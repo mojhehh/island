@@ -871,6 +871,7 @@
             <p class="screen-text">The files will be destroyed. The cover-up continues.</p>
             <p class="screen-highlight" style="color:#ff5252">"Epstein didn't kill himself."</p>
             <button class="btn" id="restartLoseBtn">RETRY</button>
+            <button class="btn" id="menuLoseBtn" style="margin-top:8px; border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.5)">MENU</button>
         </div>
 
         <!-- ========= PAUSE OVERLAY ========= -->
@@ -2052,6 +2053,16 @@ document.getElementById('restartLoseBtn').addEventListener('click', () => {
     transitionTo(() => {
         hideAllScreens();
         init();
+    });
+});
+
+document.getElementById('menuLoseBtn').addEventListener('click', () => {
+    playClick();
+    transitionTo(() => {
+        hideAllScreens();
+        document.getElementById('ui').style.display = 'none';
+        document.getElementById('titleScreen').classList.add('active');
+        gameState = 'menu';
     });
 });
 
