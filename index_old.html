@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epstein Island - Escape Game</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        #gameContainer {
+            position: relative;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 14px;
+            pointer-events: none;
+            text-shadow: 1px 1px 3px #000;
+        }
+        #ui div { margin-bottom: 4px; }
+        #startScreen, #winScreen, #loseScreen {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.85);
+            color: #fff;
+            z-index: 10;
+        }
+        #startScreen h1, #winScreen h1, #loseScreen h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #ff4444;
+            text-shadow: 0 0 20px rgba(255,50,50,0.5);
+        }
+        #startScreen h2 {
+            font-size: 18px;
+            color: #ffcc00;
+            margin-bottom: 20px;
+        }
+        #startScreen p, #winScreen p, #loseScreen p {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 8px;
+            text-align: center;
+            max-width: 500px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 12px 40px;
+            font-size: 18px;
+            font-family: 'Courier New', monospace;
+            background: #cc0000;
+            color: #fff;
+            border: 2px solid #ff4444;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #ff2222;
+            box-shadow: 0 0 20px rgba(255,50,50,0.5);
+        }
+        #winScreen h1 { color: #44ff44; text-shadow: 0 0 20px rgba(50,255,50,0.5); }
+        #winScreen button { background: #007700; border-color: #44ff44; }
+        #winScreen button:hover { background: #00aa00; box-shadow: 0 0 20px rgba(50,255,50,0.5); }
+        .key { color: #ffcc00; font-weight: bold; }
+        #touchControls {
+            display: none;
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+        #dpad {
+            position: absolute;
+            bottom: 10px;
+            left: 20px;
+            width: 140px;
+            height: 140px;
+            pointer-events: auto;
+        }
+        .dpad-btn {
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        .dpad-btn:active, .dpad-btn.active {
+            background: rgba(255,255,255,0.45);
+        }
+        #btn-up { left: 48px; top: 0; }
+        #btn-down { left: 48px; bottom: 0; }
+        #btn-left { left: 0; top: 48px; }
+        #btn-right { right: 0; top: 48px; }
+        #btn-sprint {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            width: 70px;
+            height: 70px;
+            background: rgba(255,100,100,0.25);
+            border: 2px solid rgba(255,100,100,0.5);
+            border-radius: 50%;
+            color: #fff;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            pointer-events: auto;
+        }
+        #btn-sprint:active, #btn-sprint.active {
+            background: rgba(255,100,100,0.5);
+        }
+        @media (pointer: coarse), (max-width: 1024px) {
+            #touchControls { display: block; }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer" style="width:100vw;height:100vh">
+        <canvas id="game"></canvas>
+        <div id="ui">
+            <div id="filesCount">FILES: 0 / 0</div>
+            <div id="hpBar">HEALTH:  ████████████████████</div>
+            <div id="healthBar">STAMINA: ████████████████████</div>
+            <div id="status">Find the Epstein Files!</div>
+        </div>
+
+        <div id="startScreen">
+            <h1>EPSTEIN ISLAND</h1>
+            <h2>🏝️ LITTLE ST. JAMES — 2019 🏝️</h2>
+            <p>Jeffrey Epstein's private island hides the truth. The FBI is closing in, but the files are about to be destroyed.</p>
+            <p>You're a whistleblower who snuck onto <strong style="color:#ff6666">Little St. James</strong> by boat. The files are hidden across the island — in the <strong style="color:#4488cc">blue-striped temple</strong>, the <strong style="color:#aaa">mansion</strong>, the <strong style="color:#ffcc00">helipad</strong>, the <strong style="color:#66bbdd">pool</strong>, near the <strong style="color:#ccbbaa">sundial</strong>, and the <strong style="color:#aaa">guest house</strong>.</p>
+            <p>Collect all <strong style="color:#ffcc00">7 Epstein Files</strong> and escape by boat before the guards catch you.</p>
+            <p><span class="key">WASD</span> / <span class="key">Arrows</span> to move &nbsp;|&nbsp; <span class="key">SHIFT</span> to sprint</p>
+            <p style="color:#ff4444; margin-top:10px">⚠️ Guards are everywhere. Don't get caught.</p>
+            <button id="startBtn">INFILTRATE THE ISLAND</button>
+        </div>
+
+        <div id="winScreen" style="display:none">
+            <h1>THE FILES ARE OUT!</h1>
+            <p>You escaped Little St. James with all the Epstein Files.</p>
+            <p>The names are public. Justice is coming.</p>
+            <p style="color:#ffcc00">"The truth doesn't stay buried forever."</p>
+            <p id="winTime"></p>
+            <button id="restartWinBtn">PLAY AGAIN</button>
+        </div>
+
+        <div id="loseScreen" style="display:none">
+            <h1>CAUGHT!</h1>
+            <p>You were taken down by <strong style="color:#ff6666" id="killerName">a guard</strong>.</p>
+            <p>You got diddled. The files will be destroyed.</p>
+            <p>Epstein didn't kill himself... and neither did the cover-up.</p>
+            <p style="color:#ff6666">The truth needs you. Try again.</p>
+            <button id="restartLoseBtn">RETRY</button>
+        </div>
+
+        <div id="touchControls">
+            <div id="dpad">
+                <div class="dpad-btn" id="btn-up">▲</div>
+                <div class="dpad-btn" id="btn-down">▼</div>
+                <div class="dpad-btn" id="btn-left">◀</div>
+                <div class="dpad-btn" id="btn-right">▶</div>
+            </div>
+            <div id="btn-sprint">SPRINT</div>
+        </div>
+    </div>
+
+    <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    // Base game dimensions (the map is designed for this)
+    const BASE_W = 900;
+    const BASE_H = 600;
+    const W = BASE_W;
+    const H = BASE_H;
+
+    // Set canvas internal resolution and scale to fill screen
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Tile size
+    const T = 30;
+    const COLS = W / T; // 30
+    const ROWS = H / T; // 20
+
+    // Map legend: 0=grass, 1=water, 2=sand, 3=tree/palm, 4=building, 5=wall, 6=dock, 7=temple, 8=helipad, 9=pool, 10=path, 11=sundial
+    const MAP = [
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,2,2,2,2,2,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,1,1,1,1],
+        [1,1,1,1,2,2,2,0,0,0,2,2,2,2,2,2,2,2,2,2,0,0,3,0,0,2,2,1,1,1],
+        [1,1,1,2,2,0,0,3,0,0,0,10,10,10,10,10,10,0,0,0,0,8,8,8,0,0,2,1,1,1],
+        [1,1,2,2,0,7,7,7,0,0,10,0,0,0,0,0,0,10,0,0,0,8,8,8,0,3,2,1,1,1],
+        [1,1,2,0,0,7,7,7,0,0,10,0,3,0,0,3,0,10,0,0,0,8,8,8,0,0,2,1,1,1],
+        [1,1,2,0,0,7,7,7,0,0,10,0,0,0,0,0,0,10,0,0,0,0,0,0,0,0,2,1,1,1],
+        [1,1,2,0,3,0,0,0,0,0,10,0,0,11,0,0,0,10,0,5,5,10,5,5,0,0,2,1,1,1],
+        [1,1,2,0,0,0,0,0,3,0,10,0,0,0,0,0,0,10,0,5,4,4,4,5,0,3,2,1,1,1],
+        [1,6,6,2,0,0,0,0,0,0,10,10,10,10,10,10,10,10,0,5,4,4,4,5,0,0,2,1,1,1],
+        [1,6,6,2,0,0,3,0,0,0,10,0,0,0,0,0,0,0,0,5,4,4,4,5,0,0,2,1,1,1],
+        [1,1,2,0,0,0,0,5,10,5,10,0,0,9,9,9,0,0,0,5,5,5,5,5,0,0,2,1,1,1],
+        [1,1,2,0,0,3,0,5,4,5,10,0,0,9,9,9,0,0,0,0,0,0,0,0,0,2,2,1,1,1],
+        [1,1,2,0,0,0,0,5,4,5,10,0,0,9,9,9,0,0,3,0,0,0,3,0,0,2,1,1,1,1],
+        [1,1,2,2,0,0,0,5,5,5,10,0,0,0,0,0,0,0,0,0,3,0,0,0,2,2,1,1,1,1],
+        [1,1,1,2,0,3,0,0,0,0,10,10,10,0,0,0,3,0,0,0,0,0,3,2,2,1,1,1,1],
+        [1,1,1,2,2,2,2,2,2,2,2,0,0,0,0,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    ];
+
+    // Game state
+    let player, guards, files, boat, keys, gameState, startTime, stamina, health, particles, messages, killedBy;
+
+    // Guard images
+    const guardImg1 = new Image();
+    guardImg1.src = 'guard.webp';
+    const guardImg2 = new Image();
+    guardImg2.src = 'guard2.avif';
+    const guardImg3 = new Image();
+    guardImg3.src = 'guard3.webp';
+    const guardImg4 = new Image();
+    guardImg4.src = 'guard4.webp';
+    const guardImages = [guardImg1, guardImg2, guardImg3, guardImg4];
+
+    // Player image
+    const playerImg = new Image();
+    playerImg.src = 'player.jpg';
+
+    function isWalkable(col, row) {
+        if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return false;
+        const tile = MAP[row][col];
+        return tile === 0 || tile === 2 || tile === 6 || tile === 10 || tile === 4 || tile === 7 || tile === 8 || tile === 9 || tile === 11;
+    }
+
+    function init() {
+        keys = {};
+        gameState = 'playing';
+        startTime = Date.now();
+        stamina = 60;
+        health = 100;
+        particles = [];
+        messages = [];
+        killedBy = null;
+
+        player = { x: 3 * T + T/2, y: 11 * T + T/2, speed: 3.0, size: 10, dir: 0 };
+
+        // Place files in actual island locations
+        files = [
+            { x: 6 * T, y: 6 * T, collected: false, label: "Temple File" },
+            { x: 21.5 * T, y: 11 * T, collected: false, label: "Mansion File" },
+            { x: 22 * T, y: 5 * T, collected: false, label: "Helipad File" },
+            { x: 14 * T, y: 14 * T, collected: false, label: "Pool File" },
+            { x: 8.5 * T, y: 13.5 * T, collected: false, label: "Guest House File" },
+            { x: 13 * T, y: 8 * T, collected: false, label: "Sundial File" },
+            { x: 10 * T, y: 16 * T, collected: false, label: "Beach File" },
+        ];
+
+        // Boat escape point (at the dock)
+        boat = { x: 2 * T, y: 10.5 * T };
+
+        // Guards with patrol routes along paths
+        guards = [
+            { name: 'Epstein', x: 10*T, y: 5*T, speed: 0.9, patrolPoints: [{x:10*T,y:4*T},{x:10*T,y:10*T}], patrolIdx: 0, alertTimer: 0, size: 14, mansionTimer: 600, goingToMansion: false, speechTimer: 0, stopped: false },
+            { name: 'Steven Hawking', x: 17*T, y: 10*T, speed: 0.85, patrolPoints: [{x:17*T,y:5*T},{x:17*T,y:12*T},{x:10*T,y:12*T}], patrolIdx: 0, alertTimer: 0, size: 14 },
+            { name: 'Bill Clinton', x: 13*T, y: 14*T, speed: 0.95, patrolPoints: [{x:10*T,y:15*T},{x:16*T,y:12*T},{x:10*T,y:10*T}], patrolIdx: 0, alertTimer: 0, size: 14 },
+            { name: 'Elon Musk', x: 22*T, y: 9*T, speed: 0.8, patrolPoints: [{x:22*T,y:7*T},{x:22*T,y:12*T},{x:19*T,y:12*T},{x:19*T,y:8*T}], patrolIdx: 0, alertTimer: 0, size: 14 },
+        ];
+
+        updateUI();
+    }
+
+    function addMessage(text, duration = 2000) {
+        messages.push({ text, time: Date.now(), duration });
+    }
+
+    function addParticles(x, y, color, count) {
+        for (let i = 0; i < count; i++) {
+            particles.push({
+                x, y,
+                vx: (Math.random() - 0.5) * 4,
+                vy: (Math.random() - 0.5) * 4,
+                life: 30 + Math.random() * 20,
+                color,
+                size: 2 + Math.random() * 3
+            });
+        }
+    }
+
+    function updateUI() {
+        const collected = files.filter(f => f.collected).length;
+        document.getElementById('filesCount').textContent = `FILES: ${collected} / ${files.length}`;
+
+        // Health bar
+        const hpBars = Math.round(health / 5);
+        const hpStr = '█'.repeat(hpBars) + '░'.repeat(20 - hpBars);
+        const hpColor = health > 50 ? '#ff4444' : health > 25 ? '#ff6600' : '#ff0000';
+        document.getElementById('hpBar').innerHTML = `HEALTH:  <span style="color:${hpColor}">${hpStr}</span>`;
+
+        // Stamina bar
+        const stBars = Math.round(stamina / 3);
+        const stStr = '█'.repeat(stBars) + '░'.repeat(20 - stBars);
+        const stColor = stamina > 30 ? '#44aaff' : stamina > 15 ? '#ffcc00' : '#ff4444';
+        document.getElementById('healthBar').innerHTML = `STAMINA: <span style="color:${stColor}">${stStr}</span>`;
+
+        if (collected === files.length) {
+            document.getElementById('status').innerHTML = '<span style="color:#44ff44">ALL FILES COLLECTED! Get to the BOAT!</span>';
+        } else {
+            document.getElementById('status').textContent = `Find the Epstein Files!`;
+        }
+    }
+
+    function dist(a, b) {
+        return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+    }
+
+    function moveToward(entity, tx, ty, speed) {
+        const dx = tx - entity.x;
+        const dy = ty - entity.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < speed) {
+            entity.x = tx;
+            entity.y = ty;
+            return true;
+        }
+        entity.x += (dx / d) * speed;
+        entity.y += (dy / d) * speed;
+        return false;
+    }
+
+    function update() {
+        if (gameState !== 'playing') return;
+
+        // Player movement
+        let dx = 0, dy = 0;
+        if (keys['ArrowLeft'] || keys['KeyA']) dx -= 1;
+        if (keys['ArrowRight'] || keys['KeyD']) dx += 1;
+        if (keys['ArrowUp'] || keys['KeyW']) dy -= 1;
+        if (keys['ArrowDown'] || keys['KeyS']) dy += 1;
+
+        let speed = player.speed;
+        const sprinting = keys['ShiftLeft'] || keys['ShiftRight'];
+        if (sprinting && stamina > 0 && (dx !== 0 || dy !== 0)) {
+            speed = player.speed * 1.8;
+            stamina = Math.max(0, stamina - 0.25);
+        } else if (!sprinting) {
+            stamina = Math.min(60, stamina + 0.15);
+        }
+
+        // Can't sprint if no stamina
+        if (stamina <= 0) {
+            speed = player.speed * 0.7;
+        }
+
+        if (dx !== 0 && dy !== 0) {
+            dx *= 0.707;
+            dy *= 0.707;
+        }
+
+        if (dx !== 0 || dy !== 0) {
+            player.dir = Math.atan2(dy, dx);
+        }
+
+        const newX = player.x + dx * speed;
+        const newY = player.y + dy * speed;
+
+        // Collision check
+        const margin = player.size * 0.7;
+        const colX = Math.floor(newX / T);
+        const colY = Math.floor(player.y / T);
+        const colX2 = Math.floor(player.x / T);
+        const colY2 = Math.floor(newY / T);
+
+        if (isWalkable(Math.floor((newX - margin) / T), Math.floor((player.y - margin) / T)) &&
+            isWalkable(Math.floor((newX + margin) / T), Math.floor((player.y - margin) / T)) &&
+            isWalkable(Math.floor((newX - margin) / T), Math.floor((player.y + margin) / T)) &&
+            isWalkable(Math.floor((newX + margin) / T), Math.floor((player.y + margin) / T))) {
+            player.x = newX;
+        }
+        if (isWalkable(Math.floor((player.x - margin) / T), Math.floor((newY - margin) / T)) &&
+            isWalkable(Math.floor((player.x + margin) / T), Math.floor((newY - margin) / T)) &&
+            isWalkable(Math.floor((player.x - margin) / T), Math.floor((newY + margin) / T)) &&
+            isWalkable(Math.floor((player.x + margin) / T), Math.floor((newY + margin) / T))) {
+            player.y = newY;
+        }
+
+        // Collect files
+        files.forEach(f => {
+            if (!f.collected && dist(player, f) < 22) {
+                f.collected = true;
+                addParticles(f.x, f.y, '#ffcc00', 20);
+                addMessage(f.label + ' COLLECTED!');
+                updateUI();
+            }
+        });
+
+        // Guard AI
+        guards.forEach(g => {
+            const playerDist = dist(player, g);
+            const detectRange = 100;
+            const chaseRange = 150;
+
+            // Epstein mansion visit behavior
+            if (g.mansionTimer !== undefined) {
+                if (g.stopped) {
+                    g.speechTimer--;
+                    if (g.speechTimer <= 0) {
+                        g.stopped = false;
+                        g.goingToMansion = false;
+                    }
+                    // Jitter up and down while stopped
+                    g.y += Math.sin(Date.now() * 0.01) * 0.3;
+                } else if (g.goingToMansion) {
+                    // Walk to mansion center (col 21.5, row 9.5)
+                    const mansionX = 21.5 * T;
+                    const mansionY = 9.5 * T;
+                    if (moveToward(g, mansionX, mansionY, g.speed * 0.8)) {
+                        // Arrived at mansion center
+                        g.stopped = true;
+                        g.speechTimer = 600; // 10 seconds at 60fps
+                    }
+                } else if (playerDist < detectRange) {
+                    g.alertTimer = 120;
+                    const chaseSpeed = g.speed * 1.2;
+                    moveToward(g, player.x, player.y, chaseSpeed);
+                    g.mansionTimer = 900; // reset mansion timer after chase
+                } else if (g.alertTimer > 0) {
+                    g.alertTimer--;
+                    moveToward(g, player.x, player.y, g.speed);
+                } else {
+                    g.mansionTimer--;
+                    if (g.mansionTimer <= 0) {
+                        g.goingToMansion = true;
+                        g.mansionTimer = 900; // ~15 seconds between visits
+                    } else {
+                        const target = g.patrolPoints[g.patrolIdx];
+                        if (moveToward(g, target.x, target.y, g.speed)) {
+                            g.patrolIdx = (g.patrolIdx + 1) % g.patrolPoints.length;
+                        }
+                    }
+                }
+            } else if (playerDist < detectRange) {
+                // Chase player
+                g.alertTimer = 120;
+                const chaseSpeed = g.speed * 1.2;
+                moveToward(g, player.x, player.y, chaseSpeed);
+            } else if (g.alertTimer > 0) {
+                g.alertTimer--;
+                const chaseSpeed = g.speed * 1.0;
+                moveToward(g, player.x, player.y, chaseSpeed);
+            } else {
+                // Patrol
+                const target = g.patrolPoints[g.patrolIdx];
+                if (moveToward(g, target.x, target.y, g.speed)) {
+                    g.patrolIdx = (g.patrolIdx + 1) % g.patrolPoints.length;
+                }
+            }
+
+            // Guard collision with player
+            if (playerDist < 18) {
+                health -= 1.2;
+                killedBy = g.name;
+                addParticles(player.x, player.y, '#ff4444', 2);
+                // Push player away
+                const angle = Math.atan2(player.y - g.y, player.x - g.x);
+                player.x += Math.cos(angle) * 3;
+                player.y += Math.sin(angle) * 3;
+            }
+        });
+
+        // Update particles
+        particles = particles.filter(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life--;
+            p.vx *= 0.95;
+            p.vy *= 0.95;
+            return p.life > 0;
+        });
+
+        // Remove old messages
+        messages = messages.filter(m => Date.now() - m.time < m.duration);
+
+        // Check health death
+        if (health <= 0) {
+            gameState = 'lost';
+            document.getElementById('killerName').textContent = killedBy || 'a guard';
+            document.getElementById('loseScreen').style.display = 'flex';
+        }
+
+        // Check boat escape
+        const allCollected = files.every(f => f.collected);
+        if (allCollected && dist(player, boat) < 25) {
+            gameState = 'won';
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+            document.getElementById('winTime').textContent = `Time: ${elapsed}s`;
+            document.getElementById('winScreen').style.display = 'flex';
+        }
+
+        updateUI();
+    }
+
+    function drawTile(col, row) {
+        const x = col * T;
+        const y = row * T;
+        const tile = MAP[row][col];
+
+        switch(tile) {
+            case 0: // grass
+                ctx.fillStyle = '#2d5a1e';
+                ctx.fillRect(x, y, T, T);
+                // Grass detail
+                ctx.fillStyle = '#3a6b28';
+                if ((col + row) % 3 === 0) {
+                    ctx.fillRect(x+5, y+5, 3, 8);
+                    ctx.fillRect(x+18, y+15, 3, 8);
+                }
+                break;
+            case 1: // water
+                ctx.fillStyle = '#1a3a5c';
+                ctx.fillRect(x, y, T, T);
+                // Wave effect
+                const waveOff = Math.sin(Date.now() / 800 + col * 0.5 + row * 0.3) * 3;
+                ctx.fillStyle = '#2a4a6c';
+                ctx.fillRect(x, y + 12 + waveOff, T, 4);
+                break;
+            case 2: // sand
+                ctx.fillStyle = '#c2a644';
+                ctx.fillRect(x, y, T, T);
+                ctx.fillStyle = '#b89a3a';
+                if ((col * 7 + row * 3) % 5 === 0) {
+                    ctx.fillRect(x+8, y+8, 4, 4);
+                }
+                break;
+            case 3: // tree
+                ctx.fillStyle = '#2d5a1e';
+                ctx.fillRect(x, y, T, T);
+                // Trunk
+                ctx.fillStyle = '#5a3a1a';
+                ctx.fillRect(x+12, y+18, 6, 12);
+                // Canopy
+                ctx.fillStyle = '#1a7a1a';
+                ctx.beginPath();
+                ctx.arc(x+15, y+13, 10, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = '#22881a';
+                ctx.beginPath();
+                ctx.arc(x+13, y+11, 7, 0, Math.PI*2);
+                ctx.fill();
+                break;
+            case 4: // building interior
+                ctx.fillStyle = '#555555';
+                ctx.fillRect(x, y, T, T);
+                ctx.fillStyle = '#4a4a4a';
+                ctx.fillRect(x+1, y+1, T-2, T-2);
+                break;
+            case 5: // wall
+                ctx.fillStyle = '#888888';
+                ctx.fillRect(x, y, T, T);
+                ctx.fillStyle = '#777777';
+                ctx.fillRect(x+2, y+2, T-4, T-4);
+                ctx.strokeStyle = '#999';
+                ctx.strokeRect(x+1, y+1, T-2, T-2);
+                break;
+            case 6: // dock
+                ctx.fillStyle = '#1a3a5c';
+                ctx.fillRect(x, y, T, T);
+                ctx.fillStyle = '#6a4a2a';
+                ctx.fillRect(x+2, y, T-4, T);
+                ctx.fillStyle = '#7a5a3a';
+                ctx.fillRect(x+4, y+2, T-8, 4);
+                ctx.fillRect(x+4, y+14, T-8, 4);
+                ctx.fillRect(x+4, y+26, T-8, 4);
+                break;
+            case 7: // temple (blue and white striped)
+                ctx.fillStyle = '#2d5a1e';
+                ctx.fillRect(x, y, T, T);
+                // Temple base
+                ctx.fillStyle = '#ddd8c4';
+                ctx.fillRect(x+2, y+2, T-4, T-4);
+                // Blue and white stripes
+                for (let s = 0; s < 4; s++) {
+                    ctx.fillStyle = s % 2 === 0 ? '#4488cc' : '#ffffff';
+                    ctx.fillRect(x+3, y+3 + s*6, T-6, 6);
+                }
+                // Gold dome top accent
+                ctx.fillStyle = '#daa520';
+                ctx.fillRect(x+10, y+1, 10, 3);
+                break;
+            case 8: // helipad
+                ctx.fillStyle = '#555555';
+                ctx.fillRect(x, y, T, T);
+                ctx.fillStyle = '#444444';
+                ctx.fillRect(x+1, y+1, T-2, T-2);
+                // H marking
+                ctx.fillStyle = '#ffcc00';
+                ctx.fillRect(x+8, y+6, 3, 18);
+                ctx.fillRect(x+19, y+6, 3, 18);
+                ctx.fillRect(x+8, y+13, 14, 3);
+                break;
+            case 9: // pool
+                ctx.fillStyle = '#2d5a1e';
+                ctx.fillRect(x, y, T, T);
+                // Pool tiles
+                ctx.fillStyle = '#88cccc';
+                ctx.fillRect(x+1, y+1, T-2, T-2);
+                ctx.fillStyle = '#66bbdd';
+                ctx.fillRect(x+3, y+3, T-6, T-6);
+                // Water shimmer
+                const shimmer = Math.sin(Date.now()/500 + col + row) * 0.15 + 0.85;
+                ctx.fillStyle = `rgba(150,220,255,${shimmer})`;
+                ctx.fillRect(x+5, y+5, T-10, T-10);
+                break;
+            case 10: // path/road
+                ctx.fillStyle = '#8a7a5a';
+                ctx.fillRect(x, y, T, T);
+                ctx.fillStyle = '#7a6a4a';
+                ctx.fillRect(x+1, y+1, T-2, T-2);
+                // Gravel speckles
+                ctx.fillStyle = '#9a8a6a';
+                if ((col+row)%2===0) { ctx.fillRect(x+5,y+7,2,2); ctx.fillRect(x+18,y+20,2,2); }
+                else { ctx.fillRect(x+12,y+4,2,2); ctx.fillRect(x+8,y+22,2,2); }
+                break;
+            case 11: // sundial
+                ctx.fillStyle = '#2d5a1e';
+                ctx.fillRect(x, y, T, T);
+                // Sundial base
+                ctx.fillStyle = '#ccbbaa';
+                ctx.beginPath();
+                ctx.arc(x+T/2, y+T/2, 12, 0, Math.PI*2);
+                ctx.fill();
+                // Dial markings
+                ctx.strokeStyle = '#666';
+                ctx.lineWidth = 1;
+                for (let a = 0; a < 12; a++) {
+                    const angle = (a/12) * Math.PI * 2;
+                    ctx.beginPath();
+                    ctx.moveTo(x+T/2 + Math.cos(angle)*8, y+T/2 + Math.sin(angle)*8);
+                    ctx.lineTo(x+T/2 + Math.cos(angle)*11, y+T/2 + Math.sin(angle)*11);
+                    ctx.stroke();
+                }
+                // Shadow needle
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x+T/2, y+T/2);
+                ctx.lineTo(x+T/2+7, y+T/2-5);
+                ctx.stroke();
+                break;
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Scale and center the game to fill the screen
+        const scaleX = canvas.width / W;
+        const scaleY = canvas.height / H;
+        const scale = Math.max(scaleX, scaleY);
+        const offsetX = (canvas.width - W * scale) / 2;
+        const offsetY = (canvas.height - H * scale) / 2;
+
+        ctx.save();
+        ctx.translate(offsetX, offsetY);
+        ctx.scale(scale, scale);
+
+        // Fill background with water color
+        ctx.fillStyle = '#1a3a5c';
+        ctx.fillRect(-offsetX/scale, -offsetY/scale, canvas.width/scale, canvas.height/scale);
+
+        // Draw map
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                drawTile(c, r);
+            }
+        }
+
+        // Draw boat
+        const allCollected = files.every(f => f.collected);
+        ctx.save();
+        ctx.translate(boat.x, boat.y);
+        // Boat body
+        ctx.fillStyle = allCollected ? '#44ff44' : '#6a4a2a';
+        ctx.beginPath();
+        ctx.moveTo(-15, 5);
+        ctx.lineTo(15, 5);
+        ctx.lineTo(12, 12);
+        ctx.lineTo(-12, 12);
+        ctx.closePath();
+        ctx.fill();
+        // Mast
+        ctx.fillStyle = '#8a6a4a';
+        ctx.fillRect(-1, -15, 2, 20);
+        // Sail
+        ctx.fillStyle = allCollected ? '#aaffaa' : '#ddd';
+        ctx.beginPath();
+        ctx.moveTo(0, -14);
+        ctx.lineTo(10, -3);
+        ctx.lineTo(0, -1);
+        ctx.closePath();
+        ctx.fill();
+        if (allCollected) {
+            // Glow effect
+            ctx.shadowColor = '#44ff44';
+            ctx.shadowBlur = 20;
+            ctx.strokeStyle = '#44ff44';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, 18, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+        ctx.restore();
+
+        // Draw files
+        files.forEach(f => {
+            if (f.collected) return;
+            ctx.save();
+            ctx.translate(f.x, f.y);
+            // Glow
+            const glow = Math.sin(Date.now() / 300) * 0.3 + 0.7;
+            ctx.shadowColor = '#ffcc00';
+            ctx.shadowBlur = 10 * glow;
+            // Folder
+            ctx.fillStyle = `rgba(255, 200, 0, ${glow})`;
+            ctx.fillRect(-8, -6, 16, 14);
+            ctx.fillStyle = '#ff9900';
+            ctx.fillRect(-8, -8, 10, 4);
+            // Label
+            ctx.fillStyle = '#aa6600';
+            ctx.fillRect(-5, -2, 10, 2);
+            ctx.fillRect(-5, 2, 10, 2);
+            ctx.fillRect(-5, 6, 10, 2);
+            ctx.shadowBlur = 0;
+            // TOP SECRET stamp
+            ctx.fillStyle = '#ff0000';
+            ctx.font = '6px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('SECRET', 0, -10);
+            ctx.restore();
+        });
+
+        // Draw guards
+        guards.forEach(g => {
+            ctx.save();
+            ctx.translate(g.x, g.y);
+            const alert = g.alertTimer > 0;
+
+            // Detection range circle
+            if (alert) {
+                ctx.strokeStyle = 'rgba(255,0,0,0.15)';
+                ctx.beginPath();
+                ctx.arc(0, 0, 80, 0, Math.PI*2);
+                ctx.stroke();
+            }
+
+            // Draw guard image or fallback
+            const imgSize = 32;
+            const gIdx = guards.indexOf(g);
+            const gImg = guardImages[gIdx % guardImages.length];
+            if (gImg.complete && gImg.naturalWidth > 0) {
+                ctx.drawImage(gImg, -imgSize/2, -imgSize/2, imgSize, imgSize);
+            } else {
+                // Fallback circle
+                ctx.fillStyle = alert ? '#cc0000' : '#333';
+                ctx.beginPath();
+                ctx.arc(0, 0, g.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Alert indicator
+            if (alert) {
+                ctx.fillStyle = '#ff0000';
+                ctx.font = 'bold 16px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('!', 0, -22);
+            }
+
+            // Speech bubble + folder pull animation
+            if (g.speechTimer > 0 && g.stopped) {
+                // Check if mansion file is not collected
+                const mansionFile = files.find(f => f.label === 'Mansion File');
+                const showPull = mansionFile && !mansionFile.collected;
+
+                if (showPull) {
+                    // Folder animation - draw folder to the right of Epstein
+                    const pullProgress = Math.min(1, (600 - g.speechTimer) / 180); // takes 3 sec to pull out
+                    const folderX = 20;
+                    const folderY = -5;
+
+                    // Draw folder
+                    ctx.fillStyle = '#c8a84e';
+                    ctx.fillRect(folderX - 10, folderY - 8, 20, 16);
+                    ctx.fillStyle = '#b08a30';
+                    ctx.fillRect(folderX - 10, folderY - 8, 10, 4);
+                    ctx.strokeStyle = '#7a5a10';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(folderX - 10, folderY - 8, 20, 16);
+
+                    // Player image sliding out of folder
+                    if (pullProgress > 0.1) {
+                        const slideOut = Math.min(1, (pullProgress - 0.1) / 0.6);
+                        const imgY = folderY - 4 - slideOut * 6;
+                        const imgSize = 16;
+                        ctx.save();
+                        // Clip so image appears to come from inside folder
+                        if (slideOut < 1) {
+                            ctx.beginPath();
+                            ctx.rect(folderX - 10, folderY - 30, 22, 30 - 8 + slideOut * 18);
+                            ctx.clip();
+                        }
+                        if (playerImg.complete && playerImg.naturalWidth > 0) {
+                            ctx.drawImage(playerImg, folderX - imgSize/2, imgY - imgSize/2, imgSize, imgSize);
+                        }
+                        ctx.restore();
+
+                        // Small border around the pulled image
+                        if (slideOut >= 1) {
+                            ctx.strokeStyle = '#ffcc00';
+                            ctx.lineWidth = 1;
+                            ctx.strokeRect(folderX - imgSize/2 - 1, imgY - imgSize/2 - 1, imgSize + 2, imgSize + 2);
+                        }
+                    }
+                }
+
+                // Speech bubble
+                const bubbleText = 'im omning it';
+                ctx.font = 'bold 10px monospace';
+                const tw = ctx.measureText(bubbleText).width + 12;
+                const bh = 20;
+                const bx = -tw/2;
+                const by = -42;
+                // Bubble background
+                ctx.fillStyle = '#fff';
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(bx + 4, by);
+                ctx.lineTo(bx + tw - 4, by);
+                ctx.quadraticCurveTo(bx + tw, by, bx + tw, by + 4);
+                ctx.lineTo(bx + tw, by + bh - 4);
+                ctx.quadraticCurveTo(bx + tw, by + bh, bx + tw - 4, by + bh);
+                ctx.lineTo(4, by + bh);
+                ctx.lineTo(0, by + bh + 6);
+                ctx.lineTo(-4, by + bh);
+                ctx.lineTo(bx + 4, by + bh);
+                ctx.quadraticCurveTo(bx, by + bh, bx, by + bh - 4);
+                ctx.lineTo(bx, by + 4);
+                ctx.quadraticCurveTo(bx, by, bx + 4, by);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                // Bubble text
+                ctx.fillStyle = '#333';
+                ctx.textAlign = 'center';
+                ctx.fillText(bubbleText, 0, by + 14);
+            }
+
+            // Guard name label
+            ctx.fillStyle = '#fff';
+            ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+            ctx.lineWidth = 2;
+            ctx.font = 'bold 9px monospace';
+            ctx.textAlign = 'center';
+            ctx.strokeText(g.name, 0, 24);
+            ctx.fillText(g.name, 0, 24);
+
+            ctx.restore();
+        });
+
+        // Draw player
+        ctx.save();
+        ctx.translate(player.x, player.y);
+
+        const pSize = 28;
+        if (playerImg.complete && playerImg.naturalWidth > 0) {
+            ctx.drawImage(playerImg, -pSize/2, -pSize/2, pSize, pSize);
+        } else {
+            // Fallback
+            ctx.fillStyle = '#2288ff';
+            ctx.beginPath();
+            ctx.arc(0, 0, player.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.restore();
+
+        // Draw particles
+        particles.forEach(p => {
+            ctx.globalAlpha = p.life / 50;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+        });
+        ctx.globalAlpha = 1;
+
+        // Draw messages
+        messages.forEach((m, i) => {
+            const age = (Date.now() - m.time) / m.duration;
+            ctx.globalAlpha = 1 - age;
+            ctx.fillStyle = '#ffcc00';
+            ctx.font = 'bold 16px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(m.text, W/2, 80 + i * 24 - age * 20);
+        });
+        ctx.globalAlpha = 1;
+
+        // Location labels on the map
+        ctx.font = 'bold 9px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+        ctx.lineWidth = 2;
+        const labels = [
+            { text: 'TEMPLE', x: 6*T, y: 4.3*T },
+            { text: 'MANSION', x: 21.5*T, y: 8*T },
+            { text: 'HELIPAD', x: 22*T, y: 3.5*T },
+            { text: 'POOL', x: 14*T, y: 12*T },
+            { text: 'GUEST HOUSE', x: 8.5*T, y: 11.8*T },
+            { text: 'SUNDIAL', x: 13*T, y: 7.5*T },
+            { text: 'DOCK', x: 2*T, y: 9.5*T },
+        ];
+        labels.forEach(l => {
+            ctx.strokeText(l.text, l.x, l.y);
+            ctx.fillText(l.text, l.x, l.y);
+        });
+
+        // Mini-map
+        const mmScale = 4;
+        const mmX = W - COLS * mmScale - 10;
+        const mmY = 10;
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(mmX - 2, mmY - 2, COLS * mmScale + 4, ROWS * mmScale + 4);
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                const tile = MAP[r][c];
+                ctx.fillStyle = tile === 1 ? '#1a3a5c' : tile === 2 ? '#c2a644' :
+                    tile === 3 ? '#1a7a1a' : tile === 4 ? '#555' :
+                    tile === 5 ? '#888' : tile === 6 ? '#6a4a2a' :
+                    tile === 7 ? '#4488cc' : tile === 8 ? '#555' :
+                    tile === 9 ? '#66bbdd' : tile === 10 ? '#8a7a5a' :
+                    tile === 11 ? '#ccbbaa' : '#2d5a1e';
+                ctx.fillRect(mmX + c * mmScale, mmY + r * mmScale, mmScale, mmScale);
+            }
+        }
+        // Player on minimap
+        ctx.fillStyle = '#2288ff';
+        ctx.fillRect(mmX + (player.x / T) * mmScale - 1, mmY + (player.y / T) * mmScale - 1, 3, 3);
+        // Files on minimap
+        files.forEach(f => {
+            if (!f.collected) {
+                ctx.fillStyle = '#ffcc00';
+                ctx.fillRect(mmX + (f.x / T) * mmScale - 1, mmY + (f.y / T) * mmScale - 1, 2, 2);
+            }
+        });
+        // Guards on minimap
+        guards.forEach(g => {
+            ctx.fillStyle = g.alertTimer > 0 ? '#ff0000' : '#ff6666';
+            ctx.fillRect(mmX + (g.x / T) * mmScale - 1, mmY + (g.y / T) * mmScale - 1, 2, 2);
+        });
+        // Boat on minimap
+        ctx.fillStyle = allCollected ? '#44ff44' : '#6a4a2a';
+        ctx.fillRect(mmX + (boat.x / T) * mmScale - 1, mmY + (boat.y / T) * mmScale - 1, 3, 3);
+
+        ctx.restore(); // end scale/translate
+    }
+
+    function gameLoop() {
+        update();
+        draw();
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Input handling
+    document.addEventListener('keydown', e => {
+        keys[e.code] = true;
+        e.preventDefault();
+    });
+    document.addEventListener('keyup', e => {
+        keys[e.code] = false;
+    });
+
+    // Touch controls
+    function setupTouch(btnId, keyCode) {
+        const btn = document.getElementById(btnId);
+        btn.addEventListener('touchstart', e => { e.preventDefault(); keys[keyCode] = true; btn.classList.add('active'); }, {passive:false});
+        btn.addEventListener('touchend', e => { e.preventDefault(); keys[keyCode] = false; btn.classList.remove('active'); }, {passive:false});
+        btn.addEventListener('touchcancel', e => { keys[keyCode] = false; btn.classList.remove('active'); });
+    }
+    setupTouch('btn-up', 'ArrowUp');
+    setupTouch('btn-down', 'ArrowDown');
+    setupTouch('btn-left', 'ArrowLeft');
+    setupTouch('btn-right', 'ArrowRight');
+    setupTouch('btn-sprint', 'ShiftLeft');
+
+    // Prevent default touch on canvas to avoid scrolling
+    canvas.addEventListener('touchstart', e => e.preventDefault(), {passive:false});
+    canvas.addEventListener('touchmove', e => e.preventDefault(), {passive:false});
+
+    // Buttons
+    document.getElementById('startBtn').addEventListener('click', () => {
+        document.getElementById('startScreen').style.display = 'none';
+        init();
+    });
+    document.getElementById('restartWinBtn').addEventListener('click', () => {
+        document.getElementById('winScreen').style.display = 'none';
+        init();
+    });
+    document.getElementById('restartLoseBtn').addEventListener('click', () => {
+        document.getElementById('loseScreen').style.display = 'none';
+        init();
+    });
+
+    // Start
+    init();
+    gameState = 'menu';
+    gameLoop();
+    </script>
+</body>
+</html>
