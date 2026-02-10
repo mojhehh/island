@@ -1325,7 +1325,7 @@ function checkEntranceAttack(enemy, entranceType, dt) {
 
     // Grace period — animatronic is visible but won't attack yet
     // For hall: gives player time to flash light and spot them
-    const gracePeriod = entranceType === 'hall' ? 3.5 : 2.0;
+    const gracePeriod = entranceType === 'hall' ? 1.5 : 1.0;
     enemy.attackTimer += dt;
     if (enemy.attackTimer < gracePeriod) return; // Still in warning phase
 
@@ -1346,7 +1346,7 @@ function checkEntranceAttack(enemy, entranceType, dt) {
             } else {
                 // Mask failed — she sees through it, attack after shorter delay
                 enemy.maskFailTimer = (enemy.maskFailTimer || 0) + dt;
-                if (enemy.maskFailTimer >= 3.5) {
+                if (enemy.maskFailTimer >= 2.0) {
                     triggerJumpscare(enemy);
                     return;
                 }
@@ -1381,7 +1381,7 @@ function checkEntranceAttack(enemy, entranceType, dt) {
     }
 
     // Attack threshold — if not masked in time, jumpscare
-    const attackThreshold = entranceType === 'hall' ? 8 : 6;
+    const attackThreshold = entranceType === 'hall' ? 4 : 3;
     if (activeTime >= attackThreshold && !maskEffective) {
         triggerJumpscare(enemy);
     }
@@ -1864,54 +1864,29 @@ function drawAnimatronicInOpening(anim, ox, oy, ow, oh, alpha) {
 function drawMaskOverlay() {
     const w = canvas.width, h = canvas.height;
 
-    // Dark mask with eye holes using evenodd fill
-    // This keeps the office visible through the eye holes
+    // Dark mask with two eye holes — classic FNAF style
     ctx.save();
     ctx.beginPath();
     ctx.rect(0, 0, w, h);
-    ctx.ellipse(w * 0.38, h * 0.4, w * 0.08, h * 0.07, 0, 0, Math.PI * 2);
-    ctx.ellipse(w * 0.62, h * 0.4, w * 0.08, h * 0.07, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0,0,0,0.85)';
+    // Left eye hole
+    ctx.ellipse(w * 0.36, h * 0.4, w * 0.1, h * 0.09, 0, 0, Math.PI * 2);
+    // Right eye hole
+    ctx.ellipse(w * 0.64, h * 0.4, w * 0.1, h * 0.09, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(10,8,5,0.88)';
     ctx.fill('evenodd');
     ctx.restore();
 
-    // Slight brown tint on the mask (not in eye holes)
+    // Subtle eye hole rims
     ctx.save();
+    ctx.strokeStyle = 'rgba(90,65,35,0.3)';
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.rect(0, 0, w, h);
-    ctx.ellipse(w * 0.38, h * 0.4, w * 0.08, h * 0.07, 0, 0, Math.PI * 2);
-    ctx.ellipse(w * 0.62, h * 0.4, w * 0.08, h * 0.07, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(60,40,20,0.15)';
-    ctx.fill('evenodd');
+    ctx.ellipse(w * 0.36, h * 0.4, w * 0.1, h * 0.09, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(w * 0.64, h * 0.4, w * 0.1, h * 0.09, 0, 0, Math.PI * 2);
+    ctx.stroke();
     ctx.restore();
-
-    // Slight tint inside eye holes (looking through mask material)
-    ctx.save();
-    ctx.beginPath();
-    ctx.ellipse(w * 0.38, h * 0.4, w * 0.08, h * 0.07, 0, 0, Math.PI * 2);
-    ctx.ellipse(w * 0.62, h * 0.4, w * 0.08, h * 0.07, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(40,30,15,0.08)';
-    ctx.fill();
-    ctx.restore();
-
-    // Eye hole borders
-    ctx.strokeStyle = 'rgba(100,70,40,0.3)';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.ellipse(w * 0.38, h * 0.4, w * 0.08, h * 0.07, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.ellipse(w * 0.62, h * 0.4, w * 0.08, h * 0.07, 0, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // Nose triangle below
-    ctx.beginPath();
-    ctx.moveTo(w * 0.48, h * 0.5);
-    ctx.lineTo(w * 0.52, h * 0.5);
-    ctx.lineTo(w * 0.5, h * 0.55);
-    ctx.closePath();
-    ctx.strokeStyle = 'rgba(100,70,40,0.2)';
-    ctx.stroke();
 
     // "MASK ON" indicator
     ctx.font = '10px "Share Tech Mono", monospace';
