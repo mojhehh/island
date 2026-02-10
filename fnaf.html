@@ -1683,7 +1683,7 @@ function drawOfficeView() {
 
         // Show animatronic in hallway if present
         if (hallEnemy && hallEnemy.state === 'at_entrance') {
-            drawAnimatronicInOpening(hallEnemy, hallX, hallY, hallW, hallH, 0.85);
+            drawAnimatronicInOpening(hallEnemy, hallX, hallY, hallW, hallH, 1.0, 'hall');
         }
 
         // Occasional flicker
@@ -1694,7 +1694,7 @@ function drawOfficeView() {
     } else {
         // Without flashlight — barely visible shadow, almost impossible to see
         if (hallEnemy && hallEnemy.state === 'at_entrance') {
-            drawAnimatronicInOpening(hallEnemy, hallX, hallY, hallW, hallH, 0.03 + Math.random() * 0.02);
+            drawAnimatronicInOpening(hallEnemy, hallX, hallY, hallW, hallH, 0.03 + Math.random() * 0.02, 'hall');
         }
     }
 
@@ -1730,8 +1730,8 @@ function drawOfficeView() {
 
     // Show animatronic in left vent
     if (ventLeftEnemy && ventLeftEnemy.state === 'at_entrance') {
-        const ventLAlpha = ventLightLeft ? 0.85 : 0.1;
-        drawAnimatronicInOpening(ventLeftEnemy, ventLX, ventLY, ventLW, ventLH, ventLAlpha);
+        const ventLAlpha = ventLightLeft ? 1.0 : 0.1;
+        drawAnimatronicInOpening(ventLeftEnemy, ventLX, ventLY, ventLW, ventLH, ventLAlpha, 'vent_l');
         if (ventLightLeft) {
             // Red warning glow when lit
             ctx.fillStyle = 'rgba(192,57,43,0.12)';
@@ -1768,8 +1768,8 @@ function drawOfficeView() {
     }
 
     if (ventRightEnemy && ventRightEnemy.state === 'at_entrance') {
-        const ventRAlpha = ventLightRight ? 0.85 : 0.1;
-        drawAnimatronicInOpening(ventRightEnemy, ventRX, ventRY, ventRW, ventRH, ventRAlpha);
+        const ventRAlpha = ventLightRight ? 1.0 : 0.1;
+        drawAnimatronicInOpening(ventRightEnemy, ventRX, ventRY, ventRW, ventRH, ventRAlpha, 'vent_r');
         if (ventLightRight) {
             ctx.fillStyle = 'rgba(192,57,43,0.12)';
             ctx.fillRect(ventRX - 10, ventRY - 10, ventRW + 20, ventRH + 20);
@@ -1906,39 +1906,35 @@ function drawOfficeView() {
     ctx.fillRect(0, 0, w, h);
 }
 
-function drawAnimatronicInOpening(anim, ox, oy, ow, oh, alpha) {
+function drawAnimatronicInOpening(anim, ox, oy, ow, oh, alpha, type) {
     const img = images[anim.imgKey];
     if (!img || !img.complete) return;
 
     const w = canvas.width, h = canvas.height;
     const imgAR = img.naturalWidth / img.naturalHeight || 0.7;
 
-    // Make them BIG — they're coming into the office, not hiding in a box
-    const drawH = h * 0.55;
-    const drawW = drawH * imgAR;
-    // Center on the opening but let them overflow
-    const cx = ox + ow / 2;
-    const dx = cx - drawW / 2;
-    const dy = h * 0.85 - drawH; // feet near bottom of screen
+    let drawH, drawW, dx, dy;
+
+    if (type === 'hall') {
+        // Hallway: standing in the doorway, big and centered
+        drawH = oh * 0.9;
+        drawW = drawH * imgAR;
+        dx = ox + (ow - drawW) / 2;
+        dy = oy + oh - drawH;
+    } else {
+        // Vents: crawling out, face filling the vent opening
+        drawH = oh * 1.4;
+        drawW = drawH * imgAR;
+        dx = ox + (ow - drawW) / 2;
+        dy = oy + (oh - drawH * 0.7);
+    }
 
     ctx.save();
-    ctx.globalAlpha = alpha + Math.random() * 0.1;
+    ctx.globalAlpha = Math.min(alpha, 1.0);
 
     // Distortion glitch
     const glitch = Math.random() > 0.93 ? (Math.random() - 0.5) * 6 : 0;
     ctx.drawImage(img, dx + glitch, dy, drawW, drawH);
-
-    // Eerie red glow around them
-    if (alpha > 0.3) {
-        const gx = cx, gy = dy + drawH * 0.4;
-        const gr = Math.max(drawW, drawH) * 0.5;
-        const glow = ctx.createRadialGradient(gx, gy, gr * 0.2, gx, gy, gr);
-        glow.addColorStop(0, 'rgba(180,40,30,0.08)');
-        glow.addColorStop(1, 'transparent');
-        ctx.globalAlpha = alpha * 0.5;
-        ctx.fillStyle = glow;
-        ctx.fillRect(dx - gr, dy - gr, drawW + gr * 2, drawH + gr * 2);
-    }
 
     ctx.globalAlpha = 1;
     ctx.restore();
