@@ -622,44 +622,43 @@
         #touchControls {
             display: none;
             position: absolute;
-            bottom: 10px;
+            bottom: 0;
             left: 0; right: 0;
             pointer-events: none;
             z-index: 5;
         }
-        #dpad {
+        #joystickZone {
             position: absolute;
-            bottom: 10px; left: 20px;
-            width: 140px; height: 140px;
+            bottom: 80px; left: 20px;
+            width: 150px; height: 150px;
             pointer-events: auto;
-        }
-        .dpad-btn {
-            position: absolute;
-            width: 44px; height: 44px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            -webkit-user-select: none;
             touch-action: none;
+        }
+        #joystickBase {
+            position: absolute;
+            width: 120px; height: 120px;
+            left: 15px; top: 15px;
+            background: rgba(255,255,255,0.06);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 50%;
             backdrop-filter: blur(4px);
         }
-        .dpad-btn:active, .dpad-btn.active {
-            background: rgba(255,255,255,0.3);
-            border-color: rgba(255,255,255,0.5);
+        #joystickThumb {
+            position: absolute;
+            width: 50px; height: 50px;
+            left: 50px; top: 50px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            transition: none;
         }
-        #btn-up { left: 48px; top: 0; }
-        #btn-down { left: 48px; bottom: 0; }
-        #btn-left { left: 0; top: 48px; }
-        #btn-right { right: 0; top: 48px; }
+        #joystickThumb.active {
+            background: rgba(255,255,255,0.35);
+            border-color: rgba(255,255,255,0.6);
+        }
         #btn-sprint {
             position: absolute;
-            bottom: 30px; right: 20px;
+            bottom: 110px; right: 25px;
             width: 70px; height: 70px;
             background: rgba(255,23,68,0.15);
             border: 1px solid rgba(255,23,68,0.4);
@@ -677,8 +676,10 @@
             pointer-events: auto;
             letter-spacing: 1px;
         }
-        #btn-sprint:active, #btn-sprint.active {
+        #btn-sprint.active {
             background: rgba(255,23,68,0.4);
+            border-color: rgba(255,23,68,0.7);
+            color: #fff;
         }
         @media (pointer: coarse), (max-width: 1024px) {
             #touchControls { display: block; }
@@ -884,11 +885,9 @@
 
         <!-- Touch Controls -->
         <div id="touchControls">
-            <div id="dpad">
-                <div class="dpad-btn" id="btn-up">▲</div>
-                <div class="dpad-btn" id="btn-down">▼</div>
-                <div class="dpad-btn" id="btn-left">◀</div>
-                <div class="dpad-btn" id="btn-right">▶</div>
+            <div id="joystickZone">
+                <div id="joystickBase"></div>
+                <div id="joystickThumb"></div>
             </div>
             <div id="btn-sprint">RUN</div>
         </div>
@@ -1942,18 +1941,88 @@ document.addEventListener('mousemove', e => {
     cursor.style.top = e.clientY - 12 + 'px';
 });
 
-// Touch controls
-function setupTouch(btnId, keyCode) {
-    const btn = document.getElementById(btnId);
-    btn.addEventListener('touchstart', e => { e.preventDefault(); keys[keyCode] = true; btn.classList.add('active'); }, {passive:false});
-    btn.addEventListener('touchend', e => { e.preventDefault(); keys[keyCode] = false; btn.classList.remove('active'); }, {passive:false});
-    btn.addEventListener('touchcancel', e => { keys[keyCode] = false; btn.classList.remove('active'); });
+// Touch controls — Joystick
+let joystickActive = false;
+let joystickTouchId = null;
+let joystickX = 0, joystickY = 0; // -1 to 1
+let sprintToggled = false;
+
+const joystickZone = document.getElementById('joystickZone');
+const joystickThumb = document.getElementById('joystickThumb');
+const sprintBtn = document.getElementById('btn-sprint');
+
+function getJoystickCenter() {
+    const rect = joystickZone.getBoundingClientRect();
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
 }
-setupTouch('btn-up', 'ArrowUp');
-setupTouch('btn-down', 'ArrowDown');
-setupTouch('btn-left', 'ArrowLeft');
-setupTouch('btn-right', 'ArrowRight');
-setupTouch('btn-sprint', 'ShiftLeft');
+
+joystickZone.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const touch = e.changedTouches[0];
+    joystickTouchId = touch.identifier;
+    joystickActive = true;
+    joystickThumb.classList.add('active');
+    updateJoystick(touch);
+}, {passive: false});
+
+joystickZone.addEventListener('touchmove', e => {
+    e.preventDefault();
+    for (let t of e.changedTouches) {
+        if (t.identifier === joystickTouchId) {
+            updateJoystick(t);
+            break;
+        }
+    }
+}, {passive: false});
+
+function endJoystick() {
+    joystickActive = false;
+    joystickTouchId = null;
+    joystickX = 0;
+    joystickY = 0;
+    joystickThumb.style.transform = 'translate(0px, 0px)';
+    joystickThumb.classList.remove('active');
+    keys['ArrowUp'] = false;
+    keys['ArrowDown'] = false;
+    keys['ArrowLeft'] = false;
+    keys['ArrowRight'] = false;
+}
+
+joystickZone.addEventListener('touchend', e => {
+    for (let t of e.changedTouches) {
+        if (t.identifier === joystickTouchId) { endJoystick(); break; }
+    }
+}, {passive: false});
+joystickZone.addEventListener('touchcancel', endJoystick);
+
+function updateJoystick(touch) {
+    const center = getJoystickCenter();
+    const maxDist = 45;
+    let dx = touch.clientX - center.x;
+    let dy = touch.clientY - center.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > maxDist) {
+        dx = dx / dist * maxDist;
+        dy = dy / dist * maxDist;
+    }
+    joystickThumb.style.transform = `translate(${dx}px, ${dy}px)`;
+    joystickX = dx / maxDist;
+    joystickY = dy / maxDist;
+
+    const deadzone = 0.3;
+    keys['ArrowUp'] = joystickY < -deadzone;
+    keys['ArrowDown'] = joystickY > deadzone;
+    keys['ArrowLeft'] = joystickX < -deadzone;
+    keys['ArrowRight'] = joystickX > deadzone;
+}
+
+// Sprint toggle
+sprintBtn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    sprintToggled = !sprintToggled;
+    keys['ShiftLeft'] = sprintToggled;
+    sprintBtn.classList.toggle('active', sprintToggled);
+}, {passive: false});
 
 canvas.addEventListener('touchstart', e => e.preventDefault(), {passive:false});
 canvas.addEventListener('touchmove', e => e.preventDefault(), {passive:false});
