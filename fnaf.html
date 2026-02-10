@@ -934,6 +934,7 @@ const VENT_LIGHT_DURATION = 3; // seconds each toggle lasts
 
 // Office panning
 let officeScrollX = 0; // -1 to 1 range
+const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 let mouseXRatio = 0.5; // 0 to 1, mouse position across screen
 
 // Title screen
@@ -1223,8 +1224,8 @@ function update(dt) {
         if (ventLightRightTimer <= 0) { ventLightRight = false; ventLightRightTimer = 0; }
     }
 
-    // Office panning (smooth follow mouse position)
-    if (!cameraOpen) {
+    // Office panning (smooth follow mouse position) — desktop only
+    if (!cameraOpen && !isTouchDevice) {
         const targetScroll = (mouseXRatio - 0.5) * 2; // -1 to 1
         officeScrollX += (targetScroll - officeScrollX) * Math.min(1, dt * 4);
     }
@@ -1484,7 +1485,6 @@ function toggleVentLight(side) {
 }
 
 // ============== CANVAS TAP FOR TOUCH (flashlight + vent lights) ==============
-const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 if (isTouchDevice) {
     canvas.addEventListener('touchstart', function(e) {
         if (gameState !== 'playing' || cameraOpen || maskOn) return;
@@ -1502,16 +1502,16 @@ if (isTouchDevice) {
             return;
         }
 
-        // Left vent area — tap to toggle left vent light
-        const ventLX = w * 0.05, ventLY = h * 0.35, ventLW = w * 0.12, ventLH = h * 0.25;
+        // Left vent area — tap to toggle left vent light (wider hit area)
+        const ventLX = 0, ventLY = h * 0.15, ventLW = w * 0.2, ventLH = h * 0.55;
         if (tx >= ventLX && tx <= ventLX + ventLW && ty >= ventLY && ty <= ventLY + ventLH) {
             e.preventDefault();
             toggleVentLight('left');
             return;
         }
 
-        // Right vent area — tap to toggle right vent light
-        const ventRX = w * 0.83, ventRY = h * 0.35, ventRW = w * 0.12, ventRH = h * 0.25;
+        // Right vent area — tap to toggle right vent light (wider hit area)
+        const ventRX = w * 0.8, ventRY = h * 0.15, ventRW = w * 0.2, ventRH = h * 0.55;
         if (tx >= ventRX && tx <= ventRX + ventRW && ty >= ventRY && ty <= ventRY + ventRH) {
             e.preventDefault();
             toggleVentLight('right');
@@ -1616,7 +1616,7 @@ function drawOfficeView() {
     const w = canvas.width, h = canvas.height;
 
     // Office panning - the office is wider than the screen
-    const panRange = w * 0.25; // how far left/right we can pan
+    const panRange = isTouchDevice ? 0 : w * 0.25; // no panning on touch
     const panX = -officeScrollX * panRange;
     ctx.save();
     ctx.translate(panX, 0);
