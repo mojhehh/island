@@ -169,6 +169,28 @@
             border-color: rgba(255,255,255,0.3);
             color: #888;
         }
+        .night-select {
+            margin-top: 14px;
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .night-select-btn {
+            width: 36px; height: 36px;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #555;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .night-select-btn:hover {
+            border-color: #c0392b;
+            color: #c0392b;
+            background: rgba(192,57,43,0.1);
+        }
         .title-hint {
             position: absolute;
             bottom: 40px;
@@ -699,6 +721,15 @@
                 </div>
                 <button class="title-newgame" id="newGameBtn">NEW GAME</button>
                 <button class="title-continue" id="continueBtn">CONTINUE — NIGHT <span id="continueNight">1</span></button>
+                <div class="night-select" id="nightSelect">
+                    <button class="night-select-btn" onclick="showNightStart(1)">1</button>
+                    <button class="night-select-btn" onclick="showNightStart(2)">2</button>
+                    <button class="night-select-btn" onclick="showNightStart(3)">3</button>
+                    <button class="night-select-btn" onclick="showNightStart(4)">4</button>
+                    <button class="night-select-btn" onclick="showNightStart(5)">5</button>
+                    <button class="night-select-btn" onclick="showNightStart(6)">6</button>
+                    <button class="night-select-btn" onclick="showNightStart(7)">7</button>
+                </div>
             </div>
             <div class="title-hint">BASED ON REAL EVENTS THAT DEFINITELY HAPPENED</div>
             <div class="title-controls">SPACE: CAMERAS | F: FLASHLIGHT | SHIFT: MASK | Q/E: VENT LIGHTS | W/S: CYCLE CAMS</div>
@@ -1942,8 +1973,8 @@ function drawCameraView() {
         const puppet = animatronics.find(a => a.isPuppet);
         if (puppet && !puppetReleased) {
             const img = images[puppet.imgKey];
-            if (img && img.complete) {
-                const pAlpha = musicBoxLevel > 50 ? 0.15 : (0.15 + (50 - musicBoxLevel) / 50 * 0.5);
+            if (img && img.complete && musicBoxLevel < 80) {
+                const pAlpha = musicBoxLevel > 50 ? 0.02 : (0.02 + (50 - musicBoxLevel) / 50 * 0.45);
                 const pH = h * 0.25;
                 const pW = pH * (img.naturalWidth / img.naturalHeight || 0.7);
                 ctx.save();
