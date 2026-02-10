@@ -464,6 +464,37 @@
             pointer-events: none;
         }
 
+        /* Touch / iPad: big horizontal buttons like real FNAF 2 */
+        @media (pointer: coarse) {
+            #actionBar {
+                bottom: 0;
+                left: 0;
+                right: 0;
+                transform: none;
+                gap: 0;
+                justify-content: stretch;
+            }
+            .action-btn {
+                flex: 1;
+                padding: 18px 0;
+                font-size: 16px;
+                letter-spacing: 3px;
+                text-align: center;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+                border-bottom: none;
+                border-top: 2px solid rgba(255,255,255,0.15);
+            }
+            .action-btn.mask-btn {
+                border-right: 1px solid rgba(255,255,255,0.1);
+            }
+            /* Hide flashlight button on touch — tap hallway instead */
+            .action-btn.flash-btn { display: none; }
+            /* Hide vent light buttons on touch — tap vents instead */
+            .vent-light-btn { display: none !important; }
+        }
+
         /* ========== CAMERA VIEW ========== */
         #cameraOverlay {
             position: absolute;
@@ -1193,7 +1224,7 @@ function update(dt) {
     }
 
     // Office panning (smooth follow mouse position)
-    if (!cameraOpen && !maskOn) {
+    if (!cameraOpen) {
         const targetScroll = (mouseXRatio - 0.5) * 2; // -1 to 1
         officeScrollX += (targetScroll - officeScrollX) * Math.min(1, dt * 4);
     }
@@ -1450,6 +1481,43 @@ function toggleVentLight(side) {
         ventLightRight = !ventLightRight;
         if (ventLightRight) ventLightRightTimer = VENT_LIGHT_DURATION;
     }
+}
+
+// ============== CANVAS TAP FOR TOUCH (flashlight + vent lights) ==============
+const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+if (isTouchDevice) {
+    canvas.addEventListener('touchstart', function(e) {
+        if (gameState !== 'playing' || cameraOpen || maskOn) return;
+        const touch = e.changedTouches[0];
+        const rect = canvas.getBoundingClientRect();
+        const tx = touch.clientX - rect.left;
+        const ty = touch.clientY - rect.top;
+        const w = canvas.width, h = canvas.height;
+
+        // Hallway area — tap to toggle flashlight
+        const hallX = w * 0.35, hallY = h * 0.1, hallW = w * 0.3, hallH = h * 0.55;
+        if (tx >= hallX && tx <= hallX + hallW && ty >= hallY && ty <= hallY + hallH) {
+            e.preventDefault();
+            toggleFlashlight();
+            return;
+        }
+
+        // Left vent area — tap to toggle left vent light
+        const ventLX = w * 0.05, ventLY = h * 0.35, ventLW = w * 0.12, ventLH = h * 0.25;
+        if (tx >= ventLX && tx <= ventLX + ventLW && ty >= ventLY && ty <= ventLY + ventLH) {
+            e.preventDefault();
+            toggleVentLight('left');
+            return;
+        }
+
+        // Right vent area — tap to toggle right vent light
+        const ventRX = w * 0.83, ventRY = h * 0.35, ventRW = w * 0.12, ventRH = h * 0.25;
+        if (tx >= ventRX && tx <= ventRX + ventRW && ty >= ventRY && ty <= ventRY + ventRH) {
+            e.preventDefault();
+            toggleVentLight('right');
+            return;
+        }
+    }, {passive: false});
 }
 
 // ============== JUMPSCARE ==
@@ -1842,20 +1910,36 @@ function drawAnimatronicInOpening(anim, ox, oy, ow, oh, alpha) {
     const img = images[anim.imgKey];
     if (!img || !img.complete) return;
 
+    const w = canvas.width, h = canvas.height;
     const imgAR = img.naturalWidth / img.naturalHeight || 0.7;
-    const drawH = oh * 0.85;
+
+    // Make them BIG — they're coming into the office, not hiding in a box
+    const drawH = h * 0.55;
     const drawW = drawH * imgAR;
-    const dx = ox + (ow - drawW) / 2;
-    const dy = oy + oh - drawH - 2;
+    // Center on the opening but let them overflow
+    const cx = ox + ow / 2;
+    const dx = cx - drawW / 2;
+    const dy = h * 0.85 - drawH; // feet near bottom of screen
 
     ctx.save();
-    // Clip to opening
-    ctx.beginPath();
-    ctx.rect(ox + 2, oy + 2, ow - 4, oh - 4);
-    ctx.clip();
-
     ctx.globalAlpha = alpha + Math.random() * 0.1;
-    ctx.drawImage(img, dx, dy, drawW, drawH);
+
+    // Distortion glitch
+    const glitch = Math.random() > 0.93 ? (Math.random() - 0.5) * 6 : 0;
+    ctx.drawImage(img, dx + glitch, dy, drawW, drawH);
+
+    // Eerie red glow around them
+    if (alpha > 0.3) {
+        const gx = cx, gy = dy + drawH * 0.4;
+        const gr = Math.max(drawW, drawH) * 0.5;
+        const glow = ctx.createRadialGradient(gx, gy, gr * 0.2, gx, gy, gr);
+        glow.addColorStop(0, 'rgba(180,40,30,0.08)');
+        glow.addColorStop(1, 'transparent');
+        ctx.globalAlpha = alpha * 0.5;
+        ctx.fillStyle = glow;
+        ctx.fillRect(dx - gr, dy - gr, drawW + gr * 2, drawH + gr * 2);
+    }
+
     ctx.globalAlpha = 1;
     ctx.restore();
 }
@@ -1864,22 +1948,24 @@ function drawAnimatronicInOpening(anim, ox, oy, ow, oh, alpha) {
 function drawMaskOverlay() {
     const w = canvas.width, h = canvas.height;
 
-    // Dark mask with two eye holes — classic FNAF style
+    // Dark mask with two eye holes
     ctx.save();
     ctx.beginPath();
     ctx.rect(0, 0, w, h);
     // Left eye hole
+    ctx.moveTo(w * 0.36 + w * 0.1, h * 0.4);
     ctx.ellipse(w * 0.36, h * 0.4, w * 0.1, h * 0.09, 0, 0, Math.PI * 2);
-    // Right eye hole
+    // Right eye hole — moveTo breaks the connecting line
+    ctx.moveTo(w * 0.64 + w * 0.1, h * 0.4);
     ctx.ellipse(w * 0.64, h * 0.4, w * 0.1, h * 0.09, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(10,8,5,0.88)';
+    ctx.fillStyle = '#000';
     ctx.fill('evenodd');
     ctx.restore();
 
     // Subtle eye hole rims
     ctx.save();
-    ctx.strokeStyle = 'rgba(90,65,35,0.3)';
-    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = 'rgba(90,65,35,0.25)';
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.ellipse(w * 0.36, h * 0.4, w * 0.1, h * 0.09, 0, 0, Math.PI * 2);
     ctx.stroke();
