@@ -1626,7 +1626,6 @@ function update() {
     } else if (!sprinting) {
         stamina = Math.min(60, stamina + diff.staminaRegen);
     }
-    if (stamina <= 0) speed = player.speed * 0.7;
 
     if (dx !== 0 && dy !== 0) { dx *= 0.707; dy *= 0.707; }
     if (dx !== 0 || dy !== 0) player.dir = Math.atan2(dy, dx);
