@@ -1281,7 +1281,7 @@ const guardImages = ['TheBigE.png','mrstephen.png','guard3_new.png','guard4_new.
     const img = new Image(); img.src = src; return img;
 });
 const playerImg = new Image();
-playerImg.src = 'player.jpg';
+playerImg.src = 'girl.png';
 
 function isWalkable(col, row) {
     if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return false;
@@ -2214,9 +2214,10 @@ function draw() {
         ctx.shadowBlur = 15;
     }
 
-    const pSize = 28;
+    const pH = 36;
+    const pW = pH * (playerImg.naturalWidth / (playerImg.naturalHeight || 1)) || 24;
     if (playerImg.complete && playerImg.naturalWidth > 0) {
-        ctx.drawImage(playerImg, -pSize/2, -pSize/2, pSize, pSize);
+        ctx.drawImage(playerImg, -pW/2, -pH + player.size, pW, pH);
     } else {
         ctx.fillStyle = '#2288ff';
         ctx.beginPath(); ctx.arc(0, 0, player.size, 0, Math.PI*2); ctx.fill();
