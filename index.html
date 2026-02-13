@@ -1359,8 +1359,8 @@ function init() {
         { name:'Epstein', x:10*T, y:5*T, speed:0.9*diff.guardSpeed, patrolPoints:[{x:10*T,y:4*T},{x:10*T,y:10*T}], patrolIdx:0, alertTimer:0, size:14, mansionTimer:600, goingToMansion:false, speechTimer:0, stopped:false },
         { name:'Steven Hawking', x:17*T, y:10*T, speed:0.85*diff.guardSpeed, patrolPoints:[{x:17*T,y:5*T},{x:17*T,y:12*T},{x:10*T,y:12*T}], patrolIdx:0, alertTimer:0, size:14 },
         { name:'Bill Clinton', x:13*T, y:14*T, speed:0.95*diff.guardSpeed, patrolPoints:[{x:10*T,y:15*T},{x:16*T,y:12*T},{x:10*T,y:10*T}], patrolIdx:0, alertTimer:0, size:14 },
-        { name:'Elon Musk', x:22*T, y:9*T, speed:0.8*diff.guardSpeed, patrolPoints:[{x:22*T,y:7*T},{x:22*T,y:12*T},{x:19*T,y:12*T},{x:19*T,y:8*T}], patrolIdx:0, alertTimer:0, size:14 },
-        { name:'Ghislaine', x:14*T, y:15*T, speed:1.0*diff.guardSpeed, patrolPoints:[{x:12*T,y:14*T},{x:16*T,y:16*T},{x:10*T,y:16*T}], patrolIdx:0, alertTimer:0, size:14 },
+        { name:'Elon Musk', x:20*T, y:5*T, speed:0.8*diff.guardSpeed, patrolPoints:[{x:24*T,y:4*T},{x:24*T,y:7*T},{x:20*T,y:7*T}], patrolIdx:0, alertTimer:0, size:14 },
+        { name:'Ghislaine', x:14*T, y:15*T, speed:1.0*diff.guardSpeed, patrolPoints:[{x:12*T,y:14*T},{x:15*T,y:16*T},{x:10*T,y:16*T}], patrolIdx:0, alertTimer:0, size:14 },
         { name:'Prince Andrew', x:18*T, y:7*T, speed:1.1*diff.guardSpeed, patrolPoints:[{x:18*T,y:5*T},{x:22*T,y:10*T},{x:18*T,y:13*T}], patrolIdx:0, alertTimer:0, size:14 },
     ];
 
@@ -1369,13 +1369,13 @@ function init() {
         guards.push({ name:'Donald Trump', x:12*T, y:8*T, speed:1.2*diff.guardSpeed, patrolPoints:[{x:10*T,y:6*T},{x:16*T,y:10*T},{x:12*T,y:14*T}], patrolIdx:0, alertTimer:0, size:14 });
     }
     if (diff.guardCount >= 8) {
-        guards.push({ name:'Epstein\'s Double', x:15*T, y:16*T, speed:1.3*diff.guardSpeed, patrolPoints:[{x:12*T,y:15*T},{x:18*T,y:14*T},{x:14*T,y:17*T}], patrolIdx:0, alertTimer:0, size:14 });
+        guards.push({ name:'Epstein\'s Double', x:15*T, y:16*T, speed:1.3*diff.guardSpeed, patrolPoints:[{x:12*T,y:15*T},{x:17*T,y:14*T},{x:14*T,y:17*T}], patrolIdx:0, alertTimer:0, size:14 });
     }
     if (diff.guardCount >= 9) {
         guards.push({ name:'Hawking\'s Ghost', x:8*T, y:6*T, speed:1.1*diff.guardSpeed, patrolPoints:[{x:6*T,y:5*T},{x:12*T,y:8*T},{x:8*T,y:12*T}], patrolIdx:0, alertTimer:0, size:14 });
     }
     if (diff.guardCount >= 10) {
-        guards.push({ name:'Golden Hawking', x:20*T, y:14*T, speed:1.4*diff.guardSpeed, patrolPoints:[{x:18*T,y:12*T},{x:22*T,y:16*T},{x:16*T,y:14*T},{x:20*T,y:10*T}], patrolIdx:0, alertTimer:0, size:14 });
+        guards.push({ name:'Golden Hawking', x:20*T, y:14*T, speed:1.4*diff.guardSpeed, patrolPoints:[{x:18*T,y:12*T},{x:21*T,y:16*T},{x:16*T,y:14*T},{x:20*T,y:10*T}], patrolIdx:0, alertTimer:0, size:14 });
     }
 
     initCamera();
@@ -1518,12 +1518,11 @@ function getGuardPath(g, tx, ty) {
         // If no path found, try to get unstuck by finding nearest walkable tile
         if (!g._path) {
             g._stuckCount = (g._stuckCount || 0) + 1;
-            if (g._stuckCount > 3) {
-                // Nudge toward center of current tile
-                const cc = Math.floor(g.x / T) * T + T / 2;
-                const cr = Math.floor(g.y / T) * T + T / 2;
-                g.x += (cc - g.x) * 0.3;
-                g.y += (cr - g.y) * 0.3;
+            if (g._stuckCount > 15) {
+                // Skip to next patrol point if stuck too long
+                if (g.patrolPoints && g.patrolPoints.length > 1) {
+                    g.patrolIdx = (g.patrolIdx + 1) % g.patrolPoints.length;
+                }
                 g._stuckCount = 0;
             }
         } else {
