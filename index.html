@@ -1071,7 +1071,7 @@
             <div class="name-modal-box">
                 <h2>YOU ESCAPED</h2>
                 <p>Enter your name for the leaderboard</p>
-                <input type="text" id="nameInput" placeholder="YOUR NAME" maxlength="16" autocomplete="off">
+                <input type="text" id="nameInput" placeholder="YOUR NAME" maxlength="16" autocomplete="off" inputmode="text" enterkeyhint="done" autocorrect="off" autocapitalize="characters" spellcheck="false">
                 <br>
                 <button id="submitNameBtn">SUBMIT</button>
             </div>
@@ -2341,6 +2341,8 @@ function transitionTo(callback) {
 
 // ============== INPUT ==============
 document.addEventListener('keydown', e => {
+    // Don't block typing in input fields
+    if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
     keys[e.code] = true;
     if (e.code === 'Escape' && gameState === 'playing') {
         gameState = 'paused';
@@ -2761,7 +2763,8 @@ function showNameModal() {
     document.getElementById('nameModal').classList.add('active');
     const input = document.getElementById('nameInput');
     input.value = localStorage.getItem('epstein_player_name') || '';
-    setTimeout(() => input.focus(), 100);
+    // Use longer delay for iPad Safari keyboard activation
+    setTimeout(() => { input.focus(); input.click(); }, 300);
 }
 window.showNameModal = showNameModal;
 
