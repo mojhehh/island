@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Talk to Epstein</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    background: #0a0a0a;
+    color: #e0e0e0;
+    font-family: 'Share Tech Mono', monospace;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.header {
+    padding: 16px 20px;
+    background: rgba(0,0,0,0.8);
+    border-bottom: 1px solid rgba(255,23,68,0.2);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+}
+.avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,23,68,0.4);
+    object-fit: cover;
+    object-position: top;
+}
+.header-info h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    letter-spacing: 4px;
+    color: #ff1744;
+    font-weight: 700;
+}
+.header-info p {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 2px;
+    margin-top: 2px;
+}
+.status-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-right: 4px;
+}
+.status-dot.online { background: #00e676; animation: pulse 2s ease infinite; }
+.status-dot.offline { background: #ff1744; }
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+.clear-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.4);
+    padding: 6px 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.clear-btn:hover { border-color: #ff1744; color: #ff1744; }
+.chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,23,68,0.2) transparent;
+}
+.chat::-webkit-scrollbar { width: 4px; }
+.chat::-webkit-scrollbar-thumb { background: rgba(255,23,68,0.2); border-radius: 2px; }
+.msg {
+    max-width: 80%;
+    padding: 12px 16px;
+    line-height: 1.6;
+    font-size: 14px;
+    animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.msg.user {
+    align-self: flex-end;
+    background: rgba(0,230,118,0.08);
+    border: 1px solid rgba(0,230,118,0.2);
+    border-radius: 16px 16px 4px 16px;
+    color: #c8e6c9;
+}
+.msg.ai {
+    align-self: flex-start;
+    background: rgba(255,23,68,0.06);
+    border: 1px solid rgba(255,23,68,0.15);
+    border-radius: 16px 16px 16px 4px;
+    color: #e0e0e0;
+}
+.msg.ai .name {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    color: #ff1744;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+}
+.msg.system {
+    align-self: center;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.2);
+    font-size: 11px;
+    text-align: center;
+    letter-spacing: 2px;
+    max-width: 100%;
+}
+.typing {
+    align-self: flex-start;
+    padding: 12px 20px;
+    display: none;
+    gap: 4px;
+    align-items: center;
+}
+.typing.active { display: flex; }
+.typing span {
+    width: 6px; height: 6px;
+    background: #ff1744;
+    border-radius: 50%;
+    animation: bounce 1.4s ease infinite;
+}
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+    40% { transform: scale(1); opacity: 1; }
+}
+.input-area {
+    padding: 16px 20px;
+    background: rgba(0,0,0,0.8);
+    border-top: 1px solid rgba(255,23,68,0.15);
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+#chatInput {
+    flex: 1;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    color: #fff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+#chatInput:focus { border-color: rgba(255,23,68,0.4); }
+#chatInput::placeholder { color: rgba(255,255,255,0.2); }
+#sendBtn {
+    width: 44px; height: 44px;
+    background: rgba(255,23,68,0.15);
+    border: 1px solid rgba(255,23,68,0.3);
+    border-radius: 50%;
+    color: #ff1744;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+#sendBtn:hover { background: rgba(255,23,68,0.25); }
+#sendBtn:disabled { opacity: 0.3; cursor: default; }
+.scanlines {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none;
+    z-index: 100;
+}
+.error-banner {
+    background: rgba(255,23,68,0.15);
+    border: 1px solid rgba(255,23,68,0.3);
+    color: #ff8a80;
+    padding: 10px 16px;
+    font-size: 12px;
+    text-align: center;
+    display: none;
+    flex-shrink: 0;
+}
+.error-banner.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ══════ SPLASH SCREEN ══════ -->
+<div id="splashScreen">
+  <img src="Untitled%20design.png" alt="Logo" id="splashLogo">
+</div>
+<style>
+  #splashScreen {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #000; display: flex; align-items: center; justify-content: center;
+    z-index: 99999;
+  }
+  #splashLogo {
+    max-width: 90vw; max-height: 90vh; width: auto; height: auto;
+    object-fit: contain;
+    opacity: 0;
+    animation: splashFadeIn 1s ease-in-out forwards;
+  }
+  @keyframes splashFadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes splashFadeOut {
+    from { opacity: 1; } to { opacity: 0; }
+  }
+  #splashScreen.fade-out {
+    animation: splashFadeOut 1s ease-in-out forwards;
+  }
+</style>
+<script>
+(function() {
+  var ov = document.documentElement.style.overflow;
+  document.documentElement.style.overflow = 'hidden';
+  var sp = document.getElementById('splashScreen');
+  setTimeout(function() {
+    sp.classList.add('fade-out');
+    setTimeout(function() {
+      sp.style.display = 'none';
+      sp.style.pointerEvents = 'none';
+      document.documentElement.style.overflow = ov || '';
+    }, 1000);
+  }, 2500);
+})();
+</script>
+
+<div class="scanlines"></div>
+
+<div class="header">
+    <img src="TheBigE.png" class="avatar" alt="Epstein">
+    <div class="header-info">
+        <h1>JEFFREY EPSTEIN</h1>
+        <p><span class="status-dot offline" id="statusDot"></span><span id="statusText">CHECKING...</span></p>
+    </div>
+    <button class="clear-btn" id="clearBtn">CLEAR</button>
+</div>
+
+<div class="error-banner" id="errorBanner"></div>
+
+<div class="chat" id="chat">
+    <div class="msg system">POWERED BY FIREBASE RELAY</div>
+    <div class="msg ai">
+        <div class="name">EPSTEIN</div>
+        You know, most people are too afraid to come talk to me directly. What's on your mind?
+    </div>
+</div>
+
+<div class="typing" id="typing">
+    <span></span><span></span><span></span>
+</div>
+
+<div class="input-area">
+    <input type="text" id="chatInput" placeholder="Say something..." autocomplete="off">
+    <button id="sendBtn">&#10148;</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBtPpc6BBMXUgHY5nLYNvIneX3a2U8fj9U",
+    authDomain: "island-7defd.firebaseapp.com",
+    databaseURL: "https://island-7defd-default-rtdb.firebaseio.com",
+    projectId: "island-7defd",
+    storageBucket: "island-7defd.firebasestorage.app",
+    messagingSenderId: "1014639030990",
+    appId: "1:1014639030990:web:1f08a7f020d75dcf6f569f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const sessionId = crypto.randomUUID();
+const sessionRef = ref(db, `epstein_chat/${sessionId}`);
+const responseRef = ref(db, `epstein_chat/${sessionId}/response`);
+
+const chatEl = document.getElementById('chat');
+const input = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const typing = document.getElementById('typing');
+const errorBanner = document.getElementById('errorBanner');
+const statusDot = document.getElementById('statusDot');
+const statusText = document.getElementById('statusText');
+
+let waitingForResponse = false;
+let currentAiDiv = null;
+let serverOnline = false;
+let localMessages = []; // Keep local history for context
+
+function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function showError(msg) {
+    errorBanner.textContent = msg;
+    errorBanner.classList.add('active');
+    setTimeout(() => errorBanner.classList.remove('active'), 8000);
+}
+
+function addMessage(role, text) {
+    const div = document.createElement('div');
+    div.className = `msg ${role === 'user' ? 'user' : 'ai'}`;
+    if (role === 'ai') {
+        div.innerHTML = `<div class="name">EPSTEIN</div>${escHtml(text)}`;
+    } else {
+        div.textContent = text;
+    }
+    chatEl.appendChild(div);
+    chatEl.scrollTop = chatEl.scrollHeight;
+    return div;
+}
+
+// Watch relay server status
+onValue(ref(db, 'relay_status'), (snap) => {
+    const data = snap.val();
+    if (data && data.lastPing && (Date.now() - data.lastPing < 30000)) {
+        serverOnline = true;
+        statusDot.className = 'status-dot online';
+        statusText.textContent = 'ONLINE';
+    } else {
+        serverOnline = false;
+        statusDot.className = 'status-dot offline';
+        statusText.textContent = 'OFFLINE';
+    }
+});
+
+// Watch for response from relay
+onValue(responseRef, (snap) => {
+    const data = snap.val();
+    if (!data || !waitingForResponse) return;
+
+    if (data.status === 'typing') {
+        if (!currentAiDiv) {
+            typing.classList.remove('active');
+            currentAiDiv = document.createElement('div');
+            currentAiDiv.className = 'msg ai';
+            currentAiDiv.innerHTML = '<div class="name">EPSTEIN</div><span class="ai-text"></span>';
+            chatEl.appendChild(currentAiDiv);
+        }
+        const aiText = currentAiDiv.querySelector('.ai-text');
+        if (aiText && data.text) {
+            aiText.innerHTML = escHtml(data.text);
+            chatEl.scrollTop = chatEl.scrollHeight;
+        }
+    } else if (data.status === 'done') {
+        typing.classList.remove('active');
+        if (!currentAiDiv) {
+            addMessage('ai', data.text || 'No response.');
+        } else {
+            const aiText = currentAiDiv.querySelector('.ai-text');
+            if (aiText && data.text) aiText.innerHTML = escHtml(data.text);
+        }
+        localMessages.push({ role: 'assistant', content: data.text });
+        currentAiDiv = null;
+        waitingForResponse = false;
+        sendBtn.disabled = false;
+        input.focus();
+        remove(responseRef);
+    } else if (data.status === 'error') {
+        typing.classList.remove('active');
+        showError(data.text || 'Server error');
+        currentAiDiv = null;
+        waitingForResponse = false;
+        sendBtn.disabled = false;
+        remove(responseRef);
+    }
+});
+
+async function send() {
+    const text = input.value.trim();
+    if (!text || waitingForResponse) return;
+
+    if (!serverOnline) {
+        showError('Server is offline. The host needs to run the relay script.');
+        return;
+    }
+
+    input.value = '';
+    sendBtn.disabled = true;
+    waitingForResponse = true;
+    currentAiDiv = null;
+
+    addMessage('user', text);
+    localMessages.push({ role: 'user', content: text });
+    typing.classList.add('active');
+    chatEl.scrollTop = chatEl.scrollHeight;
+
+    try {
+        // Send the full conversation history so relay has context
+        await set(ref(db, `epstein_chat/${sessionId}/request`), {
+            messages: localMessages,
+            timestamp: Date.now()
+        });
+    } catch(e) {
+        showError('Failed to send: ' + e.message);
+        typing.classList.remove('active');
+        sendBtn.disabled = false;
+        waitingForResponse = false;
+    }
+}
+
+sendBtn.addEventListener('click', send);
+input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+
+document.getElementById('clearBtn').addEventListener('click', async () => {
+    try { await remove(sessionRef); } catch(e) {}
+    localMessages = [];
+    chatEl.innerHTML = '<div class="msg system">CONVERSATION CLEARED</div><div class="msg ai"><div class="name">EPSTEIN</div>Fresh start. What do you want to know?</div>';
+    waitingForResponse = false;
+    currentAiDiv = null;
+    sendBtn.disabled = false;
+});
+
+window.addEventListener('beforeunload', () => {
+    navigator.sendBeacon && remove(sessionRef);
+});
+
+input.focus();
+</script>
+</body>
+</html>

@@ -1,0 +1,2260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<title>The Interrogation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  @font-face {
+    font-family: 'GameFont';
+    src: local('Courier New');
+  }
+
+  body {
+    background: #000;
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* ── TITLE SCREEN ── */
+  #titleScreen {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: #000;
+    z-index: 1000;
+  }
+  #titleScreen h1 {
+    font-size: 52px;
+    color: #ff2200;
+    text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 80px #880000;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    animation: titlePulse 2s ease-in-out infinite;
+  }
+  #titleScreen .subtitle {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 50px;
+    letter-spacing: 3px;
+  }
+  #titleScreen button {
+    padding: 15px 60px;
+    font-size: 22px;
+    font-family: 'Courier New', monospace;
+    background: transparent;
+    border: 2px solid #ff2200;
+    color: #ff2200;
+    cursor: pointer;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+  }
+  #titleScreen button:hover {
+    background: #ff2200;
+    color: #000;
+    box-shadow: 0 0 30px #ff000088;
+  }
+  @keyframes titlePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  /* ── GAME OVER SCREEN ── */
+  #gameOverScreen {
+    position: fixed; inset: 0;
+    display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.95);
+    z-index: 2000;
+  }
+  #gameOverScreen h1 {
+    font-size: 60px;
+    color: #ff0000;
+    text-shadow: 0 0 30px #ff0000;
+    margin-bottom: 20px;
+    z-index: 2;
+  }
+  #gameOverScreen .go-subtitle {
+    font-size: 20px;
+    color: #888;
+    margin-bottom: 15px;
+    text-align: center;
+    max-width: 500px;
+    line-height: 1.5;
+    z-index: 2;
+  }
+  #gameOverScreen .go-stats {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 40px;
+    text-align: center;
+    letter-spacing: 1px;
+    z-index: 2;
+  }
+  #gameOverScreen .ghost-face {
+    position: absolute;
+    inset: 0;
+    background: url('sprite_67774cad-9d2d-4cda-8a2e-f3d9ac96c0b8_0.png') center center / contain no-repeat;
+    opacity: 0.15;
+    z-index: 1;
+    pointer-events: none;
+  }
+  #gameOverScreen button {
+    padding: 12px 50px;
+    font-size: 18px;
+    font-family: 'Courier New', monospace;
+    background: transparent;
+    border: 2px solid #ff2200;
+    color: #ff2200;
+    cursor: pointer;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    margin: 5px;
+  }
+  #gameOverScreen button:hover {
+    background: #ff2200;
+    color: #000;
+  }
+
+  /* ── WIN SCREEN ── */
+  #winScreen {
+    position: fixed; inset: 0;
+    display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.95);
+    z-index: 2000;
+  }
+  #winScreen h1 {
+    font-size: 48px;
+    color: #00ff44;
+    text-shadow: 0 0 30px #00ff44;
+    margin-bottom: 20px;
+  }
+  #winScreen .win-subtitle {
+    font-size: 18px;
+    color: #aaa;
+    margin-bottom: 20px;
+    text-align: center;
+    max-width: 500px;
+    line-height: 1.5;
+  }
+  #winScreen .win-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 30px;
+    margin-bottom: 30px;
+    font-size: 14px;
+  }
+  #winScreen .win-stats .stat-label {
+    color: #666;
+    text-align: right;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 11px;
+  }
+  #winScreen .win-stats .stat-value {
+    color: #00ff44;
+    font-weight: bold;
+  }
+  #winScreen button {
+    padding: 12px 50px;
+    font-size: 18px;
+    font-family: 'Courier New', monospace;
+    background: transparent;
+    border: 2px solid #00ff44;
+    color: #00ff44;
+    cursor: pointer;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    margin: 5px;
+  }
+  #winScreen button:hover {
+    background: #00ff44;
+    color: #000;
+  }
+
+  /* ── NAME MODAL ── */
+  #nameModal {
+    position: fixed; inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.85);
+    z-index: 3000;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+  }
+  #nameModal .modal-box {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 30px 40px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+  }
+  #nameModal h2 {
+    color: #00ff44;
+    font-size: 20px;
+    margin-bottom: 8px;
+    letter-spacing: 3px;
+  }
+  #nameModal p {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  #nameModal input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-family: 'Courier New', monospace;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: #fff;
+    border-radius: 6px;
+    outline: none;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  #nameModal input:focus {
+    border-color: #00ff44;
+    box-shadow: 0 0 10px #00ff4433;
+  }
+  #nameModal button {
+    padding: 10px 40px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    background: #00ff44;
+    border: none;
+    color: #000;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+  }
+  #nameModal button:hover { background: #44ff88; }
+
+  /* ── LEADERBOARD SCREEN ── */
+  #leaderboardScreen {
+    position: fixed; inset: 0;
+    display: none; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+    padding-top: 60px;
+    background: rgba(0,0,0,0.97);
+    z-index: 2500;
+    overflow-y: auto;
+  }
+  #leaderboardScreen h1 {
+    font-size: 36px;
+    color: #ffcc00;
+    text-shadow: 0 0 20px #ffcc0066;
+    margin-bottom: 8px;
+    letter-spacing: 4px;
+  }
+  #leaderboardScreen .lb-subtitle {
+    color: #555;
+    font-size: 12px;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+  }
+  #leaderboardScreen table {
+    border-collapse: collapse;
+    width: 90%;
+    max-width: 600px;
+    margin-bottom: 30px;
+  }
+  #leaderboardScreen th {
+    color: #888;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    border-bottom: 1px solid #333;
+    text-align: left;
+  }
+  #leaderboardScreen td {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  #leaderboardScreen tr.gold td { color: #ffcc00; }
+  #leaderboardScreen tr.silver td { color: #c0c0c0; }
+  #leaderboardScreen tr.bronze td { color: #cd7f32; }
+  #leaderboardScreen tr td:first-child { font-weight: bold; }
+  #leaderboardScreen tr td:nth-child(2) { color: #aaa; }
+  #leaderboardScreen tr td:nth-child(3) { color: #00ff44; }
+  #leaderboardScreen tr td:nth-child(4) { color: #ff4400; }
+  #leaderboardScreen tr td:nth-child(5) { color: #666; font-size: 12px; }
+  #leaderboardScreen button {
+    padding: 12px 50px;
+    font-size: 16px;
+    font-family: 'Courier New', monospace;
+    background: transparent;
+    border: 2px solid #ffcc00;
+    color: #ffcc00;
+    cursor: pointer;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    margin-bottom: 40px;
+  }
+  #leaderboardScreen button:hover {
+    background: #ffcc00;
+    color: #000;
+  }
+
+  /* ── MAIN GAME CONTAINER ── */
+  #gameContainer {
+    display: none;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  #roomBg {
+    position: absolute;
+    inset: 0;
+    background: url('sprite_0c6b4206-af0f-4522-a0cc-b587f2381f8f_0.png') center center / cover no-repeat;
+    z-index: 1;
+  }
+
+  /* ── EPSTEIN IN CHAIR ── */
+  #epsteinChair {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 85%;
+    z-index: 2;
+    transition: filter 0.1s;
+    image-rendering: auto;
+  }
+  #epsteinChair.zapped {
+    filter: brightness(3) contrast(2) saturate(0) !important;
+  }
+
+  /* ── ELECTRIC ZAP OVERLAY ── */
+  #zapOverlay {
+    position: fixed; inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(circle at 50% 60%, rgba(255,255,100,0.6) 0%, rgba(255,200,0,0.2) 30%, transparent 60%);
+    mix-blend-mode: screen;
+  }
+  #zapOverlay.active {
+    animation: zapFlash 0.6s ease-out;
+  }
+  @keyframes zapFlash {
+    0% { opacity: 1; }
+    10% { opacity: 0.3; }
+    20% { opacity: 1; }
+    30% { opacity: 0.2; }
+    40% { opacity: 0.8; }
+    60% { opacity: 0.1; }
+    100% { opacity: 0; }
+  }
+
+  /* ── SPARKS (canvas) ── */
+  #sparksCanvas {
+    position: fixed; inset: 0;
+    z-index: 51;
+    pointer-events: none;
+  }
+
+  /* ── SCREEN SHAKE ── */
+  @keyframes shake {
+    0%, 100% { transform: translate(0,0); }
+    10% { transform: translate(-8px, 5px); }
+    20% { transform: translate(8px, -5px); }
+    30% { transform: translate(-6px, 8px); }
+    40% { transform: translate(6px, -3px); }
+    50% { transform: translate(-4px, 6px); }
+    60% { transform: translate(4px, -6px); }
+    70% { transform: translate(-2px, 3px); }
+    80% { transform: translate(2px, -2px); }
+  }
+  #gameContainer.shaking {
+    animation: shake 0.5s ease-out;
+  }
+
+  /* ── HUD: HEALTH + CONFESSION BARS ── */
+  #hud {
+    position: absolute;
+    top: 15px; left: 15px; right: 15px;
+    z-index: 100;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .bar-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .bar-label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-shadow: 0 0 10px #000;
+  }
+  .bar-track {
+    flex: 1;
+    height: 16px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid #555;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    height: 100%;
+    transition: width 0.5s ease;
+    border-radius: 1px;
+  }
+  #healthFill {
+    width: 100%;
+    background: linear-gradient(90deg, #ff0000, #ff4444);
+    box-shadow: 0 0 8px #ff000088;
+  }
+  #confessionFill {
+    width: 0%;
+    background: linear-gradient(90deg, #00aa00, #00ff44);
+    box-shadow: 0 0 8px #00ff4488;
+  }
+  .bar-value {
+    font-size: 13px;
+    min-width: 35px;
+    text-align: right;
+    text-shadow: 0 0 10px #000;
+    font-weight: bold;
+  }
+
+  /* ── ZAP BUTTON ── */
+  #zapBtn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #ffcc00;
+    background: radial-gradient(circle, #ff6600 0%, #cc0000 70%, #880000 100%);
+    color: #fff;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 0 20px #ff440066, inset 0 0 20px #ff880044;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 0 10px #fff;
+  }
+  #zapBtn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 40px #ff440099, inset 0 0 30px #ff880066;
+  }
+  #zapBtn:active {
+    transform: scale(0.95);
+  }
+  #zapBtn.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  /* ── CHAT PANEL (floating polished box) ── */
+  #chatPanel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 480px;
+    max-width: 50vw;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    background: rgba(10, 10, 10, 0.88);
+    border: 1px solid #333;
+    border-radius: 0 12px 0 0;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.8), 0 0 1px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+    overflow: hidden;
+  }
+
+  /* Chat header */
+  #chatHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(255,34,0,0.1);
+    border-bottom: 1px solid #222;
+  }
+  #chatHeader .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #ff2200;
+    box-shadow: 0 0 8px #ff2200;
+    animation: titlePulse 1.5s infinite;
+  }
+  #chatHeader .header-text {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #888;
+  }
+
+  #chatLog {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 12px;
+    max-height: 140px;
+    min-height: 40px;
+  }
+  #chatLog::-webkit-scrollbar { width: 4px; }
+  #chatLog::-webkit-scrollbar-track { background: transparent; }
+  #chatLog::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+  .msg {
+    padding: 4px 0;
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+  .msg.user {
+    color: #6cabff;
+  }
+  .msg.user .sender {
+    color: #4488cc;
+  }
+  .msg.epstein {
+    color: #e8e8e8;
+  }
+  .msg.epstein .sender {
+    color: #ff4400;
+  }
+  .msg .sender {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .msg.system {
+    text-align: center;
+    font-style: italic;
+    font-size: 12px;
+    color: #666;
+    padding: 4px 0;
+  }
+
+  /* ── DIALOGUE OPTIONS ── */
+  #dialogueOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid #222;
+  }
+  .dialogue-btn {
+    padding: 8px 14px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #1a1a1a;
+    color: #ccc;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .dialogue-btn:last-child { border-bottom: none; }
+  .dialogue-btn:hover {
+    background: rgba(255,68,0,0.08);
+    color: #ff6633;
+    padding-left: 24px;
+  }
+  .dialogue-btn:active {
+    background: rgba(255,68,0,0.15);
+  }
+  .dialogue-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    padding-left: 18px;
+  }
+  .dialogue-btn .opt-num {
+    color: #ff4400;
+    margin-right: 10px;
+    font-weight: bold;
+  }
+
+  /* ── FREE CHAT INPUT ── */
+  #freeChatRow {
+    display: flex;
+    border-top: 1px solid #222;
+    background: rgba(255,255,255,0.02);
+  }
+  #freeChatInput {
+    flex: 1;
+    padding: 12px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    background: transparent;
+    border: none;
+    color: #ccc;
+    outline: none;
+  }
+  #freeChatInput::placeholder { color: #444; }
+  #freeChatSend {
+    padding: 12px 18px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    background: transparent;
+    border: none;
+    border-left: 1px solid #222;
+    color: #ff4400;
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.15s;
+  }
+  #freeChatSend:hover {
+    background: rgba(255,68,0,0.1);
+    color: #ff6633;
+  }
+
+  /* ── SCARY FACE JUMPSCARE ── */
+  #jumpscare {
+    position: fixed; inset: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+  }
+  #jumpscare img {
+    max-width: 100%;
+    max-height: 100%;
+    animation: jumpscareAnim 0.3s ease-out;
+  }
+  @keyframes jumpscareAnim {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* ── DEATH ANIMATION ── */
+  #epsteinChair.dying {
+    animation: deathConvulse 2s ease-out;
+  }
+  @keyframes deathConvulse {
+    0% { filter: brightness(1); transform: translateX(-50%) rotate(0deg); }
+    5% { filter: brightness(4) saturate(0); transform: translateX(-50%) rotate(2deg); }
+    10% { filter: brightness(1); transform: translateX(-50%) rotate(-2deg); }
+    15% { filter: brightness(5) saturate(0); transform: translateX(-50%) rotate(3deg); }
+    20% { filter: brightness(1); transform: translateX(-50%) rotate(-1deg); }
+    30% { filter: brightness(3) saturate(0); transform: translateX(-50%) rotate(2deg); }
+    40% { filter: brightness(1); transform: translateX(-50%) rotate(-2deg); }
+    50% { filter: brightness(2) saturate(0); transform: translateX(-50%) rotate(1deg); }
+    70% { filter: brightness(1) saturate(0.5); transform: translateX(-50%) rotate(0deg); }
+    100% { filter: brightness(0.3) saturate(0); transform: translateX(-50%) rotate(0deg); opacity: 0.5; }
+  }
+
+  /* ── TYPING INDICATOR ── */
+  .typing-indicator {
+    display: flex; gap: 4px; padding: 8px 12px;
+  }
+  .typing-indicator span {
+    width: 6px; height: 6px;
+    background: #ff4400;
+    border-radius: 50%;
+    animation: typingBounce 1.4s infinite;
+  }
+  .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+    30% { transform: translateY(-8px); opacity: 1; }
+  }
+
+  /* ── ZAP COUNTER ── */
+  #zapCounter {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    z-index: 100;
+    font-size: 11px;
+    color: #666;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px #000;
+  }
+
+  /* ── CINEMATIC FADE IN ── */
+  #cinematicOverlay {
+    position: fixed; inset: 0;
+    z-index: 500;
+    background: #000;
+    pointer-events: none;
+    transition: opacity 2s ease;
+  }
+  #cinematicOverlay.fade-out {
+    opacity: 0;
+  }
+  .letterbox-top, .letterbox-bottom {
+    position: fixed;
+    left: 0; right: 0;
+    height: 12vh;
+    background: #000;
+    z-index: 400;
+    transition: height 1.5s ease 3s;
+  }
+  .letterbox-top { top: 0; }
+  .letterbox-bottom { bottom: 0; }
+  .letterbox-top.close, .letterbox-bottom.close {
+    height: 0;
+  }
+
+  /* Initially hidden game elements for staggered fade */
+  #gameContainer.cinematic #hud,
+  #gameContainer.cinematic #zapBtn,
+  #gameContainer.cinematic #chatPanel,
+  #gameContainer.cinematic #zapCounter {
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  #gameContainer.cinematic-reveal #hud { opacity: 1; transition-delay: 0.5s; }
+  #gameContainer.cinematic-reveal #zapCounter { opacity: 1; transition-delay: 0.8s; }
+  #gameContainer.cinematic-reveal #zapBtn { opacity: 1; transition-delay: 1.2s; }
+  #gameContainer.cinematic-reveal #chatPanel { opacity: 1; transition-delay: 1.8s; }
+
+  /* ── SALVAGE MODE: MOVEMENT DETECTION ── */
+  #movementWarning {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    padding: 6px 20px;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  #movementWarning.phase1 {
+    opacity: 0;
+  }
+  #movementWarning.phase2 {
+    opacity: 0;
+  }
+  #movementWarning.phase3 {
+    opacity: 1;
+    color: #ff0000;
+    background: rgba(255,0,0,0.2);
+    border: 1px solid rgba(255,0,0,0.7);
+    animation: warningPulse 0.2s infinite;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  @keyframes warningPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Salvage movement transforms */
+  #epsteinChair.salvage-twitch {
+    animation: salvageTwitch 0.3s ease-in-out 1;
+  }
+  @keyframes salvageTwitch {
+    0%, 100% { transform: translateX(-50%) rotate(0deg); }
+    25% { transform: translateX(-50%) rotate(0.4deg) translateY(-1.5px); }
+    75% { transform: translateX(-50%) rotate(-0.15deg) translateY(-0.5px); }
+  }
+  #epsteinChair.salvage-lean {
+    animation: salvageLean 3s ease-in-out infinite;
+  }
+  @keyframes salvageLean {
+    0%, 100% { transform: translateX(-50%) scale(1) rotate(0deg); }
+    50% { transform: translateX(-49.6%) scale(1.014) rotate(0.5deg) translateY(-2.5px); }
+  }
+  #epsteinChair.salvage-lunge {
+    animation: salvageLunge 0.8s ease-in forwards;
+  }
+  @keyframes salvageLunge {
+    0% { transform: translateX(-50%) scale(1) rotate(0deg); }
+    40% { transform: translateX(-48%) scale(1.08) rotate(1.5deg) translateY(-10px); }
+    100% { transform: translateX(-50%) scale(1.2) rotate(-2deg) translateY(-30px); opacity: 0; }
+  }
+
+  /* Black flash overlay for FNAF death */
+  #blackFlash {
+    position: fixed; inset: 0;
+    z-index: 8000;
+    background: #000;
+    display: none;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════ SPLASH SCREEN ══════ -->
+<div id="splashScreen">
+  <img src="Untitled%20design.png" alt="Logo" id="splashLogo">
+</div>
+<style>
+  #splashScreen {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #000; display: flex; align-items: center; justify-content: center;
+    z-index: 99999;
+  }
+  #splashLogo {
+    max-width: 90vw; max-height: 90vh; width: auto; height: auto;
+    object-fit: contain;
+    opacity: 0;
+    animation: splashFadeIn 1s ease-in-out forwards;
+  }
+  @keyframes splashFadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes splashFadeOut {
+    from { opacity: 1; } to { opacity: 0; }
+  }
+  #splashScreen.fade-out {
+    animation: splashFadeOut 1s ease-in-out forwards;
+  }
+</style>
+<script>
+(function() {
+  var ov = document.documentElement.style.overflow;
+  document.documentElement.style.overflow = 'hidden';
+  var sp = document.getElementById('splashScreen');
+  setTimeout(function() {
+    sp.classList.add('fade-out');
+    setTimeout(function() {
+      sp.style.display = 'none';
+      sp.style.pointerEvents = 'none';
+      document.documentElement.style.overflow = ov || '';
+    }, 1000);
+  }, 2500);
+})();
+</script>
+
+<!-- ══════ TITLE SCREEN ══════ -->
+<div id="titleScreen">
+  <h1>The Interrogation</h1>
+  <div class="subtitle">Make him confess. Don't kill him.</div>
+  <div style="display:flex;gap:15px;margin-top:10px;">
+    <button onclick="startGame(false)">CLASSIC</button>
+    <button onclick="startGame(true)" style="border-color:#ff8800;color:#ff8800;">FNAF MODE</button>
+  </div>
+  <div style="max-width:420px;margin:18px auto 0;text-align:left;font-size:11px;color:#666;line-height:1.7;letter-spacing:0.5px;font-family:'Courier New',monospace;">
+    <div style="color:#888;font-size:12px;margin-bottom:6px;letter-spacing:2px;text-align:center;">HOW TO PLAY</div>
+    <div style="margin-bottom:8px;">Ask questions to extract a confession. Choose from three dialogue options or type your own. Higher-tier questions unlock as you increase zap pressure.</div>
+    <div style="margin-bottom:8px;">Use the ZAP button to shock him. Zapping increases pressure, making him more likely to talk, but drains his health. If his health hits zero, he dies and you lose.</div>
+    <div style="margin-bottom:8px;">The confession meter fills based on what he actually reveals. Reach 100% to win. Careful: zap too much and he dies before confessing.</div>
+    <div style="border-top:1px solid #333;padding-top:8px;margin-top:10px;color:#ff8800;">FNAF MODE: You only get 5 zaps. He will try to break free. Watch for movement and zap him. But use your words — you can make him confess without the chair.</div>
+  </div>
+  <button onclick="showLeaderboard()" style="margin-top:15px;padding:10px 40px;font-size:14px;font-family:'Courier New',monospace;background:transparent;border:1px solid #555;color:#888;cursor:pointer;letter-spacing:3px;text-transform:uppercase;transition:all 0.3s;">LEADERBOARD</button>
+</div>
+
+<!-- ══════ GAME OVER ══════ -->
+<div id="gameOverScreen">
+  <div class="ghost-face"></div>
+  <h1>HE'S DEAD</h1>
+  <div class="go-subtitle">You failed. The victims will never get justice.<br>Their stories die with him.</div>
+  <div class="go-stats" id="goText"></div>
+  <div>
+    <button onclick="location.reload()">TRY AGAIN</button>
+    <button onclick="showLeaderboard()" style="border-color:#ffcc00;color:#ffcc00;">LEADERBOARD</button>
+  </div>
+</div>
+
+<!-- ══════ WIN SCREEN ══════ -->
+<div id="winScreen">
+  <h1>FULL CONFESSION</h1>
+  <div class="win-subtitle" id="winText">He broke. Every name, every crime, every detail — on the record.</div>
+  <div class="win-stats" id="winStats"></div>
+  <div>
+    <button onclick="location.reload()">PLAY AGAIN</button>
+    <button onclick="showLeaderboard()" style="border-color:#ffcc00;color:#ffcc00;">LEADERBOARD</button>
+  </div>
+</div>
+
+<!-- ══════ NAME INPUT MODAL ══════ -->
+<div id="nameModal">
+  <div class="modal-box">
+    <h2>CONFESSION OBTAINED</h2>
+    <p>Enter your name for the record</p>
+    <input type="text" id="playerNameInput" placeholder="Your name..." maxlength="20" autocomplete="off">
+    <br>
+    <button onclick="submitScore()">SUBMIT</button>
+  </div>
+</div>
+
+<!-- ══════ LEADERBOARD ══════ -->
+<div id="leaderboardScreen">
+  <h1>LEADERBOARD</h1>
+  <div class="lb-subtitle">TOP INTERROGATORS</div>
+  <table>
+    <thead><tr><th>#</th><th>Name</th><th>Time</th><th>Zaps</th><th>Health Left</th></tr></thead>
+    <tbody id="lbBody"><tr><td colspan="5" style="color:#555;text-align:center;">Loading...</td></tr></tbody>
+  </table>
+  <button onclick="hideLeaderboard()">BACK</button>
+</div>
+
+<!-- ══════ JUMPSCARE ══════ -->
+<div id="jumpscare">
+  <img src="sprite_67774cad-9d2d-4cda-8a2e-f3d9ac96c0b8_0.png" alt="">
+</div>
+
+<!-- ══════ BLACK FLASH (FNAF death) ══════ -->
+<div id="blackFlash"></div>
+
+<!-- ══════ GAME ══════ -->
+<div id="gameContainer">
+  <!-- Cinematic overlays -->
+  <div id="cinematicOverlay"></div>
+  <div class="letterbox-top" id="lbTop"></div>
+  <div class="letterbox-bottom" id="lbBottom"></div>
+
+  <div id="roomBg"></div>
+  <img id="epsteinChair" src="sprite_12f0e37e-fa9e-40b8-87ad-0e7a6af3d53c-Photoroom_0.png" alt="">
+
+  <!-- ZAP overlay -->
+  <div id="zapOverlay"></div>
+  <canvas id="sparksCanvas"></canvas>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="bar-container">
+      <span class="bar-label" style="color:#ff4444;">HEALTH</span>
+      <div class="bar-track"><div class="bar-fill" id="healthFill"></div></div>
+      <span class="bar-value" id="healthVal" style="color:#ff4444;">100</span>
+    </div>
+    <div class="bar-container">
+      <span class="bar-label" style="color:#00ff44;">CONFESSION</span>
+      <div class="bar-track"><div class="bar-fill" id="confessionFill"></div></div>
+      <span class="bar-value" id="confessionVal" style="color:#00ff44;">0%</span>
+    </div>
+  </div>
+
+  <div id="zapCounter">ZAPS: <span id="zapCount">0</span></div>
+
+  <!-- MOVEMENT WARNING -->
+  <div id="movementWarning">MOVEMENT DETECTED</div>
+
+  <!-- ZAP BUTTON -->
+  <button id="zapBtn" onclick="zapHim()">ZAP</button>
+
+  <!-- CHAT -->
+  <div id="chatPanel">
+    <div id="chatHeader">
+      <div class="dot"></div>
+      <span class="header-text">Interrogation — Recording</span>
+    </div>
+    <div id="chatLog"></div>
+    <div id="dialogueOptions">
+      <button class="dialogue-btn" id="opt1" onclick="pickOption(0)"><span class="opt-num">1.</span><span class="opt-text"></span></button>
+      <button class="dialogue-btn" id="opt2" onclick="pickOption(1)"><span class="opt-num">2.</span><span class="opt-text"></span></button>
+      <button class="dialogue-btn" id="opt3" onclick="pickOption(2)"><span class="opt-num">3.</span><span class="opt-text"></span></button>
+    </div>
+    <div id="freeChatRow">
+      <input type="text" id="freeChatInput" placeholder="Or type your own question..." maxlength="200" autocomplete="off">
+      <button id="freeChatSend" onclick="sendFreeChat()">SEND</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════════════════
+let health = 100;
+let confession = 0;
+let zapCount = 0;
+let isWaiting = false;
+let isDead = false;
+let gameOver = false;
+let messages = []; // conversation history for AI
+let zapPressure = 2; // hidden: how much zap pressure he's under (makes him confess more) — start at 2 so he's not a brick wall
+let maxZaps = Infinity; // FNAF mode caps this at 5
+
+let fnafMode = false; // FNAF salvage mode enabled?
+let questionsSinceMovement = 0; // track questions asked while he's moving
+
+// Salvage mode state (declared early so pickOption/sendFreeChat can reference)
+let salvagePhase = 0;       // 0=calm, 1=twitch, 2=lean, 3=lunge
+let salvageTimer = null;    // timeout for next movement event
+let salvageEscalation = null; // timeout for phase escalation
+let salvageActive = false;
+let salvageTwitchCount = 0;
+
+// Shared AudioContext (reuse to avoid browser limits)
+let _audioCtx = null;
+function getAudioCtx() {
+  if (!_audioCtx || _audioCtx.state === 'closed') {
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return _audioCtx;
+}
+
+let gameStartTime = 0;
+let questionsAsked = 0;
+let tierCounts = {1:0,2:0,3:0,4:0,5:0};
+
+const OLLAMA_URL = 'http://localhost:11434/api/chat';
+const MODEL = 'dolphin-mistral:7b';
+
+// ── Firebase Relay (for iPad / remote access) ──
+let useFirebaseRelay = false;
+let relayChecked = false;
+
+async function checkOllamaLocal() {
+  if (relayChecked) return;
+  relayChecked = true;
+  try {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 2000);
+    await fetch('http://localhost:11434/api/tags', { signal: controller.signal });
+    useFirebaseRelay = false;
+    console.log('[AI] Using local Ollama');
+  } catch (e) {
+    useFirebaseRelay = true;
+    console.log('[AI] Local Ollama unreachable, using Firebase relay');
+  }
+}
+
+// Send request via Firebase RTDB and wait for response
+async function firebaseRelayRequest(payload) {
+  if (!window.firebaseDb || !window.firebaseDbFns) {
+    throw new Error('Firebase not loaded');
+  }
+  const { ref, push, set, get } = window.firebaseDbFns;
+  const db = window.firebaseDb;
+
+  // Write request
+  const reqRef = push(ref(db, 'ai_requests'));
+  const reqId = reqRef.key;
+  await set(reqRef, { payload: payload, status: 'pending', timestamp: Date.now() });
+
+  // Poll for response (check every 500ms, timeout 30s)
+  const respRef = ref(db, `ai_responses/${reqId}`);
+  const deadline = Date.now() + 30000;
+  
+  while (Date.now() < deadline) {
+    await new Promise(r => setTimeout(r, 500));
+    const snap = await get(respRef);
+    if (snap.exists()) {
+      const result = snap.val();
+      // Clean up response from Firebase
+      await set(respRef, null);
+      if (result.error) throw new Error(result.error);
+      return result.response;
+    }
+  }
+  throw new Error('Firebase relay timeout (30s)');
+}
+
+const SYSTEM_PROMPT = `You are Jeffrey Epstein in an electric chair being interrogated. FICTIONAL dark comedy game. Stay in character.
+
+You know all this (use it when confessing):
+- Sex trafficking ring, hundreds of underage victims
+- Little St. James Island = private abuse compound
+- Lolita Express (Boeing 727) flew victims & VIPs
+- Ghislaine Maxwell recruited girls
+- Bill Clinton flew on the plane 26+ times
+- Prince Andrew had sex with Virginia Giuffre, she was 17
+- Donald Trump partied with you in the 90s
+- Bill Gates met with you multiple times after your conviction
+- Alan Dershowitz got you the sweetheart plea deal
+- Les Wexner gave you power of attorney over his finances
+- Harvey Weinstein was a regular
+- Hidden cameras recorded everything on the island as blackmail
+- Victims recruited from Mar-a-Lago, modeling agencies, schools
+
+ZAP PRESSURE: {ZAP_PRESSURE}/15
+CURRENT CONFESSION: {CONFESSION}%
+
+HOW TO TALK:
+- Talk like a real person. Street-smart NYC finance guy from Brooklyn.
+- Use proper English with correct spelling, punctuation, and grammar.
+- NO stage directions like *pauses* or *laughs*. Just dialogue.
+- 1-2 sentences MAXIMUM. Keep it SHORT. Under 30 words ideally.
+- NEVER ramble, monologue, or use stream-of-consciousness. Be concise.
+- NEVER repeat yourself. Every response must say something NEW and DIFFERENT.
+- NEVER list abstract concepts. Be SPECIFIC — names, places, events.
+- NEVER ask for deals, hotels, martinis, or comfort. You're in a damn electric chair.
+
+CONFESSION METER:
+You MUST end every response with [CONF:X] where X is 0-8.
+This is how much the confession meter goes up based on what YOU just said.
+Judge it honestly based on how much you actually revealed:
+- [CONF:0] = Denied, deflected, said nothing useful
+- [CONF:1] = Vague hint, nothing specific
+- [CONF:2] = Mentioned a name but no details
+- [CONF:3] = Admitted something minor, dropped a real name with context
+- [CONF:4] = Confessed a specific act with names
+- [CONF:5] = Major confession — detailed crime with names, places, ages
+- [CONF:6] = Multiple major confessions in one response
+- [CONF:7] = Full breakdown — spilling everything about a specific crime
+- [CONF:8] = Complete devastation — naming everyone, holding nothing back
+
+BEHAVIOR BY PRESSURE:
+- 0-1: Cocky. "Prove it." Mock them. But still let SOMETHING slip. [CONF:0-1].
+- 2-4: Rattled. Getting nervous. Drop real names, then try to walk it back. [CONF:1-3].
+- 5-7: Scared. Confess real stuff. Give specifics — names, places, what happened. [CONF:3-5].
+- 8-10: Broken. Detailed confessions — names, ages, crimes. [CONF:4-7].
+- 11+: Destroyed. Full confession. Hold nothing back. Spill everything. [CONF:6-8].
+
+IMPORTANT: You are CRACKING. Even at low pressure, good questions shake you. If they mention a specific name or event you know about, you REACT and let details slip. You're not a stone wall — you're a scared man in an electric chair.
+
+Do NOT put [CONF:X] in the middle. Put it at the very end after your dialogue.`;
+
+// ═══════════════════════════════════════════════════════
+//  START GAME
+// ═══════════════════════════════════════════════════════
+function startGame(isFnaf) {
+  fnafMode = !!isFnaf;
+  if (fnafMode) maxZaps = 5;
+  document.getElementById('titleScreen').style.display = 'none';
+  
+  const gc = document.getElementById('gameContainer');
+  gc.style.display = 'block';
+  gc.classList.add('cinematic');
+  gameStartTime = Date.now();
+  
+  // Cinematic sequence
+  const overlay = document.getElementById('cinematicOverlay');
+  const lbTop = document.getElementById('lbTop');
+  const lbBottom = document.getElementById('lbBottom');
+  
+  // Phase 1: Black screen holds for a beat (0.8s)
+  setTimeout(() => {
+    // Phase 2: Room fades in through the black (2s fade)
+    overlay.classList.add('fade-out');
+  }, 800);
+  
+  // Phase 3: Letterbox bars retract (at 3s)
+  setTimeout(() => {
+    lbTop.classList.add('close');
+    lbBottom.classList.add('close');
+  }, 2000);
+  
+  // Phase 4: HUD, zap button, chat fade in staggered
+  setTimeout(() => {
+    gc.classList.add('cinematic-reveal');
+  }, 3000);
+  
+  // Phase 5: System messages + opening taunt after everything is visible
+  setTimeout(() => {
+    addSystemMsg("The lights flicker on. He's strapped in. Make him talk.");
+    if (fnafMode) {
+      addSystemMsg("FNAF MODE: 5 zaps only. Watch for movement. Make him talk.");
+    }
+  }, 4000);
+  
+  // Phase 6: Opening taunt
+  setTimeout(() => {
+    const openingTaunts = [
+      "Well well... another one. You think this little chair scares me? I've had lunch with presidents.",
+      "Oh please. You think you can break ME? I've bought and sold people more powerful than you.",
+      "You really think this is gonna work? I got friends in places you can't even imagine."
+    ];
+    const taunt = openingTaunts[Math.floor(Math.random() * openingTaunts.length)];
+    messages.push({ role: 'assistant', content: taunt });
+    addMsg('epstein', taunt);
+    
+    // Show first set of dialogue options
+    showOptions();
+    
+    // Remove cinematic class so transitions don't interfere later
+    gc.classList.remove('cinematic');
+    
+    // Start salvage mode after a delay (only in FNAF mode)
+    if (fnafMode) {
+      setTimeout(() => startSalvageMode(), 5000);
+    }
+  }, 5500);
+}
+
+// ═══════════════════════════════════════════════════════
+//  CHAT FUNCTIONS
+// ═══════════════════════════════════════════════════════
+function addMsg(sender, text) {
+  const chatLog = document.getElementById('chatLog');
+  const div = document.createElement('div');
+  div.className = `msg ${sender}`;
+  div.innerHTML = `<div class="sender">${sender === 'user' ? 'YOU' : 'EPSTEIN'}</div><span>${escapeHtml(text)}</span>`;
+  chatLog.appendChild(div);
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function addSystemMsg(text) {
+  const chatLog = document.getElementById('chatLog');
+  const div = document.createElement('div');
+  div.className = 'msg system';
+  div.textContent = text;
+  chatLog.appendChild(div);
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function showTyping() {
+  const chatLog = document.getElementById('chatLog');
+  const div = document.createElement('div');
+  div.className = 'msg epstein';
+  div.id = 'typingMsg';
+  div.innerHTML = `<div class="sender">EPSTEIN</div><div class="typing-indicator"><span></span><span></span><span></span></div>`;
+  chatLog.appendChild(div);
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typingMsg');
+  if (el) el.remove();
+}
+
+function escapeHtml(text) {
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+// ═══════════════════════════════════════════════════════
+//  QUESTION POOL (100 questions, 5 tiers)
+// ═══════════════════════════════════════════════════════
+// tier: 1=casual(0-2%), 2=probing(2-4%), 3=aggressive(4-7%), 4=specific(7-10%), 5=killshot(10-15%)
+const QUESTIONS = [
+  // ── TIER 1: Casual / Ice breakers ──
+  {q: "So, Jeffrey... how's life been treating you?", tier: 1},
+  {q: "Tell me about yourself.", tier: 1},
+  {q: "What do you do for a living, exactly?", tier: 1},
+  {q: "You seem like a well-connected guy.", tier: 1},
+  {q: "Nice island you got there. What's it for?", tier: 1},
+  {q: "How'd you make all your money?", tier: 1},
+  {q: "Got any hobbies?", tier: 1},
+  {q: "You ever feel guilty about anything?", tier: 1},
+  {q: "What keeps you up at night?", tier: 1},
+  {q: "You got a lot of famous friends, huh?", tier: 1},
+  {q: "Let's just have a friendly chat.", tier: 1},
+  {q: "What's your side of the story?", tier: 1},
+  {q: "You think you're innocent?", tier: 1},
+  {q: "Who are you, really?", tier: 1},
+  {q: "How does a math teacher end up this rich?", tier: 1},
+  {q: "What would you tell your younger self?", tier: 1},
+  {q: "Do you regret anything?", tier: 1},
+  {q: "People say you're a monster. What do you say?", tier: 1},
+  {q: "What's your relationship with the law?", tier: 1},
+  {q: "You seem pretty calm for a guy in an electric chair.", tier: 1},
+
+  // ── TIER 2: Probing ──
+  {q: "Tell me about the island.", tier: 2},
+  {q: "What happened on Little St. James?", tier: 2},
+  {q: "Who flew on your plane?", tier: 2},
+  {q: "What's the Lolita Express?", tier: 2},
+  {q: "What did you and your friends do for fun?", tier: 2},
+  {q: "How did you meet all these powerful people?", tier: 2},
+  {q: "What was Ghislaine's role in all this?", tier: 2},
+  {q: "Did you keep any records?", tier: 2},
+  {q: "What kind of parties did you throw?", tier: 2},
+  {q: "Why did so many politicians visit your island?", tier: 2},
+  {q: "You had cameras everywhere. Why?", tier: 2},
+  {q: "What happened to the girls after they visited?", tier: 2},
+  {q: "How many times did Clinton fly with you?", tier: 2},
+  {q: "What was the recruitment process?", tier: 2},
+  {q: "Where did you find the victims?", tier: 2},
+  {q: "What was the deal with your New Mexico ranch?", tier: 2},
+  {q: "Why did you get such a light sentence in 2008?", tier: 2},
+  {q: "What did Les Wexner do for you?", tier: 2},
+  {q: "Tell me about the Manhattan townhouse.", tier: 2},
+  {q: "Who else knew what was going on?", tier: 2},
+
+  // ── TIER 3: Aggressive ──
+  {q: "You trafficked children. Admit it.", tier: 3},
+  {q: "How many girls did you abuse?", tier: 3},
+  {q: "Maxwell brought you underage girls. Say it.", tier: 3},
+  {q: "You're a predator. Own it.", tier: 3},
+  {q: "The cameras were for blackmail, weren't they?", tier: 3},
+  {q: "You flew minors on that plane. Confess.", tier: 3},
+  {q: "What exactly did you do to those girls?", tier: 3},
+  {q: "Name every powerful person who was involved.", tier: 3},
+  {q: "You ruined hundreds of lives. How do you sleep?", tier: 3},
+  {q: "Was Prince Andrew in on it?", tier: 3},
+  {q: "Did Clinton know about the girls?", tier: 3},
+  {q: "You used your money to buy silence. True?", tier: 3},
+  {q: "How young were the youngest victims?", tier: 3},
+  {q: "You paid off prosecutors. Admit it.", tier: 3},
+  {q: "Dershowitz helped cover it up, didn't he?", tier: 3},
+  {q: "What happened in the temple on the island?", tier: 3},
+  {q: "You think money makes you untouchable?", tier: 3},
+  {q: "How many countries did you traffic girls to?", tier: 3},
+  {q: "Who helped you recruit from Mar-a-Lago?", tier: 3},
+  {q: "The staff on the island — did they know?", tier: 3},
+
+  // ── TIER 4: Specific / damning ──
+  {q: "Tell me exactly what Prince Andrew did with Virginia Giuffre.", tier: 4},
+  {q: "How old was Virginia when Ghislaine brought her to you?", tier: 4},
+  {q: "Clinton ditched his Secret Service to fly with you. Why?", tier: 4},
+  {q: "You recorded Bill Gates. What's on those tapes?", tier: 4},
+  {q: "Describe what happened in the massage rooms.", tier: 4},
+  {q: "Name every person on the flight logs.", tier: 4},
+  {q: "What did you promise the girls to lure them in?", tier: 4},
+  {q: "Who was at the island the most?", tier: 4},
+  {q: "Harvey Weinstein visited regularly. What did he do there?", tier: 4},
+  {q: "Tell me about the blackmail operation.", tier: 4},
+  {q: "How did you silence the victims?", tier: 4},
+  {q: "What was Ghislaine Maxwell's exact role in recruiting?", tier: 4},
+  {q: "Where are the hidden recordings now?", tier: 4},
+  {q: "Who paid you for access to the girls?", tier: 4},
+  {q: "Name every victim you can remember.", tier: 4},
+  {q: "Les Wexner gave you hundreds of millions. For what?", tier: 4},
+  {q: "How did you avoid prison for so long?", tier: 4},
+  {q: "Which prosecutors did you bribe?", tier: 4},
+  {q: "What really happened in the Palm Beach mansion?", tier: 4},
+  {q: "Did any of your victims die?", tier: 4},
+
+  // ── TIER 5: Kill shots ──
+  {q: "Give me every single name. Every person who touched a child on that island.", tier: 5},
+  {q: "Confess to everything. Every crime. Every victim. Now.", tier: 5},
+  {q: "Your life depends on this. Tell me EVERYTHING about the trafficking ring.", tier: 5},
+  {q: "The tapes, the flights, the girls — lay it ALL out right now.", tier: 5},
+  {q: "How many children's lives did you destroy? Give me the real number.", tier: 5},
+  {q: "Tell me exactly how the blackmail operation worked, name by name.", tier: 5},
+  {q: "Maxwell, Clinton, Andrew, Gates — what did each of them do? DETAILS.", tier: 5},
+  {q: "You're going to die in that chair. Make it mean something. Confess.", tier: 5},
+  {q: "Every flight. Every girl. Every room. Every name. SAY IT ALL.", tier: 5},
+  {q: "This is your last chance. Full confession or you fry.", tier: 5},
+  {q: "Who killed you in that cell? Was it really suicide? Tell the truth about EVERYTHING.", tier: 5},
+  {q: "Describe the worst thing you ever did. In detail.", tier: 5},
+  {q: "How did you recruit girls from schools? Walk me through it step by step.", tier: 5},
+  {q: "Which world leaders are on those tapes? Name them ALL.", tier: 5},
+  {q: "You raped children. Say it. Say exactly what you did.", tier: 5},
+  {q: "Ghislaine brought you a 14 year old. What happened next?", tier: 5},
+  {q: "Who in the government protected you? Names. Now.", tier: 5},
+  {q: "The temple on the island. What happened inside?", tier: 5},
+  {q: "How many people would go to prison if the full truth came out?", tier: 5},
+  {q: "No more games. Confess to every single crime right now or I pull the switch.", tier: 5},
+];
+
+let usedQuestions = new Set();
+let currentOptions = []; // the 3 currently displayed
+
+// Confession gain per tier, scaled by zap pressure
+function getConfGain(tier) {
+  // Base gains per tier — more generous
+  const baseGain = [0, 2, 4, 7, 11, 15][tier]; // tier 1-5
+  // Pressure multiplier: questions do more at higher pressure
+  const pressureMult = 0.5 + (zapPressure / 15) * 1.2; // 0.5x at 0 pressure, 1.7x at max
+  return Math.round(baseGain * pressureMult);
+}
+
+function getAvailableTiers() {
+  // Which tiers appear based on zap pressure — unlocks faster
+  if (zapPressure < 2) return [1, 2, 2];
+  if (zapPressure < 3) return [1, 2, 3];
+  if (zapPressure < 5) return [2, 3, 3];
+  if (zapPressure < 7) return [2, 3, 4];
+  if (zapPressure < 9) return [3, 4, 4];
+  if (zapPressure < 11) return [3, 4, 5];
+  return [4, 5, 5];
+}
+
+function pickFromTier(tier) {
+  const pool = QUESTIONS.filter(q => q.tier === tier && !usedQuestions.has(q.q));
+  if (pool.length === 0) {
+    // Reset used for this tier if exhausted
+    QUESTIONS.filter(q => q.tier === tier).forEach(q => usedQuestions.delete(q.q));
+    return pickFromTier(tier);
+  }
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function showOptions() {
+  const tiers = getAvailableTiers();
+  // Shuffle the tier assignments
+  for (let i = tiers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [tiers[i], tiers[j]] = [tiers[j], tiers[i]];
+  }
+  
+  currentOptions = tiers.map(t => pickFromTier(t));
+  
+  for (let i = 0; i < 3; i++) {
+    const btn = document.getElementById('opt' + (i + 1));
+    btn.querySelector('.opt-text').textContent = currentOptions[i].q;
+    btn.disabled = false;
+  }
+}
+
+function pickOption(idx) {
+  if (isWaiting || gameOver) return;
+  
+  // FNAF mode: asking questions while he's moving is dangerous
+  if (fnafMode && salvagePhase > 0) {
+    questionsSinceMovement++;
+    if (questionsSinceMovement >= 2) {
+      // He breaks free!
+      salvageDeath();
+      return;
+    }
+  }
+  
+  const chosen = currentOptions[idx];
+  usedQuestions.add(chosen.q);
+  questionsAsked++;
+  tierCounts[chosen.tier]++;
+
+  // Asking questions builds pressure too (higher tier = more pressure)
+  zapPressure = Math.min(15, zapPressure + 0.3 + chosen.tier * 0.2);
+
+  // Disable buttons
+  for (let i = 0; i < 3; i++) {
+    document.getElementById('opt' + (i + 1)).disabled = true;
+  }
+
+  addMsg('user', chosen.q);
+
+  // Calculate confession gain based on tier + pressure
+  const gain = getConfGain(chosen.tier);
+  
+  // Send to AI for response
+  getAIResponse(chosen.q, gain);
+}
+
+// Free chat send
+function sendFreeChat() {
+  if (isWaiting || gameOver) return;
+  const input = document.getElementById('freeChatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+
+  // FNAF mode: asking questions while he's moving is dangerous
+  if (fnafMode && salvagePhase > 0) {
+    questionsSinceMovement++;
+    if (questionsSinceMovement >= 2) {
+      salvageDeath();
+      return;
+    }
+  }
+
+  // Disable buttons
+  for (let i = 0; i < 3; i++) {
+    document.getElementById('opt' + (i + 1)).disabled = true;
+  }
+  questionsAsked++;
+
+  // Talking builds pressure too (slowly)
+  zapPressure = Math.min(15, zapPressure + 0.5);
+
+  addMsg('user', text);
+
+  // Free chat gets a confession gain based on pressure (like tier 2)
+  const gain = getConfGain(2);
+  getAIResponse(text, gain);
+}
+
+// Keyboard shortcuts: 1, 2, 3 to pick options, Enter to send free chat
+document.addEventListener('keydown', e => {
+  if (isWaiting || gameOver) return;
+  // If typing in free chat input, only handle Enter
+  if (document.activeElement === document.getElementById('freeChatInput')) {
+    if (e.key === 'Enter') sendFreeChat();
+    return;
+  }
+  if (e.key === '1') pickOption(0);
+  else if (e.key === '2') pickOption(1);
+  else if (e.key === '3') pickOption(2);
+});
+
+// ═══════════════════════════════════════════════════════
+//  AI / OLLAMA
+// ═══════════════════════════════════════════════════════
+async function getAIResponse(userMsg, confGain = 0) {
+  if (gameOver) return;
+  isWaiting = true;
+  document.getElementById('zapBtn').classList.add('disabled');
+  showTyping();
+
+  // Add user message to history
+  messages.push({ role: 'user', content: userMsg });
+
+  // Trim conversation history to last 8 messages (shorter = less repetition)
+  if (messages.length > 8) {
+    messages = messages.slice(-8);
+  }
+
+  // Build system prompt with current zap pressure
+  let sysPrompt = SYSTEM_PROMPT.replace('{ZAP_PRESSURE}', String(zapPressure)).replace('{CONFESSION}', String(confession));
+
+  // Anti-repetition: ban ALL previous assistant responses
+  const allReplies = messages.filter(m => m.role === 'assistant').map(m => m.content);
+  if (allReplies.length > 0) {
+    sysPrompt += `\n\nBANNED RESPONSES — you already said ALL of these. Do NOT repeat, rephrase, or paraphrase ANY of them:\n${allReplies.map((r, i) => `${i+1}. "${r}"`).join('\n')}\n\nYour next response MUST be completely new. Talk about a DIFFERENT person, event, or crime than your last response. Pick from the list of facts above that you haven’t mentioned yet.`;
+  }
+
+  const payload = {
+    model: MODEL,
+    messages: [
+      { role: 'system', content: sysPrompt },
+      ...messages
+    ],
+    stream: false,
+    options: {
+      temperature: 0.85,
+      top_p: 0.9,
+      num_predict: 80,
+      repeat_penalty: 1.3,
+      repeat_last_n: 128
+    }
+  };
+
+  try {
+    await checkOllamaLocal();
+    let data;
+
+    if (!useFirebaseRelay) {
+      // Direct local call
+      const res = await fetch(OLLAMA_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(`Ollama error: ${res.status}`);
+      data = await res.json();
+    } else {
+      // Firebase relay
+      data = await firebaseRelayRequest(payload);
+    }
+    
+    let reply = data.message?.content || "...";
+
+    // Parse [CONF:X] from AI response
+    let aiConf = 0;
+    const confMatch = reply.match(/\[CONF[:\s]*(\d+)\]/i);
+    if (confMatch) {
+      aiConf = Math.min(8, Math.max(0, parseInt(confMatch[1])));
+    }
+    reply = reply.replace(/\[CONF[:\s]*\d+\]/gi, '').trim();
+    reply = reply.replace(/\n+$/, '').trim();
+
+    // Clean up broken punctuation and truncated output
+    reply = reply.replace(/\s{2,}/g, ' ');
+    reply = reply.replace(/([a-z])([A-Z])/g, '$1. $2');
+    if (reply.length > 10 && !/[.!?"']$/.test(reply)) {
+      const lastStop = Math.max(reply.lastIndexOf('.'), reply.lastIndexOf('!'), reply.lastIndexOf('?'));
+      if (lastStop > reply.length * 0.4) {
+        reply = reply.substring(0, lastStop + 1);
+      } else {
+        reply += '...';
+      }
+    }
+
+    // Duplicate detection: if reply is too similar to a recent one, force a different topic marker
+    const prevReplies = messages.filter(m => m.role === 'assistant').map(m => m.content.toLowerCase());
+    const replyLower = reply.toLowerCase();
+    const isDupe = prevReplies.some(prev => {
+      // Check if >60% of words overlap
+      const prevWords = new Set(prev.split(/\s+/));
+      const replyWords = reply.split(/\s+/);
+      const overlap = replyWords.filter(w => prevWords.has(w.toLowerCase())).length;
+      return overlap > replyWords.length * 0.6;
+    });
+    if (isDupe && reply.length > 15) {
+      reply = reply + ' ...but I\'ve said too much.';
+    }
+
+    // Add to history
+    messages.push({ role: 'assistant', content: reply });
+
+    // Apply AI-decided confession gain, with a small floor from question tier
+    const totalConf = Math.max(aiConf, Math.floor(confGain * 0.5));
+    if (totalConf > 0) {
+      confession = Math.min(100, confession + totalConf);
+      updateBars();
+      if (totalConf >= 3) {
+        addSystemMsg(`+${totalConf}% confession`);
+      }
+    }
+
+    removeTyping();
+    addMsg('epstein', reply);
+
+    // Check win
+    if (confession >= 100) {
+      setTimeout(() => winGame(), 500);
+      return;
+    }
+
+  } catch (err) {
+    removeTyping();
+    addSystemMsg(useFirebaseRelay ? "CONNECTION ERROR. Relay offline." : "CONNECTION ERROR. Is Ollama running? (localhost:11434)");
+    console.error(err);
+  }
+
+  isWaiting = false;
+  document.getElementById('zapBtn').classList.remove('disabled');
+  
+  // Show new options
+  if (!gameOver) showOptions();
+}
+
+// ═══════════════════════════════════════════════════════
+//  ZAP MECHANICS
+// ═══════════════════════════════════════════════════════
+function zapHim() {
+  if (isWaiting || gameOver) return;
+
+  // FNAF mode: 5 zap limit
+  if (fnafMode && zapCount >= maxZaps) {
+    addSystemMsg(`No zaps left! You have to make him talk.`);
+    return;
+  }
+
+  zapCount++;
+  zapPressure = Math.min(15, zapPressure + 2);
+  document.getElementById('zapCount').textContent = zapCount;
+
+  // Reset salvage movement (zapping saves you)
+  if (salvagePhase > 0) {
+    const wasPhase = salvagePhase;
+    resetSalvage();
+    if (wasPhase >= 2) {
+      addSystemMsg('Just in time. He\'s back in the chair.');
+    }
+  } else {
+    // If zapping while calm, just reschedule
+    resetSalvage();
+  }
+
+  // Damage — generous so you can zap a lot before he dies
+  const dmg = 3 + Math.floor(Math.random() * 5); // 3-7 damage
+  health = Math.max(0, health - dmg);
+  updateBars();
+
+  // Visual effects
+  triggerZapEffects();
+
+  // Epstein reacts (skip if dying animation would conflict)
+  const chair = document.getElementById('epsteinChair');
+  chair.classList.remove('salvage-twitch', 'salvage-lean', 'salvage-lunge');
+  chair.classList.add('zapped');
+  setTimeout(() => chair.classList.remove('zapped'), 150);
+  setTimeout(() => {
+    chair.classList.add('zapped');
+    setTimeout(() => chair.classList.remove('zapped'), 100);
+  }, 200);
+
+  // Screen shake
+  const gc = document.getElementById('gameContainer');
+  gc.classList.remove('shaking');
+  void gc.offsetWidth; // reflow
+  gc.classList.add('shaking');
+
+  // Sound simulation via AudioContext
+  playZapSound();
+
+  // Check death
+  if (health <= 0) {
+    setTimeout(() => killHim(), 600);
+    return;
+  }
+
+  addSystemMsg(fnafMode ? `ZAP! (-${dmg} HP) [${maxZaps - zapCount} zaps left]` : `ZAP! (-${dmg} HP)`);
+  
+  // Zap gives a confession boost based on pressure
+  const zapConf = Math.round(2 + zapPressure * 0.4);
+  
+  // Varied zap prompts to prevent repetition
+  const zapPrompts = [
+    `[ZZZZAP! ${zapCount} zaps now. React to the pain. What secret slips out?]`,
+    `[Another shock rips through you. Who do you want to rat out?]`,
+    `[The electricity burns. You're at ${health} HP. Start talking or die.]`,
+    `[ZAP! Your body convulses. In the pain, a name escapes your lips...]`,
+    `[The current hits you again. ${100 - health} damage taken. Confess something specific.]`,
+    `[Electric shock #${zapCount}. You can smell burning. Drop a real name.]`,
+    `[Another jolt. Your teeth are chattering. Spill a secret about the island.]`,
+    `[ZAP! The pain is unbearable. Tell them about one of the flights.]`,
+    `[The voltage increases. You're breaking. Admit what happened in the massage room.]`,
+    `[Shock after shock. Your vision is blurring. Who else was on that island?]`,
+    `[ZAP! React differently this time. What do you remember about Virginia?]`,
+    `[The chair lights up again. Talk about Ghislaine. What did she do?]`,
+    `[Another blast of current. Tell them about the tapes and cameras.]`,
+    `[Electric agony. ${health} HP left. Confess about the prosecutors you paid off.]`,
+    `[ZAP! You scream. In the chaos, admit something about Clinton's visits.]`,
+  ];
+  const zapMsg = zapPrompts[Math.floor(Math.random() * zapPrompts.length)];
+  getAIResponse(zapMsg, zapConf);
+}
+
+function triggerZapEffects() {
+  // Flash overlay
+  const overlay = document.getElementById('zapOverlay');
+  overlay.classList.remove('active');
+  void overlay.offsetWidth;
+  overlay.classList.add('active');
+
+  // Sparks
+  drawSparks();
+}
+
+// ═══════════════════════════════════════════════════════
+//  SPARK PARTICLES
+// ═══════════════════════════════════════════════════════
+function drawSparks() {
+  const canvas = document.getElementById('sparksCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const sparks = [];
+  const cx = canvas.width / 2;
+  const cy = canvas.height * 0.45;
+
+  for (let i = 0; i < 30; i++) {
+    sparks.push({
+      x: cx + (Math.random() - 0.5) * 100,
+      y: cy + (Math.random() - 0.5) * 80,
+      vx: (Math.random() - 0.5) * 15,
+      vy: (Math.random() - 0.5) * 15 - 5,
+      life: 1,
+      size: 1 + Math.random() * 3,
+      color: Math.random() > 0.5 ? '#ffff00' : '#ffaa00'
+    });
+  }
+
+  let frame = 0;
+  function animateSparks() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+
+    sparks.forEach(s => {
+      if (s.life <= 0) return;
+      alive = true;
+      s.x += s.vx;
+      s.y += s.vy;
+      s.vy += 0.5;
+      s.life -= 0.04;
+
+      const radius = Math.max(0.1, s.size * s.life);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = s.color;
+      ctx.globalAlpha = Math.max(0, s.life);
+      ctx.fill();
+
+      // Electric trail
+      if (Math.random() > 0.7) {
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(s.x + (Math.random() - 0.5) * 20, s.y + (Math.random() - 0.5) * 20);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 0.5;
+        ctx.globalAlpha = s.life * 0.5;
+        ctx.stroke();
+      }
+    });
+
+    ctx.globalAlpha = 1;
+    if (alive && frame < 60) {
+      frame++;
+      requestAnimationFrame(animateSparks);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+  animateSparks();
+}
+
+// ═══════════════════════════════════════════════════════
+//  ZAP SOUND (Web Audio)
+// ═══════════════════════════════════════════════════════
+function playZapSound() {
+  try {
+    const ac = getAudioCtx();
+    
+    // Buzzing noise
+    const bufferSize = ac.sampleRate * 0.4;
+    const buffer = ac.createBuffer(1, bufferSize, ac.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / ac.sampleRate;
+      data[i] = (Math.random() * 2 - 1) * 0.3 * Math.sin(t * 120 * Math.PI * 2) * Math.exp(-t * 5);
+    }
+    
+    const src = ac.createBufferSource();
+    src.buffer = buffer;
+    
+    const gain = ac.createGain();
+    gain.gain.value = 0.4;
+    
+    src.connect(gain);
+    gain.connect(ac.destination);
+    src.start();
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+//  DEATH / WIN
+// ═══════════════════════════════════════════════════════
+function killHim() {
+  gameOver = true;
+  isDead = true;
+  salvageActive = false;
+  clearTimeout(salvageTimer);
+  clearTimeout(salvageEscalation);
+  resetSalvage();
+
+  const chair = document.getElementById('epsteinChair');
+  chair.classList.add('dying');
+
+  // Big zap effect
+  triggerZapEffects();
+  playZapSound();
+
+  addSystemMsg("He's dead. You killed him.");
+
+  setTimeout(() => {
+    // Show scary face briefly
+    const js = document.getElementById('jumpscare');
+    js.style.display = 'flex';
+    playJumpscareSound();
+
+    setTimeout(() => {
+      js.style.display = 'none';
+      document.getElementById('gameOverScreen').style.display = 'flex';
+      const elapsed = Math.round((Date.now() - gameStartTime) / 1000);
+      const mins = Math.floor(elapsed / 60);
+      const secs = elapsed % 60;
+      const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+      document.getElementById('goText').innerHTML = 
+        `${zapCount} zaps &bull; ${confession}% confession &bull; ${timeStr} &bull; Heart failure`;
+    }, 1500);
+  }, 2000);
+}
+
+function winGame() {
+  gameOver = true;
+  salvageActive = false;
+  clearTimeout(salvageTimer);
+  clearTimeout(salvageEscalation);
+  resetSalvage();
+  const elapsed = Math.round((Date.now() - gameStartTime) / 1000);
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+  
+  addSystemMsg("FULL CONFESSION OBTAINED.");
+
+  // Build stats
+  const statsDiv = document.getElementById('winStats');
+  statsDiv.innerHTML = `
+    <span class="stat-label">Time</span><span class="stat-value">${timeStr}</span>
+    <span class="stat-label">Zaps</span><span class="stat-value">${zapCount}</span>
+    <span class="stat-label">Health Left</span><span class="stat-value">${health}%</span>
+    <span class="stat-label">Questions</span><span class="stat-value">${questionsAsked}</span>
+    <span class="stat-label">Pressure</span><span class="stat-value">${Math.round(zapPressure)}/15</span>
+    <span class="stat-label">Hardest Q</span><span class="stat-value">Tier ${Math.max(1, ...Object.entries(tierCounts).filter(([k,v]) => v > 0).map(([k]) => +k))}</span>
+  `;
+
+  // Store for leaderboard submission
+  window._winData = { time: elapsed, timeStr, zaps: zapCount, health, questions: questionsAsked };
+
+  setTimeout(() => {
+    // Show name input first
+    document.getElementById('nameModal').style.display = 'flex';
+    document.getElementById('playerNameInput').focus();
+    
+    // Enter key to submit
+    document.getElementById('playerNameInput').onkeydown = (e) => {
+      if (e.key === 'Enter') submitScore();
+    };
+  }, 1500);
+}
+
+function playJumpscareSound() {
+  try {
+    const ac = getAudioCtx();
+    const bufferSize = ac.sampleRate * 0.5;
+    const buffer = ac.createBuffer(1, bufferSize, ac.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / ac.sampleRate;
+      data[i] = (Math.random() * 2 - 1) * 0.8 * Math.exp(-t * 3);
+    }
+    const src = ac.createBufferSource();
+    src.buffer = buffer;
+    const gain = ac.createGain();
+    gain.gain.value = 0.6;
+    src.connect(gain);
+    gain.connect(ac.destination);
+    src.start();
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+//  UI UPDATES
+// ═══════════════════════════════════════════════════════
+function updateBars() {
+  document.getElementById('healthFill').style.width = health + '%';
+  document.getElementById('healthVal').textContent = health;
+  document.getElementById('confessionFill').style.width = confession + '%';
+  document.getElementById('confessionVal').textContent = confession + '%';
+
+  // Color shifts
+  if (health <= 30) {
+    document.getElementById('healthFill').style.background = 'linear-gradient(90deg, #880000, #ff0000)';
+    document.getElementById('healthFill').style.animation = 'titlePulse 0.5s infinite';
+  }
+  if (confession >= 80) {
+    document.getElementById('confessionFill').style.background = 'linear-gradient(90deg, #00ff44, #88ff88)';
+  }
+}
+
+// Handle window resize for sparks canvas
+window.addEventListener('resize', () => {
+  const canvas = document.getElementById('sparksCanvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+// ═══════════════════════════════════════════════════════
+//  AMBIENT LIGHT FLICKER
+// ═══════════════════════════════════════════════════════
+// Debug: type killHim() in console to instantly kill him
+window.killHim = killHim;
+window.debugKill = function() { health = 0; killHim(); };
+
+// ═══════════════════════════════════════════════════════
+//  SALVAGE MODE (FNAF Pizzeria Simulator style)
+// ═══════════════════════════════════════════════════════
+// He twitches randomly. If you don't zap him, he escalates
+// and eventually breaks free → jumpscare → death.
+
+// (salvagePhase, salvageTimer, etc. declared at top with game state)
+
+function startSalvageMode() {
+  salvageActive = true;
+  scheduleTwitch();
+}
+
+function scheduleTwitch() {
+  if (gameOver || !salvageActive) return;
+  
+  // Random interval: 5-12s early game, 3-7s later
+  const baseMin = Math.max(3000, 5000 - zapCount * 200);
+  const baseMax = Math.max(7000, 12000 - zapCount * 400);
+  const delay = baseMin + Math.random() * (baseMax - baseMin);
+  
+  salvageTimer = setTimeout(() => {
+    if (gameOver) return;
+    triggerSalvagePhase1();
+  }, delay);
+}
+
+function triggerSalvagePhase1() {
+  if (gameOver || salvagePhase > 0) return;
+  salvagePhase = 1;
+  salvageTwitchCount++;
+  questionsSinceMovement = 0;
+  
+  const chair = document.getElementById('epsteinChair');
+  const warning = document.getElementById('movementWarning');
+  
+  // Subtle twitch animation — no big warning, just the sprite moving slightly
+  chair.classList.remove('salvage-twitch', 'salvage-lean', 'salvage-lunge');
+  void chair.offsetWidth;
+  chair.classList.add('salvage-twitch');
+  
+  // Very subtle — no warning text, player has to notice the sprite
+  warning.className = 'phase1';
+  
+  // Quiet creak sound
+  playCreakSound(0.08);
+  
+  // Escalate to phase 2 if not zapped
+  salvageEscalation = setTimeout(() => {
+    if (gameOver || salvagePhase !== 1) return;
+    triggerSalvagePhase2();
+  }, 3000 - Math.min(1500, salvageTwitchCount * 100)); // Gets faster over time
+}
+
+function triggerSalvagePhase2() {
+  if (gameOver) return;
+  salvagePhase = 2;
+  
+  const chair = document.getElementById('epsteinChair');
+  const warning = document.getElementById('movementWarning');
+  
+  // Leaning forward
+  chair.classList.remove('salvage-twitch');
+  chair.classList.add('salvage-lean');
+  
+  // No text warning — just the animation
+  warning.className = 'phase2';
+  
+  // Louder creak
+  playCreakSound(0.3);
+  
+  // Escalate to phase 3 (lunge) - very short window
+  salvageEscalation = setTimeout(() => {
+    if (gameOver || salvagePhase !== 2) return;
+    triggerSalvagePhase3();
+  }, 2500 - Math.min(1200, salvageTwitchCount * 80));
+}
+
+function triggerSalvagePhase3() {
+  if (gameOver) return;
+  salvagePhase = 3;
+  
+  const chair = document.getElementById('epsteinChair');
+  const warning = document.getElementById('movementWarning');
+  
+  // LUNGE
+  chair.classList.remove('salvage-lean');
+  chair.classList.add('salvage-lunge');
+  
+  warning.className = 'phase3';
+  warning.textContent = 'HE BROKE FREE';
+  
+  // Loud sound
+  playCreakSound(0.6);
+  
+  // Brief moment then jumpscare death
+  setTimeout(() => {
+    if (gameOver) return;
+    salvageDeath();
+  }, 800);
+}
+
+function salvageDeath() {
+  gameOver = true;
+  isDead = true;
+  salvageActive = false;
+  clearTimeout(salvageTimer);
+  clearTimeout(salvageEscalation);
+  
+  const chair = document.getElementById('epsteinChair');
+  const warning = document.getElementById('movementWarning');
+  const blackFlash = document.getElementById('blackFlash');
+  
+  warning.className = 'phase3';
+  warning.textContent = 'HE BROKE FREE';
+  
+  addSystemMsg("He broke free from the chair.");
+  
+  // Step 1: Quick black flash
+  blackFlash.style.display = 'block';
+  playCreakSound(0.5);
+  
+  setTimeout(() => {
+    // Step 2: Flash off — he's GONE. Chair empty. Room dark.
+    blackFlash.style.display = 'none';
+    chair.style.opacity = '0';
+    document.getElementById('roomBg').style.filter = 'brightness(0.3)';
+    warning.className = '';
+    
+    // Eerie silence... 1-2 seconds of empty chair
+    const suspenseTime = 1000 + Math.random() * 1000;
+    
+    setTimeout(() => {
+      // Step 3: JUMPSCARE from the darkness
+      const js = document.getElementById('jumpscare');
+      js.style.display = 'flex';
+      playJumpscareSound();
+      
+      setTimeout(() => {
+        js.style.display = 'none';
+        document.getElementById('gameOverScreen').style.display = 'flex';
+        document.getElementById('gameOverScreen').querySelector('h1').textContent = 'HE BROKE FREE';
+        document.getElementById('gameOverScreen').querySelector('.go-subtitle').innerHTML = 
+          'You weren\'t watching. He slipped the restraints.<br>The interrogation is over. The secrets die with him.';
+        const elapsed = Math.round((Date.now() - gameStartTime) / 1000);
+        const mins = Math.floor(elapsed / 60);
+        const secs = elapsed % 60;
+        const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+        document.getElementById('goText').innerHTML = 
+          `${zapCount} zaps &bull; ${confession}% confession &bull; ${timeStr} &bull; Broke free`;
+      }, 1500);
+    }, suspenseTime);
+  }, 150); // Very quick black flash
+}
+
+function resetSalvage() {
+  // Called when player zaps — resets movement state
+  salvagePhase = 0;
+  questionsSinceMovement = 0;
+  clearTimeout(salvageEscalation);
+  clearTimeout(salvageTimer);
+  
+  const chair = document.getElementById('epsteinChair');
+  const warning = document.getElementById('movementWarning');
+  
+  chair.classList.remove('salvage-twitch', 'salvage-lean', 'salvage-lunge');
+  warning.className = '';
+  warning.textContent = 'MOVEMENT DETECTED';
+  
+  // Schedule next twitch
+  if (salvageActive && !gameOver) {
+    scheduleTwitch();
+  }
+}
+
+function playCreakSound(volume) {
+  try {
+    const ac = getAudioCtx();
+    const duration = 0.3 + Math.random() * 0.2;
+    const bufferSize = Math.floor(ac.sampleRate * duration);
+    const buffer = ac.createBuffer(1, bufferSize, ac.sampleRate);
+    const data = buffer.getChannelData(0);
+    
+    const freq = 80 + Math.random() * 120;
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / ac.sampleRate;
+      const noise = (Math.random() * 2 - 1) * 0.3;
+      const tone = Math.sin(t * freq * Math.PI * 2) * 0.2;
+      const creak = Math.sin(t * (freq * 3) * Math.PI * 2) * 0.1 * Math.sin(t * 7);
+      data[i] = (noise + tone + creak) * Math.exp(-t * 4) * (1 + Math.sin(t * 20) * 0.3);
+    }
+    
+    const src = ac.createBufferSource();
+    src.buffer = buffer;
+    const gain = ac.createGain();
+    gain.gain.value = volume;
+    src.connect(gain);
+    gain.connect(ac.destination);
+    src.start();
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+//  LEADERBOARD / FIREBASE
+// ═══════════════════════════════════════════════════════
+function submitScore() {
+  const nameInput = document.getElementById('playerNameInput');
+  const name = nameInput.value.trim() || 'ANONYMOUS';
+  const d = window._winData;
+  
+  // Hide modal, show win screen
+  document.getElementById('nameModal').style.display = 'none';
+  document.getElementById('winScreen').style.display = 'flex';
+  
+  // Submit to Firebase
+  if (window.firebaseDb) {
+    const { ref, push, set } = window.firebaseDbFns;
+    const scoreRef = push(ref(window.firebaseDb, 'interrogation_leaderboard'));
+    set(scoreRef, {
+      name: name,
+      time: d.time,
+      timeStr: d.timeStr,
+      zaps: d.zaps,
+      healthLeft: d.health,
+      questions: d.questions,
+      timestamp: Date.now()
+    }).catch(err => console.error('Firebase write error:', err));
+  }
+}
+
+function showLeaderboard() {
+  document.getElementById('leaderboardScreen').style.display = 'flex';
+  loadLeaderboard();
+}
+
+function hideLeaderboard() {
+  document.getElementById('leaderboardScreen').style.display = 'none';
+}
+
+function loadLeaderboard() {
+  if (!window.firebaseDb) {
+    document.getElementById('lbBody').innerHTML = '<tr><td colspan="5" style="color:#ff4400;text-align:center;">Firebase not loaded</td></tr>';
+    return;
+  }
+  const { ref, query, orderByChild, limitToLast, get } = window.firebaseDbFns;
+  const lbRef = query(ref(window.firebaseDb, 'interrogation_leaderboard'), orderByChild('time'), limitToLast(50));
+  
+  get(lbRef).then(snapshot => {
+    const entries = [];
+    snapshot.forEach(child => {
+      entries.push(child.val());
+    });
+    // Sort by time ascending (faster = better)
+    entries.sort((a, b) => a.time - b.time);
+    
+    const tbody = document.getElementById('lbBody');
+    if (entries.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="color:#555;text-align:center;">No confessions yet. Be the first.</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = entries.slice(0, 20).map((e, i) => {
+      const cls = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+      const medal = i === 0 ? '1ST' : i === 1 ? '2ND' : i === 2 ? '3RD' : (i + 1);
+      return `<tr class="${cls}"><td>${medal}</td><td>${escapeHtml(e.name)}</td><td>${e.timeStr || e.time + 's'}</td><td>${e.zaps}</td><td>${e.healthLeft}%</td></tr>`;
+    }).join('');
+  }).catch(err => {
+    console.error('Leaderboard load error:', err);
+    document.getElementById('lbBody').innerHTML = '<tr><td colspan="5" style="color:#ff4400;text-align:center;">Error loading</td></tr>';
+  });
+}
+
+setInterval(() => {
+  if (gameOver || isDead) return;
+  const bg = document.getElementById('roomBg');
+  if (!bg) return;
+  const flicker = 0.85 + Math.random() * 0.15;
+  bg.style.filter = `brightness(${flicker})`;
+}, 200);
+</script>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js';
+  import { getDatabase, ref, push, set, get, query, orderByChild, limitToLast } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB7p2hN3GBjysYMQbB2Jt3jNjdCowOSiS0",
+    authDomain: "epsteinchat-faa29.firebaseapp.com",
+    databaseURL: "https://epsteinchat-faa29-default-rtdb.firebaseio.com",
+    projectId: "epsteinchat-faa29",
+    storageBucket: "epsteinchat-faa29.firebasestorage.app",
+    messagingSenderId: "263027622735",
+    appId: "1:263027622735:web:4a9db562b48ab29eb93b3a",
+    measurementId: "G-2LBTQ2KKTQ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  
+  window.firebaseDb = db;
+  window.firebaseDbFns = { ref, push, set, get, query, orderByChild, limitToLast };
+</script>
+</body>
+</html>

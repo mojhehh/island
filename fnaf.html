@@ -673,6 +673,49 @@
     </style>
 </head>
 <body>
+
+<!-- ══════ SPLASH SCREEN ══════ -->
+<div id="splashScreen">
+  <img src="Untitled%20design.png" alt="Logo" id="splashLogo">
+</div>
+<style>
+  #splashScreen {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #000; display: flex; align-items: center; justify-content: center;
+    z-index: 99999;
+  }
+  #splashLogo {
+    max-width: 90vw; max-height: 90vh; width: auto; height: auto;
+    object-fit: contain;
+    opacity: 0;
+    animation: splashFadeIn 1s ease-in-out forwards;
+  }
+  @keyframes splashFadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes splashFadeOut {
+    from { opacity: 1; } to { opacity: 0; }
+  }
+  #splashScreen.fade-out {
+    animation: splashFadeOut 1s ease-in-out forwards;
+  }
+</style>
+<script>
+(function() {
+  var ov = document.documentElement.style.overflow;
+  document.documentElement.style.overflow = 'hidden';
+  var sp = document.getElementById('splashScreen');
+  setTimeout(function() {
+    sp.classList.add('fade-out');
+    setTimeout(function() {
+      sp.style.display = 'none';
+      sp.style.pointerEvents = 'none';
+      document.documentElement.style.overflow = ov || '';
+    }, 1000);
+  }, 2500);
+})();
+</script>
+
     <div id="cursor"></div>
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>

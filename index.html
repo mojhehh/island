@@ -1470,7 +1470,7 @@ function findPath(sx, sy, ex, ey) {
     ];
 
     let iters = 0;
-    while (open.length > 0 && iters < 400) {
+    while (open.length > 0 && iters < 800) {
         iters++;
         // Find lowest f
         let bestIdx = 0;
@@ -1515,6 +1515,20 @@ function getGuardPath(g, tx, ty) {
         g._pathIdx = 0;
         g._pathTarget = { c: tc, r: tr };
         g._pathTime = now;
+        // If no path found, try to get unstuck by finding nearest walkable tile
+        if (!g._path) {
+            g._stuckCount = (g._stuckCount || 0) + 1;
+            if (g._stuckCount > 3) {
+                // Nudge toward center of current tile
+                const cc = Math.floor(g.x / T) * T + T / 2;
+                const cr = Math.floor(g.y / T) * T + T / 2;
+                g.x += (cc - g.x) * 0.3;
+                g.y += (cr - g.y) * 0.3;
+                g._stuckCount = 0;
+            }
+        } else {
+            g._stuckCount = 0;
+        }
     }
     return g._path;
 }
@@ -1699,6 +1713,11 @@ function update() {
         } else if (g.alertTimer > 0) {
             g.alertTimer--;
             moveToward(g, player.x, player.y, g.speed);
+            if (g.alertTimer === 0) {
+                g._path = null;
+                g._stuckCount = 0;
+                g._directStuck = 0;
+            }
         } else {
             const target = g.patrolPoints[g.patrolIdx];
             if (moveToward(g, target.x, target.y, g.speed))
@@ -1712,10 +1731,23 @@ function update() {
             addParticles(player.x, player.y, '#ff1744', 5, { spread: 4, life: 25 });
             triggerShake(6, 12);
             playHit();
-            // Push away
+            // Push away (with wall check to prevent clipping)
             const angle = Math.atan2(player.y - g.y, player.x - g.x);
-            player.x += Math.cos(angle) * 3;
-            player.y += Math.sin(angle) * 3;
+            const pushX = player.x + Math.cos(angle) * 3;
+            const pushY = player.y + Math.sin(angle) * 3;
+            const pm = player.size * 0.7;
+            if (isWalkable(Math.floor((pushX - pm) / T), Math.floor((player.y - pm) / T)) &&
+                isWalkable(Math.floor((pushX + pm) / T), Math.floor((player.y - pm) / T)) &&
+                isWalkable(Math.floor((pushX - pm) / T), Math.floor((player.y + pm) / T)) &&
+                isWalkable(Math.floor((pushX + pm) / T), Math.floor((player.y + pm) / T))) {
+                player.x = pushX;
+            }
+            if (isWalkable(Math.floor((player.x - pm) / T), Math.floor((pushY - pm) / T)) &&
+                isWalkable(Math.floor((player.x + pm) / T), Math.floor((pushY - pm) / T)) &&
+                isWalkable(Math.floor((player.x - pm) / T), Math.floor((pushY + pm) / T)) &&
+                isWalkable(Math.floor((player.x + pm) / T), Math.floor((pushY + pm) / T))) {
+                player.y = pushY;
+            }
             // Damage vignette
             document.getElementById('damageOverlay').style.opacity = Math.min(1, (100 - health) / 60);
         }
