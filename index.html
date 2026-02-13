@@ -1335,7 +1335,7 @@ function init() {
     gameState = 'playing';
     startTime = Date.now();
     stamina = 60;
-    health = 200;
+    health = 125;
     particles = [];
     killedBy = null;
     frameCount = 0;
@@ -1425,7 +1425,7 @@ function updateUI() {
     const collected = files.filter(f => f.collected).length;
     document.getElementById('filesCount').textContent = `FILES: ${collected} / ${files.length}`;
 
-    const hpPct = Math.max(0, (health / 200) * 100);
+    const hpPct = Math.max(0, (health / 125) * 100);
     document.getElementById('healthFill').style.width = hpPct + '%';
     document.getElementById('healthVal').textContent = Math.round(health);
     document.getElementById('healthFill').className = 'hud-bar-fill' + (hpPct < 30 ? ' low' : '');
@@ -1747,7 +1747,7 @@ function update() {
                 player.y = pushY;
             }
             // Damage vignette
-            document.getElementById('damageOverlay').style.opacity = Math.min(1, (200 - health) / 120);
+            document.getElementById('damageOverlay').style.opacity = Math.min(1, (125 - health) / 75);
         }
     });
 
