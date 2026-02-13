@@ -2736,7 +2736,7 @@ gameLoop();
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getDatabase, ref, push, onValue, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+import { getDatabase, ref, push, set, get, onValue, query, orderByChild, equalTo, limitToLast } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBtPpc6BBMXUgHY5nLYNvIneX3a2U8fj9U",
@@ -2768,10 +2768,44 @@ function showNameModal() {
 }
 window.showNameModal = showNameModal;
 
-function submitScore(name, time, difficulty) {
+async function submitScore(name, time, difficulty) {
+    const cleanName = name.toUpperCase().substring(0, 16);
     const scoresRef = ref(db, 'leaderboard');
+    // Check if this player already has an entry for this difficulty
+    const existing = await get(query(scoresRef, orderByChild('name'), equalTo(cleanName)));
+    let bestKey = null;
+    let bestTime = Infinity;
+    if (existing.exists()) {
+        existing.forEach(child => {
+            const val = child.val();
+            if ((val.difficulty || 'normal') === difficulty) {
+                if (val.time < bestTime) {
+                    bestTime = val.time;
+                    bestKey = child.key;
+                } else {
+                    // Remove duplicate worse entries for same name+difficulty
+                    set(ref(db, 'leaderboard/' + child.key), null);
+                }
+            }
+        });
+    }
+    if (bestKey && time >= bestTime) {
+        // Existing score is better or equal, keep it
+        return { key: bestKey };
+    }
+    if (bestKey) {
+        // Overwrite existing with better time
+        await set(ref(db, 'leaderboard/' + bestKey), {
+            name: cleanName,
+            time: time,
+            difficulty: difficulty,
+            timestamp: Date.now()
+        });
+        return { key: bestKey };
+    }
+    // No existing entry, create new
     return push(scoresRef, {
-        name: name.toUpperCase().substring(0, 16),
+        name: cleanName,
         time: time,
         difficulty: difficulty,
         timestamp: Date.now()
