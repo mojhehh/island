@@ -2174,6 +2174,8 @@ function submitScore(autoName) {
     name = nameInput.value.trim() || 'ANONYMOUS';
   }
   name = name.toUpperCase().substring(0, 20);
+  const badWords = /nigg|fagg|fag[^s]|n[i1]gl|kike|chink|spic[^e]/i;
+  if (badWords.test(name)) name = 'PLAYER';
   localStorage.setItem('confess_player_name', name);
   const d = window._winData;
   

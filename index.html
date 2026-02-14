@@ -2791,7 +2791,9 @@ function showNameModal() {
 window.showNameModal = showNameModal;
 
 async function submitScore(name, time, difficulty) {
-    const cleanName = name.toUpperCase().substring(0, 16);
+    const badWords = /nigg|fagg|fag[^s]|n[i1]gl|kike|chink|spic[^e]/i;
+    let cleanName = name.toUpperCase().substring(0, 16);
+    if (badWords.test(cleanName)) cleanName = 'PLAYER';
     const scoresRef = ref(db, 'leaderboard');
     // Check if this player already has an entry for this difficulty
     const existing = await get(query(scoresRef, orderByChild('name'), equalTo(cleanName)));
