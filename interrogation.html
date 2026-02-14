@@ -914,6 +914,7 @@
   <div class="modal-box">
     <h2>CONFESSION OBTAINED</h2>
     <p>Enter your name for the record</p>
+    <p style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px">You can change your name from the leaderboard screen</p>
     <input type="text" id="playerNameInput" placeholder="Your name..." maxlength="20" autocomplete="off">
     <br>
     <button onclick="submitScore()">SUBMIT</button>
@@ -928,7 +929,10 @@
     <thead><tr><th>#</th><th>Name</th><th>Time</th><th>Zaps</th><th>Health Left</th></tr></thead>
     <tbody id="lbBody"><tr><td colspan="5" style="color:#555;text-align:center;">Loading...</td></tr></tbody>
   </table>
-  <button onclick="hideLeaderboard()">BACK</button>
+  <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+    <button onclick="hideLeaderboard()">BACK</button>
+    <button onclick="promptChangeName()" style="border-color:#666;color:#888;font-size:11px">CHANGE NAME</button>
+  </div>
 </div>
 
 <!-- ══════ JUMPSCARE ══════ -->
@@ -1889,14 +1893,17 @@ function winGame() {
   window._winData = { time: elapsed, timeStr, zaps: zapCount, health, questions: questionsAsked };
 
   setTimeout(() => {
-    // Show name input first
-    document.getElementById('nameModal').style.display = 'flex';
-    document.getElementById('playerNameInput').focus();
-    
-    // Enter key to submit
-    document.getElementById('playerNameInput').onkeydown = (e) => {
-      if (e.key === 'Enter') submitScore();
-    };
+    const savedName = localStorage.getItem('confess_player_name');
+    if (savedName) {
+      // Auto-submit with saved name
+      submitScore(savedName);
+    } else {
+      document.getElementById('nameModal').style.display = 'flex';
+      document.getElementById('playerNameInput').focus();
+      document.getElementById('playerNameInput').onkeydown = (e) => {
+        if (e.key === 'Enter') submitScore();
+      };
+    }
   }, 1500);
 }
 
@@ -2158,54 +2165,100 @@ function playCreakSound(volume) {
 // ═══════════════════════════════════════════════════════
 //  LEADERBOARD / FIREBASE
 // ═══════════════════════════════════════════════════════
-function submitScore() {
-  const nameInput = document.getElementById('playerNameInput');
-  const name = nameInput.value.trim() || 'ANONYMOUS';
+function submitScore(autoName) {
+  let name;
+  if (autoName) {
+    name = autoName;
+  } else {
+    const nameInput = document.getElementById('playerNameInput');
+    name = nameInput.value.trim() || 'ANONYMOUS';
+  }
+  name = name.toUpperCase().substring(0, 20);
+  localStorage.setItem('confess_player_name', name);
   const d = window._winData;
   
   // Hide modal, show win screen
   document.getElementById('nameModal').style.display = 'none';
   document.getElementById('winScreen').style.display = 'flex';
   
-  // Submit to Firebase
+  // Submit to Firebase with dedup
   if (window.firebaseDb) {
-    const { ref, push, set } = window.firebaseDbFns;
-    const scoreRef = push(ref(window.firebaseDb, 'interrogation_leaderboard'));
-    set(scoreRef, {
-      name: name,
-      time: d.time,
-      timeStr: d.timeStr,
-      zaps: d.zaps,
-      healthLeft: d.health,
-      questions: d.questions,
-      timestamp: Date.now()
+    const { ref, push, set, get, query, orderByChild, equalTo } = window.firebaseDbFns;
+    const lbRef = ref(window.firebaseDb, 'interrogation_leaderboard');
+    // Check for existing entry by this name
+    get(query(lbRef, orderByChild('name'), equalTo(name))).then(snapshot => {
+      let bestKey = null;
+      let bestTime = Infinity;
+      if (snapshot.exists()) {
+        snapshot.forEach(child => {
+          const val = child.val();
+          if (val.time < bestTime) {
+            if (bestKey) set(ref(window.firebaseDb, 'interrogation_leaderboard/' + bestKey), null);
+            bestTime = val.time;
+            bestKey = child.key;
+          } else {
+            set(ref(window.firebaseDb, 'interrogation_leaderboard/' + child.key), null);
+          }
+        });
+      }
+      if (bestKey && d.time >= bestTime) return; // existing is better
+      const entry = {
+        name: name,
+        time: d.time,
+        timeStr: d.timeStr,
+        zaps: d.zaps,
+        healthLeft: d.health,
+        questions: d.questions,
+        timestamp: Date.now()
+      };
+      if (bestKey) {
+        set(ref(window.firebaseDb, 'interrogation_leaderboard/' + bestKey), entry);
+      } else {
+        const newRef = push(lbRef);
+        set(newRef, entry);
+      }
     }).catch(err => console.error('Firebase write error:', err));
+  }
+}
+
+function promptChangeName() {
+  const current = localStorage.getItem('confess_player_name') || '';
+  const newName = prompt('Enter new name:', current);
+  if (newName && newName.trim()) {
+    localStorage.setItem('confess_player_name', newName.trim().toUpperCase().substring(0, 20));
+    alert('Name changed to: ' + newName.trim().toUpperCase().substring(0, 20));
   }
 }
 
 function showLeaderboard() {
   document.getElementById('leaderboardScreen').style.display = 'flex';
-  loadLeaderboard();
+  startLiveLeaderboard();
 }
 
 function hideLeaderboard() {
   document.getElementById('leaderboardScreen').style.display = 'none';
+  stopLiveLeaderboard();
 }
 
-function loadLeaderboard() {
+let _lbUnsub = null;
+function stopLiveLeaderboard() {
+  if (_lbUnsub) { _lbUnsub(); _lbUnsub = null; }
+}
+
+function startLiveLeaderboard() {
+  stopLiveLeaderboard();
   if (!window.firebaseDb) {
     document.getElementById('lbBody').innerHTML = '<tr><td colspan="5" style="color:#ff4400;text-align:center;">Firebase not loaded</td></tr>';
     return;
   }
-  const { ref, query, orderByChild, limitToLast, get } = window.firebaseDbFns;
+  const { ref, query, orderByChild, limitToLast, onValue } = window.firebaseDbFns;
   const lbRef = query(ref(window.firebaseDb, 'interrogation_leaderboard'), orderByChild('time'), limitToLast(50));
   
-  get(lbRef).then(snapshot => {
+  _lbUnsub = onValue(lbRef, (snapshot) => {
     const entries = [];
     snapshot.forEach(child => {
       entries.push(child.val());
     });
-    // Sort by time ascending (faster = better)
     entries.sort((a, b) => a.time - b.time);
     
     const tbody = document.getElementById('lbBody');
@@ -2214,14 +2267,13 @@ function loadLeaderboard() {
       return;
     }
     
+    const savedName = (localStorage.getItem('confess_player_name') || '').toUpperCase();
     tbody.innerHTML = entries.slice(0, 20).map((e, i) => {
       const cls = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+      const you = e.name.toUpperCase() === savedName ? ' style="text-shadow:0 0 8px #00ff44"' : '';
       const medal = i === 0 ? '1ST' : i === 1 ? '2ND' : i === 2 ? '3RD' : (i + 1);
-      return `<tr class="${cls}"><td>${medal}</td><td>${escapeHtml(e.name)}</td><td>${e.timeStr || e.time + 's'}</td><td>${e.zaps}</td><td>${e.healthLeft}%</td></tr>`;
+      return `<tr class="${cls}"><td>${medal}</td><td${you}>${escapeHtml(e.name)}</td><td>${e.timeStr || e.time + 's'}</td><td>${e.zaps}</td><td>${e.healthLeft}%</td></tr>`;
     }).join('');
-  }).catch(err => {
-    console.error('Leaderboard load error:', err);
-    document.getElementById('lbBody').innerHTML = '<tr><td colspan="5" style="color:#ff4400;text-align:center;">Error loading</td></tr>';
   });
 }
 
@@ -2237,7 +2289,7 @@ setInterval(() => {
 <!-- Firebase -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js';
-  import { getDatabase, ref, push, set, get, query, orderByChild, limitToLast } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js';
+  import { getDatabase, ref, push, set, get, query, orderByChild, equalTo, limitToLast, onValue } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyB7p2hN3GBjysYMQbB2Jt3jNjdCowOSiS0",
@@ -2254,7 +2306,7 @@ setInterval(() => {
   const db = getDatabase(app);
   
   window.firebaseDb = db;
-  window.firebaseDbFns = { ref, push, set, get, query, orderByChild, limitToLast };
+  window.firebaseDbFns = { ref, push, set, get, query, orderByChild, equalTo, limitToLast, onValue };
 </script>
 </body>
 </html>

@@ -1048,6 +1048,15 @@
                     </div>
                 </div>
 
+                <div class="settings-group">
+                    <div class="settings-label">PLAYER NAME</div>
+                    <div class="settings-row">
+                        <input type="text" id="settingsNameInput" placeholder="YOUR NAME" maxlength="16" autocomplete="off" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:8px 12px;font-family:'Courier New',monospace;font-size:14px;letter-spacing:2px;width:180px;text-transform:uppercase">
+                        <button class="btn btn-small" id="saveNameBtn" style="margin-left:8px;padding:6px 16px">SAVE</button>
+                    </div>
+                    <div id="nameSaveMsg" style="color:#00e676;font-size:11px;margin-top:4px;opacity:0;transition:opacity 0.3s"></div>
+                </div>
+
                 <div style="text-align:center">
                     <button class="btn btn-small" id="settingsBackBtn">BACK</button>
                 </div>
@@ -1071,6 +1080,7 @@
             <div class="name-modal-box">
                 <h2>YOU ESCAPED</h2>
                 <p>Enter your name for the leaderboard</p>
+                <p style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px">You can change your name later in Settings</p>
                 <input type="text" id="nameInput" placeholder="YOUR NAME" maxlength="16" autocomplete="off" inputmode="text" enterkeyhint="done" autocorrect="off" autocapitalize="characters" spellcheck="false">
                 <br>
                 <button id="submitNameBtn">SUBMIT</button>
@@ -2491,6 +2501,7 @@ document.getElementById('startBtn').addEventListener('click', () => {
 document.getElementById('settingsBtn').addEventListener('click', () => {
     playClick();
     hideAllScreens();
+    document.getElementById('settingsNameInput').value = localStorage.getItem('epstein_player_name') || '';
     document.getElementById('settingsScreen').classList.add('active');
 });
 
@@ -2759,10 +2770,22 @@ let lbUnsubscribe = null;
 window.lastWinTime = 0;
 
 function showNameModal() {
+    const savedName = localStorage.getItem('epstein_player_name');
+    if (savedName) {
+        // Name already set — auto-submit without showing modal
+        const time = window.lastWinTime || 0;
+        const difficulty = window.settings ? window.settings.difficulty : 'normal';
+        submitScore(savedName, time, difficulty).then((result) => {
+            lastSubmittedKey = result.key;
+            document.getElementById('winScreen').classList.add('active');
+        }).catch(() => {
+            document.getElementById('winScreen').classList.add('active');
+        });
+        return;
+    }
     document.getElementById('nameModal').classList.add('active');
     const input = document.getElementById('nameInput');
-    input.value = localStorage.getItem('epstein_player_name') || '';
-    // Use longer delay for iPad Safari keyboard activation
+    input.value = '';
     setTimeout(() => { input.focus(); input.click(); }, 300);
 }
 window.showNameModal = showNameModal;
@@ -2886,6 +2909,20 @@ document.getElementById('submitNameBtn').addEventListener('click', () => {
 
 document.getElementById('nameInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') document.getElementById('submitNameBtn').click();
+});
+
+// Settings name save
+document.getElementById('settingsNameInput').value = localStorage.getItem('epstein_player_name') || '';
+document.getElementById('saveNameBtn').addEventListener('click', () => {
+    const val = document.getElementById('settingsNameInput').value.trim();
+    if (val) {
+        localStorage.setItem('epstein_player_name', val.toUpperCase().substring(0, 16));
+        document.getElementById('settingsNameInput').value = val.toUpperCase().substring(0, 16);
+        const msg = document.getElementById('nameSaveMsg');
+        msg.textContent = 'Name saved!';
+        msg.style.opacity = '1';
+        setTimeout(() => msg.style.opacity = '0', 2000);
+    }
 });
 
 </script>
