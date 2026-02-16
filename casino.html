@@ -2868,9 +2868,11 @@ function authGuestMode() {
     localStorage.setItem('casino_guest_stats', JSON.stringify(playerStats));
     localStorage.setItem('casino_guest_gameStats', JSON.stringify(gameStats));
   };
-  // Guests don't write to leaderboards
+  // Guests don't write to leaderboards or chat
   window._recordGameResult = () => {};
   window._claimDailyBonus = async () => null;
+  window._sendChatMsg = async () => {};
+  window._broadcastWin = () => {};
 
   window._onAuthReady('Guest', guestId);
 }
@@ -7042,6 +7044,7 @@ function sendChatMessage() {
   const input = document.getElementById('chatInput');
   let text = input.value.trim();
   if (!text) return;
+  if (isGuestMode) { showToast('Sign in to chat', false); return; }
   if (text.length > 200) text = text.slice(0, 200); // enforce length limit
   const username = window._currentUsername || 'Guest';
   if (window._sendChatMsg) {
