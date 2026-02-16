@@ -2122,12 +2122,14 @@ window._recordGameResult = (game, wagered, won) => {
     s.gamesPlayed = (s.gamesPlayed || 0) + 1;
     if (won > (s.biggestWin || 0)) s.biggestWin = won;
     set(statsRef, s);
-    // Update game-specific leaderboard
+    // Update game-specific leaderboard (only if bigger than current)
     if (won > 0) {
-      set(ref(db, 'casino/leaderboards/' + game + '/' + playerId), {
-        name: currentUsername,
-        value: won,
-        updated: Date.now()
+      const lbRef = ref(db, 'casino/leaderboards/' + game + '/' + playerId);
+      get(lbRef).then(lbSnap => {
+        const cur = lbSnap.exists() ? (lbSnap.val().value || 0) : 0;
+        if (won > cur) {
+          set(lbRef, { name: currentUsername, value: won, updated: Date.now() }).catch(() => {});
+        }
       }).catch(() => {});
     }
     // Update profit leaderboard
@@ -2155,17 +2157,22 @@ window._getLeaderboard = async (category) => {
 window._claimDailyBonus = async () => {
   if (!playerRef) return null;
   const bonusRef = ref(db, 'casino/players/' + playerId + '/dailyBonus');
-  const snap = await get(bonusRef);
   const now = Date.now();
-  const data = snap.exists() ? snap.val() : { lastClaimed: 0, streak: 0 };
-  const lastDate = new Date(data.lastClaimed).toDateString();
-  const todayDate = new Date(now).toDateString();
-  if (lastDate === todayDate) return null; // Already claimed today
-  const yesterdayDate = new Date(now - 86400000).toDateString();
-  const newStreak = (lastDate === yesterdayDate) ? (data.streak || 0) + 1 : 1;
-  const bonus = Math.min(500 + (newStreak - 1) * 100, 2000); // $500 base, +$100/day streak, max $2000
-  await set(bonusRef, { lastClaimed: now, streak: newStreak });
-  return { amount: bonus, streak: newStreak };
+  let txResult = null;
+  try {
+    await runTransaction(bonusRef, (current) => {
+      const data = current || { lastClaimed: 0, streak: 0 };
+      const lastDate = new Date(data.lastClaimed).toDateString();
+      const todayDate = new Date(now).toDateString();
+      if (lastDate === todayDate) { txResult = null; return; } // Already claimed
+      const yesterdayDate = new Date(now - 86400000).toDateString();
+      const newStreak = (lastDate === yesterdayDate) ? (data.streak || 0) + 1 : 1;
+      const bonus = Math.min(500 + (newStreak - 1) * 100, 2000);
+      txResult = { amount: bonus, streak: newStreak };
+      return { lastClaimed: now, streak: newStreak };
+    });
+  } catch(e) { return null; }
+  return txResult;
 };
 
 // ============ GLOBAL MARKET SYNC ============
@@ -2184,23 +2191,23 @@ window._initGlobalMarket = () => {
 
 // Update global market when items change hands
 window._updateGlobalMarketItem = async (itemId, action, price) => {
-  // action: 'opened' (case), 'sold' (to house), 'traded'
   const itemRef = ref(db, 'casino/market/' + itemId);
   try {
-    const snap = await get(itemRef);
-    const d = snap.exists() ? snap.val() : { globalSupply: 0, totalOpened: 0, lastTradePrice: 0, lastTradeTs: 0 };
-    if (action === 'opened') {
-      d.globalSupply = (d.globalSupply || 0) + 1;
-      d.totalOpened = (d.totalOpened || 0) + 1;
-    } else if (action === 'sold') {
-      d.globalSupply = Math.max(0, (d.globalSupply || 0) - 1);
-      d.lastTradePrice = price || 0;
-      d.lastTradeTs = Date.now();
-    } else if (action === 'traded') {
-      d.lastTradePrice = price || 0;
-      d.lastTradeTs = Date.now();
-    }
-    await set(itemRef, d);
+    await runTransaction(itemRef, (current) => {
+      const d = current || { globalSupply: 0, totalOpened: 0, lastTradePrice: 0, lastTradeTs: 0 };
+      if (action === 'opened') {
+        d.globalSupply = (d.globalSupply || 0) + 1;
+        d.totalOpened = (d.totalOpened || 0) + 1;
+      } else if (action === 'sold') {
+        d.globalSupply = Math.max(0, (d.globalSupply || 0) - 1);
+        d.lastTradePrice = price || 0;
+        d.lastTradeTs = Date.now();
+      } else if (action === 'traded') {
+        d.lastTradePrice = price || 0;
+        d.lastTradeTs = Date.now();
+      }
+      return d;
+    });
   } catch(e) {}
 };
 
@@ -2428,18 +2435,27 @@ window._storePlaceBid = async (listingId, bidAmount) => {
 window._storeCancelListing = async (listingId) => {
   if (!playerId) return { error: 'Not logged in' };
   const listRef = ref(db, 'casino/store/listings/' + listingId);
-  const snap = await get(listRef);
-  if (!snap.exists()) return { error: 'Listing not found' };
-  const d = snap.val();
-  if (d.sellerUid !== playerId) return { error: 'Not your listing' };
-  if (d.sold) return { error: 'Already sold' };
-  // Refund highest bidder if auction has bids
-  if (d.type === 'auction' && d.highBidderUid && d.currentBid > 0) {
-    const refundRef = push(ref(db, 'casino/pendingRefunds/' + d.highBidderUid));
-    await set(refundRef, { item: null, cash: d.currentBid, reason: 'listing_cancelled', from: d.seller, itemName: d.itemName || d.itemId, ts: Date.now() });
-  }
-  await remove(listRef);
-  return { success: true, item: d };
+  let txError = null;
+  let txItem = null;
+  let bidderToRefund = null;
+  try {
+    await runTransaction(listRef, (current) => {
+      if (current === null) { txError = 'Listing not found'; return; }
+      if (current.sellerUid !== playerId) { txError = 'Not your listing'; return; }
+      if (current.sold) { txError = 'Already sold'; return; }
+      txItem = { ...current };
+      if (current.type === 'auction' && current.highBidderUid && current.currentBid > 0) {
+        bidderToRefund = { uid: current.highBidderUid, amount: current.currentBid, seller: current.seller, itemName: current.itemName || current.itemId };
+      }
+      return null; // delete the listing
+    });
+    if (txError) return { error: txError };
+    if (bidderToRefund) {
+      const refundRef = push(ref(db, 'casino/pendingRefunds/' + bidderToRefund.uid));
+      await set(refundRef, { item: null, cash: bidderToRefund.amount, reason: 'listing_cancelled', from: bidderToRefund.seller, itemName: bidderToRefund.itemName, ts: Date.now() });
+    }
+  } catch(e) { return { error: 'Cancel failed: ' + (e.message || 'unknown') }; }
+  return { success: true, item: txItem };
 };
 
 window._storeGetSales = async () => {
@@ -2828,6 +2844,7 @@ window.getBalance=()=>balance;
 window.setBalance=(v)=>{balance=v;updateBalDisplay();};
 
 function updateBalDisplay(){
+  balance=Math.round(balance*100)/100; // prevent floating-point drift
   const el=document.getElementById('balText');
   el.textContent=balance.toFixed(2);
   el.style.transition='transform .15s';
@@ -3164,7 +3181,7 @@ const labels = {
       const isMe = e.uid === myId;
       return '<div class="lb-data-row' + (isMe ? ' me' : '') + '">' +
         '<span class="lb-col-rank">' + medal + '</span>' +
-        '<span class="lb-col-name">' + e.name + (isMe ? ' (you)' : '') + '</span>' +
+        '<span class="lb-col-name">' + escapeHtml(e.name) + (isMe ? ' (you)' : '') + '</span>' +
         '<span class="lb-col-val">' + cfg.fmt(e.value) + '</span>' +
         '</div>';
     }).join('');
@@ -3320,11 +3337,13 @@ function toggleMute() {
   const btn = document.getElementById('muteBtn');
   if (btn) btn.textContent = soundMuted ? '🔇' : '🔊';
 }
-const audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-document.addEventListener('click',()=>{if(audioCtx.state==='suspended')audioCtx.resume();},{once:true});
-document.addEventListener('keydown',()=>{if(audioCtx.state==='suspended')audioCtx.resume();},{once:true});
+let audioCtx=null;
+function ensureAudioCtx(){if(!audioCtx){audioCtx=new(window.AudioContext||window.webkitAudioContext)();}if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx;}
+document.addEventListener('click',ensureAudioCtx,{once:true});
+document.addEventListener('keydown',ensureAudioCtx,{once:true});
 function playSound(freq,type='sine',dur=0.15,vol=0.1){
   try{
+    if(!audioCtx)return;
     const o=audioCtx.createOscillator();const g=audioCtx.createGain();
     o.connect(g);g.connect(audioCtx.destination);o.type=type;o.frequency.value=freq;
     g.gain.setValueAtTime(vol,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
@@ -3628,8 +3647,8 @@ async function loadTradeRequests() {
           <div style="font-size:10px;color:var(--text2);margin-top:2px;">${new Date(r.ts).toLocaleString()}</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:4px;">
-          <button onclick="respondTradeRequest('${r.id}','${r.from}','${r.fromUid}',true)" style="padding:6px 14px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:'Orbitron';">ACCEPT</button>
-          <button onclick="respondTradeRequest('${r.id}','${r.from}','${r.fromUid}',false)" style="padding:4px 12px;background:transparent;border:1px solid var(--red);border-radius:6px;color:var(--red);cursor:pointer;font-size:10px;">DECLINE</button>
+          <button onclick="respondTradeRequest('${r.id.replace(/'/g,"\\'").replace(/\\/g,'')}','${(r.from||"").replace(/'/g,"\\'").replace(/\\/g,'')}','${(r.fromUid||"").replace(/'/g,"\\'").replace(/\\/g,'')}',true)" style="padding:6px 14px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:'Orbitron';">ACCEPT</button>
+          <button onclick="respondTradeRequest('${r.id.replace(/'/g,"\\'").replace(/\\/g,'')}','${(r.from||"").replace(/'/g,"\\'").replace(/\\/g,'')}','${(r.fromUid||"").replace(/'/g,"\\'").replace(/\\/g,'')}',false)" style="padding:4px 12px;background:transparent;border:1px solid var(--red);border-radius:6px;color:var(--red);cursor:pointer;font-size:10px;">DECLINE</button>
         </div>
       </div>`).join('');
       // Prepend to inbox
@@ -4308,8 +4327,8 @@ function dmOpenChat(uid, name) {
         const isMe = m.fromUid === myId;
         return '<div style="display:flex;justify-content:' + (isMe ? 'flex-end' : 'flex-start') + ';">'
           + '<div style="max-width:75%;padding:8px 12px;border-radius:' + (isMe ? '12px 12px 2px 12px' : '12px 12px 12px 2px') + ';background:' + (isMe ? 'linear-gradient(135deg,#00cc66,#009944)' : 'var(--surface2)') + ';color:' + (isMe ? '#fff' : 'var(--text)') + ';font-size:12px;">'
-          + '<div>' + m.text + '</div>'
-          + '<div style="font-size:9px;color:' + (isMe ? 'rgba(255,255,255,.6)' : 'var(--text2)') + ';margin-top:3px;">' + (isMe ? 'You' : m.from) + ' · ' + new Date(m.ts).toLocaleTimeString() + '</div>'
+          + '<div>' + escapeHtml(m.text) + '</div>'
+          + '<div style="font-size:9px;color:' + (isMe ? 'rgba(255,255,255,.6)' : 'var(--text2)') + ';margin-top:3px;">' + (isMe ? 'You' : escapeHtml(m.from)) + ' · ' + new Date(m.ts).toLocaleTimeString() + '</div>'
           + '</div></div>';
       }).join('');
       div.scrollTop = div.scrollHeight;
@@ -4951,7 +4970,8 @@ function pickWeightedWithStreak(items) {
 
 function updateCaseStats(winCat, winRarity) {
   caseOpenTotal++;
-  caseStreak++;
+  // Reset streak on low-tier items (consumer/industrial = tier 0-1)
+  if (winRarity.tier <= 1) { caseStreak = 0; } else { caseStreak++; }
   const countEl = document.getElementById('caseOpenCount');
   if (countEl) countEl.textContent = caseOpenTotal;
   const streakEl = document.getElementById('caseStreak');
@@ -5106,8 +5126,9 @@ function openCase() {
 
 function quickOpenCase() {
   if (caseOpening) return;
+  caseOpening = true;
   const c = CASES[selectedCase];
-  if (c.price > balance) { showToast('Not enough balance!', false); return; }
+  if (c.price > balance) { caseOpening = false; showToast('Not enough balance!', false); return; }
   balance -= c.price; updateBalDisplay();
   playClickSound();
 
@@ -5138,6 +5159,7 @@ function quickOpenCase() {
   updateCaseStats(winCat, winRarity);
   recordGame('cases', c.price, mktVal);
   firebaseSave();
+  setTimeout(() => { caseOpening = false; }, 50);
 }
 
 // ============ INVENTORY ============
@@ -5336,6 +5358,13 @@ function initPlinko(){
   },2000);
 
   document.getElementById('plinkoRows').addEventListener('change',e=>{
+    // Refund in-flight balls before changing rows
+    const activeBalls=Object.keys(plinkoBallBets);
+    if(activeBalls.length>0){
+      let refundTotal=0;
+      activeBalls.forEach(id=>{refundTotal+=plinkoBallBets[id].bet||0;});
+      if(refundTotal>0){balance+=refundTotal;updateBalDisplay();showToast('Refunded $'+refundTotal.toFixed(2)+' for in-flight balls',true);}
+    }
     plinkoRowCount=parseInt(e.target.value);
     removeAllPlinkoBalls();placePlinkoPins();updatePlinkoBins();
   });
@@ -5429,7 +5458,10 @@ function handlePlinkoHit(ball){
 
   // Clean up ball
   Matter.Composite.remove(plinkoMatterEngine.world,ball);
-  const betAmt=plinkoBallBets[ball.id]||0;
+  const ballData=plinkoBallBets[ball.id]||{bet:0,risk:plinkoRiskLevel,rows:plinkoRowCount};
+  const betAmt=typeof ballData==='object'?ballData.bet:ballData;
+  const ballRisk=typeof ballData==='object'?ballData.risk:plinkoRiskLevel;
+  const ballRows=typeof ballData==='object'?ballData.rows:plinkoRowCount;
   delete plinkoBallBets[ball.id];
 
   if(binIndex<0){binIndex=0;}
@@ -5607,7 +5639,7 @@ function dropPlinkoBall(){
       render:{fillStyle:'#ff0000'}}
   );
   Matter.Composite.add(plinkoMatterEngine.world,ball);
-  plinkoBallBets[ball.id]=bet;
+  plinkoBallBets[ball.id]={bet:bet,risk:plinkoRiskLevel,rows:plinkoRowCount};
 }
 
 function toggleAutoDrop(){
@@ -5622,6 +5654,9 @@ function toggleAutoDrop(){
     autoDropInterval=setInterval(()=>{
       const bet=parseFloat(document.getElementById('plinkoBet').value)||10;
       if(bet>balance){toggleAutoDrop();return;}
+      // Limit max simultaneous balls to prevent performance issues
+      const activeBallCount=Object.keys(plinkoBallBets).length;
+      if(activeBallCount>=50)return;
       dropPlinkoBall();
     },250);
   }
@@ -6627,8 +6662,9 @@ function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;if(bjBetAmt>balance
 function bjFinish(){
   const pv=bjHandVal(bjPlayer),dv=bjHandVal(bjDealer);let w=0,msg='';
   const isNatural=bjPlayer.length===2&&pv===21;
+  const dealerNatural=bjDealer.length===2&&dv===21;
   if(pv>21){msg='BUST!';showToast('-$'+bjBetAmt.toFixed(2),false);playLoseSound();}
-  else if(isNatural&&dv!==21){w=Math.round(bjBetAmt*2.5*100)/100;msg='BLACKJACK! +$'+w.toFixed(2);balance+=w;updateBalDisplay();showToast('BLACKJACK! +$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,40);}
+  else if(isNatural&&!dealerNatural){w=Math.round(bjBetAmt*2.5*100)/100;msg='BLACKJACK! +$'+w.toFixed(2);balance+=w;updateBalDisplay();showToast('BLACKJACK! +$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,40);}
   else if(dv>21||pv>dv){w=bjBetAmt*2;msg='WIN +$'+w.toFixed(2);balance+=w;updateBalDisplay();showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,30);}
   else if(pv===dv){w=bjBetAmt;msg='PUSH';balance+=w;updateBalDisplay();showToast('Push');}
   else{msg='LOSE';showToast('-$'+bjBetAmt.toFixed(2),false);playLoseSound();}
@@ -6801,13 +6837,27 @@ let horseSelected=-1,horseRacing=false;
 function horseInit(){const t=document.getElementById('horseTrack');const b=document.getElementById('horseBets');if(!t||!b)return;t.innerHTML='';b.innerHTML='';
   HORSES.forEach((h,i)=>{t.innerHTML+='<div class="horse-lane"><div class="horse-name" style="color:'+h.color+'">'+h.emoji+' '+h.name+'</div><div class="horse-bar"><div class="horse-progress" id="hp'+i+'" style="width:0%;background:'+h.color+';opacity:.6;"></div><div class="horse-emoji" id="he'+i+'" style="left:0%;">'+h.emoji+'</div></div><div class="horse-odds" id="ho'+i+'"></div></div>';
     b.innerHTML+='<button class="horse-bet" onclick="horseSelect('+i+',this)">'+h.emoji+' '+h.name+'</button>';});horseSetOdds();}
-function horseSetOdds(){HORSES.forEach((_,i)=>{const o=(1.5+Math.random()*4).toFixed(1);document.getElementById('ho'+i).textContent=o+'×';document.getElementById('ho'+i).dataset.odds=o;});}
+function horseSetOdds(){
+  // Generate speed weights that correspond to displayed odds
+  const rawWeights=HORSES.map(()=>1+Math.random()*3); // raw speed influence
+  const totalW=rawWeights.reduce((s,w)=>s+w,0);
+  HORSES.forEach((_,i)=>{
+    const winProb=rawWeights[i]/totalW;
+    const odds=Math.max(1.2,(0.95/winProb)).toFixed(1); // ~95% RTP
+    document.getElementById('ho'+i).textContent=odds+'×';
+    document.getElementById('ho'+i).dataset.odds=odds;
+    document.getElementById('ho'+i).dataset.speed=rawWeights[i].toFixed(3);
+  });
+}
 function horseSelect(i,btn){horseSelected=i;document.querySelectorAll('.horse-bet').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');playClickSound();}
 function horseRace(){if(horseRacing||horseSelected<0){if(horseSelected<0)showToast('Pick a horse!',false);return;}
   const bet=parseFloat(document.getElementById('horseBet').value)||10;if(bet>balance){showToast('Not enough!',false);return;}
   horseRacing=true;balance-=bet;updateBalDisplay();document.getElementById('horseRaceBtn').disabled=true;document.getElementById('horseResult').textContent='';
   const progress=HORSES.map(()=>0);playClickSound();
-  const raceInterval=setInterval(()=>{let winner=-1;HORSES.forEach((_,i)=>{progress[i]+=Math.random()*3+0.5;if(progress[i]>=100){progress[i]=100;if(winner<0)winner=i;}
+  const raceInterval=setInterval(()=>{let winner=-1;HORSES.forEach((_,i)=>{
+    const spd=parseFloat(document.getElementById('ho'+i).dataset.speed)||1.5;
+    progress[i]+=Math.random()*spd*1.8+0.3;
+    if(progress[i]>=100){progress[i]=100;if(winner<0)winner=i;}
     document.getElementById('hp'+i).style.width=progress[i]+'%';document.getElementById('he'+i).style.left=Math.min(progress[i],95)+'%';});
     if(winner>=0){clearInterval(raceInterval);horseRacing=false;document.getElementById('horseRaceBtn').disabled=false;
       const odds=parseFloat(document.getElementById('ho'+horseSelected).dataset.odds);
@@ -6843,7 +6893,7 @@ function scratchReveal(i){if(!scratchActive)return;const cells=document.querySel
 }
 
 // ============ WHEEL OF FORTUNE ============
-const WHEEL_SEGMENTS=[{label:'0×',mult:0,color:'#333',weight:3},{label:'0.5×',mult:0.5,color:'#444',weight:5},{label:'1×',mult:1,color:'#555',weight:6},{label:'1.5×',mult:1.5,color:'#1a5a1a',weight:5},{label:'2×',mult:2,color:'#2a7a2a',weight:4},{label:'3×',mult:3,color:'#1a1a8e',weight:3},{label:'5×',mult:5,color:'#6b2fd9',weight:2},{label:'10×',mult:10,color:'#cc2233',weight:1},{label:'50×',mult:50,color:'#ffd700',weight:0.3}];
+const WHEEL_SEGMENTS=[{label:'0×',mult:0,color:'#333',weight:5},{label:'0.5×',mult:0.5,color:'#444',weight:7},{label:'1×',mult:1,color:'#555',weight:6},{label:'1.5×',mult:1.5,color:'#1a5a1a',weight:4},{label:'2×',mult:2,color:'#2a7a2a',weight:3},{label:'3×',mult:3,color:'#1a1a8e',weight:1.5},{label:'5×',mult:5,color:'#6b2fd9',weight:0.8},{label:'10×',mult:10,color:'#cc2233',weight:0.25},{label:'50×',mult:50,color:'#ffd700',weight:0.04}];
 let wheelAngle=0,wheelSpinning=false,wheelDrawn=false;
 function drawWheel(angle){wheelDrawn=true;const c=document.getElementById('wheelCanvas');if(!c)return;const ctx=c.getContext('2d');const cx=c.width/2,cy=c.height/2,r=c.width/2-8;ctx.clearRect(0,0,c.width,c.height);
   const totalW=WHEEL_SEGMENTS.reduce((s,seg)=>s+seg.weight,0);let curAngle=angle;
