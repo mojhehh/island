@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CASINO ROYALE</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🎰</text></svg>" type="image/svg+xml">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
@@ -747,9 +748,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <div class="login-logo">CASINO</div>
     <div class="login-subtitle">ROYALE</div>
     <div id="loginForm">
+      <form onsubmit="event.preventDefault();authSubmit();" autocomplete="on">
       <input class="login-input" type="text" id="authUsername" placeholder="Username" autocomplete="username" maxlength="20">
       <input class="login-input" type="password" id="authPassword" placeholder="Password" autocomplete="current-password">
-      <button class="login-btn primary" id="authSubmitBtn" onclick="authSubmit()">SIGN IN</button>
+      <button type="submit" class="login-btn primary" id="authSubmitBtn">SIGN IN</button>
+      </form>
       <button class="login-btn secondary" id="authToggleBtn" onclick="authToggleMode()">CREATE ACCOUNT</button>
       <button class="login-btn secondary" style="margin-top:4px;border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);font-family:'Inter',sans-serif;font-size:13px;letter-spacing:0;" onclick="authGuestMode()">Sign in later</button>
       <div class="login-error" id="authError"></div>
@@ -1956,7 +1959,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 <!-- Firebase -->
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-import{getDatabase,ref,set,get,onValue,push,update,remove,off,onDisconnect,query as fbQuery,limitToLast as fbLimitToLast}from"https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+import{getDatabase,ref,set,get,onValue,push,update,remove,off,onDisconnect,query as fbQuery,limitToLast as fbLimitToLast,runTransaction}from"https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
 const firebaseConfig={
@@ -2066,13 +2069,13 @@ onAuthStateChanged(auth, async (user) => {
     window._currentPlayerId = playerId;
 
     // Show casino, hide login
-    window._onAuthReady(currentUsername, playerId);
+    if (typeof window._onAuthReady === 'function') window._onAuthReady(currentUsername, playerId);
   } else {
     currentUser = null;
     currentUsername = '';
     playerId = '';
     playerRef = null;
-    window._onAuthLoggedOut();
+    if (typeof window._onAuthLoggedOut === 'function') window._onAuthLoggedOut();
   }
 });
 
@@ -2356,14 +2359,26 @@ window._storeGetListings = async () => {
 window._storeBuyItem = async (listingId) => {
   if (!playerId || !currentUsername) return { error: 'Not logged in' };
   const listRef = ref(db, 'casino/store/listings/' + listingId);
-  const snap = await get(listRef);
-  if (!snap.exists()) return { error: 'Listing not found' };
-  const d = snap.val();
-  if (d.sold) return { error: 'Already sold' };
-  if (d.sellerUid === playerId) return { error: "Can't buy your own item" };
-  if (d.type === 'auction') return { error: 'This is an auction — place a bid instead' };
-  // Mark as sold
-  await set(listRef, { ...d, sold: true, buyer: currentUsername, buyerUid: playerId, soldAt: Date.now() });
+  // Use transaction to prevent race conditions
+  let txResult = null;
+  let txError = null;
+  try {
+    const result = await runTransaction(listRef, (current) => {
+      if (current === null) { txError = 'Listing not found'; return; }
+      if (current.sold) { txError = 'Already sold'; return; }
+      if (current.sellerUid === playerId) { txError = "Can't buy your own item"; return; }
+      if (current.type === 'auction') { txError = 'This is an auction — place a bid instead'; return; }
+      txResult = { ...current };
+      current.sold = true;
+      current.buyer = currentUsername;
+      current.buyerUid = playerId;
+      current.soldAt = Date.now();
+      return current;
+    });
+    if (txError) return { error: txError };
+    if (!result.committed) return { error: 'Transaction failed — try again' };
+  } catch(e) { return { error: 'Purchase failed: ' + (e.message || 'unknown') }; }
+  const d = txResult;
   // Credit seller via pending refund system
   if (d.sellerUid && d.price > 0) {
     const payRef = push(ref(db, 'casino/pendingRefunds/' + d.sellerUid));
@@ -2378,28 +2393,36 @@ window._storeBuyItem = async (listingId) => {
 window._storePlaceBid = async (listingId, bidAmount) => {
   if (!playerId || !currentUsername) return { error: 'Not logged in' };
   const listRef = ref(db, 'casino/store/listings/' + listingId);
-  const snap = await get(listRef);
-  if (!snap.exists()) return { error: 'Listing not found' };
-  const d = snap.val();
-  if (d.sold) return { error: 'Already sold' };
-  if (d.sellerUid === playerId) return { error: "Can't bid on your own item" };
-  if (d.type !== 'auction') return { error: 'Not an auction' };
-  if (Date.now() > d.endsAt) return { error: 'Auction ended' };
-  // Re-read to guard against race: check current bid is still what we expect
-  const freshSnap = await get(listRef);
-  if (!freshSnap.exists()) return { error: 'Listing removed' };
-  const fresh = freshSnap.val();
-  if (fresh.sold) return { error: 'Already sold' };
-  if (bidAmount <= (fresh.currentBid || 0)) return { error: 'Bid must be higher than $' + (fresh.currentBid || 0) + ' (someone may have outbid you)' };
-  // Refund old bidder via Firebase pending refunds
-  const oldBidder = fresh.highBidderUid;
-  const oldBid = fresh.currentBid || 0;
-  if (oldBidder && oldBid > 0 && oldBidder !== playerId) {
-    const refundRef = push(ref(db, 'casino/pendingRefunds/' + oldBidder));
-    await set(refundRef, { item: null, cash: oldBid, reason: 'outbid', from: currentUsername, itemName: fresh.itemName || fresh.itemId, ts: Date.now() });
+  // Use transaction to prevent race conditions
+  let txError = null;
+  let oldBidderUid = '';
+  let oldBidAmount = 0;
+  let itemNameForRefund = '';
+  try {
+    const result = await runTransaction(listRef, (current) => {
+      if (current === null) { txError = 'Listing not found'; return; }
+      if (current.sold) { txError = 'Already sold'; return; }
+      if (current.sellerUid === playerId) { txError = "Can't bid on your own item"; return; }
+      if (current.type !== 'auction') { txError = 'Not an auction'; return; }
+      if (Date.now() > current.endsAt) { txError = 'Auction ended'; return; }
+      if (bidAmount <= (current.currentBid || 0)) { txError = 'Bid must be higher than $' + (current.currentBid || 0) + ' (someone outbid you)'; return; }
+      oldBidderUid = current.highBidderUid || '';
+      oldBidAmount = current.currentBid || 0;
+      itemNameForRefund = current.itemName || current.itemId;
+      current.currentBid = bidAmount;
+      current.highBidder = currentUsername;
+      current.highBidderUid = playerId;
+      return current;
+    });
+    if (txError) return { error: txError };
+    if (!result.committed) return { error: 'Bid failed — try again' };
+  } catch(e) { return { error: 'Bid failed: ' + (e.message || 'unknown') }; }
+  // Refund old bidder via Firebase pending refunds (after successful transaction)
+  if (oldBidderUid && oldBidAmount > 0 && oldBidderUid !== playerId) {
+    const refundRef = push(ref(db, 'casino/pendingRefunds/' + oldBidderUid));
+    await set(refundRef, { item: null, cash: oldBidAmount, reason: 'outbid', from: currentUsername, itemName: itemNameForRefund, ts: Date.now() });
   }
-  await set(listRef, { ...fresh, currentBid: bidAmount, highBidder: currentUsername, highBidderUid: playerId });
-  return { success: true, oldBidderUid: oldBidder, oldBid };
+  return { success: true, oldBidderUid: oldBidderUid, oldBid: oldBidAmount };
 };
 
 window._storeCancelListing = async (listingId) => {
@@ -2437,10 +2460,13 @@ window._storeClaimAuction = async (listingId) => {
   if (d.sold) return { error: 'Already claimed' };
   if (Date.now() < d.endsAt) return { error: 'Auction not ended yet' };
   if (!d.highBidderUid) {
-    // No bids — return to seller
+    // No bids — only seller can reclaim
+    if (d.sellerUid !== playerId) return { error: 'Only the seller can reclaim unsold items' };
     await remove(listRef);
     return { success: true, noBids: true, item: d };
   }
+  // Only seller or winning bidder can claim
+  if (d.sellerUid !== playerId && d.highBidderUid !== playerId) return { error: 'Only the seller or winner can claim' };
   await set(listRef, { ...d, sold: true, buyer: d.highBidder, buyerUid: d.highBidderUid, soldAt: Date.now() });
   // Credit seller with auction proceeds via pending refund system
   if (d.sellerUid && d.currentBid > 0) {
@@ -2965,6 +2991,27 @@ window._onAuthLoggedOut = function() {
   document.getElementById('loginScreen').style.display = '';
   document.getElementById('topNav').style.display = 'none';
   document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+  // Clear pending refund interval
+  if (window._refundInterval) { clearInterval(window._refundInterval); window._refundInterval = null; }
+  // Reset active game states to prevent cross-account leaks
+  try {
+    if (typeof crashRunning !== 'undefined') crashRunning = false;
+    if (typeof bjActive !== 'undefined') bjActive = false;
+    if (typeof minesActive !== 'undefined') minesActive = false;
+    if (typeof towerActive !== 'undefined') towerActive = false;
+    if (typeof hiloActive !== 'undefined') hiloActive = false;
+    if (typeof pylGameActive !== 'undefined') pylGameActive = false;
+    if (typeof autoDropping !== 'undefined') autoDropping = false;
+    if (typeof rouletteSpinning !== 'undefined') rouletteSpinning = false;
+    if (typeof limboRolling !== 'undefined') limboRolling = false;
+    if (typeof pokerPhase !== 'undefined') pokerPhase = 'idle';
+    // Reset balance and inventory
+    if (typeof balance !== 'undefined') balance = 1000;
+    if (typeof inventory !== 'undefined') inventory = [];
+    if (typeof tradeHistory !== 'undefined') tradeHistory = [];
+    if (typeof chatInitialized !== 'undefined') chatInitialized = false;
+    updateBalDisplay();
+  } catch(e) {}
 };
 
 // Enter key on login
@@ -3001,7 +3048,7 @@ let gameStats = {
 let dailyBonusData = { lastClaimed: 0, streak: 0 };
 
 window._loadStats = (s) => { if (s) playerStats = { ...playerStats, ...s }; };
-window._loadGameStats = (gs) => { if (gs) gameStats = { ...gameStats, ...gs }; };
+window._loadGameStats = (gs) => { if (!gs) return; Object.keys(gs).forEach(g => { gameStats[g] = { ...(gameStats[g]||{}), ...gs[g] }; }); };
 window._loadDailyBonus = (db) => { if (db) dailyBonusData = { ...dailyBonusData, ...db }; checkDailyBonus(); };
 window._getStats = () => playerStats;
 window._getGameStats = () => gameStats;
@@ -3244,6 +3291,8 @@ function spawnParticles(x,y,count=30,colors=['#ffd700','#ff8800','#00f0ff','#ff0
       life:1,decay:Math.random()*.015+.008,size:Math.random()*5+2,
       color:colors[Math.floor(Math.random()*colors.length)]});
   }
+  // Restart animation loop if it was idle
+  if(particles.length===count) requestAnimationFrame(updateParticles);
 }
 function updateParticles(){
   pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);
@@ -3256,7 +3305,7 @@ function updateParticles(){
     return true;
   });
   pCtx.globalAlpha=1;pCtx.shadowBlur=0;
-  requestAnimationFrame(updateParticles);
+  if(particles.length>0)requestAnimationFrame(updateParticles);
 }
 updateParticles();
 
@@ -3268,6 +3317,8 @@ function toggleMute() {
   if (btn) btn.textContent = soundMuted ? '🔇' : '🔊';
 }
 const audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+document.addEventListener('click',()=>{if(audioCtx.state==='suspended')audioCtx.resume();},{once:true});
+document.addEventListener('keydown',()=>{if(audioCtx.state==='suspended')audioCtx.resume();},{once:true});
 function playSound(freq,type='sine',dur=0.15,vol=0.1){
   try{
     const o=audioCtx.createOscillator();const g=audioCtx.createGain();
@@ -3916,7 +3967,6 @@ async function loadStoreListings() {
         + '<div style="font-size:10px;color:var(--text2);margin-top:4px;">This allows anyone to read game data, but only logged-in users can write.</div></div>' : '')
       + '<button onclick="loadStoreListings()" style="padding:8px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--neon);cursor:pointer;font-size:11px;font-family:Orbitron;">🔄 Retry</button>'
       + '</div>';
-  }
   }
 }
 function renderStoreListings() { loadStoreListings(); }
@@ -5109,7 +5159,10 @@ function renderInventory(){
   let rarestTier=-1,rarestName='—';
   inventory.forEach(x=>{
     const cat=ITEM_CATALOG[x.itemId];
-    const t=RARITY[cat.rarity].tier;
+    if(!cat)return;
+    const rarDef=RARITY[cat.rarity];
+    if(!rarDef)return;
+    const t=rarDef.tier;
     if(t>rarestTier){rarestTier=t;rarestName=cat.icon+' '+cat.name;}
   });
   document.getElementById('invRarest').textContent=rarestName;
@@ -5122,13 +5175,14 @@ function renderInventory(){
 
   let filtered=inventory;
   if(invFilter!=='all'){
-    filtered=inventory.filter(x=>ITEM_CATALOG[x.itemId].rarity===invFilter);
+    filtered=inventory.filter(x=>{const c=ITEM_CATALOG[x.itemId];return c&&c.rarity===invFilter;});
   }
 
   // Sort by rarity desc then value desc
   filtered.sort((a,b)=>{
-    const ra=RARITY[ITEM_CATALOG[a.itemId].rarity].tier;
-    const rb=RARITY[ITEM_CATALOG[b.itemId].rarity].tier;
+    const catA=ITEM_CATALOG[a.itemId], catB=ITEM_CATALOG[b.itemId];
+    const ra=catA&&RARITY[catA.rarity]?RARITY[catA.rarity].tier:0;
+    const rb=catB&&RARITY[catB.rarity]?RARITY[catB.rarity].tier:0;
     if(rb!==ra)return rb-ra;
     return getItemMarketValue(b.itemId)-getItemMarketValue(a.itemId);
   });
@@ -5140,9 +5194,11 @@ function renderInventory(){
 
   filtered.forEach(inv=>{
     const cat=ITEM_CATALOG[inv.itemId];
+    if(!cat)return; // skip unknown items
     const rar=RARITY[cat.rarity];
+    if(!rar)return;
     const val=getItemMarketValue(inv.itemId);
-    const pnl=val-inv.acquiredPrice;
+    const pnl=val-(inv.acquiredPrice||0);
     const pnlPct=inv.acquiredPrice>0?((pnl/inv.acquiredPrice)*100).toFixed(1):0;
     const d=itemDemand[inv.itemId]||{mult:1};
 
@@ -5167,6 +5223,7 @@ function renderInventory(){
       if(!inv)return;
       const val=getItemMarketValue(inv.itemId);
       const cat=ITEM_CATALOG[inv.itemId];
+      if(!cat){removeFromInventory(invId);renderInventory();return;}
       balance+=val;updateBalDisplay();
       removeFromInventory(invId);
       showToast('Sold '+cat.name+' for $'+val.toLocaleString()+'!');
@@ -6565,7 +6622,9 @@ function bjStand(){if(!bjActive)return;while(bjHandVal(bjDealer)<17)bjDealer.pus
 function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;if(bjBetAmt>balance){showToast('Not enough!',false);return;}balance-=bjBetAmt;bjBetAmt*=2;updateBalDisplay();bjPlayer.push(bjDeck.pop());while(bjHandVal(bjDealer)<17)bjDealer.push(bjDeck.pop());bjActive=false;bjRender();bjFinish();}
 function bjFinish(){
   const pv=bjHandVal(bjPlayer),dv=bjHandVal(bjDealer);let w=0,msg='';
+  const isNatural=bjPlayer.length===2&&pv===21;
   if(pv>21){msg='BUST!';showToast('-$'+bjBetAmt.toFixed(2),false);playLoseSound();}
+  else if(isNatural&&dv!==21){w=Math.round(bjBetAmt*2.5*100)/100;msg='BLACKJACK! +$'+w.toFixed(2);balance+=w;updateBalDisplay();showToast('BLACKJACK! +$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,40);}
   else if(dv>21||pv>dv){w=bjBetAmt*2;msg='WIN +$'+w.toFixed(2);balance+=w;updateBalDisplay();showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,30);}
   else if(pv===dv){w=bjBetAmt;msg='PUSH';balance+=w;updateBalDisplay();showToast('Push');}
   else{msg='LOSE';showToast('-$'+bjBetAmt.toFixed(2),false);playLoseSound();}
@@ -6689,7 +6748,7 @@ function limboUpdateInfo(){const t=parseFloat(document.getElementById('limboTarg
 function limboGo(){if(limboRolling)return;const bet=parseFloat(document.getElementById('limboBet').value)||10;const target=parseFloat(document.getElementById('limboTarget').value)||2;
   if(bet>balance){showToast('Not enough!',false);return;}if(target<1.01){showToast('Min target 1.01×',false);return;}
   limboRolling=true;balance-=bet;updateBalDisplay();document.getElementById('limboGoBtn').disabled=true;
-  const result=0.99/(1-Math.random());const display=document.getElementById('limboResult');const limboBar=document.getElementById('limboBar');
+  const result=Math.min(10000,0.99/(1-Math.random()));const display=document.getElementById('limboResult');const limboBar=document.getElementById('limboBar');
   let cur=1;const step=Math.max(0.01,(result-1)/20);
   const anim=setInterval(()=>{cur+=step;if(cur>=result){cur=result;clearInterval(anim);
     display.textContent=Math.max(1,result).toFixed(2)+'×';const won=result>=target;
@@ -6846,7 +6905,7 @@ function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}cons
       document.getElementById('baccPlayerScore').textContent=pScore;
       document.getElementById('baccBankerScore').textContent=bScore;
       let winner=pScore>bScore?'player':bScore>pScore?'banker':'tie';let payout=0;
-      if(winner===baccBetType){if(baccBetType==='player')payout=bet*2;else if(baccBetType==='banker')payout=bet*1.95;else payout=bet*8;}
+      if(winner===baccBetType){if(baccBetType==='player')payout=bet*2;else if(baccBetType==='banker')payout=bet*1.95;else payout=bet*9;}
       else if(winner==='tie'&&baccBetType!=='tie'){payout=bet;}
       setTimeout(()=>{
         if(payout>bet){balance+=payout;updateBalDisplay();showToast((winner==='tie'?'TIE':winner.toUpperCase())+' +$'+(payout-bet).toFixed(2));playWinSound();
