@@ -1,0 +1,62 @@
+{
+  "rules": {
+    "casino": {
+      ".read": true,
+      ".write": "auth != null",
+      "players": {
+        "$uid": {
+          ".read": true,
+          ".write": true
+        }
+      },
+      "pylRooms": {
+        ".read": true,
+        ".write": true
+      },
+      "pylLeaderboard": {
+        ".read": true,
+        ".write": true
+      },
+      "store": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "trades": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "tradeRequests": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "social": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "presence": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "dms": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      },
+      "chat": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "leaderboards": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "usernames": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "pendingRefunds": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    }
+  }
+}
