@@ -2369,67 +2369,92 @@ window._storeBuyItem = async (listingId) => {
   // Use transaction to prevent race conditions
   let txResult = null;
   let txError = null;
-  try {
-    const result = await runTransaction(listRef, (current) => {
-      if (current === null) { txError = 'Listing not found'; return; }
-      if (current.sold) { txError = 'Already sold'; return; }
-      if (current.sellerUid === playerId) { txError = "Can't buy your own item"; return; }
-      if (current.type === 'auction') { txError = 'This is an auction — place a bid instead'; return; }
-      txResult = { ...current };
-      current.sold = true;
-      current.buyer = currentUsername;
-      current.buyerUid = playerId;
-      current.soldAt = Date.now();
-      return current;
-    });
-    if (txError) return { error: txError };
-    if (!result.committed) return { error: 'Transaction failed — try again' };
-  } catch(e) { return { error: 'Purchase failed: ' + (e.message || 'unknown') }; }
-  const d = txResult;
-  // Credit seller via pending refund system
-  if (d.sellerUid && d.price > 0) {
-    const payRef = push(ref(db, 'casino/pendingRefunds/' + d.sellerUid));
-    await set(payRef, { item: null, cash: d.price, reason: 'store_sale', from: currentUsername, itemName: d.itemName || d.itemId, ts: Date.now() });
-  }
-  // Log sale
-  const saleRef = push(ref(db, 'casino/store/sales'));
-  await set(saleRef, { itemId: d.itemId, itemName: d.itemName, rarity: d.rarity, price: d.price, seller: d.seller, buyer: currentUsername, ts: Date.now() });
-  return { success: true, item: d };
+  let retries = 0;
+  const tryBuy = async () => {
+    txResult = null; txError = null;
+    try {
+      const result = await runTransaction(listRef, (current) => {
+        if (current === null) return; // abort — may be uncached, don't set error
+        if (current.sold) { txError = 'Already sold'; return; }
+        if (current.sellerUid === playerId) { txError = "Can't buy your own item"; return; }
+        if (current.type === 'auction') { txError = 'This is an auction — place a bid instead'; return; }
+        txResult = { ...current };
+        current.sold = true;
+        current.buyer = currentUsername;
+        current.buyerUid = playerId;
+        current.soldAt = Date.now();
+        return current;
+      });
+      if (txError) return { error: txError };
+      if (!result.committed) {
+        // Transaction aborted (likely current was null). Verify listing exists.
+        if (retries < 1) {
+          retries++;
+          const snap = await get(listRef);
+          if (!snap.exists()) return { error: 'Listing not found' };
+          return await tryBuy(); // retry once
+        }
+        return { error: 'Transaction failed — try again' };
+      }
+    } catch(e) { return { error: 'Purchase failed: ' + (e.message || 'unknown') }; }
+    const d = txResult;
+    // Credit seller via pending refund system
+    if (d.sellerUid && d.price > 0) {
+      const payRef = push(ref(db, 'casino/pendingRefunds/' + d.sellerUid));
+      await set(payRef, { item: null, cash: d.price, reason: 'store_sale', from: currentUsername, itemName: d.itemName || d.itemId, ts: Date.now() });
+    }
+    // Log sale
+    const saleRef = push(ref(db, 'casino/store/sales'));
+    await set(saleRef, { itemId: d.itemId, itemName: d.itemName, rarity: d.rarity, price: d.price, seller: d.seller, buyer: currentUsername, ts: Date.now() });
+    return { success: true, item: d };
+  };
+  return await tryBuy();
 };
 
 window._storePlaceBid = async (listingId, bidAmount) => {
   if (!playerId || !currentUsername) return { error: 'Not logged in' };
   const listRef = ref(db, 'casino/store/listings/' + listingId);
-  // Use transaction to prevent race conditions
   let txError = null;
   let oldBidderUid = '';
   let oldBidAmount = 0;
   let itemNameForRefund = '';
-  try {
-    const result = await runTransaction(listRef, (current) => {
-      if (current === null) { txError = 'Listing not found'; return; }
-      if (current.sold) { txError = 'Already sold'; return; }
-      if (current.sellerUid === playerId) { txError = "Can't bid on your own item"; return; }
-      if (current.type !== 'auction') { txError = 'Not an auction'; return; }
-      if (Date.now() > current.endsAt) { txError = 'Auction ended'; return; }
-      if (bidAmount <= (current.currentBid || 0)) { txError = 'Bid must be higher than $' + (current.currentBid || 0) + ' (someone outbid you)'; return; }
-      oldBidderUid = current.highBidderUid || '';
-      oldBidAmount = current.currentBid || 0;
-      itemNameForRefund = current.itemName || current.itemId;
-      current.currentBid = bidAmount;
-      current.highBidder = currentUsername;
-      current.highBidderUid = playerId;
-      return current;
-    });
-    if (txError) return { error: txError };
-    if (!result.committed) return { error: 'Bid failed — try again' };
-  } catch(e) { return { error: 'Bid failed: ' + (e.message || 'unknown') }; }
-  // Refund old bidder via Firebase pending refunds (after successful transaction)
-  if (oldBidderUid && oldBidAmount > 0 && oldBidderUid !== playerId) {
-    const refundRef = push(ref(db, 'casino/pendingRefunds/' + oldBidderUid));
-    await set(refundRef, { item: null, cash: oldBidAmount, reason: 'outbid', from: currentUsername, itemName: itemNameForRefund, ts: Date.now() });
-  }
-  return { success: true, oldBidderUid: oldBidderUid, oldBid: oldBidAmount };
+  let retries = 0;
+  const tryBid = async () => {
+    txError = null; oldBidderUid = ''; oldBidAmount = 0; itemNameForRefund = '';
+    try {
+      const result = await runTransaction(listRef, (current) => {
+        if (current === null) return; // abort — may be uncached
+        if (current.sold) { txError = 'Already sold'; return; }
+        if (current.sellerUid === playerId) { txError = "Can't bid on your own item"; return; }
+        if (current.type !== 'auction') { txError = 'Not an auction'; return; }
+        if (Date.now() > current.endsAt) { txError = 'Auction ended'; return; }
+        if (bidAmount <= (current.currentBid || 0)) { txError = 'Bid must be higher than $' + (current.currentBid || 0) + ' (someone outbid you)'; return; }
+        oldBidderUid = current.highBidderUid || '';
+        oldBidAmount = current.currentBid || 0;
+        itemNameForRefund = current.itemName || current.itemId;
+        current.currentBid = bidAmount;
+        current.highBidder = currentUsername;
+        current.highBidderUid = playerId;
+        return current;
+      });
+      if (txError) return { error: txError };
+      if (!result.committed) {
+        if (retries < 1) {
+          retries++;
+          const snap = await get(listRef);
+          if (!snap.exists()) return { error: 'Listing not found' };
+          return await tryBid();
+        }
+        return { error: 'Bid failed — try again' };
+      }
+    } catch(e) { return { error: 'Bid failed: ' + (e.message || 'unknown') }; }
+    if (oldBidderUid && oldBidAmount > 0 && oldBidderUid !== playerId) {
+      const refundRef = push(ref(db, 'casino/pendingRefunds/' + oldBidderUid));
+      await set(refundRef, { item: null, cash: oldBidAmount, reason: 'outbid', from: currentUsername, itemName: itemNameForRefund, ts: Date.now() });
+    }
+    return { success: true, oldBidderUid: oldBidderUid, oldBid: oldBidAmount };
+  };
+  return await tryBid();
 };
 
 window._storeCancelListing = async (listingId) => {
@@ -2438,24 +2463,38 @@ window._storeCancelListing = async (listingId) => {
   let txError = null;
   let txItem = null;
   let bidderToRefund = null;
-  try {
-    await runTransaction(listRef, (current) => {
-      if (current === null) { txError = 'Listing not found'; return; }
-      if (current.sellerUid !== playerId) { txError = 'Not your listing'; return; }
-      if (current.sold) { txError = 'Already sold'; return; }
-      txItem = { ...current };
-      if (current.type === 'auction' && current.highBidderUid && current.currentBid > 0) {
-        bidderToRefund = { uid: current.highBidderUid, amount: current.currentBid, seller: current.seller, itemName: current.itemName || current.itemId };
+  let retries = 0;
+  const tryCancel = async () => {
+    txError = null; txItem = null; bidderToRefund = null;
+    try {
+      await runTransaction(listRef, (current) => {
+        if (current === null) return; // abort — may be uncached
+        if (current.sellerUid !== playerId) { txError = 'Not your listing'; return; }
+        if (current.sold) { txError = 'Already sold'; return; }
+        txItem = { ...current };
+        if (current.type === 'auction' && current.highBidderUid && current.currentBid > 0) {
+          bidderToRefund = { uid: current.highBidderUid, amount: current.currentBid, seller: current.seller, itemName: current.itemName || current.itemId };
+        }
+        return null; // delete the listing
+      });
+      if (txError) return { error: txError };
+      if (!txItem) {
+        if (retries < 1) {
+          retries++;
+          const snap = await get(listRef);
+          if (!snap.exists()) return { error: 'Listing not found' };
+          return await tryCancel();
+        }
+        return { error: 'Cancel failed — try again' };
       }
-      return null; // delete the listing
-    });
-    if (txError) return { error: txError };
-    if (bidderToRefund) {
-      const refundRef = push(ref(db, 'casino/pendingRefunds/' + bidderToRefund.uid));
-      await set(refundRef, { item: null, cash: bidderToRefund.amount, reason: 'listing_cancelled', from: bidderToRefund.seller, itemName: bidderToRefund.itemName, ts: Date.now() });
-    }
-  } catch(e) { return { error: 'Cancel failed: ' + (e.message || 'unknown') }; }
-  return { success: true, item: txItem };
+      if (bidderToRefund) {
+        const refundRef = push(ref(db, 'casino/pendingRefunds/' + bidderToRefund.uid));
+        await set(refundRef, { item: null, cash: bidderToRefund.amount, reason: 'listing_cancelled', from: bidderToRefund.seller, itemName: bidderToRefund.itemName, ts: Date.now() });
+      }
+    } catch(e) { return { error: 'Cancel failed: ' + (e.message || 'unknown') }; }
+    return { success: true, item: txItem };
+  };
+  return await tryCancel();
 };
 
 window._storeGetSales = async () => {
