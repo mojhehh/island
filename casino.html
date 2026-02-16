@@ -2868,11 +2868,13 @@ function authGuestMode() {
     localStorage.setItem('casino_guest_stats', JSON.stringify(playerStats));
     localStorage.setItem('casino_guest_gameStats', JSON.stringify(gameStats));
   };
-  // Guests don't write to leaderboards or chat
+  // Guests don't write to leaderboards, chat, or market
   window._recordGameResult = () => {};
   window._claimDailyBonus = async () => null;
   window._sendChatMsg = async () => {};
   window._broadcastWin = () => {};
+  window._updateGlobalMarketItem = async () => {};
+  window._initGlobalMarket = () => {};
 
   window._onAuthReady('Guest', guestId);
 }
