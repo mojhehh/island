@@ -82,6 +82,11 @@
             return origDebugResize.call(this, width, height);
           };
         }
+
+        // iPad fix: Disable forced landscape orientation since the game
+        // runs inside an iframe that may be portrait-shaped on iPad.
+        // No-op forceOrientation so Phaser never sets incorrectOrientation=true.
+        Phaser.ScaleManager.prototype.forceOrientation = function() {};
       });
     })();
     </script>
@@ -93,6 +98,6 @@
 </head>
 <body id="body">
     <div id="sbc_game_content" style="width:100%;height:100%;"></div>
-    <div id="sbc_orientation"></div>
+    <div id="sbc_orientation" style="display:none!important;"></div>
 </body>
 </html>

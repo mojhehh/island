@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>CASINO ROYALE</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🎰</text></svg>" type="image/svg+xml">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
@@ -14,7 +14,7 @@
   --gold:#ffd700;--neon:#00f0ff;--neon2:#ff00e5;--green:#00ff88;--red:#ff3355;
   --text:#e8e8ff;--text2:#8888aa;
 }
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
+html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
 .catalog-card {
   width: 140px;
   height: 160px;
@@ -260,13 +260,23 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
 /* Touch / responsive tweaks for iPad */
 @media (max-width:1024px){
-  .game-panel{padding:72px 12px 20px;flex-direction:column;overflow-y:auto}
-  #gameCatalog{padding-top:92px}
+  #topNav{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:1px;}
+  #topNav::-webkit-scrollbar{display:none;}
+  .nav-cat-btn{font-size:10px;padding:4px 6px;}
+  .nav-btn-inline{font-size:10px;padding:4px 6px;}
+  #balanceDisplay .bal{font-size:13px;}
+  #balanceDisplay .add-btn{font-size:10px;padding:3px 7px;}
+  .daily-bonus-btn{font-size:9px!important;padding:3px 7px!important;}
+  .game-panel{padding:60px 12px 20px;flex-direction:column;overflow-y:auto}
+  #luckPanel{overflow:hidden!important;}
+  #gameCatalog{padding-top:70px;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px));}
   .plinko-sidebar{width:100%;order:2;padding:12px}
   .plinko-canvas-wrap{max-width:calc(100vw - 40px);width:100%;height:420px}
   .catalog-card{width:110px;height:120px}
   .user-avatar{width:36px;height:36px;font-size:18px}
-  .nav{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .pyl-lobby{padding-top:40px;}
+  .pyl-modes{grid-template-columns:repeat(2,1fr);}
+  .pyl-title{font-size:22px;}
 }
 
 /* Force avatar rounding and touch behavior */
@@ -297,7 +307,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* ============ PUSH YOUR LUCK ============ */
 #luckPanel{flex-direction:column;align-items:center;justify-content:flex-start;gap:0;
   background:#000;padding:0!important;overflow:hidden;}
-#luckPanel iframe{width:100%;height:100%;border:none;position:absolute;top:0;left:0;z-index:1;}
+#luckPanel iframe{border:none;position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:1;}
 
 /* PYL Lobby Overlay */
 .pyl-lobby{position:absolute;top:0;left:0;right:0;bottom:0;z-index:10;
@@ -844,7 +854,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 </nav>
 
 <!-- Particles Canvas -->
-<div id="gameCatalog" style="position:fixed;top:50px;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:32px;padding-top:32px;background:var(--surface1);z-index:999;overflow-y:auto;">
+<div id="gameCatalog" style="position:fixed;top:50px;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;gap:32px;padding:32px 16px 60px;background:var(--surface1);z-index:999;overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div class="catalog-card" onclick="switchGame('slots',this)"><span class="icon">🎰</span><div>Slots</div></div>
   <div class="catalog-card" onclick="switchGame('crash',this)"><span class="icon">📈</span><div>Crash</div></div>
   <div class="catalog-card" onclick="switchGame('mines',this)"><span class="icon">💣</span><div>Mines</div></div>
