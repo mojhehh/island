@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Push Your Luck</title>
+
+    <meta charset="utf-8">
+
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=Edge">
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Push Your Luck">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui">
+
+    <meta name="full-screen" content="yes" />
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon" />
+
+    <link rel="stylesheet" href="css/app.css" type="text/css" />
+
+    <!-- Patch: Defer Phaser init until container has real dimensions -->
+    <script>
+    /* 1v1 MODE: Read opponent name and room code from URL hash */
+    (function() {
+      var hash = window.location.hash;
+      if (hash && hash.indexOf('#1v1=') === 0) {
+        var params = hash.slice(5).split('&room=');
+        window.PYL_1V1 = {
+          opponentName: decodeURIComponent(params[0]),
+          roomCode: params[1] || 'default'
+        };
+      }
+    })();
+
+    (function() {
+      var _origOnload = null;
+      Object.defineProperty(window, 'onload', {
+        set: function(fn) { _origOnload = fn; },
+        get: function() { return null; },
+        configurable: true
+      });
+      window.addEventListener('load', function() {
+        if (!_origOnload) return;
+        function tryLaunch() {
+          var el = document.getElementById('sbc_game_content');
+          if (el && el.offsetWidth > 0 && el.offsetHeight > 0
+              && window.innerWidth > 0 && window.innerHeight > 0) {
+            _origOnload();
+          } else {
+            setTimeout(tryLaunch, 100);
+          }
+        }
+        setTimeout(tryLaunch, 50);
+      });
+
+      // Patch Phaser BitmapData.resize and Debug.resize after scripts load
+      // to guard against Infinity/NaN dimensions (causes getImageData crash)
+      window.addEventListener('DOMContentLoaded', function() {
+        if (typeof Phaser === 'undefined') return;
+
+        var origResize = Phaser.BitmapData.prototype.resize;
+        Phaser.BitmapData.prototype.resize = function(width, height) {
+          if (!isFinite(width) || !isFinite(height) || width <= 0 || height <= 0) {
+            return this;
+          }
+          return origResize.call(this, width, height);
+        };
+
+        if (Phaser.Utils && Phaser.Utils.Debug) {
+          var origDebugResize = Phaser.Utils.Debug.prototype.resize;
+          Phaser.Utils.Debug.prototype.resize = function(width, height) {
+            if (!isFinite(width) || !isFinite(height) || width <= 0 || height <= 0) {
+              return;
+            }
+            return origDebugResize.call(this, width, height);
+          };
+        }
+      });
+    })();
+    </script>
+
+    <!-- Game scripts -->
+    <!-- <script src="js/es6-promise.auto.min.js"></script> -->
+    <script src="js/phaser.min.js"></script>
+    <script src="js/pushyourluck.js"></script>
+</head>
+<body id="body">
+    <div id="sbc_game_content" style="width:100%;height:100%;"></div>
+    <div id="sbc_orientation"></div>
+</body>
+</html>

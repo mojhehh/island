@@ -2,20 +2,19 @@
   "rules": {
     "casino": {
       ".read": true,
-      ".write": "auth != null",
       "players": {
         "$uid": {
           ".read": true,
-          ".write": true
+          ".write": "auth != null && auth.uid === $uid"
         }
       },
       "pylRooms": {
         ".read": true,
-        ".write": true
+        ".write": "auth != null"
       },
       "pylLeaderboard": {
         ".read": true,
-        ".write": true
+        ".write": "auth != null"
       },
       "store": {
         ".read": true,

@@ -872,9 +872,10 @@
 <div id="titleScreen">
   <h1>The Interrogation</h1>
   <div class="subtitle">Make him confess. Don't kill him.</div>
-  <div style="display:flex;gap:15px;margin-top:10px;">
+  <div style="display:flex;gap:15px;margin-top:10px;flex-wrap:wrap;justify-content:center;">
     <button onclick="startGame(false)">CLASSIC</button>
     <button onclick="startGame(true)" style="border-color:#ff8800;color:#ff8800;">FNAF MODE</button>
+    <button onclick="startGame(false,true)" style="border-color:#e040fb;color:#e040fb;">HARDENED</button>
   </div>
   <div style="max-width:420px;margin:18px auto 0;text-align:left;font-size:11px;color:#666;line-height:1.7;letter-spacing:0.5px;font-family:'Courier New',monospace;">
     <div style="color:#888;font-size:12px;margin-bottom:6px;letter-spacing:2px;text-align:center;">HOW TO PLAY</div>
@@ -884,6 +885,7 @@
     <div style="border-top:1px solid #333;padding-top:8px;margin-top:10px;color:#ff8800;">FNAF MODE: You only get 5 zaps. He will try to break free. Watch for movement and zap him. But use your words — you can make him confess without the chair.</div>
   </div>
   <button onclick="showLeaderboard()" style="margin-top:15px;padding:10px 40px;font-size:14px;font-family:'Courier New',monospace;background:transparent;border:1px solid #555;color:#888;cursor:pointer;letter-spacing:3px;text-transform:uppercase;transition:all 0.3s;">LEADERBOARD</button>
+  <button onclick="showConfessAchievements()" style="margin-top:8px;padding:8px 30px;font-size:12px;font-family:'Courier New',monospace;background:transparent;border:1px solid rgba(0,230,118,0.3);color:#00e676;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all 0.3s;">🏆 ACHIEVEMENTS</button>
 </div>
 
 <!-- ══════ GAME OVER ══════ -->
@@ -903,9 +905,11 @@
   <h1>FULL CONFESSION</h1>
   <div class="win-subtitle" id="winText">He broke. Every name, every crime, every detail — on the record.</div>
   <div class="win-stats" id="winStats"></div>
+  <div id="winAchievements" style="margin:10px 0;font-size:11px;color:#00e676;letter-spacing:1px"></div>
   <div>
     <button onclick="location.reload()">PLAY AGAIN</button>
     <button onclick="showLeaderboard()" style="border-color:#ffcc00;color:#ffcc00;">LEADERBOARD</button>
+    <button onclick="showConfessAchievements()" style="border-color:#00e676;color:#00e676;">🏆</button>
   </div>
 </div>
 
@@ -933,6 +937,21 @@
     <button onclick="hideLeaderboard()">BACK</button>
     <button onclick="promptChangeName()" style="border-color:#666;color:#888;font-size:11px">CHANGE NAME</button>
   </div>
+</div>
+
+<!-- ══════ ACHIEVEMENTS SCREEN ══════ -->
+<div id="confessAchScreen" style="display:none;position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.95);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+  <h1 style="font-family:'Courier New',monospace;color:#00e676;letter-spacing:4px;margin-bottom:4px;">🏆 ACHIEVEMENTS</h1>
+  <div id="confessAchCount" style="font-size:11px;color:#888;letter-spacing:2px;margin-bottom:14px;">0 / 0 UNLOCKED</div>
+  <div id="confessAchPanel" style="max-height:50vh;overflow-y:auto;width:90%;max-width:450px;"></div>
+  <button onclick="hideConfessAchievements()" style="margin-top:16px;padding:8px 30px;font-size:12px;font-family:'Courier New',monospace;background:transparent;border:1px solid #555;color:#888;cursor:pointer;letter-spacing:3px;">BACK</button>
+</div>
+
+<!-- ══════ ACHIEVEMENT POPUP ══════ -->
+<div id="confessAchPopup" style="position:fixed;top:20px;right:20px;z-index:9500;background:rgba(0,0,0,0.92);border:1px solid #00e676;border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:12px;transform:translateX(120%);transition:transform .4s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 0 30px rgba(0,230,118,0.15);max-width:340px;">
+  <div id="confAchPopIcon" style="font-size:28px;"></div>
+  <div><div id="confAchPopTitle" style="font-family:'Courier New',monospace;font-size:10px;color:#00e676;letter-spacing:2px;">ACHIEVEMENT UNLOCKED</div>
+  <div id="confAchPopDesc" style="font-size:11px;color:rgba(255,255,255,0.6);"></div></div>
 </div>
 
 <!-- ══════ JUMPSCARE ══════ -->
@@ -1013,6 +1032,7 @@ let zapPressure = 2; // hidden: how much zap pressure he's under (makes him conf
 let maxZaps = Infinity; // FNAF mode caps this at 5
 
 let fnafMode = false; // FNAF salvage mode enabled?
+let hardenedMode = false; // Hardened difficulty
 let questionsSinceMovement = 0; // track questions asked while he's moving
 
 // Salvage mode state (declared early so pickOption/sendFreeChat can reference)
@@ -1034,6 +1054,105 @@ function getAudioCtx() {
 let gameStartTime = 0;
 let questionsAsked = 0;
 let tierCounts = {1:0,2:0,3:0,4:0,5:0};
+
+// ═══════════════════════════════════════════════════════
+//  ACHIEVEMENT SYSTEM
+// ═══════════════════════════════════════════════════════
+const CONFESS_ACHIEVEMENTS = [
+  { id:'first_confession', icon:'📋', name:'CASE CLOSED', desc:'Get your first confession' },
+  { id:'no_zap', icon:'🕊️', name:'PACIFIST', desc:'Win without using any zaps' },
+  { id:'speed_confess', icon:'⚡', name:'SPEED CONFESS', desc:'Get a confession in under 2 minutes' },
+  { id:'barely_alive', icon:'💀', name:'BARELY ALIVE', desc:'Win with less than 10% health remaining' },
+  { id:'full_health', icon:'❤️', name:'GENTLE TOUCH', desc:'Win with 100% health remaining' },
+  { id:'fnaf_win', icon:'🎃', name:'FNAF SURVIVOR', desc:'Win in FNAF mode' },
+  { id:'hardened_win', icon:'💎', name:'HARDENED VETERAN', desc:'Win in Hardened mode' },
+  { id:'low_questions', icon:'🎯', name:'EFFICIENT', desc:'Win with 5 or fewer questions' },
+  { id:'high_pressure', icon:'🔥', name:'MAX PRESSURE', desc:'Reach maximum zap pressure (15)' },
+  { id:'3_wins', icon:'⭐', name:'INTERROGATOR', desc:'Win 3 games total' },
+  { id:'10_wins', icon:'🌟', name:'MASTER INTERROGATOR', desc:'Win 10 games total' },
+];
+
+function getConfessAchievements() {
+  try { return JSON.parse(localStorage.getItem('confess_achievements') || '{}'); }
+  catch { return {}; }
+}
+function saveConfessAch(id) {
+  const a = getConfessAchievements();
+  if (a[id]) return false;
+  a[id] = Date.now();
+  localStorage.setItem('confess_achievements', JSON.stringify(a));
+  return true;
+}
+function getConfessWinCount() { return parseInt(localStorage.getItem('confess_win_count') || '0'); }
+function incConfessWinCount() { const c = getConfessWinCount() + 1; localStorage.setItem('confess_win_count', String(c)); return c; }
+
+let _confAchQueue = [];
+let _confAchShowing = false;
+function showConfessAchPopup(ach) {
+  _confAchQueue.push(ach);
+  if (!_confAchShowing) _drainConfAchPop();
+}
+function _drainConfAchPop() {
+  if (_confAchQueue.length === 0) { _confAchShowing = false; return; }
+  _confAchShowing = true;
+  const ach = _confAchQueue.shift();
+  const popup = document.getElementById('confessAchPopup');
+  document.getElementById('confAchPopIcon').textContent = ach.icon;
+  document.getElementById('confAchPopTitle').textContent = 'ACHIEVEMENT UNLOCKED';
+  document.getElementById('confAchPopDesc').textContent = ach.name + ' — ' + ach.desc;
+  popup.style.transform = 'translateX(0)';
+  setTimeout(() => { popup.style.transform = 'translateX(120%)'; setTimeout(_drainConfAchPop, 400); }, 3500);
+}
+
+function checkConfessAchievements(elapsed, zaps, healthLeft, questions, fnaf, hardened) {
+  const newAchs = [];
+  const checks = [
+    ['first_confession', true],
+    ['no_zap', zaps === 0],
+    ['speed_confess', elapsed < 120],
+    ['barely_alive', healthLeft > 0 && healthLeft <= 10],
+    ['full_health', healthLeft >= 100],
+    ['fnaf_win', fnaf],
+    ['hardened_win', hardened],
+    ['low_questions', questions <= 5],
+    ['high_pressure', zapPressure >= 15],
+  ];
+  checks.forEach(([id, cond]) => {
+    if (cond && saveConfessAch(id)) {
+      const a = CONFESS_ACHIEVEMENTS.find(x => x.id === id);
+      if (a) { newAchs.push(a); showConfessAchPopup(a); }
+    }
+  });
+  const wins = incConfessWinCount();
+  if (wins >= 3 && saveConfessAch('3_wins')) {
+    const a = CONFESS_ACHIEVEMENTS.find(x => x.id === '3_wins');
+    if (a) { newAchs.push(a); showConfessAchPopup(a); }
+  }
+  if (wins >= 10 && saveConfessAch('10_wins')) {
+    const a = CONFESS_ACHIEVEMENTS.find(x => x.id === '10_wins');
+    if (a) { newAchs.push(a); showConfessAchPopup(a); }
+  }
+  return newAchs;
+}
+
+function showConfessAchievements() {
+  const panel = document.getElementById('confessAchPanel');
+  const unlocked = getConfessAchievements();
+  const count = Object.keys(unlocked).length;
+  document.getElementById('confessAchCount').textContent = count + ' / ' + CONFESS_ACHIEVEMENTS.length + ' UNLOCKED';
+  panel.innerHTML = CONFESS_ACHIEVEMENTS.map(a => {
+    const done = !!unlocked[a.id];
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.06);opacity:${done?1:0.3}">
+      <span style="font-size:20px;width:28px;text-align:center">${a.icon}</span>
+      <span style="flex:1"><span style="color:#fff;font-weight:bold;letter-spacing:1px;font-size:12px">${a.name}</span><br><span style="color:rgba(255,255,255,0.4);font-size:10px">${a.desc}</span></span>
+      <span style="color:#00e676;font-size:14px">${done ? '✓' : ''}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('confessAchScreen').style.display = 'flex';
+}
+function hideConfessAchievements() {
+  document.getElementById('confessAchScreen').style.display = 'none';
+}
 
 const OLLAMA_URL = 'http://localhost:11434/api/chat';
 const MODEL = 'dolphin-mistral:7b';
@@ -1146,9 +1265,17 @@ Do NOT put [CONF:X] in the middle. Put it at the very end after your dialogue.`;
 // ═══════════════════════════════════════════════════════
 //  START GAME
 // ═══════════════════════════════════════════════════════
-function startGame(isFnaf) {
+function startGame(isFnaf, isHardened) {
   fnafMode = !!isFnaf;
+  hardenedMode = !!isHardened;
   if (fnafMode) maxZaps = 5;
+  if (hardenedMode) {
+    maxZaps = 8;
+    health = 70;
+    zapPressure = 1;
+    document.getElementById('healthVal').textContent = '70';
+    document.getElementById('healthFill').style.width = '70%';
+  }
   document.getElementById('titleScreen').style.display = 'none';
   
   const gc = document.getElementById('gameContainer');
@@ -1183,6 +1310,9 @@ function startGame(isFnaf) {
     addSystemMsg("The lights flicker on. He's strapped in. Make him talk.");
     if (fnafMode) {
       addSystemMsg("FNAF MODE: 5 zaps only. Watch for movement. Make him talk.");
+    }
+    if (hardenedMode) {
+      addSystemMsg("HARDENED MODE: 8 zaps max. 70% health. Confession gains halved. Good luck.");
     }
   }, 4000);
   
@@ -1377,7 +1507,10 @@ function getConfGain(tier) {
   const baseGain = [0, 2, 4, 7, 11, 15][tier]; // tier 1-5
   // Pressure multiplier: questions do more at higher pressure
   const pressureMult = 0.5 + (zapPressure / 15) * 1.2; // 0.5x at 0 pressure, 1.7x at max
-  return Math.round(baseGain * pressureMult);
+  let gain = Math.round(baseGain * pressureMult);
+  // Hardened mode: halved confession gain
+  if (hardenedMode) gain = Math.max(1, Math.floor(gain * 0.55));
+  return gain;
 }
 
 function getAvailableTiers() {
@@ -1880,7 +2013,9 @@ function winGame() {
 
   // Build stats
   const statsDiv = document.getElementById('winStats');
+  const modeLabel = hardenedMode ? ' <span style="color:#e040fb">[HARDENED]</span>' : fnafMode ? ' <span style="color:#ff8800">[FNAF]</span>' : '';
   statsDiv.innerHTML = `
+    <span class="stat-label">Mode</span><span class="stat-value">${hardenedMode ? 'HARDENED' : fnafMode ? 'FNAF' : 'CLASSIC'}${modeLabel}</span>
     <span class="stat-label">Time</span><span class="stat-value">${timeStr}</span>
     <span class="stat-label">Zaps</span><span class="stat-value">${zapCount}</span>
     <span class="stat-label">Health Left</span><span class="stat-value">${health}%</span>
@@ -1889,8 +2024,15 @@ function winGame() {
     <span class="stat-label">Hardest Q</span><span class="stat-value">Tier ${Math.max(1, ...Object.entries(tierCounts).filter(([k,v]) => v > 0).map(([k]) => +k))}</span>
   `;
 
+  // Check achievements
+  const newAchs = checkConfessAchievements(elapsed, zapCount, health, questionsAsked, fnafMode, hardenedMode);
+  const winAchEl = document.getElementById('winAchievements');
+  if (newAchs.length > 0) {
+    winAchEl.innerHTML = newAchs.map(a => a.icon + ' ' + a.name).join(' &middot; ');
+  } else { winAchEl.innerHTML = ''; }
+
   // Store for leaderboard submission
-  window._winData = { time: elapsed, timeStr, zaps: zapCount, health, questions: questionsAsked };
+  window._winData = { time: elapsed, timeStr, zaps: zapCount, health, questions: questionsAsked, mode: hardenedMode ? 'hardened' : fnafMode ? 'fnaf' : 'classic' };
 
   setTimeout(() => {
     const savedName = localStorage.getItem('confess_player_name');
@@ -2183,28 +2325,15 @@ function submitScore(autoName) {
   document.getElementById('nameModal').style.display = 'none';
   document.getElementById('winScreen').style.display = 'flex';
   
-  // Submit to Firebase with dedup
+  // Submit to Firebase with deterministic key (no duplicates)
   if (window.firebaseDb) {
-    const { ref, push, set, get, query, orderByChild, equalTo } = window.firebaseDbFns;
-    const lbRef = ref(window.firebaseDb, 'interrogation_leaderboard');
-    // Check for existing entry by this name
-    get(query(lbRef, orderByChild('name'), equalTo(name))).then(snapshot => {
-      let bestKey = null;
-      let bestTime = Infinity;
-      if (snapshot.exists()) {
-        snapshot.forEach(child => {
-          const val = child.val();
-          if (val.time < bestTime) {
-            if (bestKey) set(ref(window.firebaseDb, 'interrogation_leaderboard/' + bestKey), null);
-            bestTime = val.time;
-            bestKey = child.key;
-          } else {
-            set(ref(window.firebaseDb, 'interrogation_leaderboard/' + child.key), null);
-          }
-        });
-      }
-      if (bestKey && d.time >= bestTime) return; // existing is better
-      const entry = {
+    const { ref, set, get } = window.firebaseDbFns;
+    const nameKey = name.replace(/[.#$\[\]\/\s]/g, '_');
+    const entryRef = ref(window.firebaseDb, 'interrogation_leaderboard/' + nameKey);
+    
+    get(entryRef).then(snap => {
+      if (snap.exists() && snap.val().time <= d.time) return; // existing is better
+      set(entryRef, {
         name: name,
         time: d.time,
         timeStr: d.timeStr,
@@ -2212,13 +2341,7 @@ function submitScore(autoName) {
         healthLeft: d.health,
         questions: d.questions,
         timestamp: Date.now()
-      };
-      if (bestKey) {
-        set(ref(window.firebaseDb, 'interrogation_leaderboard/' + bestKey), entry);
-      } else {
-        const newRef = push(lbRef);
-        set(newRef, entry);
-      }
+      });
     }).catch(err => console.error('Firebase write error:', err));
   }
 }
@@ -2272,9 +2395,10 @@ function startLiveLeaderboard() {
     const savedName = (localStorage.getItem('confess_player_name') || '').toUpperCase();
     tbody.innerHTML = entries.slice(0, 20).map((e, i) => {
       const cls = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-      const you = e.name.toUpperCase() === savedName ? ' style="text-shadow:0 0 8px #00ff44"' : '';
-      const medal = i === 0 ? '1ST' : i === 1 ? '2ND' : i === 2 ? '3RD' : (i + 1);
-      return `<tr class="${cls}"><td>${medal}</td><td${you}>${escapeHtml(e.name)}</td><td>${e.timeStr || e.time + 's'}</td><td>${e.zaps}</td><td>${e.healthLeft}%</td></tr>`;
+      const isYou = e.name.toUpperCase() === savedName;
+      const youStyle = isYou ? ' style="text-shadow:0 0 8px #00ff44"' : '';
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+      return `<tr class="${cls}"><td>${medal}</td><td${youStyle}>${escapeHtml(e.name)}${isYou ? ' (you)' : ''}</td><td>${e.timeStr || e.time + 's'}</td><td>${e.zaps}</td><td>${e.healthLeft}%</td></tr>`;
     }).join('');
   });
 }

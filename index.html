@@ -682,6 +682,48 @@
             display: flex;
             gap: 10px;
         }
+
+        /* ============== DIFFICULTY TABS ============== */
+        .lb-diff-tabs { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; justify-content:center; }
+        .lb-diff-tab { padding:6px 14px; border:1px solid rgba(255,255,255,0.15); border-radius:6px;
+            background:transparent; color:rgba(255,255,255,0.4); cursor:pointer; font-size:10px;
+            font-family:'Share Tech Mono',monospace; letter-spacing:2px; transition:all .2s; text-transform:uppercase; }
+        .lb-diff-tab:hover { border-color:rgba(255,215,64,0.4); color:rgba(255,255,255,0.7); }
+        .lb-diff-tab.active { background:rgba(255,215,64,0.1); border-color:#ffd740; color:#ffd740; }
+        .lb-diff-tab.tab-easy.active { border-color:#69f0ae; color:#69f0ae; background:rgba(105,240,174,0.08); }
+        .lb-diff-tab.tab-normal.active { border-color:#ffd740; color:#ffd740; }
+        .lb-diff-tab.tab-hard.active { border-color:#ff5252; color:#ff5252; background:rgba(255,82,82,0.08); }
+        .lb-diff-tab.tab-insane.active { border-color:#e040fb; color:#e040fb; background:rgba(224,64,251,0.08); }
+
+        /* ============== ACHIEVEMENTS ============== */
+        #achievementPopup { position:fixed; top:20px; right:20px; z-index:9000;
+            background:rgba(0,0,0,0.92); border:1px solid #ffd740; border-radius:12px;
+            padding:14px 20px; display:flex; align-items:center; gap:12px;
+            transform:translateX(120%); transition:transform .4s cubic-bezier(.175,.885,.32,1.275);
+            box-shadow:0 0 30px rgba(255,215,64,0.2); max-width:340px; }
+        #achievementPopup.show { transform:translateX(0); }
+        .ach-icon { font-size:32px; }
+        .ach-text { flex:1; }
+        .ach-title { font-family:'Orbitron',monospace; font-size:11px; color:#ffd740;
+            letter-spacing:2px; margin-bottom:2px; }
+        .ach-desc { font-size:11px; color:rgba(255,255,255,0.6); }
+        #achievementsPanel { display:none; flex-direction:column; align-items:center; gap:8px;
+            max-height:40vh; overflow-y:auto; width:90%; max-width:500px; margin-top:12px; }
+        #achievementsPanel.show { display:flex; }
+        .ach-row { display:flex; align-items:center; gap:10px; width:100%; padding:8px 12px;
+            border-bottom:1px solid rgba(255,255,255,0.06); font-size:12px; }
+        .ach-row.locked { opacity:0.3; }
+        .ach-row .ach-r-icon { font-size:22px; width:30px; text-align:center; }
+        .ach-row .ach-r-name { flex:1; color:#fff; font-weight:bold; letter-spacing:1px; }
+        .ach-row .ach-r-desc { color:rgba(255,255,255,0.4); font-size:10px; }
+        .ach-row .ach-r-check { color:#00e676; font-size:14px; width:20px; text-align:center; }
+
+        /* ============== DAILY CHALLENGE ============== */
+        .daily-badge { display:inline-block; padding:3px 10px; border-radius:4px;
+            background:linear-gradient(135deg,#ff6d00,#ff9100); color:#000;
+            font-size:9px; font-weight:bold; letter-spacing:2px; margin-left:8px;
+            animation:livePulse 2s ease infinite; }
+
         #loseScreen {
             background: rgba(0,0,0,0.9);
             backdrop-filter: blur(10px);
@@ -989,7 +1031,9 @@
                 </div>
                 <div class="title-warning">⚠ GUARDS ARE EVERYWHERE ⚠</div>
                 <button class="btn" id="startBtn">INFILTRATE</button>
+                <button class="btn" id="dailyChallengeBtn" style="margin-top:8px; background:linear-gradient(135deg,rgba(255,109,0,0.15),rgba(255,145,0,0.1)); border-color:#ff9100; color:#ff9100; font-size:10px;">📅 DAILY CHALLENGE</button>
                 <button class="btn btn-small" id="leaderboardBtnTitle" style="margin-top:8px; border-color:rgba(255,215,64,0.4); color:#ffd740">LEADERBOARD</button>
+                <button class="btn btn-small" id="achievementsBtnTitle" style="margin-top:4px; border-color:rgba(0,230,118,0.4); color:#00e676">🏆 ACHIEVEMENTS</button>
                 <button class="btn btn-small" id="settingsBtn" style="margin-top:10px; border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.5);">SETTINGS</button>
             </div>
         </div>
@@ -1071,8 +1115,10 @@
             <p class="screen-text">The names are public. Justice is coming.</p>
             <p class="screen-highlight">"The truth doesn't stay buried forever."</p>
             <p class="screen-stat" id="winTime" style="color:#00e676"></p>
+            <div id="winAchievements" style="margin:10px 0;font-size:11px;color:#00e676;letter-spacing:1px"></div>
             <button class="btn btn-green" id="restartWinBtn">PLAY AGAIN</button>
             <button class="btn btn-small" id="leaderboardBtnWin" style="margin-top:8px; border-color:rgba(255,215,64,0.4); color:#ffd740">LEADERBOARD</button>
+            <button class="btn btn-small" id="achievementsBtnWin" style="margin-top:4px; border-color:rgba(0,230,118,0.4); color:#00e676">🏆 ACHIEVEMENTS</button>
         </div>
 
         <!-- ========= NAME INPUT MODAL ========= -->
@@ -1092,6 +1138,14 @@
             <div class="lb-title">LEADERBOARD</div>
             <div class="lb-live">● LIVE</div>
             <div class="lb-sub">FASTEST ESCAPES</div>
+            <div class="lb-diff-tabs">
+                <button class="lb-diff-tab active" data-filter="all">ALL</button>
+                <button class="lb-diff-tab tab-easy" data-filter="easy">EASY</button>
+                <button class="lb-diff-tab tab-normal" data-filter="normal">NORMAL</button>
+                <button class="lb-diff-tab tab-hard" data-filter="hard">HARD</button>
+                <button class="lb-diff-tab tab-insane" data-filter="insane">INSANE</button>
+                <button class="lb-diff-tab" data-filter="daily" style="border-color:rgba(255,145,0,0.4);color:rgba(255,145,0,0.6)">📅 DAILY</button>
+            </div>
             <div class="lb-table">
                 <div class="lb-row header">
                     <div class="lb-rank">#</div>
@@ -1104,6 +1158,16 @@
             <div class="lb-buttons">
                 <button class="btn btn-small" id="lbPlayBtn">PLAY AGAIN</button>
                 <button class="btn btn-small" id="lbMenuBtn" style="border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.5)">MENU</button>
+            </div>
+        </div>
+
+        <!-- ========= ACHIEVEMENTS SCREEN ========= -->
+        <div id="achievementsScreen" class="game-screen">
+            <div class="lb-title">🏆 ACHIEVEMENTS</div>
+            <div class="lb-sub" id="achCount">0 / 0 UNLOCKED</div>
+            <div id="achievementsPanel" class="show"></div>
+            <div class="lb-buttons" style="margin-top:14px">
+                <button class="btn btn-small" id="achBackBtn">BACK</button>
             </div>
         </div>
 
@@ -1134,6 +1198,15 @@
             </div>
             <div id="btn-sprint">RUN</div>
         </div>
+
+        <!-- Achievement Popup -->
+        <div id="achievementPopup">
+            <div class="ach-icon" id="achPopIcon"></div>
+            <div class="ach-text">
+                <div class="ach-title" id="achPopTitle">ACHIEVEMENT UNLOCKED</div>
+                <div class="ach-desc" id="achPopDesc"></div>
+            </div>
+        </div>
     </div>
 
 <script>
@@ -1163,6 +1236,125 @@ const difficultyMods = {
     hard:   { guardSpeed: 1.3, detectRange: 130, chaseRange: 180, damage: 1.8, guardCount: 7, staminaDrain: 0.35, staminaRegen: 0.10 },
     insane: { guardSpeed: 1.6, detectRange: 160, chaseRange: 220, damage: 2.5, guardCount: 10, staminaDrain: 0.45, staminaRegen: 0.08 }
 };
+
+// ============== ACHIEVEMENT SYSTEM ==============
+const ACHIEVEMENTS = [
+    { id:'first_escape', icon:'📁', name:'THE WHISTLEBLOWER', desc:'Complete your first escape' },
+    { id:'speedrunner', icon:'🏃', name:'SPEEDRUNNER', desc:'Escape in under 60 seconds' },
+    { id:'lightning', icon:'⚡', name:'LIGHTNING', desc:'Escape in under 45 seconds' },
+    { id:'ghost', icon:'👻', name:'GHOST', desc:'Escape without being spotted' },
+    { id:'untouchable', icon:'❤️', name:'UNTOUCHABLE', desc:'Take zero damage' },
+    { id:'close_call', icon:'👀', name:'CLOSE CALL', desc:'Escape with less than 10% health' },
+    { id:'hard_hero', icon:'💪', name:'HARD MODE HERO', desc:'Win on Hard difficulty' },
+    { id:'insane_legend', icon:'🔥', name:'INSANE LEGEND', desc:'Win on Insane difficulty' },
+    { id:'storm_runner', icon:'🌧️', name:'STORM RUNNER', desc:'Win with rain enabled' },
+    { id:'daily_winner', icon:'📅', name:'DAILY PLAYER', desc:'Complete a Daily Challenge' },
+    { id:'5_wins', icon:'⭐', name:'VETERAN', desc:'Win 5 games total' },
+    { id:'10_wins', icon:'🌟', name:'LEGEND', desc:'Win 10 games total' },
+];
+
+function getUnlockedAchievements() {
+    try { return JSON.parse(localStorage.getItem('island_achievements') || '{}'); }
+    catch { return {}; }
+}
+function saveAchievement(id) {
+    const achs = getUnlockedAchievements();
+    if (achs[id]) return false;
+    achs[id] = Date.now();
+    localStorage.setItem('island_achievements', JSON.stringify(achs));
+    return true;
+}
+function getWinCount() {
+    return parseInt(localStorage.getItem('island_win_count') || '0');
+}
+function incrementWinCount() {
+    const c = getWinCount() + 1;
+    localStorage.setItem('island_win_count', String(c));
+    return c;
+}
+let _achPopQueue = [];
+let _achPopShowing = false;
+function showAchievementPopup(ach) {
+    _achPopQueue.push(ach);
+    if (!_achPopShowing) _drainAchPopup();
+}
+function _drainAchPopup() {
+    if (_achPopQueue.length === 0) { _achPopShowing = false; return; }
+    _achPopShowing = true;
+    const ach = _achPopQueue.shift();
+    const popup = document.getElementById('achievementPopup');
+    document.getElementById('achPopIcon').textContent = ach.icon;
+    document.getElementById('achPopTitle').textContent = 'ACHIEVEMENT UNLOCKED';
+    document.getElementById('achPopDesc').textContent = ach.name + ' — ' + ach.desc;
+    popup.classList.add('show');
+    setTimeout(() => { popup.classList.remove('show'); setTimeout(_drainAchPopup, 400); }, 3500);
+}
+function checkAndAwardAchievements(elapsed, timesSpotted, damageTaken, difficulty, isDaily) {
+    const newAchs = [];
+    const checks = [
+        ['first_escape', true],
+        ['speedrunner', elapsed < 60],
+        ['lightning', elapsed < 45],
+        ['ghost', timesSpotted === 0],
+        ['untouchable', damageTaken === 0],
+        ['close_call', health > 0 && health < 12.5],
+        ['hard_hero', difficulty === 'hard' || difficulty === 'insane'],
+        ['insane_legend', difficulty === 'insane'],
+        ['storm_runner', settings.rain],
+        ['daily_winner', isDaily],
+    ];
+    checks.forEach(([id, cond]) => {
+        if (cond && saveAchievement(id)) {
+            const a = ACHIEVEMENTS.find(a => a.id === id);
+            if (a) { newAchs.push(a); showAchievementPopup(a); }
+        }
+    });
+    const wins = incrementWinCount();
+    if (wins >= 5 && saveAchievement('5_wins')) {
+        const a = ACHIEVEMENTS.find(a => a.id === '5_wins');
+        if (a) { newAchs.push(a); showAchievementPopup(a); }
+    }
+    if (wins >= 10 && saveAchievement('10_wins')) {
+        const a = ACHIEVEMENTS.find(a => a.id === '10_wins');
+        if (a) { newAchs.push(a); showAchievementPopup(a); }
+    }
+    return newAchs;
+}
+function renderAchievementsPanel() {
+    const panel = document.getElementById('achievementsPanel');
+    const unlocked = getUnlockedAchievements();
+    const count = Object.keys(unlocked).length;
+    document.getElementById('achCount').textContent = count + ' / ' + ACHIEVEMENTS.length + ' UNLOCKED';
+    panel.innerHTML = ACHIEVEMENTS.map(a => {
+        const done = !!unlocked[a.id];
+        return `<div class="ach-row ${done ? '' : 'locked'}">
+            <div class="ach-r-icon">${a.icon}</div>
+            <div style="flex:1"><div class="ach-r-name">${a.name}</div><div class="ach-r-desc">${a.desc}</div></div>
+            <div class="ach-r-check">${done ? '✓' : ''}</div>
+        </div>`;
+    }).join('');
+}
+
+// ============== DAILY CHALLENGE ==============
+let isDailyChallenge = false;
+function getDailySeed() {
+    const d = new Date();
+    return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+}
+function seededRandom(seed) {
+    let s = seed;
+    return function() {
+        s = (s * 1664525 + 1013904223) & 0xFFFFFFFF;
+        return (s >>> 0) / 0xFFFFFFFF;
+    };
+}
+
+// ============== STEALTH TRACKING ==============
+let timesSpotted = 0;
+let totalDamageTaken = 0;
+
+// ============== LB FILTER ==============
+let lbDiffFilter = 'all';
 
 // ============== AUDIO SYSTEM ==============
 let audioCtx = null;
@@ -1285,6 +1477,7 @@ let player, guards, files, boat, keys, gameState, startTime, stamina, health;
 let lastWinTime = 0;
 let particles, rainDrops, killedBy, camera, stepTimer = 0;
 let frameCount = 0;
+let _alreadySpottedBy = {}; // track unique guard spot events
 
 // Guard images
 const guardImages = ['TheBigE.png','mrstephen.png','guard3_new.png','guard4_new.png','guard5_new.png','guard6_new.png','trump5.png','TheBigE.png','mrstephen.png','goldenstephen.png'].map(src => {
@@ -1349,6 +1542,9 @@ function init() {
     particles = [];
     killedBy = null;
     frameCount = 0;
+    timesSpotted = 0;
+    totalDamageTaken = 0;
+    _alreadySpottedBy = {};
 
     player = { x: 3*T + T/2, y: 11*T + T/2, speed: 3.0, size: 10, dir: 0, trail: [] };
 
@@ -1386,6 +1582,31 @@ function init() {
     }
     if (diff.guardCount >= 10) {
         guards.push({ name:'Golden Hawking', x:20*T, y:14*T, speed:1.4*diff.guardSpeed, patrolPoints:[{x:18*T,y:12*T},{x:21*T,y:16*T},{x:16*T,y:14*T},{x:20*T,y:10*T}], patrolIdx:0, alertTimer:0, size:14 });
+    }
+
+    // Daily Challenge: shuffle guard patrol offsets with seeded random
+    if (isDailyChallenge) {
+        const rng = seededRandom(getDailySeed());
+        // Shuffle file positions slightly (within walkable tiles)
+        const walkablePositions = [
+            {x:6*T,y:6*T},{x:21.5*T,y:11*T},{x:22*T,y:5*T},{x:14*T,y:14*T},
+            {x:8.5*T,y:13.5*T},{x:13*T,y:8*T},{x:10*T,y:16*T},
+            {x:9*T,y:4*T},{x:18*T,y:14*T},{x:5*T,y:15*T},{x:16*T,y:6*T},
+            {x:12*T,y:11*T},{x:20*T,y:8*T},{x:7*T,y:10*T},{x:11*T,y:15*T}
+        ];
+        // Shuffle using Fisher-Yates with seeded RNG
+        for (let i = walkablePositions.length - 1; i > 0; i--) {
+            const j = Math.floor(rng() * (i + 1));
+            [walkablePositions[i], walkablePositions[j]] = [walkablePositions[j], walkablePositions[i]];
+        }
+        files.forEach((f, idx) => {
+            f.x = walkablePositions[idx].x;
+            f.y = walkablePositions[idx].y;
+        });
+        // Slightly adjust guard speeds
+        guards.forEach(g => {
+            g.speed *= (0.85 + rng() * 0.3);
+        });
     }
 
     initCamera();
@@ -1698,7 +1919,7 @@ function update() {
                     g.stopped = true; g.speechTimer = 600;
                 }
             } else if (playerDist < detectRange) {
-                if (g.alertTimer === 0) playAlert();
+                if (g.alertTimer === 0) { playAlert(); if (!_alreadySpottedBy[g.name]) { timesSpotted++; _alreadySpottedBy[g.name] = true; } }
                 g.alertTimer = 120;
                 moveToward(g, player.x, player.y, g.speed * 1.2);
                 g.mansionTimer = 900;
@@ -1715,7 +1936,7 @@ function update() {
                 }
             }
         } else if (playerDist < detectRange) {
-            if (g.alertTimer === 0) playAlert();
+            if (g.alertTimer === 0) { playAlert(); if (!_alreadySpottedBy[g.name]) { timesSpotted++; _alreadySpottedBy[g.name] = true; } }
             g.alertTimer = 120;
             moveToward(g, player.x, player.y, g.speed * 1.2);
         } else if (g.alertTimer > 0) {
@@ -1735,6 +1956,7 @@ function update() {
         // Collision
         if (playerDist < 18) {
             health -= diff.damage;
+            totalDamageTaken += diff.damage;
             killedBy = g.name;
             addParticles(player.x, player.y, '#ff1744', 5, { spread: 4, life: 25 });
             triggerShake(6, 12);
@@ -1801,6 +2023,18 @@ function update() {
         document.getElementById('winTime').textContent = `ESCAPE TIME: ${elapsed}s`;
         lastWinTime = parseFloat(elapsed);
         window.lastWinTime = lastWinTime;
+        window._lastSpotted = timesSpotted;
+        window._lastDaily = isDailyChallenge;
+        // Achievement check
+        const newAchs = checkAndAwardAchievements(parseFloat(elapsed), timesSpotted, totalDamageTaken, settings.difficulty, isDailyChallenge);
+        // Show new achievements on win screen
+        const winAchEl = document.getElementById('winAchievements');
+        if (newAchs.length > 0) {
+            winAchEl.innerHTML = newAchs.map(a => a.icon + ' ' + a.name).join(' &nbsp;·&nbsp; ');
+        } else { winAchEl.innerHTML = ''; }
+        // Show stealth stats
+        const statsLine = `Spotted: ${timesSpotted} | Damage: ${Math.round(totalDamageTaken)}`;
+        document.getElementById('winTime').textContent = `ESCAPE TIME: ${elapsed}s — ${statsLine}`;
         playWin();
         transitionTo(() => {
             document.getElementById('ui').style.display = 'none';
@@ -2597,6 +2831,51 @@ document.getElementById('lbMenuBtn').addEventListener('click', () => {
     gameState = 'menu';
 });
 
+// ============== DAILY CHALLENGE BTN ==============
+document.getElementById('dailyChallengeBtn').addEventListener('click', () => {
+    initAudio();
+    playClick();
+    isDailyChallenge = true;
+    transitionTo(() => {
+        hideAllScreens();
+        init();
+    });
+});
+// Normal start resets daily flag
+const _origStartClick = document.getElementById('startBtn').onclick;
+document.getElementById('startBtn').addEventListener('click', () => {
+    isDailyChallenge = false;
+}, true); // capture phase, runs first
+
+// ============== ACHIEVEMENT SCREEN BTNS ==============
+document.getElementById('achievementsBtnTitle').addEventListener('click', () => {
+    playClick();
+    hideAllScreens();
+    renderAchievementsPanel();
+    document.getElementById('achievementsScreen').classList.add('active');
+});
+document.getElementById('achievementsBtnWin').addEventListener('click', () => {
+    playClick();
+    hideAllScreens();
+    renderAchievementsPanel();
+    document.getElementById('achievementsScreen').classList.add('active');
+});
+document.getElementById('achBackBtn').addEventListener('click', () => {
+    playClick();
+    hideAllScreens();
+    document.getElementById('titleScreen').classList.add('active');
+});
+
+// ============== DIFFICULTY LB TABS ==============
+document.querySelectorAll('.lb-diff-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.lb-diff-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        lbDiffFilter = tab.dataset.filter;
+        if (window.startLeaderboardListener) window.startLeaderboardListener();
+    });
+});
+
 // ============== TITLE SCREEN BACKGROUND ==============
 const titleCanvas = document.getElementById('titleBgCanvas');
 const tCtx = titleCanvas.getContext('2d');
@@ -2775,7 +3054,9 @@ function showNameModal() {
         // Name already set — auto-submit without showing modal
         const time = window.lastWinTime || 0;
         const difficulty = window.settings ? window.settings.difficulty : 'normal';
-        submitScore(savedName, time, difficulty).then((result) => {
+        const spotted = window._lastSpotted || 0;
+        const daily = window._lastDaily || false;
+        submitScore(savedName, time, difficulty, spotted, daily).then((result) => {
             lastSubmittedKey = result.key;
             document.getElementById('winScreen').classList.add('active');
         }).catch(() => {
@@ -2790,50 +3071,28 @@ function showNameModal() {
 }
 window.showNameModal = showNameModal;
 
-async function submitScore(name, time, difficulty) {
+async function submitScore(name, time, difficulty, spotted, isDaily) {
     const badWords = /nigg|fagg|fag[^s]|n[i1]gl|kike|chink|spic[^e]/i;
     let cleanName = name.toUpperCase().substring(0, 16);
     if (badWords.test(cleanName)) cleanName = 'PLAYER';
-    const scoresRef = ref(db, 'leaderboard');
-    // Check if this player already has an entry for this difficulty
-    const existing = await get(query(scoresRef, orderByChild('name'), equalTo(cleanName)));
-    let bestKey = null;
-    let bestTime = Infinity;
-    if (existing.exists()) {
-        existing.forEach(child => {
-            const val = child.val();
-            if ((val.difficulty || 'normal') === difficulty) {
-                if (val.time < bestTime) {
-                    bestTime = val.time;
-                    bestKey = child.key;
-                } else {
-                    // Remove duplicate worse entries for same name+difficulty
-                    set(ref(db, 'leaderboard/' + child.key), null);
-                }
-            }
-        });
+    // Deterministic key: one entry per name+difficulty (no duplicates)
+    const nameKey = cleanName.replace(/[.#$\[\]\/\s]/g, '_');
+    const entryKey = nameKey + '_' + difficulty + (isDaily ? '_daily' : '');
+    const entryRef = ref(db, 'leaderboard/' + entryKey);
+    // Check if existing entry is better
+    const existing = await get(entryRef);
+    if (existing.exists() && existing.val().time <= time) {
+        return { key: entryKey };
     }
-    if (bestKey && time >= bestTime) {
-        // Existing score is better or equal, keep it
-        return { key: bestKey };
-    }
-    if (bestKey) {
-        // Overwrite existing with better time
-        await set(ref(db, 'leaderboard/' + bestKey), {
-            name: cleanName,
-            time: time,
-            difficulty: difficulty,
-            timestamp: Date.now()
-        });
-        return { key: bestKey };
-    }
-    // No existing entry, create new
-    return push(scoresRef, {
+    await set(entryRef, {
         name: cleanName,
         time: time,
         difficulty: difficulty,
+        spotted: spotted || 0,
+        daily: isDaily || false,
         timestamp: Date.now()
     });
+    return { key: entryKey };
 }
 
 function formatTime(secs) {
@@ -2844,7 +3103,7 @@ function formatTime(secs) {
 
 function startLeaderboardListener() {
     stopLeaderboardListener();
-    const scoresRef = query(ref(db, 'leaderboard'), orderByChild('time'), limitToLast(50));
+    const scoresRef = query(ref(db, 'leaderboard'), orderByChild('time'), limitToLast(100));
     lbUnsubscribe = onValue(scoresRef, (snapshot) => {
         const rows = document.getElementById('lbRows');
         if (!rows) return;
@@ -2852,23 +3111,35 @@ function startLeaderboardListener() {
         snapshot.forEach(child => {
             entries.push({ key: child.key, ...child.val() });
         });
-        // Sort ascending (fastest first) — limitToLast + orderByChild gives ascending
-        entries.sort((a, b) => a.time - b.time);
+        // Apply difficulty filter
+        const filter = window.lbDiffFilter || 'all';
+        let filtered = entries;
+        if (filter === 'daily') {
+            filtered = entries.filter(e => e.daily === true);
+        } else if (filter !== 'all') {
+            filtered = entries.filter(e => (e.difficulty || 'normal') === filter);
+        }
+        filtered.sort((a, b) => a.time - b.time);
+        const savedName = (localStorage.getItem('epstein_player_name') || '').toUpperCase();
 
         rows.innerHTML = '';
-        entries.forEach((entry, i) => {
+        filtered.slice(0, 50).forEach((entry, i) => {
             const row = document.createElement('div');
-            row.className = 'lb-row' + (entry.key === lastSubmittedKey ? ' you' : '');
+            const isYou = entry.name.toUpperCase() === savedName || entry.key === lastSubmittedKey;
+            row.className = 'lb-row' + (isYou ? ' you' : '');
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+            const spottedBadge = entry.spotted === 0 ? ' 👻' : (entry.spotted !== undefined ? ` (${entry.spotted}👁)` : '');
+            const dailyBadge = entry.daily ? ' <span class="daily-badge">DAILY</span>' : '';
             row.innerHTML = `
-                <div class="lb-rank">${i + 1}</div>
-                <div class="lb-name">${escHtml(entry.name)}</div>
+                <div class="lb-rank">${medal}</div>
+                <div class="lb-name">${escHtml(entry.name)}${isYou ? ' (you)' : ''}${spottedBadge}${dailyBadge}</div>
                 <div class="lb-diff ${entry.difficulty || 'normal'}">${(entry.difficulty || 'normal').toUpperCase()}</div>
                 <div class="lb-time">${formatTime(entry.time)}</div>
             `;
             rows.appendChild(row);
         });
 
-        if (entries.length === 0) {
+        if (filtered.length === 0) {
             rows.innerHTML = '<div style="color:rgba(255,255,255,0.3); padding:20px; text-align:center; font-size:12px;">No scores yet. Be the first!</div>';
         }
     });
@@ -2898,8 +3169,10 @@ document.getElementById('submitNameBtn').addEventListener('click', () => {
 
     const time = window.lastWinTime || 0;
     const difficulty = window.settings ? window.settings.difficulty : 'normal';
+    const spotted = window._lastSpotted || 0;
+    const daily = window._lastDaily || false;
 
-    submitScore(name, time, difficulty).then((result) => {
+    submitScore(name, time, difficulty, spotted, daily).then((result) => {
         lastSubmittedKey = result.key;
         document.getElementById('nameModal').classList.remove('active');
         document.getElementById('winScreen').classList.add('active');

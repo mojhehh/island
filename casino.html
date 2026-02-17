@@ -740,6 +740,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
+<noscript><div style="position:fixed;inset:0;background:#0a0a1a;color:#e8e8ff;display:flex;align-items:center;justify-content:center;font-family:sans-serif;font-size:18px;z-index:99999;text-align:center;padding:20px;">JavaScript is required to play Casino Royale. Please enable JavaScript in your browser settings.</div></noscript>
+<script>window.addEventListener('error',function(e){console.warn('Global error:',e.message);});window.addEventListener('unhandledrejection',function(e){console.warn('Unhandled promise:',e.reason);});</script>
 
 <!-- LOGIN SCREEN -->
 <div id="loginScreen">
@@ -4191,7 +4193,7 @@ async function loadFriendsList() {
       const lastSeen = !online && p.lastSeen ? 'Last seen ' + timeAgo(p.lastSeen) : (online ? 'Online now' : 'Offline');
       return '<div style="background:var(--bg);border:1px solid ' + (online ? 'rgba(0,230,118,.3)' : 'var(--border)') + ';border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;">'
         + '<div style="font-size:24px;">👤</div>'
-        + '<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;color:var(--text);">' + statusDot + f.username + '</div>'
+        + '<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;color:var(--text);">' + statusDot + escapeHtml(f.username) + '</div>'
         + '<div style="font-size:10px;color:' + (online ? 'var(--green)' : 'var(--text2)') + ';">' + lastSeen + '</div></div>'
         + '<div style="display:flex;gap:4px;">'
         + '<button onclick="dmOpenChat(\'' + f.uid + '\',\'' + f.username + '\')" style="padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--neon);cursor:pointer;font-size:10px;" title="Message">💬</button>'
@@ -4223,7 +4225,7 @@ async function loadFriendRequests() {
     div.innerHTML = reqs.map(r => {
       return '<div style="background:var(--bg);border:1px solid rgba(0,230,118,.3);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;">'
         + '<div style="font-size:24px;">📩</div>'
-        + '<div style="flex:1;"><div style="font-weight:700;font-size:13px;color:var(--neon);">' + r.from + '</div>'
+        + '<div style="flex:1;"><div style="font-weight:700;font-size:13px;color:var(--neon);">' + escapeHtml(r.from) + '</div>'
         + '<div style="font-size:10px;color:var(--text2);">' + new Date(r.ts).toLocaleString() + '</div></div>'
         + '<button onclick="friendAcceptReq(\'' + r.uid + '\',\'' + r.from + '\')" style="padding:6px 14px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:11px;font-weight:700;">ACCEPT</button>'
         + '<button onclick="friendDeclineReq(\'' + r.uid + '\')" style="padding:5px 10px;background:transparent;border:1px solid var(--red);border-radius:6px;color:var(--red);cursor:pointer;font-size:10px;">✕</button>'
@@ -4333,7 +4335,7 @@ async function loadDMContacts() {
       const online = p.online && (Date.now() - (p.lastSeen || 0) < 120000);
       return '<div onclick="dmOpenChat(\'' + f.uid + '\',\'' + f.username + '\')" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor=\'var(--neon)\'" onmouseout="this.style.borderColor=\'var(--border)\'">'
         + '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + (online ? '#00e676' : '#555') + ';"></span>'
-        + '<div style="font-weight:600;font-size:13px;color:var(--text);">' + f.username + '</div>'
+        + '<div style="font-weight:600;font-size:13px;color:var(--text);">' + escapeHtml(f.username) + '</div>'
         + '<div style="margin-left:auto;font-size:10px;color:var(--text2);">' + (online ? '🟢 Online' : 'Offline') + '</div>'
         + '<div style="font-size:14px;">💬</div>'
         + '</div>';
@@ -4617,6 +4619,7 @@ function startCrash(){
   if (rnd >= 0.99999) rnd = 0.99999; // prevent Infinity
   crashPoint=1+(0.96/(1-rnd))-0.96;
   if(crashPoint<1.02)crashPoint=1.02;
+  if(crashPoint>1000)crashPoint=1000;
   if(!isFinite(crashPoint))crashPoint=1.02;
 
   document.getElementById('crashStartBtn').style.display='none';
@@ -5323,7 +5326,7 @@ let plinkoDropCount=0,plinkoTotalProfit=0,plinkoLastWinsList=[];
 let plinkoProfitHistory=[0]; // store cumulative profit history (starts with 0 like source)
 let plinkoProfitChartInstance = null; // Chart.js instance for Plinko profit chart
 let plinkoWinCount=0, plinkoLossCount=0; // win/loss counters
-let autoDropInterval=null,autoDropping=false;
+let autoDropInterval=null,autoDropping=false,plinkoDropLock=false;
 let plinkoRowCount=16,plinkoRiskLevel='MEDIUM';
 let plinkoLastRowXCoords=[];
 
@@ -5336,7 +5339,8 @@ function initPlinko(){
   canvas.width=PW;canvas.height=PH;
 
   const engine=Matter.Engine.create({timing:{timeScale:1}});
-  const render=Matter.Render.create({engine,canvas,options:{width:PW,height:PH,background:'#0f1728',wireframes:false}});
+  const dpr=window.devicePixelRatio||1;
+  const render=Matter.Render.create({engine,canvas,options:{width:PW,height:PH,pixelRatio:dpr,background:'#0f1728',wireframes:false}});
   const runner=Matter.Runner.create();
   plinkoMatterEngine=engine;plinkoMatterRender=render;plinkoMatterRunner=runner;
 
@@ -5659,12 +5663,14 @@ function removeAllPlinkoBalls(){
 }
 
 function dropPlinkoBall(){
+  if(plinkoDropLock)return;plinkoDropLock=true;
   if(!plinkoInitialized)initPlinko();
   const bet=parseFloat(document.getElementById('plinkoBet').value)||10;
-  if(bet>balance){showToast('Not enough balance!',false);if(autoDropping)toggleAutoDrop();return;}
-  if(bet<=0)return;
+  if(bet>balance){showToast('Not enough balance!',false);if(autoDropping)toggleAutoDrop();plinkoDropLock=false;return;}
+  if(bet<=0){plinkoDropLock=false;return;}
 
   balance-=bet;updateBalDisplay();
+  plinkoDropLock=false;
   playSound(500,'sine',.04,.05);
 
   const pinDist=getPinDistX();
@@ -5706,6 +5712,7 @@ let pylCurrentMode = null; // 'solo','1v1','highstakes','tournament'
 let pylRoomCode = null;
 let pylRoomUnsub = null; // Firebase listener cleanup
 let pylWagerAmount = 0;
+let pylWagerEscrowed = false; // true when wager deducted at room creation
 let pylHSTarget = 500;
 let pylHSMultiplier = 2;
 let pylGameActive = false;
@@ -5778,6 +5785,13 @@ function pylShowWager(mode) {
 
 function pylBackToLobby() {
   playClickSound();
+  // Refund escrowed wager if game never started
+  if (pylWagerEscrowed && pylWagerAmount > 0) {
+    balance += pylWagerAmount;
+    updateBalDisplay();
+    showToast('Wager refunded ($' + pylWagerAmount + ')');
+    pylWagerEscrowed = false;
+  }
   // Clean up any room listener
   if (pylRoomUnsub) { pylRoomUnsub(); pylRoomUnsub = null; }
   if (pylRoomCode && pylCurrentMode === '1v1') {
@@ -5861,6 +5875,11 @@ function pylCreateRoom() {
   pylRoomCode = generateRoomCode();
   playClickSound();
 
+  // Escrow wager immediately to prevent spending it on other games
+  balance -= pylWagerAmount;
+  updateBalDisplay();
+  pylWagerEscrowed = true;
+
   document.getElementById('pylRoomStatus').innerHTML =
     'Room: <span style="color:var(--neon);font-size:18px;letter-spacing:3px;">' + pylRoomCode + '</span><br>' +
     '<span style="color:var(--text2);font-size:11px;">Share this code with your opponent</span>';
@@ -5880,10 +5899,10 @@ function pylCreateRoom() {
 
         if (playerKeys.length >= 2) {
           pylGameStarted = true;
+          pylWagerEscrowed = false; // game started, escrow consumed
           showToast('⚔️ Opponent joined! Game on!');
           playWinSound();
-          balance -= pylWagerAmount;
-          updateBalDisplay();
+          // Wager already escrowed at room creation
           const opId = playerKeys.find(k => k !== window._pylPlayerId);
           const opData = opId ? players[opId] : null;
           const opName = opData && opData.name ? opData.name : (opId ? opId.slice(-5) : 'Opponent');
@@ -6026,6 +6045,7 @@ function pylSubmitScore() {
 
   if (pylCurrentMode === 'solo') {
     showToast('Free play score: ' + score + ' pts!');
+    firebaseSave();
   }
 
   else if (pylCurrentMode === '1v1') {
@@ -6220,7 +6240,7 @@ function pylLoadLeaderboard() {
         const isMe = e.player === (window._currentUsername || '');
         return '<div class="pyl-lb-row' + (isMe ? ' me' : '') + '">' +
           '<span class="lb-rank">' + medal + '</span>' +
-          '<span class="lb-name">' + e.player + (isMe ? ' (you)' : '') + '</span>' +
+          '<span class="lb-name">' + escapeHtml(e.player) + (isMe ? ' (you)' : '') + '</span>' +
           '<span class="lb-score">' + e.score.toLocaleString() + ' pts</span>' +
           '</div>';
       }).join('');
@@ -6308,12 +6328,29 @@ function advanceToTick(targetTick) {
 
   // Cap catchup to prevent UI freeze (max 5000 ticks = ~4.2 hours)
   const MAX_CATCHUP_TICKS = 5000;
+  const MAX_COMPUTE_TICKS = 20000; // absolute max ticks to compute
   const gap = targetTick - lastComputedTick;
   if (gap > MAX_CATCHUP_TICKS) {
-    // Skip ahead, only compute last MAX_CATCHUP_TICKS
-    lastComputedTick = targetTick - MAX_CATCHUP_TICKS;
-    // Reset prices to base and recompute from there
-    STOCK_DEFS.forEach(s => { stockPrices[s.ticker] = s.basePrice; stockPriceHistory[s.ticker] = []; });
+    // Fast-forward the skipped ticks deterministically using a step size
+    // that keeps total computation under MAX_COMPUTE_TICKS iterations
+    const skipTo = targetTick - MAX_CATCHUP_TICKS;
+    const skipGap = skipTo - lastComputedTick;
+    const step = Math.max(1, Math.ceil(skipGap / MAX_COMPUTE_TICKS));
+    for (let t = lastComputedTick + step; t <= skipTo; t += step) {
+      STOCK_DEFS.forEach(s => {
+        const h = hashTicker(s.ticker);
+        const r = getTickRandom(h, t);
+        const price = stockPrices[s.ticker];
+        const change = price * s.volatility * (r * 2 - 1) * step;
+        const reversion = (s.basePrice - price) * 0.0015 * step;
+        const driftAmt = price * s.drift * step;
+        let newPrice = price + change + reversion + driftAmt;
+        newPrice = Math.max(s.basePrice * 0.05, newPrice);
+        stockPrices[s.ticker] = Math.round(newPrice * 10000) / 10000;
+      });
+    }
+    lastComputedTick = skipTo;
+    STOCK_DEFS.forEach(s => { stockPriceHistory[s.ticker] = []; });
   }
 
   const startTick = lastComputedTick;
@@ -6687,17 +6724,18 @@ function cardRankIdx(c){return CARD_RANKS.indexOf(c.r);}
 
 // ============ BLACKJACK ============
 let bjDeck=[],bjPlayer=[],bjDealer=[],bjBetAmt=0,bjActive=false;
+function bjDrawCard(){if(bjDeck.length<10)bjDeck=bjDeck.concat(newDeck());return bjDeck.pop();}
 function bjHandVal(h){let v=0,a=0;h.forEach(c=>{v+=cardNumVal(c);if(c.r==='A')a++;});while(v>21&&a>0){v-=10;a--;}return v;}
 function bjDeal(){
   if(bjActive)return;const bet=parseFloat(document.getElementById('bjBet').value)||10;
   if(bet>balance){showToast('Not enough!',false);return;}if(bet<=0)return;
-  bjBetAmt=bet;balance-=bet;updateBalDisplay();bjDeck=newDeck();bjPlayer=[bjDeck.pop(),bjDeck.pop()];bjDealer=[bjDeck.pop(),bjDeck.pop()];bjActive=true;bjRender();
+  bjBetAmt=bet;balance-=bet;updateBalDisplay();bjDeck=newDeck();bjPlayer=[bjDrawCard(),bjDrawCard()];bjDealer=[bjDrawCard(),bjDrawCard()];bjActive=true;bjRender();
   document.getElementById('bjResult').textContent='';
   if(bjHandVal(bjPlayer)===21)bjStand();playClickSound();
 }
-function bjHit(){if(!bjActive)return;bjPlayer.push(bjDeck.pop());if(bjHandVal(bjPlayer)>21){bjActive=false;bjRender();bjFinish();}else if(bjHandVal(bjPlayer)===21)bjStand();else bjRender();}
-function bjStand(){if(!bjActive)return;while(bjHandVal(bjDealer)<17)bjDealer.push(bjDeck.pop());bjActive=false;bjRender();bjFinish();}
-function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;if(bjBetAmt>balance){showToast('Not enough!',false);return;}balance-=bjBetAmt;bjBetAmt*=2;updateBalDisplay();bjPlayer.push(bjDeck.pop());while(bjHandVal(bjDealer)<17)bjDealer.push(bjDeck.pop());bjActive=false;bjRender();bjFinish();}
+function bjHit(){if(!bjActive)return;bjPlayer.push(bjDrawCard());if(bjHandVal(bjPlayer)>21){bjActive=false;bjRender();bjFinish();}else if(bjHandVal(bjPlayer)===21)bjStand();else bjRender();}
+function bjStand(){if(!bjActive)return;while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
+function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;if(bjBetAmt>balance){showToast('Not enough!',false);return;}balance-=bjBetAmt;bjBetAmt*=2;updateBalDisplay();bjPlayer.push(bjDrawCard());while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
 function bjFinish(){
   const pv=bjHandVal(bjPlayer),dv=bjHandVal(bjDealer);let w=0,msg='';
   const isNatural=bjPlayer.length===2&&pv===21;

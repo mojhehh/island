@@ -33,7 +33,7 @@ http.createServer((req, res) => {
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
   let url = decodeURIComponent(req.url.split('?')[0]);
-  if (url === '/') url = '/index.html';
+  if (url === '/') url = '/casino.html';
   const filePath = path.join(ROOT, url);
 
   // Security: prevent directory traversal
@@ -46,7 +46,12 @@ http.createServer((req, res) => {
       return;
     }
     const ext = path.extname(filePath).toLowerCase();
-    res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
+    res.writeHead(200, {
+      'Content-Type': MIME[ext] || 'application/octet-stream',
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
     res.end(data);
   });
 }).listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
