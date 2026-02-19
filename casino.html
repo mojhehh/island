@@ -3728,10 +3728,17 @@ function openPfpPicker() {
   const overlay = document.getElementById('pfpPickerOverlay');
   overlay.style.display = 'flex';
   const grid = document.getElementById('pfpGrid');
-  grid.innerHTML = PFP_OPTIONS.map((emoji, i) => {
+  grid.innerHTML = '';
+  PFP_OPTIONS.forEach((emoji) => {
     const isSelected = emoji === selectedPfp;
-    return '<div onclick="selectPfp(\\'' + emoji.replace(/'/g,"\\\\'") + '\\')" style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:10px;cursor:pointer;border:2px solid ' + (isSelected ? 'var(--gold)' : 'var(--border)') + ';background:' + (isSelected ? 'rgba(255,215,0,.15)' : 'var(--bg)') + ';transition:all .15s;" onmouseover="this.style.transform=\\'scale(1.15)\\'" onmouseout="this.style.transform=\\'scale(1)\\'">' + emoji + '</div>';
-  }).join('');
+    const div = document.createElement('div');
+    div.style.cssText = 'width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:10px;cursor:pointer;border:2px solid ' + (isSelected ? 'var(--gold)' : 'var(--border)') + ';background:' + (isSelected ? 'rgba(255,215,0,.15)' : 'var(--bg)') + ';transition:all .15s;';
+    div.textContent = emoji;
+    div.onmouseover = function(){ this.style.transform='scale(1.15)'; };
+    div.onmouseout = function(){ this.style.transform='scale(1)'; };
+    div.onclick = function(){ selectPfp(emoji); };
+    grid.appendChild(div);
+  });
 }
 function closePfpPicker() { document.getElementById('pfpPickerOverlay').style.display = 'none'; }
 function selectPfp(emoji) {
