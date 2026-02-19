@@ -4168,7 +4168,6 @@ function duelDramaticSequence(room) {
   
   // Phase 1: Countdown 3... 2... 1...
   countdownEl.style.display = 'block';
-  statusEl.textContent = 'GET READY...';
   let count = 3;
   countdownEl.textContent = count;
   countdownEl.style.animation = 'none';
@@ -4197,47 +4196,70 @@ function duelDramaticSequence(room) {
       flash.style.animation = 'duelFlashBang .4s ease-out forwards';
       setTimeout(() => { flash.style.animation = 'none'; }, 500);
       
-      // Phase 2: Coin spinning
+      // Phase 2: Coin spinning with pure visual drama
       setTimeout(() => {
         countdownEl.style.display = 'none';
         coinEl.style.display = 'flex';
-        coinEl.style.animation = 'duelCoinSpin .15s linear infinite';
-        statusEl.textContent = 'FLIPPING...';
+        coinEl.style.animation = 'duelCoinSpin .12s linear infinite';
         tensionBar.style.display = 'block';
+        
+        // Create fog/atmosphere overlay
+        const gameOverlay = document.getElementById('duelGameOverlay');
+        const fogTint = document.createElement('div');
+        fogTint.style.position = 'absolute';
+        fogTint.style.top = '0';
+        fogTint.style.left = '0';
+        fogTint.style.width = '100%';
+        fogTint.style.height = '100%';
+        fogTint.style.pointerEvents = 'none';
+        fogTint.style.background = 'radial-gradient(ellipse at center, transparent 0%, rgba(30,58,138,0.3) 100%)';
+        fogTint.style.opacity = '0';
+        gameOverlay.appendChild(fogTint);
+        
         duelPlayDrum();
         
-        // Phase 3: Tension build — coin slows down over 3.5 seconds with rising sound
+        // Phase 3: Tension build — coin exponentially slows with visual atmosphere
         let tensionStep = 0;
-        const tensionTotal = 35;
+        const tensionTotal = 40;
         const tensionInterval = setInterval(() => {
           tensionStep++;
-          const pct = (tensionStep / tensionTotal) * 100;
+          const pct = Math.min((tensionStep / tensionTotal) * 100, 100);
           tensionFill.style.width = pct + '%';
           
-          // Slow down coin rotation
-          const speed = 0.15 + (tensionStep / tensionTotal) * 1.2;
-          coinEl.style.animation = 'duelCoinSpin ' + speed.toFixed(2) + 's linear infinite';
+          // Exponential slowdown: easing formula for more dramatic pause
+          const eased = (tensionStep / tensionTotal);
+          const speed = 0.12 + eased * eased * 2.0; // Accelerates slowdown
+          coinEl.style.animation = 'duelCoinSpin ' + speed.toFixed(3) + 's linear infinite';
+          
+          // Coin glow pulses with tension
+          const glowIntensity = 8 + Math.sin(tensionStep / 8) * 6;
+          coinEl.style.filter = 'drop-shadow(0 0 ' + glowIntensity + 'px rgba(255, 200, 0, 0.7)) saturate(1.2)';
+          
+          // Screen saturation pulses during tension (visual energy)
+          if (tensionStep < tensionTotal - 5) {
+            const saturation = 0.9 + Math.sin(tensionStep / 4) * 0.15;
+            gameOverlay.style.filter = 'saturate(' + saturation + ') brightness(1.05)';
+          }
+          
+          // Fog intensity builds toward end
+          fogTint.style.opacity = (pct / 100 * 0.6).toFixed(3);
           
           // Suspense ticks get higher pitch
           if (tensionStep % 3 === 0) duelPlaySuspense(tensionStep / 3);
           
-          // Change status text as tension builds
-          if (tensionStep === 10) statusEl.textContent = 'WHO WILL IT BE...';
-          if (tensionStep === 20) statusEl.textContent = 'ALMOST THERE...';
-          if (tensionStep === 28) statusEl.textContent = 'ANY MOMENT NOW...';
-          if (tensionStep === 33) {
-            statusEl.textContent = '...';
-            // Final dramatic pause — stop the coin briefly
-            coinEl.style.animation = 'duelCoinSpin 2s linear infinite';
+          // Final dramatic pause — ultra-slow spin
+          if (tensionStep >= tensionTotal - 7) {
+            coinEl.style.animation = 'duelCoinSpin 3s linear infinite';
           }
           
           if (tensionStep >= tensionTotal) {
             clearInterval(tensionInterval);
             // Hide tension bar and coin — result will be shown by duelShowResult
             tensionBar.style.display = 'none';
-            statusEl.textContent = '';
+            gameOverlay.style.filter = 'saturate(1) brightness(1)';
+            fogTint.style.opacity = '0';
           }
-        }, 100);
+        }, 85);
       }, 600);
       
       clearInterval(countInterval);

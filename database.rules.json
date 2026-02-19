@@ -62,7 +62,7 @@
       },
       "duelRooms": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": true
       }
     }
   }
