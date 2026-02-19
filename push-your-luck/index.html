@@ -87,6 +87,12 @@
         // runs inside an iframe that may be portrait-shaped on iPad.
         // No-op forceOrientation so Phaser never sets incorrectOrientation=true.
         Phaser.ScaleManager.prototype.forceOrientation = function() {};
+        // Also force incorrectOrientation to always be false so resize always works
+        Object.defineProperty(Phaser.ScaleManager.prototype, 'incorrectOrientation', {
+          get: function() { return false; },
+          set: function() {},
+          configurable: true
+        });
       });
     })();
     </script>

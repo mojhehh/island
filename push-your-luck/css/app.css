@@ -30,5 +30,5 @@ body {
     background-position: center;
     background-color: rgb(0, 0, 0);
     z-index: 999;
-    display: none;
+    display: none !important;
 }

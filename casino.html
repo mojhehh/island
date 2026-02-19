@@ -445,9 +445,45 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
   .catalog-card{width:90px;height:100px;font-size:14px;}
   .catalog-card .icon{font-size:32px;margin-bottom:4px;}
   #topNav .logo{font-size:13px;margin-right:3px;}
-  .game-panel{padding:8px;}
+  .game-panel{padding:6px 4px;}
   .pyl-modes{grid-template-columns:1fr;}
   .win-toast{font-size:15px;padding:10px 20px;}
+  .bet-controls{flex-wrap:wrap;gap:4px;padding:6px 4px;}
+  .bet-input{width:70px;font-size:11px;padding:5px 6px;}
+  .action-btn{padding:8px 14px;font-size:12px;}
+  .htp-box{font-size:11px;padding:6px;}
+  .case-card{width:70px;padding:6px 2px;}
+  .case-card .case-icon{font-size:18px;}
+  .case-card .case-name{font-size:8px;}
+  .case-card .case-price{font-size:9px;}
+  .case-opener{height:80px;}
+  .case-item{width:80px;height:80px;font-size:9px;}
+  .case-item .item-icon{font-size:24px;}
+  .case-won{font-size:14px;}
+  .crash-multiplier{font-size:36px!important;}
+  .crash-container{max-height:35vh;}
+  .slots-machine{padding:8px;}
+  .reel-window{width:55px;height:150px;}
+  .reel-symbol{width:55px;height:50px;font-size:26px;}
+  .roulette-canvas{width:min(220px,60vw)!important;height:min(220px,60vw)!important;}
+  .tower-cell{width:48px!important;height:40px!important;font-size:16px!important;}
+  .mine-cell{width:42px!important;height:42px!important;font-size:16px!important;}
+  .keno-num{width:34px!important;height:34px!important;font-size:10px!important;}
+  .scratch-cell{width:56px!important;height:56px!important;font-size:22px!important;}
+  .scratch-card{width:200px;padding:10px;}
+  .hilo-card{width:100px!important;height:140px!important;font-size:28px!important;}
+  .hilo-act-btn{padding:8px 12px!important;font-size:11px!important;}
+  .lb-data-row{padding:8px 10px;}
+  .lb-col-rank{width:30px;font-size:12px;}
+  .lb-col-name{font-size:11px;}
+  .lb-col-val{font-size:10px;min-width:70px;}
+  .plinko-canvas-wrap{height:min(300px,40vh);}
+  .horse-track{max-width:98vw;}
+  #chatPanel{right:4px;left:4px;width:auto;bottom:60px;max-height:350px;}
+  .user-avatar{width:32px;height:32px;font-size:16px;}
+  .user-name{font-size:10px;}
+  #balanceDisplay .bal{font-size:11px;}
+  #profileAvatar{width:64px!important;height:64px!important;}
 }
 
 /* Scrollbar */
@@ -520,9 +556,9 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
 #leaderboardPanel{flex-direction:column;align-items:center;gap:16px;overflow-y:auto;
   padding:80px 20px 20px;background:radial-gradient(ellipse at top,#1a1a40 0%,#0a0a1a 70%);}
 .lb-container{width:100%;max-width:700px;}
-.lb-tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;justify-content:center;}
-.lb-tab{padding:8px 16px;border:1px solid var(--border);border-radius:8px;background:transparent;
-  color:var(--text2);cursor:pointer;font-weight:600;font-size:12px;transition:all .2s;
+.lb-tabs{display:flex;gap:3px;margin-bottom:16px;flex-wrap:wrap;justify-content:center;}
+.lb-tab{padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:transparent;
+  color:var(--text2);cursor:pointer;font-weight:600;font-size:11px;transition:all .2s;
   font-family:'Inter',sans-serif;}
 .lb-tab:hover{border-color:var(--neon);color:var(--text);}
 .lb-tab.active{background:linear-gradient(135deg,#1a1a5e,#2a1a4e);color:var(--gold);
@@ -536,7 +572,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
 .lb-data-row.me{border-color:var(--gold);background:rgba(255,215,0,.05);}
 .lb-col-rank{width:40px;font-family:'Orbitron';font-weight:900;font-size:14px;color:var(--gold);}
 .lb-col-name{flex:1;font-weight:600;font-size:14px;}
-.lb-col-val{width:120px;text-align:right;font-family:'Orbitron';font-weight:700;font-size:13px;color:var(--neon);}
+.lb-col-val{min-width:90px;max-width:180px;text-align:right;font-family:'Orbitron';font-weight:700;font-size:12px;color:var(--neon);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .lb-col-extra{width:100px;text-align:right;font-size:12px;color:var(--text2);}
 .lb-empty{text-align:center;padding:30px;color:var(--text2);font-size:13px;}
 
@@ -1555,15 +1591,28 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
     <div style="text-align:center;margin-bottom:8px;">
       <span style="font-family:'Orbitron';font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--gold),#ff8800);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🏆 LEADERBOARDS</span>
     </div>
-    <div class="lb-tabs">
+    <div class="lb-tabs" style="flex-wrap:wrap;">
       <button class="lb-tab active" onclick="switchLB('richest',this)">💰 Richest</button>
+      <button class="lb-tab" onclick="switchLB('profit',this)">📊 Profit</button>
       <button class="lb-tab" onclick="switchLB('slots',this)">🎰 Slots</button>
       <button class="lb-tab" onclick="switchLB('crash',this)">📈 Crash</button>
       <button class="lb-tab" onclick="switchLB('roulette',this)">🎡 Roulette</button>
+      <button class="lb-tab" onclick="switchLB('blackjack',this)">🃏 BJ</button>
       <button class="lb-tab" onclick="switchLB('cases',this)">📦 Cases</button>
       <button class="lb-tab" onclick="switchLB('plinko',this)">⚡ Plinko</button>
-      <button class="lb-tab" onclick="switchLB('pyl',this)">🎲 Luck</button>
-      <button class="lb-tab" onclick="switchLB('profit',this)">📊 Profit</button>
+      <button class="lb-tab" onclick="switchLB('mines',this)">💣 Mines</button>
+      <button class="lb-tab" onclick="switchLB('dice',this)">🎲 Dice</button>
+      <button class="lb-tab" onclick="switchLB('tower',this)">🗼 Tower</button>
+      <button class="lb-tab" onclick="switchLB('coinflip',this)">🪙 Flip</button>
+      <button class="lb-tab" onclick="switchLB('keno',this)">🔢 Keno</button>
+      <button class="lb-tab" onclick="switchLB('limbo',this)">🎯 Limbo</button>
+      <button class="lb-tab" onclick="switchLB('poker',this)">♠️ Poker</button>
+      <button class="lb-tab" onclick="switchLB('horses',this)">🐎 Horses</button>
+      <button class="lb-tab" onclick="switchLB('scratch',this)">🎫 Scratch</button>
+      <button class="lb-tab" onclick="switchLB('wheel',this)">🎡 Wheel</button>
+      <button class="lb-tab" onclick="switchLB('baccarat',this)">🂡 Baccarat</button>
+      <button class="lb-tab" onclick="switchLB('hilo',this)">⬆️ Hi-Lo</button>
+      <button class="lb-tab" onclick="switchLB('pyl',this)">🍀 Luck</button>
     </div>
     <div class="lb-table" id="lbTable">
       <div class="lb-empty">Loading...</div>
@@ -1575,9 +1624,20 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
 <div class="game-panel" id="profilePanel">
   <div style="max-width:600px;margin:0 auto;padding:20px;">
     <div style="text-align:center;margin-bottom:16px;">
-      <div style="font-size:48px;margin-bottom:8px;" id="profileAvatar">👤</div>
+      <div style="font-size:48px;margin-bottom:8px;cursor:pointer;" id="profileAvatar" onclick="openPfpPicker()" title="Click to change avatar">👤</div>
+      <button onclick="openPfpPicker()" style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 12px;color:var(--text2);font-size:10px;cursor:pointer;margin-bottom:6px;font-family:Inter,sans-serif;">✏️ Change Avatar</button>
       <div style="font-family:'Orbitron';font-size:22px;font-weight:900;color:var(--gold);letter-spacing:3px;" id="profileName">PLAYER</div>
       <div style="font-size:11px;color:var(--text2);letter-spacing:2px;margin-top:4px;" id="profileJoined"></div>
+    </div>
+    <!-- PFP Picker Modal -->
+    <div id="pfpPickerOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:10001;align-items:center;justify-content:center;">
+      <div style="background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:20px;max-width:380px;width:90vw;max-height:70vh;overflow-y:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span style="font-family:'Orbitron';font-size:14px;color:var(--gold);">CHOOSE AVATAR</span>
+          <button onclick="closePfpPicker()" style="background:none;border:none;color:var(--text);font-size:18px;cursor:pointer;">✕</button>
+        </div>
+        <div id="pfpGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;"></div>
+      </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;">
@@ -1915,7 +1975,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
     </div>
 
     <!-- DM / MESSAGES -->
-    <div id="frViewDM" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
+    <div id="frViewDm" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
       <div style="font-family:'Orbitron';font-size:13px;color:var(--neon);letter-spacing:1px;margin-bottom:12px;">💬 DIRECT MESSAGES</div>
       <!-- DM contact list -->
       <div id="dmContactList" style="display:flex;flex-direction:column;gap:6px;">
@@ -2178,6 +2238,8 @@ window._recordGameResult = (game, wagered, won) => {
   }).then((result) => {
     if (!result.committed) return;
     const s = result.snapshot.val() || {};
+    // Sync local playerStats to match server's atomic value
+    if (window._loadStats) window._loadStats(s);
     // Update game-specific leaderboard (only if bigger than current)
     if (won > 0) {
       const lbRef = ref(db, 'casino/leaderboards/' + game + '/' + playerId);
@@ -2195,8 +2257,6 @@ window._recordGameResult = (game, wagered, won) => {
       updated: Date.now()
     }).catch(() => {});
   }).catch(() => {});
-  // Also trigger balance save
-  window._firebaseSave();
 };
 
 // ============ LEADERBOARD FETCH ============
@@ -2306,6 +2366,16 @@ window._loadPendingTrades = async () => {
 
 window._acceptTradeOffer = async (tradeId) => {
   if (!playerId) return;
+  // Read the trade data before deleting so we can credit items/cash server-side
+  const tradeSnap = await get(ref(db, 'casino/trades/' + playerId + '/' + tradeId));
+  if (tradeSnap.exists()) {
+    const trade = tradeSnap.val();
+    // Credit the item/cash to the recipient's player data via a pending refund node
+    // This ensures server-side persistence even if client crashes
+    const creditData = { item: trade.itemId || null, cash: trade.cash || 0, reason: 'trade_accepted', from: trade.from || 'Unknown', ts: Date.now() };
+    const creditRef = push(ref(db, 'casino/pendingRefunds/' + playerId));
+    await set(creditRef, creditData);
+  }
   await remove(ref(db, 'casino/trades/' + playerId + '/' + tradeId));
 };
 
@@ -2955,13 +3025,34 @@ let balance = 1000;
 window.getBalance=()=>balance;
 window.setBalance=(v)=>{balance=v;updateBalDisplay();};
 
+function formatBalance(v){
+  const abs=Math.abs(v);
+  if(abs>=1e15)return(v/1e15).toFixed(2)+'Q';
+  if(abs>=1e12)return(v/1e12).toFixed(2)+'T';
+  if(abs>=1e9)return(v/1e9).toFixed(2)+'B';
+  if(abs>=1e6)return(v/1e6).toFixed(2)+'M';
+  if(abs>=1e4)return(v/1e3).toFixed(1)+'K';
+  return v.toFixed(2);
+}
 function updateBalDisplay(){
   balance=Math.round(balance*100)/100; // prevent floating-point drift
   const el=document.getElementById('balText');
-  el.textContent=balance.toFixed(2);
+  el.textContent=formatBalance(balance);
+  el.title='$'+balance.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
   el.style.transition='transform .15s';
   el.style.transform='scale(1.15)';
   setTimeout(()=>{el.style.transform='scale(1)';},150);
+  // Pity system: if balance is exactly 0 or below, offer $5
+  if(balance<=0 && !window._pityOffered){
+    window._pityOffered=true;
+    setTimeout(()=>{
+      if(balance<=0){
+        showToast('💸 Broke? Here\'s $5 pity cash!',true);
+        balance=5;updateBalDisplay();firebaseSave();
+      }
+      window._pityOffered=false;
+    },1500);
+  }
 }
 
 let _lastAddMoney=0;
@@ -3103,6 +3194,8 @@ window._onAuthReady = function(username, uid) {
   const uaInit = username[0].toUpperCase();
   document.getElementById('userAvatar').innerHTML = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><linearGradient id="avG" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#6b2fd9"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#avG)"/><text x="50" y="58" font-family="Orbitron,Inter,sans-serif" font-weight="900" font-size="48" fill="#fff" text-anchor="middle">${uaInit}</text></svg>`;
   document.getElementById('userNameDisplay').textContent = username;
+  // Apply custom PFP if set
+  if (typeof applyPfp === 'function' && selectedPfp) applyPfp();
   updateBalDisplay();
   checkDailyBonus();
   // Show chat button
@@ -3280,15 +3373,49 @@ async function loadLeaderboard(category) {
       return;
     }
 const myId = window._currentPlayerId || '';
-const labels = {
-      richest: { col: 'Balance', fmt: v => '$' + v.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) },
-      slots: { col: 'Biggest Win', fmt: v => '$' + v.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) },
-      crash: { col: 'Biggest Win', fmt: v => '$' + v.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) },
-      roulette: { col: 'Biggest Win', fmt: v => '$' + v.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) },
-      cases: { col: 'Biggest Win', fmt: v => '$' + v.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) },
-      plinko: { col: 'Biggest Win', fmt: v => '$' + v.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) },
+const fmtBig = (v) => {
+      const abs = Math.abs(v);
+      if (abs >= 1e18) return '$' + (v/1e18).toFixed(2) + 'Qi';
+      if (abs >= 1e15) return '$' + (v/1e15).toFixed(2) + 'Q';
+      if (abs >= 1e12) return '$' + (v/1e12).toFixed(2) + 'T';
+      if (abs >= 1e9)  return '$' + (v/1e9).toFixed(2) + 'B';
+      if (abs >= 1e6)  return '$' + (v/1e6).toFixed(2) + 'M';
+      if (abs >= 1e4)  return '$' + (v/1e3).toFixed(1) + 'K';
+      return '$' + v.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+    };
+    const fmtProfit = (v) => {
+      const sign = v >= 0 ? '+' : '-';
+      const abs = Math.abs(v);
+      if (abs >= 1e18) return sign + '$' + (abs/1e18).toFixed(2) + 'Qi';
+      if (abs >= 1e15) return sign + '$' + (abs/1e15).toFixed(2) + 'Q';
+      if (abs >= 1e12) return sign + '$' + (abs/1e12).toFixed(2) + 'T';
+      if (abs >= 1e9)  return sign + '$' + (abs/1e9).toFixed(2) + 'B';
+      if (abs >= 1e6)  return sign + '$' + (abs/1e6).toFixed(2) + 'M';
+      if (abs >= 1e4)  return sign + '$' + (abs/1e3).toFixed(1) + 'K';
+      return (v >= 0 ? '+$' : '-$') + abs.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+    };
+    const labels = {
+      richest: { col: 'Balance', fmt: fmtBig },
+      slots: { col: 'Biggest Win', fmt: fmtBig },
+      crash: { col: 'Biggest Win', fmt: fmtBig },
+      roulette: { col: 'Biggest Win', fmt: fmtBig },
+      blackjack: { col: 'Biggest Win', fmt: fmtBig },
+      cases: { col: 'Biggest Win', fmt: fmtBig },
+      plinko: { col: 'Biggest Win', fmt: fmtBig },
+      mines: { col: 'Biggest Win', fmt: fmtBig },
+      dice: { col: 'Biggest Win', fmt: fmtBig },
+      tower: { col: 'Biggest Win', fmt: fmtBig },
+      coinflip: { col: 'Biggest Win', fmt: fmtBig },
+      keno: { col: 'Biggest Win', fmt: fmtBig },
+      limbo: { col: 'Biggest Win', fmt: fmtBig },
+      poker: { col: 'Biggest Win', fmt: fmtBig },
+      horses: { col: 'Biggest Win', fmt: fmtBig },
+      scratch: { col: 'Biggest Win', fmt: fmtBig },
+      wheel: { col: 'Biggest Win', fmt: fmtBig },
+      baccarat: { col: 'Biggest Win', fmt: fmtBig },
+      hilo: { col: 'Biggest Win', fmt: fmtBig },
       pyl: { col: 'High Score', fmt: v => v.toLocaleString() + ' pts' },
-      profit: { col: 'Total Profit', fmt: v => (v >= 0 ? '+$' : '-$') + Math.abs(v).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) },
+      profit: { col: 'Total Profit', fmt: fmtProfit },
     };
     const cfg = labels[category] || labels.richest;
 
@@ -3587,19 +3714,58 @@ window._loadTradeHistory = (data) => {
 };
 
 // ============ PROFILE RENDER ============
+// ============ CUSTOM PROFILE PICTURES ============
+const PFP_OPTIONS = [
+  '👤','😎','🤑','🎰','🃏','👑','🔥','💎','⚡','🌟',
+  '🐉','🦊','🐺','🦅','🐲','🦁','🐯','🦈','🐙','🦇',
+  '💀','👻','🤖','👽','🎭','🥷','🧙','🧛','🧟','🏴‍☠️',
+  '🎲','🎯','🎪','🏆','🎸','🎮','⚔️','🛡️','🗡️','💣',
+  '🌊','🌋','❄️','☄️','🌙','☀️','🌈','🍀','💰','🏝️'
+];
+let selectedPfp = localStorage.getItem('casino_pfp') || '';
+
+function openPfpPicker() {
+  const overlay = document.getElementById('pfpPickerOverlay');
+  overlay.style.display = 'flex';
+  const grid = document.getElementById('pfpGrid');
+  grid.innerHTML = PFP_OPTIONS.map((emoji, i) => {
+    const isSelected = emoji === selectedPfp;
+    return '<div onclick="selectPfp(\\'' + emoji.replace(/'/g,"\\\\'") + '\\')" style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:28px;border-radius:10px;cursor:pointer;border:2px solid ' + (isSelected ? 'var(--gold)' : 'var(--border)') + ';background:' + (isSelected ? 'rgba(255,215,0,.15)' : 'var(--bg)') + ';transition:all .15s;" onmouseover="this.style.transform=\\'scale(1.15)\\'" onmouseout="this.style.transform=\\'scale(1)\\'">' + emoji + '</div>';
+  }).join('');
+}
+function closePfpPicker() { document.getElementById('pfpPickerOverlay').style.display = 'none'; }
+function selectPfp(emoji) {
+  selectedPfp = emoji;
+  localStorage.setItem('casino_pfp', emoji);
+  if(window._firebaseSave) firebaseSave();
+  applyPfp();
+  closePfpPicker();
+  showToast('Avatar updated! ' + emoji, true);
+}
+function applyPfp() {
+  const name = window._currentUsername || 'Guest';
+  const init = name.charAt(0).toUpperCase();
+  if (selectedPfp) {
+    document.getElementById('userAvatar').innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;">' + selectedPfp + '</div>';
+    document.getElementById('profileAvatar').innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;">' + selectedPfp + '</div>';
+  } else {
+    document.getElementById('userAvatar').innerHTML = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="avG" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#6b2fd9"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#avG)"/><text x="50" y="58" font-family="Orbitron,Inter,sans-serif" font-weight="900" font-size="48" fill="#fff" text-anchor="middle">${init}</text></svg>`;
+    document.getElementById('profileAvatar').innerHTML = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="profG" x1="0" x2="1"><stop offset="0" stop-color="#ffb86b"/><stop offset="1" stop-color="#ff6b6b"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#profG)"/><text x="50" y="60" font-family="Orbitron,Inter,sans-serif" font-weight="900" font-size="42" fill="#071028" text-anchor="middle">${init}</text></svg>`;
+  }
+}
+
 function renderProfile() {
   const name = document.getElementById('userNameDisplay').textContent || 'PLAYER';
   document.getElementById('profileName').textContent = name;
-  const pInit = name.charAt(0).toUpperCase();
-  document.getElementById('profileAvatar').innerHTML = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><linearGradient id="profG" x1="0" x2="1"><stop offset="0" stop-color="#ffb86b"/><stop offset="1" stop-color="#ff6b6b"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#profG)"/><text x="50" y="60" font-family="Orbitron,Inter,sans-serif" font-weight="900" font-size="42" fill="#071028" text-anchor="middle">${pInit}</text></svg>`;
-  document.getElementById('profBalance').textContent = '$' + balance.toFixed(2);
+  applyPfp();
+  document.getElementById('profBalance').textContent = '$' + formatBalance(balance);
   document.getElementById('profGames').textContent = playerStats.gamesPlayed.toLocaleString();
   const profit = playerStats.totalProfit;
   const profEl = document.getElementById('profProfit');
-  profEl.textContent = (profit >= 0 ? '+' : '') + '$' + profit.toFixed(2);
+  profEl.textContent = (profit >= 0 ? '+$' : '-$') + formatBalance(Math.abs(profit));
   profEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('profWagered').textContent = '$' + playerStats.totalWagered.toFixed(2);
-  document.getElementById('profBiggest').textContent = '$' + playerStats.biggestWin.toFixed(2);
+  document.getElementById('profWagered').textContent = '$' + formatBalance(playerStats.totalWagered);
+  document.getElementById('profBiggest').textContent = '$' + formatBalance(playerStats.biggestWin);
   if (typeof getInventoryValue === 'function') {
     document.getElementById('profInvValue').textContent = '$' + getInventoryValue().toFixed(2);
   }
@@ -4242,7 +4408,7 @@ function hideFriendsPanel() {
 function switchFriendsTab(tab, btn) {
   document.querySelectorAll('#friendsOverlay .inv-tab').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  ['Friends','Requests','Add','Blocked','DM','Privacy'].forEach(v => {
+  ['Friends','Requests','Add','Blocked','Dm','Privacy'].forEach(v => {
     const el = document.getElementById('frView' + v);
     if (el) el.style.display = 'none';
   });
@@ -4895,68 +5061,103 @@ const RARITY={
   classified:{label:'Classified',     color:'#d32ce6',cls:'rarity-classified',tier:4},
   covert:    {label:'Covert',         color:'#eb4b4b',cls:'rarity-covert',    tier:5},
   legendary: {label:'★ Legendary',    color:'#ffd700',cls:'rarity-legendary', tier:6},
+  mythic:    {label:'★★ Mythic',      color:'#ff4500',cls:'rarity-legendary', tier:7},
 };
 
 // Full item catalog — each item is a unique collectible
 const ITEM_CATALOG={
   // Consumer Grade
-  rustedCoin:      {id:'rustedCoin',      name:'Rusted Coin',        icon:'🪙', rarity:'consumer',  baseValue:8},
-  brokenCompass:   {id:'brokenCompass',   name:'Broken Compass',     icon:'🧭', rarity:'consumer',  baseValue:12},
-  driftwood:       {id:'driftwood',       name:'Driftwood Charm',    icon:'🪵', rarity:'consumer',  baseValue:6},
-  seaGlass:        {id:'seaGlass',        name:'Sea Glass',          icon:'💠', rarity:'consumer',  baseValue:10},
-  coconutShell:    {id:'coconutShell',    name:'Coconut Shell',      icon:'🥥', rarity:'consumer',  baseValue:5},
+  rustedCoin:      {id:'rustedCoin',      name:'Rusted Coin',        icon:'🪙', rarity:'consumer',  baseValue:15},
+  brokenCompass:   {id:'brokenCompass',   name:'Broken Compass',     icon:'🧭', rarity:'consumer',  baseValue:20},
+  driftwood:       {id:'driftwood',       name:'Driftwood Charm',    icon:'🪵', rarity:'consumer',  baseValue:12},
+  seaGlass:        {id:'seaGlass',        name:'Sea Glass',          icon:'💠', rarity:'consumer',  baseValue:18},
+  coconutShell:    {id:'coconutShell',    name:'Coconut Shell',      icon:'🥥', rarity:'consumer',  baseValue:10},
   // Industrial Grade
-  bronzeMedallion: {id:'bronzeMedallion', name:'Bronze Medallion',   icon:'🏅', rarity:'industrial',baseValue:25},
-  pearlFragment:   {id:'pearlFragment',   name:'Pearl Fragment',     icon:'⚪', rarity:'industrial',baseValue:35},
-  corkedBottle:    {id:'corkedBottle',    name:'Corked Bottle',      icon:'🍾', rarity:'industrial',baseValue:30},
-  ancientMap:      {id:'ancientMap',      name:'Ancient Map',        icon:'🗺️', rarity:'industrial', baseValue:40},
+  bronzeMedallion: {id:'bronzeMedallion', name:'Bronze Medallion',   icon:'🏅', rarity:'industrial',baseValue:60},
+  pearlFragment:   {id:'pearlFragment',   name:'Pearl Fragment',     icon:'⚪', rarity:'industrial',baseValue:80},
+  corkedBottle:    {id:'corkedBottle',    name:'Corked Bottle',      icon:'🍾', rarity:'industrial',baseValue:70},
+  ancientMap:      {id:'ancientMap',      name:'Ancient Map',        icon:'🗺️', rarity:'industrial', baseValue:90},
   // Mil-Spec Grade
-  silverDagger:    {id:'silverDagger',    name:'Silver Dagger',      icon:'🗡️', rarity:'milspec',   baseValue:80},
-  crystalOrb:      {id:'crystalOrb',      name:'Crystal Orb',        icon:'🔮', rarity:'milspec',   baseValue:100},
-  enchantedRing:   {id:'enchantedRing',   name:'Enchanted Ring',     icon:'💍', rarity:'milspec',   baseValue:120},
-  stormLantern:    {id:'stormLantern',    name:'Storm Lantern',      icon:'🏮', rarity:'milspec',   baseValue:90},
+  silverDagger:    {id:'silverDagger',    name:'Silver Dagger',      icon:'🗡️', rarity:'milspec',   baseValue:200},
+  crystalOrb:      {id:'crystalOrb',      name:'Crystal Orb',        icon:'🔮', rarity:'milspec',   baseValue:250},
+  enchantedRing:   {id:'enchantedRing',   name:'Enchanted Ring',     icon:'💍', rarity:'milspec',   baseValue:300},
+  stormLantern:    {id:'stormLantern',    name:'Storm Lantern',      icon:'🏮', rarity:'milspec',   baseValue:220},
   // Restricted
-  goldenCompass:   {id:'goldenCompass',   name:'Golden Compass',     icon:'🧭', rarity:'restricted',baseValue:250},
-  dragonScale:     {id:'dragonScale',     name:'Dragon Scale',       icon:'🐉', rarity:'restricted',baseValue:300},
-  phoenixFeather:  {id:'phoenixFeather',  name:'Phoenix Feather',    icon:'🪶', rarity:'restricted',baseValue:280},
-  moonstone:       {id:'moonstone',       name:'Moonstone Gem',      icon:'🌙', rarity:'restricted',baseValue:260},
+  goldenCompass:   {id:'goldenCompass',   name:'Golden Compass',     icon:'🧭', rarity:'restricted',baseValue:600},
+  dragonScale:     {id:'dragonScale',     name:'Dragon Scale',       icon:'🐉', rarity:'restricted',baseValue:750},
+  phoenixFeather:  {id:'phoenixFeather',  name:'Phoenix Feather',    icon:'🪶', rarity:'restricted',baseValue:700},
+  moonstone:       {id:'moonstone',       name:'Moonstone Gem',      icon:'🌙', rarity:'restricted',baseValue:650},
   // Classified
-  voidShard:       {id:'voidShard',       name:'Void Shard',         icon:'♠️', rarity:'classified',baseValue:600},
-  starforgedBlade: {id:'starforgedBlade', name:'Starforged Blade',   icon:'⚔️', rarity:'classified',baseValue:750},
-  abyssalPearl:    {id:'abyssalPearl',    name:'Abyssal Pearl',      icon:'⚫', rarity:'classified',baseValue:650},
+  voidShard:       {id:'voidShard',       name:'Void Shard',         icon:'♠️', rarity:'classified',baseValue:1500},
+  starforgedBlade: {id:'starforgedBlade', name:'Starforged Blade',   icon:'⚔️', rarity:'classified',baseValue:2000},
+  abyssalPearl:    {id:'abyssalPearl',    name:'Abyssal Pearl',      icon:'⚫', rarity:'classified',baseValue:1800},
   // Covert
-  dragonheart:     {id:'dragonheart',     name:'Dragonheart',        icon:'❤️‍🔥', rarity:'covert', baseValue:1500},
-  etherealCrown:   {id:'etherealCrown',   name:'Ethereal Crown',     icon:'👑', rarity:'covert',    baseValue:2000},
-  cosmicDust:      {id:'cosmicDust',      name:'Cosmic Dust',        icon:'✨', rarity:'covert',    baseValue:1800},
+  dragonheart:     {id:'dragonheart',     name:'Dragonheart',        icon:'❤️‍🔥', rarity:'covert', baseValue:5000},
+  etherealCrown:   {id:'etherealCrown',   name:'Ethereal Crown',     icon:'👑', rarity:'covert',    baseValue:6000},
+  cosmicDust:      {id:'cosmicDust',      name:'Cosmic Dust',        icon:'✨', rarity:'covert',    baseValue:5500},
   // Legendary
-  infinityGem:     {id:'infinityGem',     name:'Infinity Gem',       icon:'💎', rarity:'legendary', baseValue:5000},
-  islandRelic:     {id:'islandRelic',     name:'Island Relic',       icon:'🏝️', rarity:'legendary', baseValue:8000},
-  casinoChip:      {id:'casinoChip',      name:'Casino Royale Chip', icon:'🎰', rarity:'legendary', baseValue:10000},
+  infinityGem:     {id:'infinityGem',     name:'Infinity Gem',       icon:'💎', rarity:'legendary', baseValue:15000},
+  islandRelic:     {id:'islandRelic',     name:'Island Relic',       icon:'🏝️', rarity:'legendary', baseValue:25000},
+  casinoChip:      {id:'casinoChip',      name:'Casino Royale Chip', icon:'🎰', rarity:'legendary', baseValue:30000},
+  // ----- NEW HIGH-VALUE ITEMS -----
+  // Mega tier items (for whale cases)
+  obsidianCrown:   {id:'obsidianCrown',   name:'Obsidian Crown',     icon:'🖤', rarity:'legendary', baseValue:100000},
+  solarFlare:      {id:'solarFlare',      name:'Solar Flare',        icon:'☀️', rarity:'legendary', baseValue:200000},
+  voidEngine:      {id:'voidEngine',      name:'Void Engine',        icon:'⚙️', rarity:'legendary', baseValue:500000},
+  // Mythic tier (ultra rare, whale bait)
+  worldEater:      {id:'worldEater',      name:'World Eater',        icon:'🌍', rarity:'mythic',    baseValue:2000000},
+  tidalForce:      {id:'tidalForce',      name:'Tidal Force',        icon:'🌊', rarity:'mythic',    baseValue:5000000},
+  cosmicTear:      {id:'cosmicTear',      name:'Cosmic Tear',        icon:'💧', rarity:'mythic',    baseValue:15000000},
+  galaxyHeart:     {id:'galaxyHeart',     name:'Galaxy Heart',       icon:'🫀', rarity:'mythic',    baseValue:50000000},
+  infinityCascade: {id:'infinityCascade', name:'Infinity Cascade',   icon:'♾️', rarity:'mythic',    baseValue:250000000},
+  bigBang:         {id:'bigBang',         name:'Big Bang',           icon:'💥', rarity:'mythic',    baseValue:1000000000},
 };
 
 // Case definitions — each references items from ITEM_CATALOG
+// RTP target: ~90-95% per case
 const CASES = [
   { name:'Starter Crate', icon:'📦', price:50, items:[
-    {id:'rustedCoin',w:30},{id:'brokenCompass',w:25},{id:'driftwood',w:25},{id:'seaGlass',w:20},
-    {id:'coconutShell',w:25},{id:'bronzeMedallion',w:12},{id:'pearlFragment',w:10},{id:'corkedBottle',w:10},
-    {id:'ancientMap',w:8},{id:'silverDagger',w:3},{id:'crystalOrb',w:2}
+    {id:'rustedCoin',w:20},{id:'brokenCompass',w:18},{id:'driftwood',w:18},{id:'seaGlass',w:16},
+    {id:'coconutShell',w:18},{id:'bronzeMedallion',w:10},{id:'pearlFragment',w:8},{id:'corkedBottle',w:8},
+    {id:'ancientMap',w:6},{id:'silverDagger',w:3},{id:'crystalOrb',w:2},{id:'enchantedRing',w:1}
   ]},
   { name:'Explorer Chest', icon:'🧰', price:200, items:[
-    {id:'bronzeMedallion',w:20},{id:'pearlFragment',w:18},{id:'corkedBottle',w:18},{id:'ancientMap',w:15},
+    {id:'bronzeMedallion',w:15},{id:'pearlFragment',w:14},{id:'corkedBottle',w:14},{id:'ancientMap',w:12},
     {id:'silverDagger',w:10},{id:'crystalOrb',w:8},{id:'enchantedRing',w:7},{id:'stormLantern',w:7},
-    {id:'goldenCompass',w:3},{id:'dragonScale',w:2},{id:'phoenixFeather',w:2},{id:'moonstone',w:2}
+    {id:'goldenCompass',w:4},{id:'dragonScale',w:3},{id:'phoenixFeather',w:3},{id:'moonstone',w:3}
   ]},
   { name:'Mystic Vault', icon:'🔮', price:500, items:[
-    {id:'silverDagger',w:12},{id:'crystalOrb',w:12},{id:'enchantedRing',w:10},{id:'stormLantern',w:10},
+    {id:'silverDagger',w:10},{id:'crystalOrb',w:10},{id:'enchantedRing',w:9},{id:'stormLantern',w:9},
     {id:'goldenCompass',w:8},{id:'dragonScale',w:7},{id:'phoenixFeather',w:7},{id:'moonstone',w:7},
-    {id:'voidShard',w:3},{id:'starforgedBlade',w:2},{id:'abyssalPearl',w:3},
-    {id:'dragonheart',w:0.8},{id:'etherealCrown',w:0.5},{id:'cosmicDust',w:0.6}
+    {id:'voidShard',w:4},{id:'starforgedBlade',w:3},{id:'abyssalPearl',w:3.5},
+    {id:'dragonheart',w:1.2},{id:'etherealCrown',w:0.8},{id:'cosmicDust',w:1}
   ]},
   { name:'Legendary Trove', icon:'👑', price:2000, items:[
-    {id:'goldenCompass',w:10},{id:'dragonScale',w:10},{id:'phoenixFeather',w:10},{id:'moonstone',w:10},
-    {id:'voidShard',w:8},{id:'starforgedBlade',w:7},{id:'abyssalPearl',w:7},
-    {id:'dragonheart',w:4},{id:'etherealCrown',w:3},{id:'cosmicDust',w:3.5},
-    {id:'infinityGem',w:1},{id:'islandRelic',w:0.6},{id:'casinoChip',w:0.4}
+    {id:'goldenCompass',w:8},{id:'dragonScale',w:8},{id:'phoenixFeather',w:8},{id:'moonstone',w:8},
+    {id:'voidShard',w:7},{id:'starforgedBlade',w:6},{id:'abyssalPearl',w:6},
+    {id:'dragonheart',w:5},{id:'etherealCrown',w:4},{id:'cosmicDust',w:4.5},
+    {id:'infinityGem',w:2},{id:'islandRelic',w:1.2},{id:'casinoChip',w:1}
+  ]},
+  { name:'Diamond Vault', icon:'💎', price:10000, items:[
+    {id:'voidShard',w:10},{id:'starforgedBlade',w:9},{id:'abyssalPearl',w:9},
+    {id:'dragonheart',w:8},{id:'etherealCrown',w:7},{id:'cosmicDust',w:7},
+    {id:'infinityGem',w:6},{id:'islandRelic',w:4},{id:'casinoChip',w:4},
+    {id:'obsidianCrown',w:2.5},{id:'solarFlare',w:1},{id:'voidEngine',w:0.4}
+  ]},
+  { name:'Whale Chest', icon:'🐋', price:100000, items:[
+    {id:'infinityGem',w:10},{id:'islandRelic',w:8},{id:'casinoChip',w:8},
+    {id:'obsidianCrown',w:7},{id:'solarFlare',w:5},{id:'voidEngine',w:3},
+    {id:'worldEater',w:1.5},{id:'tidalForce',w:0.8},{id:'cosmicTear',w:0.3}
+  ]},
+  { name:'Cosmic Crate', icon:'🌌', price:1000000, items:[
+    {id:'obsidianCrown',w:10},{id:'solarFlare',w:8},{id:'voidEngine',w:6},
+    {id:'worldEater',w:5},{id:'tidalForce',w:3},{id:'cosmicTear',w:1.5},
+    {id:'galaxyHeart',w:0.5},{id:'infinityCascade',w:0.15}
+  ]},
+  { name:'Big Bang Box', icon:'💥', price:50000000, items:[
+    {id:'voidEngine',w:10},{id:'worldEater',w:8},{id:'tidalForce',w:6},
+    {id:'cosmicTear',w:5},{id:'galaxyHeart',w:3},{id:'infinityCascade',w:1.5},
+    {id:'bigBang',w:0.5}
   ]}
 ];
 
@@ -7161,6 +7362,7 @@ function hiloCashout(){if(!hiloActive||hiloStreakCount===0)return;const p=hiloBe
 }
 function hiloGuess(guess){if(!hiloActive)return;if(hiloDeck.length<2)hiloDeck=newDeck();
   const next=hiloDeck.pop();const curRank=cardRankIdx(hiloCard),nextRank=cardRankIdx(next);
+  if(guess==='skip'){hiloCard=next;hiloRender();playSound(400,'sine',.04,.04);return;}
   let correct=false;
   if(guess==='higher')correct=nextRank>=curRank;else if(guess==='lower')correct=nextRank<=curRank;else correct=nextRank===curRank;
   hiloCard=next;
@@ -7267,10 +7469,15 @@ function sendChatMessage() {
   if (text.length > 200) text = text.slice(0, 200); // enforce length limit
   const username = window._currentUsername || 'Guest';
   if (window._sendChatMsg) {
-    window._sendChatMsg(text, username, 'msg').catch(()=>{});
+    window._sendChatMsg(text, username, 'msg').then(()=>{
+      // Scroll to bottom so user sees their message
+      const msgs = document.getElementById('chatMessages');
+      if(msgs) msgs.scrollTop = msgs.scrollHeight;
+    }).catch((e)=>{ showToast('Message failed to send', false); console.error('Chat error:', e); });
+  } else {
+    showToast('Chat not available', false);
   }
   input.value = '';
-  input.focus();
 }
 
 // Enter key to send
