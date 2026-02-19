@@ -175,9 +175,15 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
 .roul-bet-btn.green-btn.selected{background:rgba(0,170,68,.2);color:var(--green);border-color:var(--green);}
 
 /* ============ CASES ============ */
-#casesPanel{flex-direction:column;align-items:center;justify-content:center;gap:14px;
+#casesPanel{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:14px;
   background:radial-gradient(ellipse at top,#1a1a0a 0%,#0a0a1a 70%);overflow-y:auto;padding:70px 16px 20px!important;}
-.case-selector{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.case-selector{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-height:320px;overflow-y:auto;
+  padding:8px 4px;border:1px solid var(--border);border-radius:12px;background:rgba(0,0,0,.3);width:100%;
+  scrollbar-width:thin;scrollbar-color:var(--neon) transparent;}
+.case-selector::-webkit-scrollbar{width:6px;}
+.case-selector::-webkit-scrollbar-thumb{background:var(--neon);border-radius:3px;}
+.case-selector::after{content:'↕ Scroll for more cases';display:block;width:100%;text-align:center;
+  font-size:10px;color:var(--text2);padding:4px 0;flex-shrink:0;}
 .case-card{width:120px;padding:12px 8px;border-radius:12px;border:2px solid var(--border);
   background:var(--surface);cursor:pointer;text-align:center;transition:all .2s;}
 .case-card:hover{transform:translateY(-4px);border-color:var(--gold);}
@@ -809,6 +815,42 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
 @keyframes fadeInOut{
   0%{opacity:0;}10%{opacity:1;}75%{opacity:1;}100%{opacity:0;}
 }
+
+/* ===== PRESTIGE BADGES ===== */
+.prestige-badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:4px;font-weight:700;letter-spacing:1px;margin-left:4px;vertical-align:middle;font-family:'Orbitron',sans-serif;}
+.prestige-1{background:linear-gradient(135deg,#cd7f32,#8b4513);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);}
+.prestige-2{background:linear-gradient(135deg,#c0c0c0,#808080);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5);}
+.prestige-3{background:linear-gradient(135deg,#ffd700,#ff8c00);color:#1a1a2e;text-shadow:0 1px 2px rgba(255,255,255,.3);}
+.prestige-4{background:linear-gradient(135deg,#00f0ff,#0066ff);color:#fff;text-shadow:0 0 6px rgba(0,240,255,.5);}
+.prestige-5{background:linear-gradient(135deg,#ff00ff,#6b2fd9);color:#fff;text-shadow:0 0 8px rgba(255,0,255,.5);animation:prestigeGlow 2s ease-in-out infinite;}
+@keyframes prestigeGlow{0%,100%{box-shadow:0 0 4px rgba(255,0,255,.4);}50%{box-shadow:0 0 12px rgba(255,0,255,.8);}}
+.prestige-btn{background:linear-gradient(135deg,var(--gold),#ff8800);color:#1a1a2e;border:none;border-radius:8px;padding:10px 20px;font-family:'Orbitron',sans-serif;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:2px;transition:all .2s;display:flex;align-items:center;gap:8px;margin:12px auto;}
+.prestige-btn:hover{transform:scale(1.05);box-shadow:0 0 20px rgba(255,215,0,.5);}
+.prestige-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.prestige-confirm-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);z-index:10002;display:flex;align-items:center;justify-content:center;}
+.prestige-confirm-box{background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:24px;max-width:400px;width:90vw;text-align:center;}
+
+/* ===== DUELS ===== */
+#duelsPanel .duel-lobby{max-width:600px;margin:0 auto;padding:16px;}
+.duel-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;transition:all .2s;}
+.duel-card:hover{border-color:var(--gold);box-shadow:0 0 10px rgba(255,215,0,.15);}
+.duel-card .duel-host{font-family:'Orbitron',sans-serif;font-size:13px;color:var(--text);}
+.duel-card .duel-wager{font-family:'Orbitron',sans-serif;font-size:16px;color:var(--gold);font-weight:900;}
+.duel-card .duel-join{background:linear-gradient(135deg,var(--green),#00cc88);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-family:'Orbitron',sans-serif;font-size:11px;cursor:pointer;font-weight:700;letter-spacing:1px;transition:all .2s;}
+.duel-card .duel-join:hover{transform:scale(1.05);box-shadow:0 0 12px rgba(0,230,118,.4);}
+.duel-create-box{background:var(--surface);border:2px solid var(--gold);border-radius:12px;padding:20px;margin-bottom:16px;text-align:center;}
+.duel-create-box input{width:140px;text-align:center;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px;color:var(--text);font-family:'Orbitron',sans-serif;font-size:14px;}
+.duel-create-btn{background:linear-gradient(135deg,var(--gold),#ff8800);color:#1a1a2e;border:none;border-radius:8px;padding:10px 24px;font-family:'Orbitron',sans-serif;font-size:13px;cursor:pointer;font-weight:900;letter-spacing:2px;margin-top:10px;transition:all .2s;}
+.duel-create-btn:hover{transform:scale(1.05);box-shadow:0 0 16px rgba(255,215,0,.5);}
+.duel-vs{font-family:'Orbitron',sans-serif;font-size:36px;color:var(--gold);text-shadow:0 0 20px rgba(255,215,0,.5);margin:12px 0;letter-spacing:6px;}
+.duel-player{text-align:center;flex:1;}
+.duel-player-name{font-family:'Orbitron',sans-serif;font-size:16px;color:var(--text);margin-bottom:4px;}
+.duel-player-bet{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--gold);}
+.duel-result{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;letter-spacing:3px;margin:12px 0;}
+.duel-coin{font-size:64px;display:inline-block;animation:coinSpin 0.8s linear infinite;}
+@keyframes coinSpin{0%{transform:rotateY(0deg);}100%{transform:rotateY(360deg);}}
+.duel-history{margin-top:16px;}
+.duel-history-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:4px;font-size:11px;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -892,6 +934,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
     <div class="nav-dropdown" onmouseenter="openCat(this.parentElement)" onmouseleave="closeCat(this.parentElement)">
       <button class="nav-btn" onclick="switchGame('luck',this)"><span class="icon">🎲</span>Push Your Luck</button>
       <button class="nav-btn" onclick="switchGame('stocks',this)"><span class="icon">📊</span>Stocks</button>
+      <button class="nav-btn" onclick="switchGame('duels',this)"><span class="icon">⚔️</span>Duels</button>
     </div>
   </div>
 
@@ -1563,7 +1606,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
 
 <!-- ============ HILO ============ -->
 <div class="game-panel" id="hiloPanel">
-  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Press <strong>START</strong> — a card is revealed.</li><li>Guess if the next card will be <strong>Higher</strong> or <strong>Lower</strong>.</li><li>Each correct guess multiplies your winnings — the streak continues!</li><li>The probability of each choice is shown on the buttons.</li><li>Press <strong>CASH OUT</strong> anytime to collect, or risk it for more!</li></ul></div></div>
+  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Press <strong>START</strong> — a card is revealed.</li><li>Guess if the next card will be <strong>Higher</strong> or <strong>Lower</strong>.</li><li><strong>Ties (same rank) count as WRONG</strong> — the next card must be strictly higher or lower!</li><li>Each correct guess multiplies your winnings by 1.88×.</li><li>Press <strong>SKIP</strong> to swap the current card — but each skip costs <strong>10% of your payout</strong>.</li><li>Max multiplier is capped at <strong>500×</strong>.</li><li>Press <strong>CASH OUT</strong> anytime to collect, or risk it for more!</li></ul></div></div>
   <div id="hiloStreak">Start a game to begin!</div>
   
   <div class="hilo-card" id="hiloCard" style="color:#888;">?<br>?</div>
@@ -1582,6 +1625,55 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
     </div>
     <button class="action-btn primary" id="hiloStartBtn" onclick="hiloStart()">START</button>
     <button class="action-btn danger" id="hiloCashoutBtn" onclick="hiloCashout()" style="display:none;">CASH OUT</button>
+  </div>
+</div>
+
+<!-- ============ DUELS PANEL ============ -->
+<div class="game-panel" id="duelsPanel">
+  <div class="duel-lobby">
+    <div style="text-align:center;margin-bottom:12px;">
+      <span style="font-family:'Orbitron';font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--gold),#ff4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">⚔️ COINFLIP DUELS</span>
+      <div style="font-size:11px;color:var(--text2);margin-top:4px;">Challenge other players! Winner takes all.</div>
+    </div>
+    <!-- Create Duel -->
+    <div class="duel-create-box">
+      <div style="font-family:'Orbitron';font-size:12px;color:var(--text2);letter-spacing:2px;margin-bottom:8px;">CREATE A DUEL</div>
+      <input id="duelWagerInput" type="number" min="10" value="100" placeholder="Wager">
+      <br>
+      <button class="duel-create-btn" onclick="duelCreate()">⚔️ CREATE DUEL</button>
+    </div>
+    <!-- Active Duels List -->
+    <div style="font-family:'Orbitron';font-size:12px;color:var(--text2);letter-spacing:2px;margin-bottom:8px;">OPEN DUELS</div>
+    <div id="duelList" style="min-height:60px;">
+      <div style="text-align:center;color:var(--text2);font-size:12px;padding:20px;">No open duels. Create one!</div>
+    </div>
+    <!-- Duel History -->
+    <div class="duel-history">
+      <div style="font-family:'Orbitron';font-size:12px;color:var(--text2);letter-spacing:2px;margin-bottom:8px;">RECENT DUELS</div>
+      <div id="duelHistory"></div>
+    </div>
+  </div>
+  <!-- Duel Game Overlay -->
+  <div id="duelGameOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.95);z-index:10003;display:none;align-items:center;justify-content:center;">
+    <div style="text-align:center;max-width:500px;width:90vw;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:16px;">
+        <div class="duel-player">
+          <div class="duel-player-name" id="duelP1Name">Player 1</div>
+          <div class="duel-player-bet">HEADS</div>
+        </div>
+        <div class="duel-vs">VS</div>
+        <div class="duel-player">
+          <div class="duel-player-name" id="duelP2Name">Player 2</div>
+          <div class="duel-player-bet">TAILS</div>
+        </div>
+      </div>
+      <div id="duelCoinArea" style="min-height:80px;margin:16px 0;">
+        <div class="duel-coin" id="duelCoin">🪙</div>
+      </div>
+      <div id="duelResultText" class="duel-result" style="display:none;"></div>
+      <div id="duelWagerText" style="font-family:'Orbitron';font-size:14px;color:var(--gold);margin-bottom:8px;"></div>
+      <button id="duelCloseBtn" onclick="duelCloseOverlay()" style="display:none;padding:10px 24px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:'Orbitron';font-size:12px;margin-top:12px;">CLOSE</button>
+    </div>
   </div>
 </div>
 
@@ -1613,6 +1705,8 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
       <button class="lb-tab" onclick="switchLB('baccarat',this)">🂡 Baccarat</button>
       <button class="lb-tab" onclick="switchLB('hilo',this)">⬆️ Hi-Lo</button>
       <button class="lb-tab" onclick="switchLB('pyl',this)">🍀 Luck</button>
+      <button class="lb-tab" onclick="switchLB('duels',this)">⚔️ Duels</button>
+      <button class="lb-tab" onclick="switchLB('prestige',this)">👑 Prestige</button>
     </div>
     <div class="lb-table" id="lbTable">
       <div class="lb-empty">Loading...</div>
@@ -1627,11 +1721,13 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
       <div style="font-size:48px;margin-bottom:8px;cursor:pointer;" id="profileAvatar" onclick="openPfpPicker()" title="Click to change avatar">👤</div>
       <button onclick="openPfpPicker()" style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 12px;color:var(--text2);font-size:10px;cursor:pointer;margin-bottom:6px;font-family:Inter,sans-serif;">✏️ Change Avatar</button>
       <div style="font-family:'Orbitron';font-size:22px;font-weight:900;color:var(--gold);letter-spacing:3px;" id="profileName">PLAYER</div>
+      <div id="profilePrestigeBadge" style="margin-top:4px;"></div>
       <div style="font-size:11px;color:var(--text2);letter-spacing:2px;margin-top:4px;" id="profileJoined"></div>
     </div>
     <!-- PFP Picker Modal -->
     <div id="pfpPickerOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:10001;align-items:center;justify-content:center;">
       <div style="background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:20px;max-width:380px;width:90vw;max-height:70vh;overflow-y:auto;">
+```
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
           <span style="font-family:'Orbitron';font-size:14px;color:var(--gold);">CHOOSE AVATAR</span>
           <button onclick="closePfpPicker()" style="background:none;border:none;color:var(--text);font-size:18px;cursor:pointer;">✕</button>
@@ -1674,6 +1770,14 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
     <div style="margin-bottom:16px;">
       <div style="font-family:'Orbitron';font-size:13px;color:var(--gold);letter-spacing:2px;margin-bottom:8px;">📦 INVENTORY VALUE</div>
       <div id="profInvValue" style="font-family:'Orbitron';font-size:20px;color:var(--green);">$0</div>
+    </div>
+    <!-- Prestige Section -->
+    <div style="margin-bottom:16px;padding:16px;background:linear-gradient(135deg,rgba(255,215,0,.05),rgba(255,136,0,.05));border:1px solid rgba(255,215,0,.2);border-radius:12px;text-align:center;">
+      <div style="font-family:'Orbitron';font-size:13px;color:var(--gold);letter-spacing:2px;margin-bottom:8px;">👑 PRESTIGE</div>
+      <div style="font-family:'Orbitron';font-size:28px;color:var(--gold);margin-bottom:4px;" id="profPrestigeLevel">0</div>
+      <div style="font-size:10px;color:var(--text2);margin-bottom:8px;">Reset your balance to $1,000 and earn a prestige rank.<br>Higher prestige = exclusive badges in chat & leaderboards.</div>
+      <div style="font-size:10px;color:var(--text2);margin-bottom:10px;" id="prestigeReqText"></div>
+      <button class="prestige-btn" onclick="prestigeConfirm()" id="prestigeBtn">👑 PRESTIGE UP</button>
     </div>
   </div>
 </div>
@@ -2119,7 +2223,8 @@ window._authSubmit = async (username, password, isRegister) => {
         plinko: { played: 0, won: 0, biggestWin: 0 },
         pyl: { played: 0, highScore: 0 }
       },
-      dailyBonus: { lastClaimed: 0, streak: 0 }
+      dailyBonus: { lastClaimed: 0, streak: 0 },
+      prestige: 0
     });
     return cred.user;
   } else {
@@ -2152,6 +2257,7 @@ onAuthStateChanged(auth, async (user) => {
       if (data.dailyBonus) window._loadDailyBonus(data.dailyBonus);
       if (data.achievements) window._loadAchievements(data.achievements);
       if (data.tradeHistory) window._loadTradeHistory(data.tradeHistory);
+      if (data.prestige != null) window._loadPrestige(data.prestige);
     } else {
       currentUsername = emailToUsername(user.email);
     }
@@ -2207,6 +2313,7 @@ window._firebaseSave = () => {
     dailyBonus: window._getDailyBonus ? window._getDailyBonus() : null,
     achievements: window._getAchievements ? window._getAchievements() : null,
     tradeHistory: window._getTradeHistory ? window._getTradeHistory() : null,
+    prestige: window._getPrestige ? window._getPrestige() : null,
   };
   // Clean nulls
   Object.keys(saveData).forEach(k => { if (saveData[k] == null) delete saveData[k]; });
@@ -2863,6 +2970,16 @@ window._pylCreateRoom = (roomCode, wager) => {
   });
 };
 
+// Read-only room peek (checks existence + wager without joining)
+window._pylPeekRoom = async (roomCode) => {
+  const roomRef = ref(db, 'casino/pylRooms/' + roomCode);
+  const snap = await get(roomRef);
+  if (!snap.exists()) return null;
+  const data = snap.val();
+  if (data.status !== 'waiting') return null;
+  return data;
+};
+
 window._pylJoinRoom = async (roomCode) => {
   const sid = window._currentPylSessionId;
   const name = window._currentUsername || sid.slice(-5);
@@ -2949,6 +3066,16 @@ window._pylSubmitLeaderboard = (score) => {
   });
 };
 
+// ============ FIREBASE BRIDGE FOR GAME SCRIPTS ============
+// Expose Firebase functions so the main game script can use them for Prestige & Duels
+window._fbRef = (path) => ref(db, path);
+window._fbSet = (path, data) => set(ref(db, path), data);
+window._fbGet = (path) => get(ref(db, path));
+window._fbUpdate = (path, data) => update(ref(db, path), data);
+window._fbRemove = (path) => remove(ref(db, path));
+window._fbOnValue = (path, cb) => { const r = ref(db, path); onValue(r, cb); return () => off(r); };
+window._fbOnDisconnect = (path) => onDisconnect(ref(db, path));
+
 // ============ GLOBAL CHAT (Firebase) ============
 let chatListener = null;
 let chatPresenceRef = null;
@@ -2998,7 +3125,8 @@ window._sendChatMsg = async (text, username, type) => {
     user: username || 'Guest',
     text: text.slice(0, 200),
     type: type || 'msg', // 'msg', 'win', 'system'
-    ts: Date.now()
+    ts: Date.now(),
+    prestige: window._getPrestige ? window._getPrestige() : 0
   });
   // Trim old messages (keep last 100)
   const snap = await get(chatRef);
@@ -3273,9 +3401,17 @@ let gameStats = {
   scratch: { played: 0, won: 0, biggestWin: 0 },
   wheel: { played: 0, won: 0, biggestWin: 0 },
   baccarat: { played: 0, won: 0, biggestWin: 0 },
-  hilo: { played: 0, won: 0, biggestWin: 0 }
+  hilo: { played: 0, won: 0, biggestWin: 0 },
+  duels: { played: 0, won: 0, biggestWin: 0 }
 };
 let dailyBonusData = { lastClaimed: 0, streak: 0 };
+
+// Global max bet to prevent runaway compounding (client-side safety net)
+const MAX_BET = 1000000; // $1M max bet across all games
+function checkMaxBet(bet, game) {
+  if (bet > MAX_BET) { showToast('Max bet is $' + MAX_BET.toLocaleString() + ' for ' + game, false); return false; }
+  return true;
+}
 
 window._loadStats = (s) => { if (s) playerStats = { ...playerStats, ...s }; };
 window._loadGameStats = (gs) => { if (!gs) return; Object.keys(gs).forEach(g => { gameStats[g] = { ...(gameStats[g]||{}), ...gs[g] }; }); };
@@ -3416,6 +3552,8 @@ const fmtBig = (v) => {
       hilo: { col: 'Biggest Win', fmt: fmtBig },
       pyl: { col: 'High Score', fmt: v => v.toLocaleString() + ' pts' },
       profit: { col: 'Total Profit', fmt: fmtProfit },
+      duels: { col: 'Biggest Win', fmt: fmtBig },
+      prestige: { col: 'Prestige Level', fmt: v => '👑 ' + v },
     };
     const cfg = labels[category] || labels.richest;
 
@@ -3515,6 +3653,7 @@ function switchGame(game,btn){
   if(game==='profile')renderProfile();
   if(game==='stocks')renderStocks();
   if(game==='leaderboard')loadLeaderboard(currentLBCategory);
+  if(game==='duels')duelLoadLobby();
   if(game==='wheel'&&!wheelDrawn)drawWheel(0);
   if(game==='keno')kenoInit();
   if(game==='horses')horseInit();
@@ -3799,6 +3938,328 @@ function renderProfile() {
       <div style="font-size:10px;color:var(--green)">Best: $${(s.biggestWin||0).toFixed(0)}</div>
     </div>`;
   }).filter(Boolean).join('');
+  // Prestige
+  renderPrestige();
+}
+
+// ============ PRESTIGE SYSTEM ============
+let prestigeLevel = 0;
+const PRESTIGE_REQS = [10000, 50000, 250000, 1000000, 10000000]; // Balance needed to prestige at each level
+const PRESTIGE_NAMES = ['Bronze','Silver','Gold','Diamond','Legendary'];
+const PRESTIGE_COLORS = ['prestige-1','prestige-2','prestige-3','prestige-4','prestige-5'];
+
+window._loadPrestige = (val) => { prestigeLevel = val || 0; };
+window._getPrestige = () => prestigeLevel;
+
+function getPrestigeReq() {
+  if (prestigeLevel >= PRESTIGE_REQS.length) return PRESTIGE_REQS[PRESTIGE_REQS.length - 1] * Math.pow(5, prestigeLevel - PRESTIGE_REQS.length + 1);
+  return PRESTIGE_REQS[prestigeLevel];
+}
+
+function getPrestigeBadgeHTML(level) {
+  if (!level || level <= 0) return '';
+  const tier = Math.min(level, 5);
+  const name = tier <= PRESTIGE_NAMES.length ? PRESTIGE_NAMES[tier - 1] : PRESTIGE_NAMES[PRESTIGE_NAMES.length - 1];
+  const cls = tier <= PRESTIGE_COLORS.length ? PRESTIGE_COLORS[tier - 1] : PRESTIGE_COLORS[PRESTIGE_COLORS.length - 1];
+  return `<span class="prestige-badge ${cls}">P${level} ${name}</span>`;
+}
+
+function renderPrestige() {
+  const el = document.getElementById('profPrestigeLevel');
+  if (el) el.textContent = prestigeLevel;
+  const badge = document.getElementById('profilePrestigeBadge');
+  if (badge) badge.innerHTML = prestigeLevel > 0 ? getPrestigeBadgeHTML(prestigeLevel) : '<span style="font-size:11px;color:var(--text2);">Not yet prestiged</span>';
+  const req = getPrestigeReq();
+  const reqEl = document.getElementById('prestigeReqText');
+  if (reqEl) reqEl.textContent = 'Requires $' + formatBalance(req) + ' balance to prestige.';
+  const btn = document.getElementById('prestigeBtn');
+  if (btn) btn.disabled = balance < req;
+}
+
+function prestigeConfirm() {
+  const req = getPrestigeReq();
+  if (balance < req) { showToast('Need $' + formatBalance(req) + ' to prestige!', false); return; }
+  // Show confirmation overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'prestige-confirm-overlay';
+  overlay.innerHTML = `<div class="prestige-confirm-box">
+    <div style="font-size:36px;margin-bottom:8px;">👑</div>
+    <div style="font-family:'Orbitron';font-size:18px;color:var(--gold);margin-bottom:8px;">PRESTIGE UP?</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">
+      Your balance will reset to <b style="color:var(--gold);">$1,000</b><br>
+      You'll go from <b>Prestige ${prestigeLevel}</b> → <b style="color:var(--gold);">Prestige ${prestigeLevel + 1}</b><br>
+      <span style="color:var(--text2);font-size:10px;">Your inventory, stats and achievements are kept.</span>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button onclick="this.closest('.prestige-confirm-overlay').remove()" style="padding:10px 20px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:'Orbitron';font-size:11px;">CANCEL</button>
+      <button onclick="prestigeExecute();this.closest('.prestige-confirm-overlay').remove()" style="padding:10px 20px;background:linear-gradient(135deg,var(--gold),#ff8800);border:none;border-radius:8px;color:#1a1a2e;cursor:pointer;font-family:'Orbitron';font-size:11px;font-weight:900;">👑 PRESTIGE</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+
+function prestigeExecute() {
+  const req = getPrestigeReq();
+  if (balance < req) return;
+  prestigeLevel++;
+  balance = 1000;
+  updateBalDisplay();
+  showToast('👑 PRESTIGE ' + prestigeLevel + '! Welcome to ' + (PRESTIGE_NAMES[Math.min(prestigeLevel, PRESTIGE_NAMES.length) - 1] || 'Legendary') + '!');
+  playWinSound();
+  spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 50);
+  // Update leaderboard
+  if (window._currentPlayerId && window._currentUsername) {
+    window._fbSet('casino/leaderboards/prestige/' + window._currentPlayerId, {
+      name: window._currentUsername,
+      value: prestigeLevel,
+      updated: Date.now()
+    }).catch(() => {});
+  }
+  firebaseSave();
+  renderPrestige();
+}
+
+// ============ COINFLIP DUELS ============
+let duelRoomUnsub = null;
+let duelLobbyUnsub = null;
+let currentDuelRoom = null;
+let duelHistory = [];
+try { duelHistory = JSON.parse(localStorage.getItem('casino_duel_history') || '[]'); } catch(e) { duelHistory = []; }
+
+function duelGenCode() { return 'D' + Math.random().toString(36).substr(2, 6).toUpperCase(); }
+
+async function duelCreate() {
+  if (!window._currentPlayerId) { showToast('Login required!', false); return; }
+  const wager = parseFloat(document.getElementById('duelWagerInput').value) || 100;
+  if (wager < 10) { showToast('Minimum wager is $10', false); return; }
+  if (wager > balance) { showToast('Not enough balance!', false); return; }
+  const code = duelGenCode();
+  balance -= wager;
+  updateBalDisplay();
+  await window._fbSet('casino/duelRooms/' + code, {
+    host: window._currentPlayerId,
+    hostName: window._currentUsername,
+    hostPrestige: prestigeLevel,
+    wager: wager,
+    status: 'waiting',
+    created: Date.now()
+  });
+  // Auto-cleanup if host disconnects
+  window._fbOnDisconnect('casino/duelRooms/' + code).remove();
+  showToast('Duel created! Waiting for opponent...', true);
+  playClickSound();
+  duelLoadLobby();
+}
+
+async function duelJoin(code) {
+  if (!window._currentPlayerId) { showToast('Login required!', false); return; }
+  const snap = await window._fbGet('casino/duelRooms/' + code);
+  if (!snap.exists()) { showToast('Duel not found!', false); return; }
+  const room = snap.val();
+  if (room.status !== 'waiting') { showToast('Duel already started!', false); return; }
+  if (room.host === window._currentPlayerId) { showToast("Can't join your own duel!", false); return; }
+  if (room.wager > balance) { showToast('Not enough balance! Need $' + room.wager.toFixed(2), false); return; }
+  // Deduct wager
+  balance -= room.wager;
+  updateBalDisplay();
+  // Join the room
+  await window._fbUpdate('casino/duelRooms/' + code, {
+    challenger: window._currentPlayerId,
+    challengerName: window._currentUsername,
+    challengerPrestige: prestigeLevel,
+    status: 'playing'
+  });
+  playClickSound();
+  // Both players watch for result
+  duelWatchGame(code, room.wager);
+}
+
+function duelWatchGame(code, wager) {
+  currentDuelRoom = code;
+  const overlay = document.getElementById('duelGameOverlay');
+  overlay.style.display = 'flex';
+  document.getElementById('duelCloseBtn').style.display = 'none';
+  document.getElementById('duelResultText').style.display = 'none';
+  document.getElementById('duelCoin').style.animation = 'coinSpin 0.8s linear infinite';
+  document.getElementById('duelWagerText').textContent = 'Wager: $' + wager.toFixed(2) + ' each';
+
+  if (duelRoomUnsub) { duelRoomUnsub(); duelRoomUnsub = null; }
+  
+  duelRoomUnsub = window._fbOnValue('casino/duelRooms/' + code, (snap) => {
+    if (!snap.exists()) return;
+    const room = snap.val();
+    document.getElementById('duelP1Name').textContent = room.hostName || 'Host';
+    document.getElementById('duelP2Name').textContent = room.challengerName || 'Waiting...';
+    
+    if (room.status === 'playing' && !room.result) {
+      // Determine result (host determines)
+      if (room.host === window._currentPlayerId) {
+        setTimeout(() => duelResolve(code), 2000);
+      }
+    }
+    
+    if (room.result) {
+      duelShowResult(room);
+    }
+  });
+}
+
+async function duelResolve(code) {
+  const snap = await window._fbGet('casino/duelRooms/' + code);
+  if (!snap.exists()) return;
+  const room = snap.val();
+  if (room.result) return; // Already resolved
+  
+  // Coinflip: 50/50
+  const flip = Math.random() < 0.5 ? 'heads' : 'tails';
+  const winnerId = flip === 'heads' ? room.host : room.challenger;
+  const winnerName = flip === 'heads' ? room.hostName : room.challengerName;
+  const loserId = flip === 'heads' ? room.challenger : room.host;
+  const loserName = flip === 'heads' ? room.challengerName : room.hostName;
+  const pot = room.wager * 2;
+  
+  await window._fbUpdate('casino/duelRooms/' + code, {
+    result: flip,
+    winner: winnerId,
+    winnerName: winnerName,
+    loserId: loserId,
+    loserName: loserName,
+    pot: pot,
+    status: 'finished',
+    finishedAt: Date.now()
+  });
+}
+
+function duelShowResult(room) {
+  const coin = document.getElementById('duelCoin');
+  coin.style.animation = 'none';
+  coin.textContent = room.result === 'heads' ? '🟡' : '⚫';
+  
+  const resultEl = document.getElementById('duelResultText');
+  resultEl.style.display = 'block';
+  const isWinner = room.winner === window._currentPlayerId;
+  
+  if (isWinner) {
+    resultEl.textContent = 'YOU WIN!';
+    resultEl.style.color = 'var(--green)';
+    // Credit winnings
+    balance += room.pot;
+    updateBalDisplay();
+    playWinSound();
+    spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 30);
+    showToast('+$' + room.pot.toFixed(2) + ' from duel!');
+    recordGame('duels', room.wager, room.pot);
+  } else if (room.loserId === window._currentPlayerId) {
+    resultEl.textContent = 'YOU LOSE!';
+    resultEl.style.color = 'var(--red)';
+    playLoseSound();
+    recordGame('duels', room.wager, 0);
+  } else {
+    resultEl.textContent = room.winnerName + ' WINS!';
+    resultEl.style.color = 'var(--gold)';
+  }
+  
+  document.getElementById('duelCloseBtn').style.display = '';
+  document.getElementById('duelWagerText').textContent = room.winnerName + ' wins $' + room.pot.toFixed(2) + '!';
+  
+  // Save to local history
+  duelHistory.unshift({ winner: room.winnerName, loser: room.loserName, pot: room.pot, time: Date.now() });
+  if (duelHistory.length > 20) duelHistory.length = 20;
+  localStorage.setItem('casino_duel_history', JSON.stringify(duelHistory));
+  
+  // Broadcast big wins
+  if (isWinner && room.pot >= 500 && window._broadcastWin) {
+    window._broadcastWin(window._currentUsername, 'Duel', room.pot);
+  }
+  
+  // Cleanup room after 10 seconds
+  if (room.host === window._currentPlayerId) {
+    setTimeout(() => {
+      window._fbRemove('casino/duelRooms/' + currentDuelRoom).catch(() => {});
+    }, 10000);
+  }
+  
+  if (duelRoomUnsub) { duelRoomUnsub(); duelRoomUnsub = null; }
+  firebaseSave();
+}
+
+function duelCloseOverlay() {
+  document.getElementById('duelGameOverlay').style.display = 'none';
+  currentDuelRoom = null;
+  duelLoadLobby();
+}
+
+function duelLoadLobby() {
+  // Listen for all open duels
+  if (duelLobbyUnsub) { duelLobbyUnsub(); duelLobbyUnsub = null; }
+  duelLobbyUnsub = window._fbOnValue('casino/duelRooms', (snap) => {
+    const list = document.getElementById('duelList');
+    if (!snap.exists()) {
+      list.innerHTML = '<div style="text-align:center;color:var(--text2);font-size:12px;padding:20px;">No open duels. Create one!</div>';
+      return;
+    }
+    const rooms = snap.val();
+    let html = '';
+    let hasOpen = false;
+    Object.entries(rooms).forEach(([code, room]) => {
+      if (room.status !== 'waiting') return;
+      // Don't show stale rooms (older than 5 minutes)
+      if (Date.now() - room.created > 300000) return;
+      hasOpen = true;
+      const isHost = room.host === window._currentPlayerId;
+      const badge = room.hostPrestige > 0 ? getPrestigeBadgeHTML(room.hostPrestige) : '';
+      html += `<div class="duel-card">
+        <div>
+          <div class="duel-host">${escapeHtml(room.hostName || 'Unknown')} ${badge}</div>
+          <div style="font-size:10px;color:var(--text2);">${isHost ? 'Your duel — waiting...' : 'Open duel'}</div>
+        </div>
+        <div class="duel-wager">$${formatBalance(room.wager)}</div>
+        ${isHost
+          ? `<button class="duel-join" style="background:var(--red);" onclick="duelCancel('${code}')">CANCEL</button>`
+          : `<button class="duel-join" onclick="duelJoin('${code}')">JOIN ⚔️</button>`}
+      </div>`;
+    });
+    if (!hasOpen) {
+      html = '<div style="text-align:center;color:var(--text2);font-size:12px;padding:20px;">No open duels. Create one!</div>';
+    }
+    list.innerHTML = html;
+  });
+  
+  // Render local duel history
+  renderDuelHistory();
+}
+
+async function duelCancel(code) {
+  const snap = await window._fbGet('casino/duelRooms/' + code);
+  if (snap.exists()) {
+    const room = snap.val();
+    if (room.host === window._currentPlayerId && room.status === 'waiting') {
+      balance += room.wager; // Refund
+      updateBalDisplay();
+      await window._fbRemove('casino/duelRooms/' + code);
+      showToast('Duel cancelled, wager refunded.', true);
+    }
+  }
+}
+
+function renderDuelHistory() {
+  const el = document.getElementById('duelHistory');
+  if (!el) return;
+  if (duelHistory.length === 0) {
+    el.innerHTML = '<div style="text-align:center;color:var(--text2);font-size:11px;padding:8px;">No duels yet.</div>';
+    return;
+  }
+  el.innerHTML = duelHistory.slice(0, 10).map(d => {
+    const ago = Math.floor((Date.now() - d.time) / 60000);
+    const timeStr = ago < 1 ? 'just now' : ago + 'm ago';
+    return `<div class="duel-history-item">
+      <span style="color:var(--green);">${escapeHtml(d.winner)}</span>
+      <span style="color:var(--text2);">beat</span>
+      <span style="color:var(--red);">${escapeHtml(d.loser)}</span>
+      <span style="color:var(--gold);font-family:'Orbitron';">$${formatBalance(d.pot)}</span>
+      <span style="color:var(--text2);">${timeStr}</span>
+    </div>`;
+  }).join('');
 }
 
 // ============ TRADING SYSTEM (Multi-Step) ============
@@ -3954,8 +4415,20 @@ async function loadTradeRequests() {
 async function respondTradeRequest(reqId, fromName, fromUid, accepted) {
   if (!window._respondTradeRequest) return;
   await window._respondTradeRequest(reqId, accepted);
-  if (accepted) showToast('✅ Accepted trade request from ' + fromName, true);
-  else showToast('Declined trade request from ' + fromName, false);
+  if (accepted) {
+    showToast('✅ Accepted! Waiting for ' + fromName + ' to send their items...', true);
+    // Switch to Inbox tab and start polling for the incoming trade offer
+    switchTradeTab('inbox', document.getElementById('tradeInboxTab'));
+    // Poll inbox for the incoming trade from sender (they compose after acceptance)
+    let pollCount = 0;
+    const pollInbox = setInterval(() => {
+      loadIncomingTrades();
+      pollCount++;
+      if (pollCount > 30) clearInterval(pollInbox); // stop after ~30s
+    }, 1000);
+  } else {
+    showToast('Declined trade request from ' + fromName, false);
+  }
   loadIncomingTrades();
   loadTradeRequests();
 }
@@ -4714,6 +5187,7 @@ function spinSlots(){
   const bet=parseFloat(document.getElementById('slotsBet').value)||10;
   if(bet>balance){showToast('Not enough balance!',false);return;}
   if(bet<=0)return;
+  if(!checkMaxBet(bet,'Slots'))return;
   slotsSpinning=true;balance-=bet;updateBalDisplay();
   document.getElementById('spinBtn').disabled=true;
   playClickSound();
@@ -4862,7 +5336,6 @@ function startCrash(){
   const bet=parseFloat(document.getElementById('crashBet').value)||10;
   if(bet>balance){showToast('Not enough balance!',false);return;}
   if(bet<=0)return;
-
   crashBetAmount=bet;balance-=bet;updateBalDisplay();
   crashCashedOut=false;crashRunning=true;
   crashMultVal=1;crashHistory=[{t:0,m:1}];
@@ -4989,6 +5462,7 @@ function spinRoulette(){
   const bet=parseFloat(document.getElementById('roulBetInput').value)||10;
   if(bet>balance){showToast('Not enough balance!',false);return;}
   if(bet<=0)return;
+  if(!checkMaxBet(bet,'Roulette'))return;
 
   rouletteSpinning=true;balance-=bet;updateBalDisplay();
   document.getElementById('roulSpinBtn').disabled=true;
@@ -5952,6 +6426,7 @@ function dropPlinkoBall(){
   const bet=parseFloat(document.getElementById('plinkoBet').value)||10;
   if(bet>balance){showToast('Not enough balance!',false);if(autoDropping)toggleAutoDrop();plinkoDropLock=false;return;}
   if(bet<=0){plinkoDropLock=false;return;}
+  if(!checkMaxBet(bet,'Plinko')){plinkoDropLock=false;return;}
 
   balance-=bet;updateBalDisplay();
   plinkoDropLock=false;
@@ -6228,24 +6703,30 @@ function pylJoinRoom() {
   if (!code) { showToast('Enter a room code!', false); return; }
 
   playClickSound();
-  document.getElementById('pylRoomStatus').textContent = 'Joining...';
+  document.getElementById('pylRoomStatus').textContent = 'Checking room...';
 
   if (window._pylJoinRoom) {
-    window._pylJoinRoom(code).then(data => {
+    // PRE-CHECK: read room data first to validate balance BEFORE joining on Firebase
+    window._pylPeekRoom(code).then(data => {
       if (!data) {
         showToast('Room not found or already started!', false);
         document.getElementById('pylRoomStatus').textContent = 'Room not found. Try again.';
         return;
       }
+      const wager = data.wager || 100;
+      if (wager > balance) {
+        showToast('Not enough balance for $' + wager + ' wager!', false);
+        document.getElementById('pylRoomStatus').textContent = 'Insufficient balance ($' + wager + ' needed).';
+        return;
+      }
+      // Balance OK — now actually join on Firebase
+      document.getElementById('pylRoomStatus').textContent = 'Joining...';
+      return window._pylJoinRoom(code);
+    }).then(data => {
+      if (!data) return; // already handled above
 
       pylRoomCode = code;
       pylWagerAmount = data.wager || 100;
-
-      if (pylWagerAmount > balance) {
-        showToast('Not enough balance for $' + pylWagerAmount + ' wager!', false);
-        document.getElementById('pylRoomStatus').textContent = 'Insufficient balance.';
-        return;
-      }
 
       balance -= pylWagerAmount;
       updateBalDisplay();
@@ -7013,6 +7494,7 @@ function bjHandVal(h){let v=0,a=0;h.forEach(c=>{v+=cardNumVal(c);if(c.r==='A')a+
 function bjDeal(){
   if(bjActive)return;const bet=parseFloat(document.getElementById('bjBet').value)||10;
   if(bet>balance){showToast('Not enough!',false);return;}if(bet<=0)return;
+  if(!checkMaxBet(bet,'Blackjack'))return;
   bjBetAmt=bet;balance-=bet;updateBalDisplay();bjDeck=newDeck();bjPlayer=[bjDrawCard(),bjDrawCard()];bjDealer=[bjDrawCard(),bjDrawCard()];bjActive=true;bjRender();
   document.getElementById('bjResult').textContent='';
   if(bjHandVal(bjPlayer)===21)bjStand();playClickSound();
@@ -7041,6 +7523,7 @@ function minesStart(){
   if(minesActive)return;const bet=parseFloat(document.getElementById('minesBet').value)||10;if(bet<=0)return;minesCount=parseInt(document.getElementById('mineCount').value);
   if(!minesCount||minesCount<1)minesCount=1;if(minesCount>24)minesCount=24;
   if(bet>balance){showToast('Not enough!',false);return;}
+  if(!checkMaxBet(bet,'Mines'))return;
   minesBetAmt=bet;balance-=bet;updateBalDisplay();minesActive=true;minesRevealed=0;
   minesBoard=Array(25).fill(false);const pos=[];while(pos.length<minesCount){const p=Math.floor(Math.random()*25);if(!pos.includes(p))pos.push(p);}
   pos.forEach(p=>minesBoard[p]=true);minesRenderGrid();
@@ -7070,6 +7553,7 @@ function diceSetMode(m){diceMode=m;document.getElementById('diceOverBtn').classN
 function diceUpdateSlider(){const v=Math.max(2,Math.min(98,parseFloat(document.getElementById('diceSlider').value)));const chance=diceMode==='over'?(100-v):v;const payout=chance>0?Math.min(Math.floor(99/chance*100)/100,9900):0;document.getElementById('diceTarget').textContent=v.toFixed(2);document.getElementById('diceChance').textContent=chance.toFixed(2)+'%';document.getElementById('dicePayout').textContent=payout.toFixed(2)+'×';
   const sl=document.getElementById('diceSlider');sl.style.background='linear-gradient(90deg,'+(diceMode==='over'?'var(--red)':'var(--green)')+' 0%,'+(diceMode==='over'?'var(--red)':'var(--green)')+' '+v+'%,'+(diceMode==='over'?'var(--green)':'var(--red)')+' '+v+'%,'+(diceMode==='over'?'var(--green)':'var(--red)')+' 100%)';}
 function diceRoll(){const bet=parseFloat(document.getElementById('diceBet').value)||10;if(bet>balance){showToast('Not enough!',false);return;}if(bet<=0)return;
+  if(!checkMaxBet(bet,'Dice'))return;
   balance-=bet;updateBalDisplay();let target=parseFloat(document.getElementById('diceSlider').value);target=Math.max(2,Math.min(98,target));const chance=diceMode==='over'?(100-target):target;const payout=chance>0?Math.min(Math.floor(99/chance*100)/100,9900):0;
   const roll=Math.random()*100;const won=diceMode==='over'?roll>target:roll<target;const display=document.getElementById('diceDisplay');
   display.textContent=roll.toFixed(2);display.style.color=won?'var(--green)':'var(--red)';
@@ -7082,6 +7566,7 @@ let towerBoard=[],towerRow=0,towerBetAmt=0,towerActive=false,towerCols=3,towerRo
 function towerMultiplier(){if(towerRow===0)return 1;let m=1;for(let i=0;i<towerRow;i++)m*=towerCols/towerSafePerRow;return Math.round(m*97)/100;}
 function towerStart(){
   if(towerActive)return;const bet=parseFloat(document.getElementById('towerBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
+  if(!checkMaxBet(bet,'Tower'))return;
   const diff=document.getElementById('towerDiff').value;
   if(diff==='easy'){towerCols=4;towerSafePerRow=3;}else if(diff==='medium'){towerCols=3;towerSafePerRow=2;}else if(diff==='hard'){towerCols=4;towerSafePerRow=2;}else{towerCols=4;towerSafePerRow=1;}
   towerBetAmt=bet;balance-=bet;updateBalDisplay();towerActive=true;towerRow=0;towerRows=8;
@@ -7113,6 +7598,7 @@ function towerRender(){const g=document.getElementById('towerGrid');g.innerHTML=
 let coinChoice='heads',coinFlipping=false;
 function coinSelect(c){coinChoice=c;document.getElementById('coinHeads').className='coin-choice'+(c==='heads'?' selected':'');document.getElementById('coinTails').className='coin-choice'+(c==='tails'?' selected':'');playClickSound();}
 function coinFlip(){if(coinFlipping)return;const bet=parseFloat(document.getElementById('coinBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
+  if(!checkMaxBet(bet,'Coinflip'))return;
   coinFlipping=true;balance-=bet;updateBalDisplay();document.getElementById('coinFlipBtn').disabled=true;document.getElementById('coinResult').textContent='';
   const coin=document.getElementById('coinDisplay');coin.classList.remove('flip');void coin.offsetWidth;coin.classList.add('flip');playClickSound();
   const result=Math.random()<0.5?'heads':'tails';
@@ -7130,6 +7616,7 @@ function kenoInit(){const g=document.getElementById('kenoGrid');if(!g)return;g.i
 function kenoToggle(n){if(kenoPlaying)return;const cells=document.querySelectorAll('.keno-num');if(kenoSelected.has(n)){kenoSelected.delete(n);cells[n-1].classList.remove('selected');}else{if(kenoSelected.size>=10){showToast('Max 10!',false);return;}kenoSelected.add(n);cells[n-1].classList.add('selected');}document.getElementById('kenoInfo').textContent=kenoSelected.size+'/10 selected';playClickSound();}
 function kenoClear(){if(kenoPlaying)return;kenoSelected.clear();document.querySelectorAll('.keno-num').forEach(c=>{c.className='keno-num';});document.getElementById('kenoInfo').textContent='Pick up to 10 numbers';document.getElementById('kenoResult').textContent='';}
 function kenoDraw(){if(kenoPlaying||kenoSelected.size===0)return;const bet=parseFloat(document.getElementById('kenoBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
+  if(!checkMaxBet(bet,'Keno'))return;
   kenoPlaying=true;balance-=bet;updateBalDisplay();document.getElementById('kenoDrawBtn').disabled=true;
   const drawn=new Set();while(drawn.size<10){drawn.add(Math.floor(Math.random()*40)+1);}
   const cells=document.querySelectorAll('.keno-num');let hits=0;const drawnArr=[...drawn];let idx=0;
@@ -7149,6 +7636,7 @@ let limboRolling=false;
 function limboUpdateInfo(){const t=parseFloat(document.getElementById('limboTarget').value)||2;const chance=Math.min(99,(99/t));document.getElementById('limboPayout').textContent='Win chance: '+chance.toFixed(2)+'% — Payout: '+t.toFixed(2)+'×';}
 function limboGo(){if(limboRolling)return;const bet=parseFloat(document.getElementById('limboBet').value)||10;if(bet<=0)return;let target=parseFloat(document.getElementById('limboTarget').value)||2;target=Math.max(1.01,Math.min(1000,target));
   if(bet>balance){showToast('Not enough!',false);return;}if(target<1.01){showToast('Min target 1.01×',false);return;}
+  if(!checkMaxBet(bet,'Limbo'))return;
   limboRolling=true;balance-=bet;updateBalDisplay();document.getElementById('limboGoBtn').disabled=true;
   const result=Math.min(10000,0.99/(1-Math.random()));const display=document.getElementById('limboResult');const limboBar=document.getElementById('limboBar');
   let cur=1;const step=Math.max(0.01,(result-1)/20);
@@ -7167,6 +7655,7 @@ let pokerDeckArr=[],pokerHandArr=[],pokerHeld=[],pokerBetAmt=0,pokerPhase='idle'
 function pokerDeal(){
   if(pokerPhase==='hold'){pokerDrawCards();return;}
   const bet=parseFloat(document.getElementById('pokerBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
+  if(!checkMaxBet(bet,'Poker'))return;
   pokerBetAmt=bet;balance-=bet;updateBalDisplay();pokerDeckArr=newDeck();pokerHandArr=[];pokerHeld=Array(5).fill(false);
   for(let i=0;i<5;i++)pokerHandArr.push(pokerDeckArr.pop());pokerPhase='hold';pokerRender();
   document.getElementById('pokerDealBtn').textContent='DRAW';document.getElementById('pokerResult').textContent='Click cards to hold, then DRAW';playClickSound();
@@ -7214,6 +7703,7 @@ function horseSetOdds(){
 function horseSelect(i,btn){horseSelected=i;document.querySelectorAll('.horse-bet').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');playClickSound();}
 function horseRace(){if(horseRacing||horseSelected<0){if(horseSelected<0)showToast('Pick a horse!',false);return;}
   const bet=parseFloat(document.getElementById('horseBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
+  if(!checkMaxBet(bet,'Horses'))return;
   horseRacing=true;balance-=bet;updateBalDisplay();document.getElementById('horseRaceBtn').disabled=true;document.getElementById('horseResult').textContent='';
   const progress=HORSES.map(()=>0);playClickSound();
   const raceInterval=setInterval(()=>{let winner=-1;HORSES.forEach((_,i)=>{
@@ -7278,6 +7768,7 @@ function drawWheel(angle){wheelDrawn=true;const c=document.getElementById('wheel
   ctx.beginPath();ctx.arc(cx,cy,r+2,0,Math.PI*2);ctx.strokeStyle='rgba(255,215,0,.2)';ctx.lineWidth=4;ctx.stroke();
 }
 function wheelSpin(){if(wheelSpinning)return;const bet=parseFloat(document.getElementById('wheelBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
+  if(!checkMaxBet(bet,'Wheel'))return;
   wheelSpinning=true;balance-=bet;updateBalDisplay();document.getElementById('wheelSpinBtn').disabled=true;document.getElementById('wheelResult').textContent='';playClickSound();
   const totalW=WHEEL_SEGMENTS.reduce((s,seg)=>s+seg.weight,0);let rnd=Math.random()*totalW,winIdx=0;
   for(let i=0;i<WHEEL_SEGMENTS.length;i++){rnd-=WHEEL_SEGMENTS[i].weight;if(rnd<=0){winIdx=i;break;}}const seg=WHEEL_SEGMENTS[winIdx];
@@ -7304,6 +7795,7 @@ function baccSelect(type,btn){baccBetType=type;document.querySelectorAll('.bacc-
 function baccCardVal(c){const v=cardNumVal(c);return v===11?1:v>=10?0:v;}
 function baccHandTotal(hand){return hand.reduce((s,c)=>s+baccCardVal(c),0)%10;}
 function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}const bet=parseFloat(document.getElementById('baccBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
+  if(!checkMaxBet(bet,'Baccarat'))return;
   balance-=bet;updateBalDisplay();const deck=newDeck();const player=[deck.pop(),deck.pop()],banker=[deck.pop(),deck.pop()];
   let pScore=baccHandTotal(player),bScore=baccHandTotal(banker);
   if(pScore<8&&bScore<8){let pThird=null;
@@ -7356,10 +7848,19 @@ function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}cons
 }
 
 // ============ HILO ============
-let hiloDeck=[],hiloCard=null,hiloStreakCount=0,hiloBetAmt=0,hiloActive=false;
-function hiloMultiplier(){if(hiloStreakCount===0)return 1;let m=1;for(let i=0;i<hiloStreakCount;i++)m*=1.88;return Math.round(m*100)/100;}
+let hiloDeck=[],hiloCard=null,hiloStreakCount=0,hiloBetAmt=0,hiloActive=false,hiloSkipCount=0;
+const HILO_MAX_MULT=500; // cap multiplier at 500×
+const HILO_SKIP_PENALTY=0.10; // each skip reduces payout by 10%
+function hiloMultiplier(){
+  if(hiloStreakCount===0)return 1;
+  let m=1;for(let i=0;i<hiloStreakCount;i++)m*=1.88;
+  // Apply skip penalties (each skip ×0.90)
+  for(let i=0;i<hiloSkipCount;i++)m*=(1-HILO_SKIP_PENALTY);
+  m=Math.round(m*100)/100;
+  return Math.min(m,HILO_MAX_MULT);
+}
 function hiloStart(){if(hiloActive)return;const bet=parseFloat(document.getElementById('hiloBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
-  hiloBetAmt=bet;balance-=bet;updateBalDisplay();hiloActive=true;hiloStreakCount=0;hiloDeck=newDeck();hiloCard=hiloDeck.pop();hiloRender();
+  hiloBetAmt=bet;balance-=bet;updateBalDisplay();hiloActive=true;hiloStreakCount=0;hiloSkipCount=0;hiloDeck=newDeck();hiloCard=hiloDeck.pop();hiloRender();
   document.getElementById('hiloStartBtn').style.display='none';document.getElementById('hiloCashoutBtn').style.display='';playClickSound();
 }
 function hiloCashout(){if(!hiloActive||hiloStreakCount===0)return;const p=hiloBetAmt*hiloMultiplier();balance+=p;updateBalDisplay();
@@ -7369,19 +7870,21 @@ function hiloCashout(){if(!hiloActive||hiloStreakCount===0)return;const p=hiloBe
 }
 function hiloGuess(guess){if(!hiloActive)return;if(hiloDeck.length<2)hiloDeck=newDeck();
   const next=hiloDeck.pop();const curRank=cardRankIdx(hiloCard),nextRank=cardRankIdx(next);
-  if(guess==='skip'){hiloCard=next;hiloRender();playSound(400,'sine',.04,.04);return;}
+  if(guess==='skip'){hiloSkipCount++;hiloCard=next;hiloRender();playSound(400,'sine',.04,.04);
+    showToast('Skipped! (-10% payout penalty)',false);return;}
   let correct=false;
-  if(guess==='higher')correct=nextRank>=curRank;else if(guess==='lower')correct=nextRank<=curRank;else correct=nextRank===curRank;
+  // Ties (equal rank) count as WRONG — must be strictly higher or lower
+  if(guess==='higher')correct=nextRank>curRank;else if(guess==='lower')correct=nextRank<curRank;
   hiloCard=next;
   if(correct){hiloStreakCount++;playSound(500+hiloStreakCount*60,'sine',.08,.06);hiloRender();}
   else{hiloActive=false;hiloRender();showToast('-$'+hiloBetAmt.toFixed(2),false);playLoseSound();
     document.getElementById('hiloStartBtn').style.display='';document.getElementById('hiloCashoutBtn').style.display='none';
-    document.getElementById('hiloStreak').innerHTML='<span style="color:var(--red)">WRONG!</span> Card was '+next.r+next.s;recordGame('hilo',hiloBetAmt,0);
+    document.getElementById('hiloStreak').innerHTML='<span style="color:var(--red)">WRONG!</span> Card was '+next.r+next.s+(nextRank===curRank?' (tie = loss)':'');recordGame('hilo',hiloBetAmt,0);
   }
 }
 function hiloRender(){const c=hiloCard;document.getElementById('hiloCard').className='hilo-card'+(cardIsRed(c)?' red':'');document.getElementById('hiloCard').innerHTML=c.r+'<br>'+c.s;
   document.getElementById('hiloHigherBtn').disabled=!hiloActive;document.getElementById('hiloLowerBtn').disabled=!hiloActive;document.getElementById('hiloSkipBtn').disabled=!hiloActive;
-  if(hiloActive){const m=hiloMultiplier();document.getElementById('hiloStreak').textContent='Streak: '+hiloStreakCount+' — '+m.toFixed(2)+'×';
+  if(hiloActive){const m=hiloMultiplier();document.getElementById('hiloStreak').textContent='Streak: '+hiloStreakCount+' — '+m.toFixed(2)+'×'+(hiloSkipCount>0?' ('+hiloSkipCount+' skips, -'+Math.round(100*(1-Math.pow(0.9,hiloSkipCount)))+'%)':'');
     document.getElementById('hiloCashout').textContent=hiloStreakCount>0?'Cash out: $'+(hiloBetAmt*m).toFixed(2):'';}
 }
 
@@ -7441,9 +7944,10 @@ window._onChatMessages = function(msgs) {
       const initial = (m.user || '?')[0].toUpperCase();
       const isGuest = (m.user || '').toLowerCase() === 'guest';
       const timeStr = m.ts ? new Date(m.ts).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+      const pBadge = m.prestige > 0 ? getPrestigeBadgeHTML(m.prestige) : '';
       el.innerHTML = `<div class="chat-msg-avatar">${initial}</div>
         <div class="chat-msg-body">
-          <div class="chat-msg-name${isGuest?' guest-name':''}">${escapeHtml(m.user||'Guest')} <span class="chat-msg-time">${timeStr}</span></div>
+          <div class="chat-msg-name${isGuest?' guest-name':''}">${escapeHtml(m.user||'Guest')}${pBadge} <span class="chat-msg-time">${timeStr}</span></div>
           <div class="chat-msg-text">${escapeHtml(m.text)}</div>
         </div>`;
       container.appendChild(el);
