@@ -75,6 +75,17 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .nav-btn-inline.active{background:linear-gradient(135deg,#1a1a5e,#2a1a4e);color:var(--neon);
   box-shadow:0 0 15px rgba(0,240,255,.15);border:1px solid rgba(0,240,255,.3);}
 .nav-btn-inline .icon{font-size:13px;margin-right:3px;}
+.nav-label{display:inline;}
+/* Games Menu */
+.games-category{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;overflow:hidden;}
+.games-category-title{font-family:'Orbitron';font-size:14px;font-weight:900;color:var(--neon);letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.games-category-title .icon{font-size:20px;}
+.games-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;}
+.game-btn{padding:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text2);cursor:pointer;font-size:11px;font-weight:700;font-family:'Orbitron';transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;white-space:nowrap;text-align:center;}
+.game-btn .game-icon{font-size:24px;}
+.game-btn:hover{border-color:var(--neon);background:var(--surface);color:var(--text);box-shadow:0 0 12px rgba(0,240,255,.2);transform:translateY(-2px);}
+.game-btn:active{transform:scale(0.98);}
+
 #balanceDisplay{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0;}
 #balanceDisplay .bal{font-family:'Orbitron';font-size:16px;color:var(--gold);text-shadow:0 0 10px rgba(255,215,0,.4);}
 #balanceDisplay .add-btn{padding:5px 10px;border:none;border-radius:6px;cursor:pointer;
@@ -269,9 +280,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 @media (max-width:1024px){
   #topNav{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:1px;flex-wrap:nowrap;padding:0 6px;}
   #topNav::-webkit-scrollbar{display:none;}
-  .nav-cat-btn{font-size:0;padding:4px 8px;}
-  .nav-cat-btn .cat-icon{font-size:16px;}
-  .nav-cat-btn .cat-arrow{display:none;}
+  .nav-label{display:none;}
   .nav-btn-inline{font-size:0;padding:6px 8px;}
   .nav-btn-inline .icon{font-size:15px;margin-right:0;}
   #balanceDisplay{gap:3px;margin-left:auto;flex-shrink:1;min-width:0;}
@@ -326,6 +335,10 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   #balanceDisplay .bal{font-size:11px;}
   #balanceDisplay .add-btn{font-size:9px;padding:2px 5px;}
   #chatPanel{right:4px;left:4px;width:auto;bottom:66px;}
+  #gamesMenuOverlay{padding-top:50px;}
+  .games-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;}
+  .game-btn{padding:10px;font-size:10px;}
+  .game-btn .game-icon{font-size:20px;}
   .game-panel{padding:8px;}
   .bet-controls{padding:6px 8px;}
   .bet-input{width:60px;font-size:11px;padding:4px 6px;}
@@ -925,72 +938,19 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 
 <!-- Top Navigation -->
 <nav id="topNav" style="display:none;">
-  <div class="logo" onclick="switchGame('slots',null)">CASINO</div>
+  <div class="logo" onclick="switchGame('leaderboard',null)" title="Home" style="cursor:pointer;">🏠 HOME</div>
 
-  <!-- Category: Popular -->
-  <div class="nav-cat" onmouseenter="openCat(this)" onmouseleave="closeCat(this)">
-    <button class="nav-cat-btn" onclick="toggleCat(this.parentElement)"><span class="cat-icon">⭐</span>Popular<span class="cat-arrow">▼</span></button>
-    <div class="nav-dropdown" onmouseenter="openCat(this.parentElement)" onmouseleave="closeCat(this.parentElement)">
-      <button class="nav-btn" onclick="switchGame('slots',this)"><span class="icon">🎰</span>Slots</button>
-      <button class="nav-btn" onclick="switchGame('crash',this)"><span class="icon">📈</span>Crash</button>
-      <button class="nav-btn" onclick="switchGame('mines',this)"><span class="icon">💣</span>Mines</button>
-      <button class="nav-btn" onclick="switchGame('plinko',this)"><span class="icon">⚡</span>Plinko</button>
-      <button class="nav-btn" onclick="switchGame('cases',this)"><span class="icon">📦</span>Cases</button>
-    </div>
-  </div>
+  <!-- Games Menu Button -->
+  <button class="nav-btn-inline" onclick="openGamesMenu()" style="margin-left:3px;"><span class="icon">🎮</span><span class="nav-label">Games</span></button>
 
-  <!-- Category: Card Games -->
-  <div class="nav-cat" onmouseenter="openCat(this)" onmouseleave="closeCat(this)">
-    <button class="nav-cat-btn" onclick="toggleCat(this.parentElement)"><span class="cat-icon">🃏</span>Cards<span class="cat-arrow">▼</span></button>
-    <div class="nav-dropdown" onmouseenter="openCat(this.parentElement)" onmouseleave="closeCat(this.parentElement)">
-      <button class="nav-btn" onclick="switchGame('blackjack',this)"><span class="icon">🃏</span>Blackjack</button>
-      <button class="nav-btn" onclick="switchGame('poker',this)"><span class="icon">♠️</span>Video Poker</button>
-      <button class="nav-btn" onclick="switchGame('baccarat',this)"><span class="icon">🎴</span>Baccarat</button>
-      <button class="nav-btn" onclick="switchGame('hilo',this)"><span class="icon">↕️</span>Hi-Lo</button>
-    </div>
-  </div>
-
-  <!-- Category: Table Games -->
-  <div class="nav-cat" onmouseenter="openCat(this)" onmouseleave="closeCat(this)">
-    <button class="nav-cat-btn" onclick="toggleCat(this.parentElement)"><span class="cat-icon">🎡</span>Table<span class="cat-arrow">▼</span></button>
-    <div class="nav-dropdown" onmouseenter="openCat(this.parentElement)" onmouseleave="closeCat(this.parentElement)">
-      <button class="nav-btn" onclick="switchGame('roulette',this)"><span class="icon">🎡</span>Roulette</button>
-      <button class="nav-btn" onclick="switchGame('wheel',this)"><span class="icon">💫</span>Wheel</button>
-      <button class="nav-btn" onclick="switchGame('keno',this)"><span class="icon">🔢</span>Keno</button>
-      <button class="nav-btn" onclick="switchGame('horses',this)"><span class="icon">🏇</span>Horse Racing</button>
-    </div>
-  </div>
-
-  <!-- Category: Quick Games -->
-  <div class="nav-cat" onmouseenter="openCat(this)" onmouseleave="closeCat(this)">
-    <button class="nav-cat-btn" onclick="toggleCat(this.parentElement)"><span class="cat-icon">⚡</span>Quick<span class="cat-arrow">▼</span></button>
-    <div class="nav-dropdown" onmouseenter="openCat(this.parentElement)" onmouseleave="closeCat(this.parentElement)">
-      <button class="nav-btn" onclick="switchGame('dice',this)"><span class="icon">🎯</span>Dice</button>
-      <button class="nav-btn" onclick="switchGame('limbo',this)"><span class="icon">🚀</span>Limbo</button>
-      <button class="nav-btn" onclick="switchGame('coinflip',this)"><span class="icon">🪙</span>Coin Flip</button>
-      <button class="nav-btn" onclick="switchGame('tower',this)"><span class="icon">🗼</span>Tower</button>
-      <button class="nav-btn" onclick="switchGame('scratch',this)"><span class="icon">🎫</span>Scratch Cards</button>
-    </div>
-  </div>
-
-  <!-- Category: Special -->
-  <div class="nav-cat" onmouseenter="openCat(this)" onmouseleave="closeCat(this)">
-    <button class="nav-cat-btn" onclick="toggleCat(this.parentElement)"><span class="cat-icon">💎</span>Special<span class="cat-arrow">▼</span></button>
-    <div class="nav-dropdown" onmouseenter="openCat(this.parentElement)" onmouseleave="closeCat(this.parentElement)">
-      <button class="nav-btn" onclick="switchGame('luck',this)"><span class="icon">🎲</span>Push Your Luck</button>
-      <button class="nav-btn" onclick="switchGame('stocks',this)"><span class="icon">📊</span>Stocks</button>
-      <button class="nav-btn" onclick="switchGame('duels',this)"><span class="icon">⚔️</span>Duels</button>
-    </div>
-  </div>
-
-  <!-- Inline buttons for important sections -->
-  <button class="nav-btn-inline" onclick="switchGame('leaderboard',this)"><span class="icon">🏆</span>Board</button>
-  <button class="nav-btn-inline" onclick="switchGame('profile',this)"><span class="icon">👤</span>Profile</button>
-  <button class="nav-btn-inline" onclick="showInventory()"><span class="icon">🎒</span>Inv</button>
-  <button class="nav-btn-inline" onclick="openStoreOverlay()" style="border-color:rgba(255,215,0,.4);"><span class="icon">🏪</span>Store</button>
-  <button class="nav-btn-inline" onclick="openTradeOverlay()" style="border-color:rgba(0,230,118,.4);"><span class="icon">🔄</span>Trade</button>
-  <button class="nav-btn-inline" onclick="openLoanOverlay()" style="border-color:rgba(255,193,7,.4);"><span class="icon">🏦</span>Loans</button>
-  <button class="nav-btn-inline" onclick="showFriendsPanel()" style="position:relative;"><span class="icon">👥</span>Friends<span id="friendReqBadge" style="position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:8px;padding:1px 4px;border-radius:8px;display:none;"></span></button>
+  <!-- Essential Navigation Buttons -->
+  <button class="nav-btn-inline" onclick="switchGame('leaderboard',this)"><span class="icon">🏆</span><span class="nav-label">Board</span></button>
+  <button class="nav-btn-inline" onclick="switchGame('profile',this)"><span class="icon">👤</span><span class="nav-label">Profile</span></button>
+  <button class="nav-btn-inline" onclick="showInventory()"><span class="icon">🎒</span><span class="nav-label">Inv</span></button>
+  <button class="nav-btn-inline" onclick="openStoreOverlay()" style="border-color:rgba(255,215,0,.4);"><span class="icon">🏪</span><span class="nav-label">Store</span></button>
+  <button class="nav-btn-inline" onclick="openTradeOverlay()" style="border-color:rgba(0,230,118,.4);"><span class="icon">🔄</span><span class="nav-label">Trade</span></button>
+  <button class="nav-btn-inline" onclick="openLoanOverlay()" style="border-color:rgba(255,193,7,.4);"><span class="icon">🏦</span><span class="nav-label">Loans</span></button>
+  <button class="nav-btn-inline" onclick="showFriendsPanel()" style="position:relative;"><span class="icon">👥</span><span class="nav-label">Friends</span><span id="friendReqBadge" style="position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:8px;padding:1px 4px;border-radius:8px;display:none;"></span></button>
 
   <div id="balanceDisplay">
     <button id="muteBtn" onclick="toggleMute()" style="padding:5px 8px;border:none;border-radius:6px;cursor:pointer;background:var(--surface2);color:var(--text);font-size:13px;transition:all .2s;" title="Toggle Sound">🔊</button>
@@ -1003,6 +963,20 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="logout-btn" onclick="authLogout()" title="Logout" aria-label="Logout">⏻</button>
     </div>
   </div>
+</nav>
+
+<!-- Games Menu Overlay -->
+<div id="gamesMenuOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.92);z-index:9998;padding-top:60px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:800px;margin:0 auto;padding:20px;position:relative;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;position:sticky;top:0;background:rgba(4,8,20,.95);padding:12px;border-radius:8px;z-index:1;">
+      <span style="font-family:'Orbitron';font-size:24px;color:var(--neon);font-weight:900;letter-spacing:2px;">🎮 ALL GAMES</span>
+      <button onclick="closeGamesMenu()" style="background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    
+    <!-- Game Categories Grid -->
+    <div id="gamesCategoriesContainer" style="display:grid;gap:20px;"></div>
+  </div>
+</div>
 </nav>
 
 <!-- Particles Canvas -->
@@ -3729,6 +3703,63 @@ function toggleCat(el){el.classList.toggle('open');document.querySelectorAll('.n
 // Close dropdowns if clicking/tapping outside
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-cat'))document.querySelectorAll('.nav-cat').forEach(c=>c.classList.remove('open'));});
 document.addEventListener('touchstart',function(e){if(!e.target.closest('.nav-cat'))document.querySelectorAll('.nav-cat').forEach(c=>c.classList.remove('open'));},{passive:true});
+
+// ============ GAMES MENU ============
+const gamesData = [
+  { cat: '⭐ Popular', games: [
+    { name: 'Slots', icon: '🎰', id: 'slots' },
+    { name: 'Crash', icon: '📈', id: 'crash' },
+    { name: 'Mines', icon: '💣', id: 'mines' },
+    { name: 'Plinko', icon: '⚡', id: 'plinko' },
+    { name: 'Cases', icon: '📦', id: 'cases' }
+  ]},
+  { cat: '🃏 Card Games', games: [
+    { name: 'Blackjack', icon: '🃏', id: 'blackjack' },
+    { name: 'Poker', icon: '♠️', id: 'poker' },
+    { name: 'Baccarat', icon: '🎴', id: 'baccarat' },
+    { name: 'Hi-Lo', icon: '↕️', id: 'hilo' }
+  ]},
+  { cat: '🎡 Table Games', games: [
+    { name: 'Roulette', icon: '🎡', id: 'roulette' },
+    { name: 'Wheel', icon: '💫', id: 'wheel' },
+    { name: 'Keno', icon: '🔢', id: 'keno' },
+    { name: 'Horse Racing', icon: '🏇', id: 'horses' }
+  ]},
+  { cat: '⚡ Quick Games', games: [
+    { name: 'Dice', icon: '🎯', id: 'dice' },
+    { name: 'Limbo', icon: '🚀', id: 'limbo' },
+    { name: 'Coin Flip', icon: '🪙', id: 'coinflip' },
+    { name: 'Tower', icon: '🗼', id: 'tower' },
+    { name: 'Scratch Cards', icon: '🎫', id: 'scratch' }
+  ]},
+  { cat: '💎 Special', games: [
+    { name: 'Push Your Luck', icon: '🎲', id: 'luck' },
+    { name: 'Stocks', icon: '📊', id: 'stocks' },
+    { name: 'Duels', icon: '⚔️', id: 'duels' }
+  ]}
+];
+
+function openGamesMenu(){
+  const overlay = document.getElementById('gamesMenuOverlay');
+  overlay.style.display = 'block';
+  const container = document.getElementById('gamesCategoriesContainer');
+  container.innerHTML = gamesData.map((cat, i) => {
+    const games = cat.games.map(g => `<button class="game-btn" onclick="switchGame('${g.id}',this);closeGamesMenu();"><span class="game-icon">${g.icon}</span>${g.name}</button>`).join('');
+    return `<div class="games-category"><div class="games-category-title"><span>${cat.cat}</span></div><div class="games-grid">${games}</div></div>`;
+  }).join('');
+  setTimeout(() => overlay.style.opacity = '1', 10);
+}
+
+function closeGamesMenu(){
+  const overlay = document.getElementById('gamesMenuOverlay');
+  overlay.style.display = 'none';
+}
+
+// Close games menu on backdrop click
+document.getElementById('gamesMenuOverlay')?.addEventListener('click', (e) => {
+  if(e.target.id === 'gamesMenuOverlay') closeGamesMenu();
+});
+
 // How-to-play toggle
 function htpToggle(el){el.closest('.htp-box').classList.toggle('open');}
 function showToast(msg,isWin=true){
