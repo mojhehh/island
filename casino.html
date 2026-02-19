@@ -1867,10 +1867,11 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
 
   <div id="tradePanel" style="width:100%;">
     <!-- Trade tabs -->
-    <div style="display:flex;gap:6px;margin-bottom:12px;">
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
       <button class="inv-tab active" id="tradeSendTab" onclick="switchTradeTab('send',this)" style="border-color:rgba(0,230,118,0.3);color:#00e676;">📤 Send</button>
       <button class="inv-tab" id="tradeInboxTab" onclick="switchTradeTab('inbox',this)" style="border-color:rgba(255,184,107,0.3);color:#ffb86b;">📥 Inbox <span id="tradeInboxCount" style="font-size:9px;background:var(--red);color:#fff;padding:1px 5px;border-radius:8px;margin-left:4px;display:none;"></span></button>
       <button class="inv-tab" id="tradeHistoryTab" onclick="switchTradeTab('history',this)">📋 History</button>
+      <button class="inv-tab" id="giftTabBtn" onclick="switchTradeTab('gift',this)" style="border-color:rgba(255,193,7,0.3);color:#ffc107;">🎁 Gift</button>
     </div>
     
     <!-- SEND TAB — Step 1: Enter Username -->
@@ -1954,6 +1955,28 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
       <div style="font-family:'Orbitron';font-size:14px;color:var(--text2);letter-spacing:2px;margin-bottom:12px;">📋 TRADE HISTORY</div>
       <div id="tradeHistoryList" style="display:flex;flex-direction:column;gap:6px;">
         <div style="color:var(--text2);font-size:12px;text-align:center;padding:20px;">No trade history yet</div>
+      </div>
+    </div>
+
+    <!-- GIFT TAB -->
+    <div id="giftView" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
+      <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:16px;text-align:center;">🎁 GIFT MONEY</div>
+      <div style="max-width:400px;margin:0 auto;">
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px;">Recipient Username</label>
+          <input type="text" id="giftUsername" placeholder="Enter username..." maxlength="16" autocomplete="off" style="width:100%;padding:12px 14px;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px;">Amount ($)</label>
+          <input type="number" id="giftAmount" placeholder="Enter amount..." min="1" style="width:100%;padding:12px 14px;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--gold);font-family:'Orbitron';font-size:14px;text-align:right;box-sizing:border-box;">
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <button onclick="quickGiftAmount(100)" style="flex:1;padding:8px;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);border-radius:6px;color:var(--gold);cursor:pointer;font-size:11px;font-family:'Orbitron';font-weight:700;">$100</button>
+          <button onclick="quickGiftAmount(1000)" style="flex:1;padding:8px;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);border-radius:6px;color:var(--gold);cursor:pointer;font-size:11px;font-family:'Orbitron';font-weight:700;">$1K</button>
+          <button onclick="quickGiftAmount(10000)" style="flex:1;padding:8px;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);border-radius:6px;color:var(--gold);cursor:pointer;font-size:11px;font-family:'Orbitron';font-weight:700;">$10K</button>
+        </div>
+        <button onclick="sendGift()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ffc107,#ff9800);border:none;border-radius:10px;color:#000;cursor:pointer;font-family:'Orbitron';font-size:14px;font-weight:700;letter-spacing:1px;transition:all .2s;">💝 SEND GIFT</button>
+        <div id="giftStatus" style="font-size:12px;color:var(--text2);margin-top:8px;text-align:center;min-height:20px;"></div>
       </div>
     </div>
   </div>
@@ -2611,6 +2634,47 @@ window._respondTradeRequest = async (requestId, accepted) => {
   await set(ref(db, 'casino/tradeRequests/' + playerId + '/' + requestId + '/response'), accepted ? 'accepted' : 'declined');
   // Auto-cleanup after 10s
   setTimeout(() => { remove(ref(db, 'casino/tradeRequests/' + playerId + '/' + requestId)).catch(()=>{}); }, 10000);
+};
+
+// ============ GIFT SYSTEM (Firebase) ============
+window._giftMoney = async (recipientUsername, amount) => {
+  if (!playerId || !currentUsername) return { error: 'Not logged in' };
+  if (!recipientUsername || !amount || amount < 1) return { error: 'Invalid recipient or amount' };
+  
+  // Look up recipient by username
+  const nameSnap = await window._fbGet('casino/usernames/' + recipientUsername.toLowerCase());
+  if (!nameSnap.val()) return { error: 'Player not found' };
+  
+  const recipientUid = nameSnap.val();
+  if (recipientUid === playerId) return { error: "Can't gift to yourself" };
+  
+  // Get sender's current balance
+  const senderSnap = await window._fbGet('casino/players/' + playerId);
+  const senderBal = senderSnap.val()?.balance || 0;
+  
+  if (senderBal < amount) return { error: 'Insufficient balance' };
+  
+  // Get recipient's current balance
+  const recipientSnap = await window._fbGet('casino/players/' + recipientUid);
+  const recipientBal = recipientSnap.val()?.balance || 0;
+  
+  // Transfer money
+  const newSenderBal = senderBal - amount;
+  const newRecipientBal = recipientBal + amount;
+  
+  // Update both balances atomically
+  const updates = {};
+  updates['casino/players/' + playerId + '/balance'] = newSenderBal;
+  updates['casino/players/' + recipientUid + '/balance'] = newRecipientBal;
+  
+  try {
+    await window._fbUpdate('casino', updates);
+    console.log(`Gift sent: ${currentUsername} -> ${recipientUsername}: $${amount}`);
+    return { success: true, newBalance: newSenderBal };
+  } catch(err) {
+    console.error('Gift error:', err);
+    return { error: 'Transfer failed' };
+  }
 };
 
 // ============ STORE / MARKETPLACE (Firebase) ============
@@ -4729,24 +4793,34 @@ async function loadTradeRequests() {
     // Show as part of inbox
     const div = document.getElementById('incomingTrades');
     if (reqs.length > 0) {
-      const reqHtml = reqs.map(r => `<div style="background:var(--bg);border:1px solid rgba(0,230,118,.4);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;">
-        <div style="font-size:28px;">🤝</div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-weight:700;font-size:13px;color:var(--green);">Trade Request</div>
-          <div style="font-size:11px;color:var(--text2);">From <strong style="color:var(--neon);">${r.from}</strong></div>
-          <div style="font-size:10px;color:var(--text2);margin-top:2px;">${new Date(r.ts).toLocaleString()}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px;">
-          <button onclick="respondTradeRequest('${r.id.replace(/'/g,"\\'").replace(/\\/g,'')}','${(r.from||"").replace(/'/g,"\\'").replace(/\\/g,'')}','${(r.fromUid||"").replace(/'/g,"\\'").replace(/\\/g,'')}',true)" style="padding:6px 14px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:'Orbitron';">ACCEPT</button>
-          <button onclick="respondTradeRequest('${r.id.replace(/'/g,"\\'").replace(/\\/g,'')}','${(r.from||"").replace(/'/g,"\\'").replace(/\\/g,'')}','${(r.fromUid||"").replace(/'/g,"\\'").replace(/\\/g,'')}',false)" style="padding:4px 12px;background:transparent;border:1px solid var(--red);border-radius:6px;color:var(--red);cursor:pointer;font-size:10px;">DECLINE</button>
-        </div>
-      </div>`).join('');
+      const reqHtml = reqs.map((r, idx) => {
+        const dataId = 'tradeReq_' + idx;
+        window[dataId] = { requestId: r.id, fromName: r.from, fromUid: r.fromUid };
+        return `<div style="background:var(--bg);border:1px solid rgba(0,230,118,.4);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;">
+          <div style="font-size:28px;">🤝</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;font-size:13px;color:var(--green);">Trade Request</div>
+            <div style="font-size:11px;color:var(--text2);">From <strong style="color:var(--neon);">${r.from}</strong></div>
+            <div style="font-size:10px;color:var(--text2);margin-top:2px;">${new Date(r.ts).toLocaleString()}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <button onclick="handleTradeResponse('${dataId}', true)" style="padding:6px 14px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:'Orbitron';">ACCEPT</button>
+            <button onclick="handleTradeResponse('${dataId}', false)" style="padding:4px 12px;background:transparent;border:1px solid var(--red);border-radius:6px;color:var(--red);cursor:pointer;font-size:10px;">DECLINE</button>
+          </div>
+        </div>`;
+      }).join('');
       // Prepend to inbox
       const existing = div.innerHTML;
       if (existing.includes('No pending')) div.innerHTML = reqHtml;
       else div.innerHTML = reqHtml + existing;
     }
   } catch(e) {}
+}
+
+async function handleTradeResponse(dataId, accepted) {
+  const data = window[dataId];
+  if (!data) return;
+  await respondTradeRequest(data.requestId, data.fromName, data.fromUid, accepted);
 }
 
 async function respondTradeRequest(reqId, fromName, fromUid, accepted) {
@@ -4776,9 +4850,58 @@ function switchTradeTab(tab, btn) {
   document.getElementById('tradeSendView').style.display = tab === 'send' ? 'block' : 'none';
   document.getElementById('tradeInboxView').style.display = tab === 'inbox' ? 'block' : 'none';
   document.getElementById('tradeHistoryView').style.display = tab === 'history' ? 'block' : 'none';
+  document.getElementById('giftView').style.display = tab === 'gift' ? 'block' : 'none';
   if (tab === 'send') tradeGoToStep(1);
   if (tab === 'inbox') { loadIncomingTrades(); loadTradeRequests(); }
   if (tab === 'history') renderTradeHistory();
+  if (tab === 'gift') { document.getElementById('giftUsername').focus(); }
+}
+
+// ============ GIFT SYSTEM UI ============
+function quickGiftAmount(amt) {
+  document.getElementById('giftAmount').value = amt;
+}
+
+async function sendGift() {
+  const statusEl = document.getElementById('giftStatus');
+  const usernameEl = document.getElementById('giftUsername');
+  const amountEl = document.getElementById('giftAmount');
+  
+  const username = usernameEl.value.trim();
+  const amount = parseFloat(amountEl.value);
+  
+  if (!username) {
+    statusEl.textContent = '❌ Please enter a username';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+  
+  if (!amount || amount < 1) {
+    statusEl.textContent = '❌ Invalid amount (minimum $1)';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+  
+  statusEl.textContent = '⏳ Processing gift...';
+  statusEl.style.color = 'var(--text2)';
+  
+  const result = await window._giftMoney(username, amount);
+  
+  if (result.error) {
+    statusEl.textContent = '❌ ' + result.error;
+    statusEl.style.color = 'var(--red)';
+  } else {
+    statusEl.textContent = '✅ Gift sent! Your balance: $' + Math.floor(result.newBalance);
+    statusEl.style.color = 'var(--green)';
+    usernameEl.value = '';
+    amountEl.value = '';
+    showToast('💝 Sent $' + Math.floor(amount) + ' to ' + username + '!', true);
+    // Update player balance display
+    updatePlayerBalance(result.newBalance);
+    setTimeout(() => {
+      statusEl.textContent = '';
+    }, 3000);
+  }
 }
 
 function populateTradeSelect() {
