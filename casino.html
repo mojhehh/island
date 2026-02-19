@@ -4078,7 +4078,8 @@ async function duelCreate() {
   window._fbOnDisconnect('casino/duelRooms/' + code).remove();
   showToast('Duel created! Waiting for opponent...', true);
   playClickSound();
-  duelLoadLobby();
+  // Host watches their own room for opponent join
+  duelWatchGame(code, wager);
 }
 
 async function duelJoin(code) {
