@@ -8,13 +8,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+button,select,input,[onclick]{touch-action:manipulation;cursor:pointer;}
 :root{
   --bg:#0a0a1a;--surface:#111128;--surface2:#1a1a3e;--border:#2a2a5e;
   --gold:#ffd700;--neon:#00f0ff;--neon2:#ff00e5;--green:#00ff88;--red:#ff3355;
   --text:#e8e8ff;--text2:#8888aa;
 }
-html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
+html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;width:100%;max-width:100vw;}
 .catalog-card {
   width: 140px;
   height: 160px;
@@ -308,6 +309,21 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
   .scratch-cell{width:72px!important;height:72px!important;font-size:28px!important;}
   .stock-chart-wrap{height:200px!important;}
   .horse-track{max-width:95vw;}
+  #chatPanel{right:8px;width:min(340px, calc(100vw - 16px));max-height:min(460px, 70vh);}
+  #chatToggleBtn{right:10px;bottom:10px;}
+  .nav-dropdown{max-width:calc(100vw - 20px);}
+}
+@media (max-width:480px){
+  #topNav .logo{font-size:12px;margin-right:2px;}
+  #balanceDisplay .bal{font-size:11px;}
+  #balanceDisplay .add-btn{font-size:9px;padding:2px 5px;}
+  #chatPanel{right:4px;left:4px;width:auto;bottom:66px;}
+  .game-panel{padding:8px;}
+  .bet-controls{padding:6px 8px;}
+  .bet-input{width:60px;font-size:11px;padding:4px 6px;}
+  .action-btn{padding:8px 14px;font-size:12px;}
+  .catalog-card{width:90px;height:100px;font-size:14px;}
+  .catalog-card .icon{font-size:32px;margin-bottom:4px;}
 }
 
 /* Force avatar rounding and touch behavior */
@@ -2799,38 +2815,15 @@ window._storeGetListings = async () => {
 window._storeBuyItem = async (listingId) => {
   if (!playerId || !currentUsername) return { error: 'Not logged in' };
   const listRef = ref(db, 'casino/store/listings/' + listingId);
-  // Use transaction to prevent race conditions
-  let txResult = null;
-  let txError = null;
-  let retries = 0;
-  const tryBuy = async () => {
-    txResult = null; txError = null;
-    try {
-      const result = await runTransaction(listRef, (current) => {
-        if (current === null) return; // abort — may be uncached, don't set error
-        if (current.sold) { txError = 'Already sold'; return; }
-        if (current.sellerUid === playerId) { txError = "Can't buy your own item"; return; }
-        if (current.type === 'auction') { txError = 'This is an auction — place a bid instead'; return; }
-        txResult = { ...current };
-        current.sold = true;
-        current.buyer = currentUsername;
-        current.buyerUid = playerId;
-        current.soldAt = Date.now();
-        return current;
-      });
-      if (txError) return { error: txError };
-      if (!result.committed) {
-        // Transaction aborted (likely current was null). Verify listing exists.
-        if (retries < 1) {
-          retries++;
-          const snap = await get(listRef);
-          if (!snap.exists()) return { error: 'Listing not found' };
-          return await tryBuy(); // retry once
-        }
-        return { error: 'Transaction failed — try again' };
-      }
-    } catch(e) { return { error: 'Purchase failed: ' + (e.message || 'unknown') }; }
-    const d = txResult;
+  try {
+    const snap = await get(listRef);
+    if (!snap.exists()) return { error: 'Listing not found' };
+    const d = snap.val();
+    if (d.sold) return { error: 'Already sold' };
+    if (d.sellerUid === playerId) return { error: "Can't buy your own item" };
+    if (d.type === 'auction') return { error: 'This is an auction — place a bid instead' };
+    // Mark as sold
+    await update(listRef, { sold: true, buyer: currentUsername, buyerUid: playerId, soldAt: Date.now() });
     // Credit seller via pending refund system
     if (d.sellerUid && d.price > 0) {
       const payRef = push(ref(db, 'casino/pendingRefunds/' + d.sellerUid));
@@ -2840,94 +2833,53 @@ window._storeBuyItem = async (listingId) => {
     const saleRef = push(ref(db, 'casino/store/sales'));
     await set(saleRef, { itemId: d.itemId, itemName: d.itemName, rarity: d.rarity, price: d.price, seller: d.seller, buyer: currentUsername, ts: Date.now() });
     return { success: true, item: d };
-  };
-  return await tryBuy();
+  } catch(e) { return { error: 'Purchase failed: ' + (e.message || 'unknown') }; }
 };
 
 window._storePlaceBid = async (listingId, bidAmount) => {
   if (!playerId || !currentUsername) return { error: 'Not logged in' };
   const listRef = ref(db, 'casino/store/listings/' + listingId);
-  let txError = null;
-  let oldBidderUid = '';
-  let oldBidAmount = 0;
-  let itemNameForRefund = '';
-  let retries = 0;
-  const tryBid = async () => {
-    txError = null; oldBidderUid = ''; oldBidAmount = 0; itemNameForRefund = '';
-    try {
-      const result = await runTransaction(listRef, (current) => {
-        if (current === null) return; // abort — may be uncached
-        if (current.sold) { txError = 'Already sold'; return; }
-        if (current.sellerUid === playerId) { txError = "Can't bid on your own item"; return; }
-        if (current.type !== 'auction') { txError = 'Not an auction'; return; }
-        if (Date.now() > current.endsAt) { txError = 'Auction ended'; return; }
-        if (bidAmount <= (current.currentBid || 0)) { txError = 'Bid must be higher than $' + (current.currentBid || 0) + ' (someone outbid you)'; return; }
-        oldBidderUid = current.highBidderUid || '';
-        oldBidAmount = current.currentBid || 0;
-        itemNameForRefund = current.itemName || current.itemId;
-        current.currentBid = bidAmount;
-        current.highBidder = currentUsername;
-        current.highBidderUid = playerId;
-        return current;
-      });
-      if (txError) return { error: txError };
-      if (!result.committed) {
-        if (retries < 1) {
-          retries++;
-          const snap = await get(listRef);
-          if (!snap.exists()) return { error: 'Listing not found' };
-          return await tryBid();
-        }
-        return { error: 'Bid failed — try again' };
-      }
-    } catch(e) { return { error: 'Bid failed: ' + (e.message || 'unknown') }; }
+  try {
+    const snap = await get(listRef);
+    if (!snap.exists()) return { error: 'Listing not found' };
+    const d = snap.val();
+    if (d.sold) return { error: 'Already sold' };
+    if (d.sellerUid === playerId) return { error: "Can't bid on your own item" };
+    if (d.type !== 'auction') return { error: 'Not an auction' };
+    if (Date.now() > d.endsAt) return { error: 'Auction ended' };
+    if (bidAmount <= (d.currentBid || 0)) return { error: 'Bid must be higher than $' + (d.currentBid || 0) + ' (someone outbid you)' };
+    const oldBidderUid = d.highBidderUid || '';
+    const oldBidAmount = d.currentBid || 0;
+    const itemNameForRefund = d.itemName || d.itemId;
+    // Place bid
+    await update(listRef, { currentBid: bidAmount, highBidder: currentUsername, highBidderUid: playerId });
+    // Refund previous highest bidder
     if (oldBidderUid && oldBidAmount > 0 && oldBidderUid !== playerId) {
       const refundRef = push(ref(db, 'casino/pendingRefunds/' + oldBidderUid));
       await set(refundRef, { item: null, cash: oldBidAmount, reason: 'outbid', from: currentUsername, itemName: itemNameForRefund, ts: Date.now() });
     }
     return { success: true, oldBidderUid: oldBidderUid, oldBid: oldBidAmount };
-  };
-  return await tryBid();
+  } catch(e) { return { error: 'Bid failed: ' + (e.message || 'unknown') }; }
 };
 
 window._storeCancelListing = async (listingId) => {
   if (!playerId) return { error: 'Not logged in' };
   const listRef = ref(db, 'casino/store/listings/' + listingId);
-  let txError = null;
-  let txItem = null;
-  let bidderToRefund = null;
-  let retries = 0;
-  const tryCancel = async () => {
-    txError = null; txItem = null; bidderToRefund = null;
-    try {
-      await runTransaction(listRef, (current) => {
-        if (current === null) return; // abort — may be uncached
-        if (current.sellerUid !== playerId) { txError = 'Not your listing'; return; }
-        if (current.sold) { txError = 'Already sold'; return; }
-        txItem = { ...current };
-        if (current.type === 'auction' && current.highBidderUid && current.currentBid > 0) {
-          bidderToRefund = { uid: current.highBidderUid, amount: current.currentBid, seller: current.seller, itemName: current.itemName || current.itemId };
-        }
-        return null; // delete the listing
-      });
-      if (txError) return { error: txError };
-      if (!txItem) {
-        if (retries < 1) {
-          retries++;
-          const snap = await get(listRef);
-          if (!snap.exists()) return { error: 'Listing not found' };
-          return await tryCancel();
-        }
-        return { error: 'Cancel failed — try again' };
-      }
-      if (bidderToRefund) {
-        const refundRef = push(ref(db, 'casino/pendingRefunds/' + bidderToRefund.uid));
-        await set(refundRef, { item: null, cash: bidderToRefund.amount, reason: 'listing_cancelled', from: bidderToRefund.seller, itemName: bidderToRefund.itemName, ts: Date.now() });
-      }
-    } catch(e) { return { error: 'Cancel failed: ' + (e.message || 'unknown') }; }
-    return { success: true, item: txItem };
-  };
-  return await tryCancel();
+  try {
+    const snap = await get(listRef);
+    if (!snap.exists()) return { error: 'Listing not found' };
+    const d = snap.val();
+    if (d.sellerUid !== playerId) return { error: 'Not your listing' };
+    if (d.sold) return { error: 'Already sold' };
+    // Refund highest bidder if auction
+    if (d.type === 'auction' && d.highBidderUid && d.currentBid > 0) {
+      const refundRef = push(ref(db, 'casino/pendingRefunds/' + d.highBidderUid));
+      await set(refundRef, { item: null, cash: d.currentBid, reason: 'listing_cancelled', from: d.seller, itemName: d.itemName || d.itemId, ts: Date.now() });
+    }
+    // Remove the listing
+    await remove(listRef);
+    return { success: true, item: d };
+  } catch(e) { return { error: 'Cancel failed: ' + (e.message || 'unknown') }; }
 };
 
 window._storeGetSales = async () => {
@@ -2942,46 +2894,35 @@ window._storeGetSales = async () => {
 window._storeClaimAuction = async (listingId) => {
   if (!playerId) return { error: 'Not logged in' };
   const listRef = ref(db, 'casino/store/listings/' + listingId);
-  let txError = null;
-  let txData = null;
-  let noBidsReclaim = false;
   try {
-    const result = await runTransaction(listRef, (current) => {
-      if (current === null) return;
-      if (current.sold) { txError = 'Already claimed'; return; }
-      if (Date.now() < current.endsAt) { txError = 'Auction not ended yet'; return; }
-      if (!current.highBidderUid) {
-        if (current.sellerUid !== playerId) { txError = 'Only the seller can reclaim unsold items'; return; }
-        noBidsReclaim = true;
-        txData = { ...current };
-        return null; // remove the listing
-      }
-      if (current.sellerUid !== playerId && current.highBidderUid !== playerId) { txError = 'Only the seller or winner can claim'; return; }
-      txData = { ...current };
-      current.sold = true;
-      current.buyer = current.highBidder;
-      current.buyerUid = current.highBidderUid;
-      current.soldAt = Date.now();
-      return current;
-    });
-    if (txError) return { error: txError };
-    if (!result.committed) return { error: 'Transaction failed — try again' };
+    const snap = await get(listRef);
+    if (!snap.exists()) return { error: 'Listing not found' };
+    const d = snap.val();
+    if (d.sold) return { error: 'Already claimed' };
+    if (Date.now() < d.endsAt) return { error: 'Auction not ended yet' };
+    // No bids — seller reclaims
+    if (!d.highBidderUid) {
+      if (d.sellerUid !== playerId) return { error: 'Only the seller can reclaim unsold items' };
+      await remove(listRef);
+      return { success: true, noBids: true, item: d };
+    }
+    // Has bids — seller or winner claims
+    if (d.sellerUid !== playerId && d.highBidderUid !== playerId) return { error: 'Only the seller or winner can claim' };
+    await update(listRef, { sold: true, buyer: d.highBidder, buyerUid: d.highBidderUid, soldAt: Date.now() });
+    // Credit seller with auction proceeds
+    if (d.sellerUid && d.currentBid > 0) {
+      const payRef = push(ref(db, 'casino/pendingRefunds/' + d.sellerUid));
+      await set(payRef, { item: null, cash: d.currentBid, reason: 'auction_sold', from: d.highBidder, itemName: d.itemName || d.itemId, ts: Date.now() });
+    }
+    // Credit buyer with the item
+    if (d.highBidderUid) {
+      const itemRef = push(ref(db, 'casino/pendingRefunds/' + d.highBidderUid));
+      await set(itemRef, { item: d.itemId, cash: 0, reason: 'auction_won', from: d.seller, itemName: d.itemName || d.itemId, ts: Date.now() });
+    }
+    const saleRef = push(ref(db, 'casino/store/sales'));
+    await set(saleRef, { itemId: d.itemId, itemName: d.itemName, rarity: d.rarity, price: d.currentBid, seller: d.seller, buyer: d.highBidder, ts: Date.now(), auction: true });
+    return { success: true, item: d };
   } catch(e) { return { error: 'Claim failed: ' + (e.message || 'unknown') }; }
-  if (noBidsReclaim) return { success: true, noBids: true, item: txData };
-  const d = txData;
-  // Credit seller with auction proceeds via pending refund system
-  if (d.sellerUid && d.currentBid > 0) {
-    const payRef = push(ref(db, 'casino/pendingRefunds/' + d.sellerUid));
-    await set(payRef, { item: null, cash: d.currentBid, reason: 'auction_sold', from: d.highBidder, itemName: d.itemName || d.itemId, ts: Date.now() });
-  }
-  // Credit buyer with the item via pending refund system
-  if (d.highBidderUid) {
-    const itemRef = push(ref(db, 'casino/pendingRefunds/' + d.highBidderUid));
-    await set(itemRef, { item: d.itemId, cash: 0, reason: 'auction_won', from: d.seller, itemName: d.itemName || d.itemId, ts: Date.now() });
-  }
-  const saleRef = push(ref(db, 'casino/store/sales'));
-  await set(saleRef, { itemId: d.itemId, itemName: d.itemName, rarity: d.rarity, price: d.currentBid, seller: d.seller, buyer: d.highBidder, ts: Date.now(), auction: true });
-  return { success: true, item: d };
 };
 
 // ============ FRIEND SYSTEM (Firebase) ============
@@ -5958,6 +5899,9 @@ async function loadDMContacts() {
 function dmOpenChat(uid, name) {
   _dmPartnerUid = uid;
   _dmPartnerName = name;
+  // Switch to DM tab first (in case we're on Friends tab)
+  const dmTab = document.getElementById('frTabDM');
+  if (dmTab) switchFriendsTab('dm', dmTab);
   document.getElementById('dmContactList').style.display = 'none';
   document.getElementById('dmChatView').style.display = 'block';
   document.getElementById('dmChatPartner').textContent = name;
