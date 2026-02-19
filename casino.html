@@ -844,11 +844,30 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
 .duel-create-btn:hover{transform:scale(1.05);box-shadow:0 0 16px rgba(255,215,0,.5);}
 .duel-vs{font-family:'Orbitron',sans-serif;font-size:36px;color:var(--gold);text-shadow:0 0 20px rgba(255,215,0,.5);margin:12px 0;letter-spacing:6px;}
 .duel-player{text-align:center;flex:1;}
-.duel-player-name{font-family:'Orbitron',sans-serif;font-size:16px;color:var(--text);margin-bottom:4px;}
+.duel-player-name{font-family:'Orbitron',sans-serif;font-size:16px;color:var(--text);margin-bottom:4px;transition:all .5s;}
 .duel-player-bet{font-family:'Orbitron',sans-serif;font-size:12px;color:var(--gold);}
 .duel-result{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;letter-spacing:3px;margin:12px 0;}
-.duel-coin{font-size:64px;display:inline-block;animation:coinSpin 0.8s linear infinite;}
-@keyframes coinSpin{0%{transform:rotateY(0deg);}100%{transform:rotateY(360deg);}}
+.duel-coin-wrapper{perspective:600px;display:inline-block;}
+.duel-coin{width:120px;height:120px;border-radius:50%;position:relative;transform-style:preserve-3d;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:900;font-family:'Orbitron',sans-serif;}
+.duel-coin .coin-face{position:absolute;width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;}
+.duel-coin .coin-heads{background:linear-gradient(135deg,#ffd700,#ffaa00,#ffd700);color:#1a1a2e;border:4px solid #cc8800;box-shadow:0 0 30px rgba(255,215,0,.5),inset 0 0 20px rgba(255,255,255,.3);}
+.duel-coin .coin-tails{background:linear-gradient(135deg,#2a2a3e,#1a1a2e,#2a2a3e);color:#8888aa;border:4px solid #444;box-shadow:0 0 30px rgba(100,100,200,.3),inset 0 0 20px rgba(0,0,0,.5);transform:rotateY(180deg);}
+@keyframes duelCoinSpin{0%{transform:rotateY(0deg);}100%{transform:rotateY(360deg);}}
+@keyframes duelCoinSlowDown{0%{transform:rotateY(0deg);}100%{transform:rotateY(1800deg);}}
+@keyframes duelCoinRevealHeads{0%{transform:rotateY(0deg);}100%{transform:rotateY(0deg);}}
+@keyframes duelCoinRevealTails{0%{transform:rotateY(0deg);}100%{transform:rotateY(180deg);}}
+.duel-countdown{font-family:'Orbitron',sans-serif;font-size:72px;font-weight:900;color:var(--gold);text-shadow:0 0 40px rgba(255,215,0,.8),0 0 80px rgba(255,215,0,.4);animation:duelCountPulse .5s ease-out;}
+@keyframes duelCountPulse{0%{transform:scale(2);opacity:0;}50%{transform:scale(1.1);opacity:1;}100%{transform:scale(1);opacity:1;}}
+.duel-flash{position:fixed;inset:0;z-index:10004;pointer-events:none;opacity:0;}
+@keyframes duelFlashBang{0%{opacity:.8;}100%{opacity:0;}}
+@keyframes duelShake{0%,100%{transform:translate(0,0);}10%{transform:translate(-8px,4px);}20%{transform:translate(8px,-4px);}30%{transform:translate(-6px,6px);}40%{transform:translate(6px,-6px);}50%{transform:translate(-4px,2px);}60%{transform:translate(4px,-2px);}70%{transform:translate(-2px,4px);}80%{transform:translate(2px,-4px);}90%{transform:translate(-1px,1px);}}
+.duel-overlay-shake{animation:duelShake .5s ease-out;}
+.duel-win-glow{animation:duelWinGlow 1.5s ease-in-out infinite;}
+@keyframes duelWinGlow{0%,100%{text-shadow:0 0 10px currentColor,0 0 20px currentColor;}50%{text-shadow:0 0 30px currentColor,0 0 60px currentColor,0 0 90px currentColor;}}
+.duel-result-reveal{animation:duelResultSlam .6s cubic-bezier(.17,.67,.29,1.5);}
+@keyframes duelResultSlam{0%{transform:scale(3) rotateZ(-10deg);opacity:0;}60%{transform:scale(1.1) rotateZ(2deg);opacity:1;}100%{transform:scale(1) rotateZ(0deg);opacity:1;}}
+.duel-tension-bar{width:80%;max-width:300px;height:6px;background:var(--surface2);border-radius:3px;margin:12px auto;overflow:hidden;}
+.duel-tension-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),#ff4444);transition:width .1s linear;}
 .duel-history{margin-top:16px;}
 .duel-history-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:4px;font-size:11px;}
 </style>
@@ -1654,24 +1673,35 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
     </div>
   </div>
   <!-- Duel Game Overlay -->
-  <div id="duelGameOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.95);z-index:10003;display:none;align-items:center;justify-content:center;">
-    <div style="text-align:center;max-width:500px;width:90vw;">
-      <div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:16px;">
+  <div id="duelGameOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.97);z-index:10003;align-items:center;justify-content:center;">
+    <div id="duelFlash" class="duel-flash"></div>
+    <div id="duelInner" style="text-align:center;max-width:560px;width:92vw;">
+      <div id="duelWagerText" style="font-family:'Orbitron';font-size:18px;color:var(--gold);margin-bottom:16px;letter-spacing:3px;"></div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:28px;margin-bottom:20px;">
         <div class="duel-player">
+          <div style="font-size:40px;margin-bottom:4px;">🟡</div>
           <div class="duel-player-name" id="duelP1Name">Player 1</div>
           <div class="duel-player-bet">HEADS</div>
         </div>
-        <div class="duel-vs">VS</div>
+        <div class="duel-vs" id="duelVsText">VS</div>
         <div class="duel-player">
+          <div style="font-size:40px;margin-bottom:4px;">⚫</div>
           <div class="duel-player-name" id="duelP2Name">Player 2</div>
           <div class="duel-player-bet">TAILS</div>
         </div>
       </div>
-      <div id="duelCoinArea" style="min-height:80px;margin:16px 0;">
-        <div class="duel-coin" id="duelCoin">🪙</div>
+      <div id="duelCoinArea" style="min-height:140px;margin:20px 0;display:flex;align-items:center;justify-content:center;">
+        <div id="duelCountdown" class="duel-countdown" style="display:none;"></div>
+        <div class="duel-coin-wrapper">
+          <div class="duel-coin" id="duelCoin" style="display:none;">
+            <div class="coin-face coin-heads">H</div>
+            <div class="coin-face coin-tails">T</div>
+          </div>
+        </div>
       </div>
+      <div class="duel-tension-bar" id="duelTensionBar" style="display:none;"><div class="duel-tension-fill" id="duelTensionFill" style="width:0%;"></div></div>
+      <div id="duelStatusText" style="font-family:'Orbitron';font-size:11px;color:var(--text2);letter-spacing:2px;margin:8px 0;"></div>
       <div id="duelResultText" class="duel-result" style="display:none;"></div>
-      <div id="duelWagerText" style="font-family:'Orbitron';font-size:14px;color:var(--gold);margin-bottom:8px;"></div>
       <button id="duelCloseBtn" onclick="duelCloseOverlay()" style="display:none;padding:10px 24px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:'Orbitron';font-size:12px;margin-top:12px;">CLOSE</button>
     </div>
   </div>
@@ -4074,14 +4104,34 @@ async function duelJoin(code) {
   duelWatchGame(code, room.wager);
 }
 
+let _duelAnimating = false;
+let _duelResolved = false;
+
+function duelPlayTick() { playSound(800, 'sine', .15, .04); }
+function duelPlayBoom() { playSound(100, 'sawtooth', .5, .15); setTimeout(() => playSound(80, 'square', .4, .2), 80); }
+function duelPlayDrum() { playSound(150, 'triangle', .3, .08); }
+function duelPlaySuspense(i) {
+  // Rising pitch tension ticks
+  const freq = 300 + i * 60;
+  playSound(freq, 'sine', .12, .06);
+}
+
 function duelWatchGame(code, wager) {
   currentDuelRoom = code;
+  _duelAnimating = false;
+  _duelResolved = false;
   const overlay = document.getElementById('duelGameOverlay');
   overlay.style.display = 'flex';
   document.getElementById('duelCloseBtn').style.display = 'none';
   document.getElementById('duelResultText').style.display = 'none';
-  document.getElementById('duelCoin').style.animation = 'coinSpin 0.8s linear infinite';
-  document.getElementById('duelWagerText').textContent = 'Wager: $' + wager.toFixed(2) + ' each';
+  document.getElementById('duelCoin').style.display = 'none';
+  document.getElementById('duelCoin').style.animation = 'none';
+  document.getElementById('duelCountdown').style.display = 'none';
+  document.getElementById('duelTensionBar').style.display = 'none';
+  document.getElementById('duelStatusText').textContent = 'WAITING FOR OPPONENT...';
+  document.getElementById('duelWagerText').textContent = '⚔️ $' + formatBalance(wager) + ' ON THE LINE ⚔️';
+  document.getElementById('duelVsText').textContent = 'VS';
+  document.getElementById('duelInner').classList.remove('duel-overlay-shake');
 
   if (duelRoomUnsub) { duelRoomUnsub(); duelRoomUnsub = null; }
   
@@ -4091,17 +4141,108 @@ function duelWatchGame(code, wager) {
     document.getElementById('duelP1Name').textContent = room.hostName || 'Host';
     document.getElementById('duelP2Name').textContent = room.challengerName || 'Waiting...';
     
-    if (room.status === 'playing' && !room.result) {
-      // Determine result (host determines)
+    if (room.status === 'playing' && !room.result && !_duelAnimating) {
+      _duelAnimating = true;
+      document.getElementById('duelStatusText').textContent = 'OPPONENT FOUND!';
+      // Host resolves after a delay to allow animation sync
       if (room.host === window._currentPlayerId) {
-        setTimeout(() => duelResolve(code), 2000);
+        setTimeout(() => duelResolve(code), 7500);
       }
+      // Start the dramatic sequence
+      duelDramaticSequence(room);
     }
     
-    if (room.result) {
+    if (room.result && !_duelResolved) {
+      _duelResolved = true;
       duelShowResult(room);
     }
   });
+}
+
+function duelDramaticSequence(room) {
+  const countdownEl = document.getElementById('duelCountdown');
+  const coinEl = document.getElementById('duelCoin');
+  const statusEl = document.getElementById('duelStatusText');
+  const tensionBar = document.getElementById('duelTensionBar');
+  const tensionFill = document.getElementById('duelTensionFill');
+  
+  // Phase 1: Countdown 3... 2... 1...
+  countdownEl.style.display = 'block';
+  statusEl.textContent = 'GET READY...';
+  let count = 3;
+  countdownEl.textContent = count;
+  countdownEl.style.animation = 'none';
+  void countdownEl.offsetWidth;
+  countdownEl.style.animation = 'duelCountPulse .5s ease-out';
+  duelPlayTick();
+  
+  const countInterval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countdownEl.textContent = count;
+      countdownEl.style.animation = 'none';
+      void countdownEl.offsetWidth;
+      countdownEl.style.animation = 'duelCountPulse .5s ease-out';
+      duelPlayTick();
+    } else if (count === 0) {
+      countdownEl.textContent = '⚔️';
+      countdownEl.style.animation = 'none';
+      void countdownEl.offsetWidth;
+      countdownEl.style.animation = 'duelCountPulse .5s ease-out';
+      duelPlayBoom();
+      
+      // Flash
+      const flash = document.getElementById('duelFlash');
+      flash.style.background = 'white';
+      flash.style.animation = 'duelFlashBang .4s ease-out forwards';
+      setTimeout(() => { flash.style.animation = 'none'; }, 500);
+      
+      // Phase 2: Coin spinning
+      setTimeout(() => {
+        countdownEl.style.display = 'none';
+        coinEl.style.display = 'flex';
+        coinEl.style.animation = 'duelCoinSpin .15s linear infinite';
+        statusEl.textContent = 'FLIPPING...';
+        tensionBar.style.display = 'block';
+        duelPlayDrum();
+        
+        // Phase 3: Tension build — coin slows down over 3.5 seconds with rising sound
+        let tensionStep = 0;
+        const tensionTotal = 35;
+        const tensionInterval = setInterval(() => {
+          tensionStep++;
+          const pct = (tensionStep / tensionTotal) * 100;
+          tensionFill.style.width = pct + '%';
+          
+          // Slow down coin rotation
+          const speed = 0.15 + (tensionStep / tensionTotal) * 1.2;
+          coinEl.style.animation = 'duelCoinSpin ' + speed.toFixed(2) + 's linear infinite';
+          
+          // Suspense ticks get higher pitch
+          if (tensionStep % 3 === 0) duelPlaySuspense(tensionStep / 3);
+          
+          // Change status text as tension builds
+          if (tensionStep === 10) statusEl.textContent = 'WHO WILL IT BE...';
+          if (tensionStep === 20) statusEl.textContent = 'ALMOST THERE...';
+          if (tensionStep === 28) statusEl.textContent = 'ANY MOMENT NOW...';
+          if (tensionStep === 33) {
+            statusEl.textContent = '...';
+            // Final dramatic pause — stop the coin briefly
+            coinEl.style.animation = 'duelCoinSpin 2s linear infinite';
+          }
+          
+          if (tensionStep >= tensionTotal) {
+            clearInterval(tensionInterval);
+            // Hide tension bar and coin — result will be shown by duelShowResult
+            tensionBar.style.display = 'none';
+            statusEl.textContent = '';
+          }
+        }, 100);
+      }, 600);
+      
+      clearInterval(countInterval);
+    }
+  }, 1000);
 }
 
 async function duelResolve(code) {
@@ -4132,35 +4273,77 @@ async function duelResolve(code) {
 
 function duelShowResult(room) {
   const coin = document.getElementById('duelCoin');
-  coin.style.animation = 'none';
-  coin.textContent = room.result === 'heads' ? '🟡' : '⚫';
-  
+  const inner = document.getElementById('duelInner');
+  const flash = document.getElementById('duelFlash');
+  const statusEl = document.getElementById('duelStatusText');
   const resultEl = document.getElementById('duelResultText');
-  resultEl.style.display = 'block';
   const isWinner = room.winner === window._currentPlayerId;
+  const isLoser = room.loserId === window._currentPlayerId;
   
-  if (isWinner) {
-    resultEl.textContent = 'YOU WIN!';
-    resultEl.style.color = 'var(--green)';
-    // Credit winnings
-    balance += room.pot;
-    updateBalDisplay();
-    playWinSound();
-    spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 30);
-    showToast('+$' + room.pot.toFixed(2) + ' from duel!');
-    recordGame('duels', room.wager, room.pot);
-  } else if (room.loserId === window._currentPlayerId) {
-    resultEl.textContent = 'YOU LOSE!';
-    resultEl.style.color = 'var(--red)';
-    playLoseSound();
-    recordGame('duels', room.wager, 0);
-  } else {
-    resultEl.textContent = room.winnerName + ' WINS!';
-    resultEl.style.color = 'var(--gold)';
-  }
+  // SLAM — screen shake + flash
+  duelPlayBoom();
+  inner.classList.remove('duel-overlay-shake');
+  void inner.offsetWidth;
+  inner.classList.add('duel-overlay-shake');
+  
+  // Flash the screen in winner's color
+  flash.style.background = isWinner ? '#00e676' : isLoser ? '#ff1744' : '#ffd700';
+  flash.style.animation = 'duelFlashBang .6s ease-out forwards';
+  setTimeout(() => { flash.style.animation = 'none'; }, 700);
+  
+  // Reveal the coin — snap to result
+  coin.style.animation = room.result === 'heads' ? 'duelCoinRevealHeads .8s ease-out forwards' : 'duelCoinRevealTails .8s ease-out forwards';
+  
+  // Show result text with dramatic slam animation
+  setTimeout(() => {
+    resultEl.style.display = 'block';
+    resultEl.className = 'duel-result duel-result-reveal';
+    statusEl.textContent = room.result === 'heads' ? '🟡 HEADS! 🟡' : '⚫ TAILS! ⚫';
+    
+    if (isWinner) {
+      resultEl.textContent = '💰 YOU WIN! 💰';
+      resultEl.style.color = '#00e676';
+      resultEl.classList.add('duel-win-glow');
+      // Huge boom sound
+      setTimeout(() => {
+        playSound(200, 'square', .4, .1);
+        setTimeout(() => playSound(300, 'square', .4, .1), 100);
+        setTimeout(() => playSound(400, 'square', .4, .1), 200);
+        setTimeout(() => playSound(600, 'square', .5, .15), 300);
+        setTimeout(() => playSound(800, 'sine', .3, .2), 400);
+      }, 100);
+      // Massive particles
+      balance += room.pot;
+      updateBalDisplay();
+      spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 60);
+      setTimeout(() => spawnParticles(window.innerWidth / 3, window.innerHeight / 2, 30), 200);
+      setTimeout(() => spawnParticles(window.innerWidth * 2 / 3, window.innerHeight / 2, 30), 400);
+      showToast('🎉 +$' + formatBalance(room.pot) + ' from duel!');
+      recordGame('duels', room.wager, room.pot);
+      // Flash green multiple times
+      let flashCount = 0;
+      const flashInterval = setInterval(() => {
+        flash.style.background = '#00e676';
+        flash.style.animation = 'duelFlashBang .3s ease-out forwards';
+        setTimeout(() => { flash.style.animation = 'none'; }, 350);
+        flashCount++;
+        if (flashCount >= 3) clearInterval(flashInterval);
+      }, 400);
+    } else if (isLoser) {
+      resultEl.textContent = '💀 YOU LOSE 💀';
+      resultEl.style.color = '#ff1744';
+      playLoseSound();
+      recordGame('duels', room.wager, 0);
+    } else {
+      resultEl.textContent = room.winnerName + ' WINS!';
+      resultEl.style.color = 'var(--gold)';
+    }
+    
+    // Show pot amount
+    document.getElementById('duelWagerText').textContent = room.winnerName + ' takes $' + formatBalance(room.pot) + '!';
+  }, 400);
   
   document.getElementById('duelCloseBtn').style.display = '';
-  document.getElementById('duelWagerText').textContent = room.winnerName + ' wins $' + room.pot.toFixed(2) + '!';
   
   // Save to local history
   duelHistory.unshift({ winner: room.winnerName, loser: room.loserName, pot: room.pot, time: Date.now() });

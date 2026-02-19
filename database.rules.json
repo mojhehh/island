@@ -59,6 +59,10 @@
       "market": {
         ".read": true,
         ".write": "auth != null"
+      },
+      "duelRooms": {
+        ".read": true,
+        ".write": "auth != null"
       }
     }
   }
