@@ -4032,12 +4032,12 @@ async function adminGiveMoney() {
       return;
     }
     const userId = usersSnap.val();
-    // Give them money
-    const playerRef = ref(db, 'casino/players/' + userId);
-    const snap = await get(playerRef);
-    const currentBal = snap.exists() ? (snap.val().balance || 0) : 0;
+    // Get current balance
+    const playerSnap = await window._fbGet('casino/players/' + userId);
+    const currentBal = playerSnap.exists() ? (playerSnap.val().balance || 0) : 0;
+    // Update balance
     await window._fbUpdate('casino/players/' + userId, { balance: currentBal + amount });
-    showToast('Gave $' + formatBalance(amount) + ' to ' + username, true);
+    showToast('✅ Gave $' + formatBalance(amount) + ' to ' + username, true);
     document.getElementById('adminUsername').value = '';
     document.getElementById('adminAmount').value = '';
   } catch(e) {
@@ -4051,7 +4051,7 @@ async function adminSetSelfBalance() {
     return;
   }
   const amount = parseFloat(document.getElementById('adminSelfBalance').value);
-  if (!amount || amount < 0) {
+  if (isNaN(amount) || amount < 0) {
     showToast('Invalid amount!', false);
     return;
   }
@@ -4059,10 +4059,9 @@ async function adminSetSelfBalance() {
     balance = amount;
     updateBalDisplay();
     await window._fbSet('casino/players/' + window._currentPlayerId, {
-      ...window._playerData,
       balance: amount
-    });
-    showToast('Balance set to $' + formatBalance(amount), true);
+    }, true);
+    showToast('✅ Balance set to $' + formatBalance(amount), true);
     document.getElementById('adminSelfBalance').value = '';
     renderProfile();
   } catch(e) {
