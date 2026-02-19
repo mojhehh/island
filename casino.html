@@ -4127,7 +4127,11 @@ function renderPrestige() {
 
 function prestigeConfirm() {
   const req = getPrestigeReq();
-  if (balance < req) { showToast('Need $' + formatBalance(req) + ' to prestige!', false); return; }
+  console.log('Prestige check - Current balance:', balance, 'Requirement:', req, 'Prestige level:', prestigeLevel);
+  if (balance < req) { 
+    showToast('Need $' + formatBalance(req) + ' to prestige! You have $' + formatBalance(balance), false); 
+    return; 
+  }
   // Show confirmation overlay
   const overlay = document.createElement('div');
   overlay.className = 'prestige-confirm-overlay';
@@ -4149,23 +4153,33 @@ function prestigeConfirm() {
 
 function prestigeExecute() {
   const req = getPrestigeReq();
-  if (balance < req) return;
-  prestigeLevel++;
-  balance = 1000;
-  updateBalDisplay();
-  showToast('👑 PRESTIGE ' + prestigeLevel + '! Welcome to ' + (PRESTIGE_NAMES[Math.min(prestigeLevel, PRESTIGE_NAMES.length) - 1] || 'Legendary') + '!');
-  playWinSound();
-  spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 50);
-  // Update leaderboard
-  if (window._currentPlayerId && window._currentUsername) {
-    window._fbSet('casino/leaderboards/prestige/' + window._currentPlayerId, {
-      name: window._currentUsername,
-      value: prestigeLevel,
-      updated: Date.now()
-    }).catch(() => {});
+  if (balance < req) {
+    showToast('Not enough balance!', false);
+    return;
   }
-  firebaseSave();
-  renderPrestige();
+  try {
+    prestigeLevel++;
+    balance = 1000;
+    updateBalDisplay();
+    console.log('Prestige executed! New level:', prestigeLevel, 'New balance:', balance);
+    showToast('👑 PRESTIGE ' + prestigeLevel + '! Welcome to ' + (PRESTIGE_NAMES[Math.min(prestigeLevel, PRESTIGE_NAMES.length) - 1] || 'Legendary') + '!');
+    playWinSound();
+    spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 50);
+    // Update leaderboard
+    if (window._currentPlayerId && window._currentUsername) {
+      window._fbSet('casino/leaderboards/prestige/' + window._currentPlayerId, {
+        name: window._currentUsername,
+        value: prestigeLevel,
+        updated: Date.now()
+      }).catch((err) => { console.error('Prestige leaderboard update failed:', err); });
+    }
+    firebaseSave();
+    renderProfile();
+    renderPrestige();
+  } catch(e) {
+    console.error('Prestige execute error:', e);
+    showToast('❌ Error: ' + (e.message || 'Unknown'), false);
+  }
 }
 
 // ============ COINFLIP DUELS ============
