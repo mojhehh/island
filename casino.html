@@ -4025,23 +4025,42 @@ async function adminGiveMoney() {
     return;
   }
   try {
+    showToast('⏳ Processing...', true);
     // Find user by username
     const usersSnap = await window._fbGet('casino/usernames/' + username.toLowerCase());
     if (!usersSnap.exists()) {
-      showToast('User not found!', false);
+      showToast('❌ User "' + username + '" not found!', false);
       return;
     }
     const userId = usersSnap.val();
+    console.log('Found user:', userId);
+    
     // Get current balance
     const playerSnap = await window._fbGet('casino/players/' + userId);
-    const currentBal = playerSnap.exists() ? (playerSnap.val().balance || 0) : 0;
-    // Update balance
-    await window._fbUpdate('casino/players/' + userId, { balance: currentBal + amount });
-    showToast('✅ Gave $' + formatBalance(amount) + ' to ' + username, true);
+    const currentData = playerSnap.exists() ? playerSnap.val() : {};
+    const currentBal = parseFloat(currentData.balance || 0);
+    const newBal = currentBal + amount;
+    
+    console.log('Current balance:', currentBal, 'Adding:', amount, 'New balance:', newBal);
+    
+    // Update balance using SET to ensure write succeeds
+    await window._fbSet('casino/players/' + userId, {
+      ...currentData,
+      balance: newBal,
+      lastAdminGift: {
+        from: window._currentUsername,
+        amount: amount,
+        time: Date.now()
+      }
+    });
+    
+    console.log('Balance updated successfully for', username);
+    showToast('✅ Gave $' + formatBalance(amount) + ' to ' + username + ' (' + newBal.toFixed(2) + ')', true);
     document.getElementById('adminUsername').value = '';
     document.getElementById('adminAmount').value = '';
   } catch(e) {
-    showToast('Error: ' + (e.message || 'Unknown'), false);
+    console.error('Admin give money error:', e);
+    showToast('❌ Error: ' + (e.message || 'Unknown error'), false);
   }
 }
 
@@ -4056,16 +4075,28 @@ async function adminSetSelfBalance() {
     return;
   }
   try {
+    showToast('⏳ Setting balance...', true);
     balance = amount;
     updateBalDisplay();
+    
+    // Get current player data
+    const playerSnap = await window._fbGet('casino/players/' + window._currentPlayerId);
+    const currentData = playerSnap.exists() ? playerSnap.val() : {};
+    
+    // Update with new balance
     await window._fbSet('casino/players/' + window._currentPlayerId, {
-      balance: amount
-    }, true);
+      ...currentData,
+      balance: amount,
+      lastBalanceSet: Date.now()
+    });
+    
+    console.log('Self balance set to:', amount);
     showToast('✅ Balance set to $' + formatBalance(amount), true);
     document.getElementById('adminSelfBalance').value = '';
     renderProfile();
   } catch(e) {
-    showToast('Error: ' + (e.message || 'Unknown'), false);
+    console.error('Admin set balance error:', e);
+    showToast('❌ Error: ' + (e.message || 'Unknown'), false);
   }
 }
 
