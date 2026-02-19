@@ -2,6 +2,7 @@
   "rules": {
     "casino": {
       ".read": true,
+      ".write": true,
       "players": {
         "$uid": {
           ".read": true,
