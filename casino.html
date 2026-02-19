@@ -776,6 +776,8 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
 .chat-msg-body{flex:1;min-width:0;}
 .chat-msg-name{font-size:11px;font-weight:700;color:var(--neon);margin-bottom:2px;}
 .chat-msg-name.guest-name{color:var(--text2);}
+.role-badge-owner{display:inline-block;font-size:8px;padding:1px 5px;border-radius:6px;margin-left:4px;background:linear-gradient(135deg,#ff3300,#ff6600);color:#fff;font-weight:900;letter-spacing:.5px;vertical-align:middle;}
+.role-badge-coowner{display:inline-block;font-size:8px;padding:1px 5px;border-radius:6px;margin-left:4px;background:linear-gradient(135deg,#9b59b6,#8e44ad);color:#fff;font-weight:900;letter-spacing:.5px;vertical-align:middle;}
 .chat-msg-text{font-size:12px;color:var(--text);line-height:1.4;word-break:break-word;}
 .chat-msg-time{font-size:9px;color:var(--text2);margin-top:2px;}
 .chat-msg-system{text-align:center;color:var(--text2);font-size:11px;font-style:italic;padding:4px 0;}
@@ -963,6 +965,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
   <button class="nav-btn-inline" onclick="showInventory()"><span class="icon">🎒</span>Inv</button>
   <button class="nav-btn-inline" onclick="openStoreOverlay()" style="border-color:rgba(255,215,0,.4);"><span class="icon">🏪</span>Store</button>
   <button class="nav-btn-inline" onclick="openTradeOverlay()" style="border-color:rgba(0,230,118,.4);"><span class="icon">🔄</span>Trade</button>
+  <button class="nav-btn-inline" onclick="openLoanOverlay()" style="border-color:rgba(255,193,7,.4);"><span class="icon">🏦</span>Loans</button>
   <button class="nav-btn-inline" onclick="showFriendsPanel()" style="position:relative;"><span class="icon">👥</span>Friends<span id="friendReqBadge" style="position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:8px;padding:1px 4px;border-radius:8px;display:none;"></span></button>
 
   <div id="balanceDisplay">
@@ -1980,6 +1983,83 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
       </div>
     </div>
   </div>
+  </div>
+</div>
+
+<!-- ============ LOAN OVERLAY ============ -->
+<div id="loanOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.92);z-index:9999;overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:700px;margin:0 auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div style="font-family:'Orbitron';font-size:18px;color:var(--gold);letter-spacing:2px;">🏦 LOANS</div>
+      <button onclick="closeLoanOverlay()" style="padding:8px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:'Orbitron';font-size:12px;">CLOSE</button>
+    </div>
+    <!-- Loan tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:12px;">
+      <button class="inv-tab active" id="loanBankTab" onclick="switchLoanTab('bank',this)" style="border-color:rgba(255,193,7,0.3);color:#ffc107;">🏦 Bank Loans</button>
+      <button class="inv-tab" id="loanPlayerTab" onclick="switchLoanTab('player',this)" style="border-color:rgba(0,230,118,0.3);color:#00e676;">🤝 Player Loans</button>
+      <button class="inv-tab" id="loanMyLoansTab" onclick="switchLoanTab('myloans',this)" style="border-color:rgba(255,107,107,0.3);color:#ff6b6b;">📋 My Loans</button>
+    </div>
+
+    <!-- BANK LOAN TAB -->
+    <div id="loanBankView" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
+      <div style="font-family:'Orbitron';font-size:14px;color:var(--gold);letter-spacing:2px;margin-bottom:12px;text-align:center;">🏦 BANK LOANS</div>
+      <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:16px;">Borrow money from the bank. 10% interest. Must repay within 30 minutes or balance goes further negative.</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;max-width:520px;margin:0 auto;">
+        <button onclick="takeBankLoan(500)" class="loan-card" style="padding:16px;background:linear-gradient(135deg,rgba(255,193,7,.08),rgba(255,193,7,.02));border:1px solid rgba(255,193,7,.3);border-radius:10px;cursor:pointer;text-align:center;color:var(--text);">
+          <div style="font-size:24px;margin-bottom:6px;">💰</div>
+          <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);font-weight:700;">$500</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:4px;">Repay: $550</div>
+        </button>
+        <button onclick="takeBankLoan(2000)" class="loan-card" style="padding:16px;background:linear-gradient(135deg,rgba(255,193,7,.08),rgba(255,193,7,.02));border:1px solid rgba(255,193,7,.3);border-radius:10px;cursor:pointer;text-align:center;color:var(--text);">
+          <div style="font-size:24px;margin-bottom:6px;">💰</div>
+          <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);font-weight:700;">$2,000</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:4px;">Repay: $2,200</div>
+        </button>
+        <button onclick="takeBankLoan(10000)" class="loan-card" style="padding:16px;background:linear-gradient(135deg,rgba(255,193,7,.08),rgba(255,193,7,.02));border:1px solid rgba(255,193,7,.3);border-radius:10px;cursor:pointer;text-align:center;color:var(--text);">
+          <div style="font-size:24px;margin-bottom:6px;">💰</div>
+          <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);font-weight:700;">$10,000</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:4px;">Repay: $11,000</div>
+        </button>
+        <button onclick="takeBankLoan(50000)" class="loan-card" style="padding:16px;background:linear-gradient(135deg,rgba(255,193,7,.08),rgba(255,193,7,.02));border:1px solid rgba(255,193,7,.3);border-radius:10px;cursor:pointer;text-align:center;color:var(--text);">
+          <div style="font-size:24px;margin-bottom:6px;">💰</div>
+          <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);font-weight:700;">$50,000</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:4px;">Repay: $55,000</div>
+        </button>
+      </div>
+      <div id="bankLoanStatus" style="font-size:12px;text-align:center;margin-top:12px;min-height:20px;color:var(--text2);"></div>
+    </div>
+
+    <!-- PLAYER LOAN TAB -->
+    <div id="loanPlayerView" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
+      <div style="font-family:'Orbitron';font-size:14px;color:var(--green);letter-spacing:2px;margin-bottom:12px;text-align:center;">🤝 PLAYER LOANS</div>
+      <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:16px;">Lend money to other players. Set your own interest rate.</div>
+      <div style="max-width:400px;margin:0 auto;">
+        <div style="margin-bottom:10px;">
+          <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;">Borrower Username</label>
+          <input type="text" id="loanPlayerUsername" placeholder="Enter username..." maxlength="16" autocomplete="off" style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;">
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <div style="flex:1;">
+            <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;">Loan Amount ($)</label>
+            <input type="number" id="loanPlayerAmount" placeholder="Amount" min="1" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--gold);font-family:'Orbitron';font-size:13px;box-sizing:border-box;">
+          </div>
+          <div style="width:100px;">
+            <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;">Interest %</label>
+            <input type="number" id="loanPlayerInterest" value="10" min="0" max="100" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;">
+          </div>
+        </div>
+        <button onclick="sendPlayerLoan()" style="width:100%;padding:12px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Orbitron';font-size:13px;font-weight:700;letter-spacing:1px;">💸 SEND LOAN</button>
+        <div id="playerLoanStatus" style="font-size:12px;text-align:center;margin-top:8px;min-height:20px;color:var(--text2);"></div>
+      </div>
+    </div>
+
+    <!-- MY LOANS TAB -->
+    <div id="loanMyLoansView" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
+      <div style="font-family:'Orbitron';font-size:14px;color:#ff6b6b;letter-spacing:2px;margin-bottom:12px;text-align:center;">📋 MY LOANS</div>
+      <div id="myLoansList" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="color:var(--text2);font-size:12px;text-align:center;padding:20px;">Loading...</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -3234,12 +3314,17 @@ window._sendChatMsg = async (text, username, type) => {
   if (!text || text.length === 0) return;
   const chatRef = ref(db, 'casino/chat');
   const msgRef = push(chatRef);
+  const uname = (username || 'Guest').toLowerCase();
+  let role = '';
+  if (uname === 'mojheh') role = 'owner';
+  else if (uname === 'terpez') role = 'co-owner';
   await set(msgRef, {
     user: username || 'Guest',
     text: text.slice(0, 200),
     type: type || 'msg', // 'msg', 'win', 'system'
     ts: Date.now(),
-    prestige: window._getPrestige ? window._getPrestige() : 0
+    prestige: window._getPrestige ? window._getPrestige() : 0,
+    role: role
   });
   // Trim old messages (keep last 100)
   const snap = await get(chatRef);
@@ -3283,13 +3368,12 @@ function updateBalDisplay(){
   el.style.transition='transform .15s';
   el.style.transform='scale(1.15)';
   setTimeout(()=>{el.style.transform='scale(1)';},150);
-  // Pity system: if balance is exactly 0 or below, offer $5
+  // Pity system: notify player they're broke but DON'T auto-give money (preserves debt)
   if(balance<=0 && !window._pityOffered){
     window._pityOffered=true;
     setTimeout(()=>{
       if(balance<=0){
-        showToast('💸 Broke? Here\'s $5 pity cash!',true);
-        balance=5;updateBalDisplay();firebaseSave();
+        showToast('💸 You\'re in debt! Take a loan or get a gift.',false);
       }
       window._pityOffered=false;
     },1500);
@@ -4053,9 +4137,10 @@ function renderProfile() {
   }).filter(Boolean).join('');
   // Prestige
   renderPrestige();
-  // Admin panel (mojheh only)
+  // Admin panel (mojheh + co-owners)
   const adminPanel = document.getElementById('adminPanel');
-  if (name.toLowerCase() === 'mojheh') {
+  const lowerName = name.toLowerCase();
+  if (lowerName === 'mojheh' || lowerName === 'terpez') {
     adminPanel.style.display = 'block';
   } else {
     adminPanel.style.display = 'none';
@@ -4897,10 +4982,239 @@ async function sendGift() {
     amountEl.value = '';
     showToast('💝 Sent $' + Math.floor(amount) + ' to ' + username + '!', true);
     // Update player balance display
-    updatePlayerBalance(result.newBalance);
+    balance = result.newBalance; updateBalDisplay(); firebaseSave();
     setTimeout(() => {
       statusEl.textContent = '';
     }, 3000);
+  }
+}
+
+// ============ LOAN SYSTEM ============
+function openLoanOverlay() {
+  document.getElementById('loanOverlay').style.display = 'block';
+  switchLoanTab('bank', document.getElementById('loanBankTab'));
+}
+function closeLoanOverlay() {
+  document.getElementById('loanOverlay').style.display = 'none';
+}
+function switchLoanTab(tab, btn) {
+  document.querySelectorAll('#loanOverlay .inv-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('loanBankView').style.display = tab === 'bank' ? 'block' : 'none';
+  document.getElementById('loanPlayerView').style.display = tab === 'player' ? 'block' : 'none';
+  document.getElementById('loanMyLoansView').style.display = tab === 'myloans' ? 'block' : 'none';
+  if (tab === 'myloans') loadMyLoans();
+}
+
+async function takeBankLoan(amount) {
+  const statusEl = document.getElementById('bankLoanStatus');
+  if (!window._currentPlayerId) { statusEl.textContent = '❌ Not logged in'; statusEl.style.color = 'var(--red)'; return; }
+  
+  const interest = Math.round(amount * 0.10);
+  const repayAmount = amount + interest;
+  const dueAt = Date.now() + (30 * 60 * 1000); // 30 minutes
+  
+  statusEl.textContent = '⏳ Processing loan...';
+  statusEl.style.color = 'var(--text2)';
+  
+  try {
+    // Save loan record to Firebase
+    const loanId = 'bank_' + Date.now();
+    await window._fbSet('casino/loans/' + window._currentPlayerId + '/' + loanId, {
+      type: 'bank',
+      amount: amount,
+      interest: interest,
+      repayAmount: repayAmount,
+      takenAt: Date.now(),
+      dueAt: dueAt,
+      repaid: false
+    });
+    
+    // Give player the money
+    balance += amount;
+    updateBalDisplay();
+    firebaseSave();
+    
+    showToast('🏦 Bank loan: +$' + amount.toLocaleString() + ' (repay $' + repayAmount.toLocaleString() + ')', true);
+    statusEl.innerHTML = '✅ Loan approved! Repay <strong style="color:var(--gold);">$' + repayAmount.toLocaleString() + '</strong> within 30 min';
+    statusEl.style.color = 'var(--green)';
+    
+    // Set auto-deduction timer
+    setTimeout(() => {
+      enforceBankLoanRepayment(loanId, repayAmount);
+    }, 30 * 60 * 1000);
+    
+  } catch(e) {
+    statusEl.textContent = '❌ Loan failed: ' + e.message;
+    statusEl.style.color = 'var(--red)';
+  }
+}
+
+async function enforceBankLoanRepayment(loanId, repayAmount) {
+  try {
+    const loanSnap = await window._fbGet('casino/loans/' + window._currentPlayerId + '/' + loanId);
+    if (!loanSnap.val() || loanSnap.val().repaid) return; // Already repaid
+    
+    // Auto-deduct repayment
+    balance -= repayAmount;
+    updateBalDisplay();
+    firebaseSave();
+    
+    // Mark as repaid
+    await window._fbUpdate('casino/loans/' + window._currentPlayerId + '/' + loanId, { repaid: true, repaidAt: Date.now(), autoCollected: true });
+    showToast('🏦 Bank loan auto-collected: -$' + repayAmount.toLocaleString(), false);
+  } catch(e) {
+    console.error('Loan enforcement error:', e);
+  }
+}
+
+async function repayLoan(loanId) {
+  try {
+    const loanSnap = await window._fbGet('casino/loans/' + window._currentPlayerId + '/' + loanId);
+    if (!loanSnap.val() || loanSnap.val().repaid) {
+      showToast('Loan already repaid', false);
+      loadMyLoans();
+      return;
+    }
+    const loan = loanSnap.val();
+    const repayAmt = loan.repayAmount;
+    
+    if (balance < repayAmt) {
+      showToast('❌ Need $' + repayAmt.toLocaleString() + ' to repay (you have $' + Math.floor(balance).toLocaleString() + ')', false);
+      return;
+    }
+    
+    // Deduct payment
+    balance -= repayAmt;
+    updateBalDisplay();
+    firebaseSave();
+    
+    // If player loan, send money back to lender
+    if (loan.type === 'player' && loan.lenderUid) {
+      const lenderSnap = await window._fbGet('casino/players/' + loan.lenderUid);
+      const lenderBal = lenderSnap.val()?.balance || 0;
+      await window._fbUpdate('casino/players/' + loan.lenderUid, { balance: lenderBal + repayAmt });
+    }
+    
+    // Mark repaid
+    await window._fbUpdate('casino/loans/' + window._currentPlayerId + '/' + loanId, { repaid: true, repaidAt: Date.now() });
+    showToast('✅ Loan repaid: -$' + repayAmt.toLocaleString(), true);
+    loadMyLoans();
+  } catch(e) {
+    showToast('❌ Repayment failed', false);
+  }
+}
+
+async function sendPlayerLoan() {
+  const statusEl = document.getElementById('playerLoanStatus');
+  const username = document.getElementById('loanPlayerUsername').value.trim();
+  const amount = parseFloat(document.getElementById('loanPlayerAmount').value);
+  const interestPct = parseFloat(document.getElementById('loanPlayerInterest').value) || 0;
+  
+  if (!username) { statusEl.textContent = '❌ Enter a username'; statusEl.style.color = 'var(--red)'; return; }
+  if (!amount || amount < 1) { statusEl.textContent = '❌ Invalid amount'; statusEl.style.color = 'var(--red)'; return; }
+  if (balance < amount) { statusEl.textContent = '❌ Insufficient balance'; statusEl.style.color = 'var(--red)'; return; }
+  
+  statusEl.textContent = '⏳ Processing...';
+  statusEl.style.color = 'var(--text2)';
+  
+  try {
+    // Look up borrower
+    const nameSnap = await window._fbGet('casino/usernames/' + username.toLowerCase());
+    if (!nameSnap.val()) { statusEl.textContent = '❌ Player not found'; statusEl.style.color = 'var(--red)'; return; }
+    const borrowerUid = nameSnap.val();
+    if (borrowerUid === window._currentPlayerId) { statusEl.textContent = "❌ Can't loan to yourself"; statusEl.style.color = 'var(--red)'; return; }
+    
+    const interest = Math.round(amount * (interestPct / 100));
+    const repayAmount = amount + interest;
+    const loanId = 'player_' + Date.now();
+    const lenderUsername = window._currentUsername || 'Unknown';
+    
+    // Save loan under borrower
+    await window._fbSet('casino/loans/' + borrowerUid + '/' + loanId, {
+      type: 'player',
+      lender: lenderUsername,
+      lenderUid: window._currentPlayerId,
+      amount: amount,
+      interest: interest,
+      interestPct: interestPct,
+      repayAmount: repayAmount,
+      takenAt: Date.now(),
+      dueAt: Date.now() + (60 * 60 * 1000), // 1 hour
+      repaid: false
+    });
+    
+    // Deduct from lender
+    balance -= amount;
+    updateBalDisplay();
+    firebaseSave();
+    
+    // Give to borrower
+    const borrowerSnap = await window._fbGet('casino/players/' + borrowerUid);
+    const borrowerBal = borrowerSnap.val()?.balance || 0;
+    await window._fbUpdate('casino/players/' + borrowerUid, { balance: borrowerBal + amount });
+    
+    showToast('💸 Loaned $' + amount.toLocaleString() + ' to ' + username + ' (repay $' + repayAmount.toLocaleString() + ')', true);
+    statusEl.innerHTML = '✅ Loaned <strong>$' + amount.toLocaleString() + '</strong> to <strong>' + username + '</strong>';
+    statusEl.style.color = 'var(--green)';
+    
+    document.getElementById('loanPlayerUsername').value = '';
+    document.getElementById('loanPlayerAmount').value = '';
+  } catch(e) {
+    statusEl.textContent = '❌ Loan failed: ' + e.message;
+    statusEl.style.color = 'var(--red)';
+  }
+}
+
+async function loadMyLoans() {
+  const listEl = document.getElementById('myLoansList');
+  listEl.innerHTML = '<div style="color:var(--text2);font-size:12px;text-align:center;padding:10px;">Loading...</div>';
+  
+  try {
+    const snap = await window._fbGet('casino/loans/' + window._currentPlayerId);
+    if (!snap.val()) {
+      listEl.innerHTML = '<div style="color:var(--text2);font-size:12px;text-align:center;padding:20px;">No loans</div>';
+      return;
+    }
+    
+    const loans = [];
+    const data = snap.val();
+    Object.keys(data).forEach(id => {
+      loans.push({ id, ...data[id] });
+    });
+    
+    // Sort: unpaid first, then by date
+    loans.sort((a, b) => {
+      if (a.repaid !== b.repaid) return a.repaid ? 1 : -1;
+      return b.takenAt - a.takenAt;
+    });
+    
+    if (loans.length === 0) {
+      listEl.innerHTML = '<div style="color:var(--text2);font-size:12px;text-align:center;padding:20px;">No loans</div>';
+      return;
+    }
+    
+    listEl.innerHTML = loans.map(loan => {
+      const isBank = loan.type === 'bank';
+      const icon = isBank ? '🏦' : '🤝';
+      const from = isBank ? 'Bank' : (loan.lender || 'Unknown');
+      const dueDateStr = new Date(loan.dueAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      const isOverdue = !loan.repaid && Date.now() > loan.dueAt;
+      const statusColor = loan.repaid ? 'var(--green)' : (isOverdue ? 'var(--red)' : 'var(--gold)');
+      const statusText = loan.repaid ? '✅ Repaid' : (isOverdue ? '⚠️ OVERDUE' : '⏰ Due ' + dueDateStr);
+      const repayBtn = !loan.repaid ? `<button onclick="repayLoan('${loan.id}')" style="padding:6px 14px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:'Orbitron';">REPAY $${loan.repayAmount.toLocaleString()}</button>` : '';
+      
+      return `<div style="background:var(--bg);border:1px solid ${loan.repaid ? 'var(--border)' : (isOverdue ? 'rgba(255,107,107,.4)' : 'rgba(255,193,7,.3)')};border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;${loan.repaid ? 'opacity:.6;' : ''}">
+        <div style="font-size:24px;">${icon}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:700;font-size:12px;color:${statusColor};">${statusText}</div>
+          <div style="font-size:11px;color:var(--text2);">From: <strong>${from}</strong> · $${loan.amount.toLocaleString()} (+${loan.interest.toLocaleString()} interest)</div>
+        </div>
+        <div>${repayBtn}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    listEl.innerHTML = '<div style="color:var(--red);font-size:12px;text-align:center;padding:20px;">Error loading loans</div>';
   }
 }
 
@@ -8396,9 +8710,12 @@ window._onChatMessages = function(msgs) {
       const isGuest = (m.user || '').toLowerCase() === 'guest';
       const timeStr = m.ts ? new Date(m.ts).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
       const pBadge = m.prestige > 0 ? getPrestigeBadgeHTML(m.prestige) : '';
+      let roleBadge = '';
+      if (m.role === 'owner') roleBadge = '<span class="role-badge-owner">OWNER</span>';
+      else if (m.role === 'co-owner') roleBadge = '<span class="role-badge-coowner">CO-OWNER</span>';
       el.innerHTML = `<div class="chat-msg-avatar">${initial}</div>
         <div class="chat-msg-body">
-          <div class="chat-msg-name${isGuest?' guest-name':''}">${escapeHtml(m.user||'Guest')}${pBadge} <span class="chat-msg-time">${timeStr}</span></div>
+          <div class="chat-msg-name${isGuest?' guest-name':''}">${escapeHtml(m.user||'Guest')}${roleBadge}${pBadge} <span class="chat-msg-time">${timeStr}</span></div>
           <div class="chat-msg-text">${escapeHtml(m.text)}</div>
         </div>`;
       container.appendChild(el);
