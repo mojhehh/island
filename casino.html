@@ -267,18 +267,22 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 
 /* Touch / responsive tweaks for iPad */
 @media (max-width:1024px){
-  #topNav{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:1px;flex-wrap:nowrap;}
+  #topNav{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:1px;flex-wrap:nowrap;padding:0 6px;}
   #topNav::-webkit-scrollbar{display:none;}
-  .nav-cat-btn{font-size:10px;padding:4px 6px;}
+  .nav-cat-btn{font-size:0;padding:4px 8px;}
+  .nav-cat-btn .cat-icon{font-size:16px;}
+  .nav-cat-btn .cat-arrow{display:none;}
   .nav-btn-inline{font-size:0;padding:6px 8px;}
   .nav-btn-inline .icon{font-size:15px;margin-right:0;}
-  #balanceDisplay{gap:4px;}
-  #balanceDisplay .bal{font-size:13px;}
-  #balanceDisplay .add-btn{font-size:10px;padding:3px 7px;}
-  .daily-bonus-btn{font-size:9px!important;padding:3px 7px!important;}
+  #balanceDisplay{gap:3px;margin-left:auto;flex-shrink:1;min-width:0;}
+  #balanceDisplay .bal{font-size:12px;white-space:nowrap;}
+  #balanceDisplay .add-btn{display:none;}
+  .daily-bonus-btn{font-size:8px!important;padding:2px 6px!important;white-space:nowrap;}
   .user-name{display:none;}
-  .user-info{gap:4px;margin-left:4px;}
-  .logout-btn{width:28px;height:28px;}
+  .user-info{gap:3px;margin-left:2px;}
+  .user-avatar{width:30px!important;height:30px!important;}
+  .logout-btn{width:26px;height:26px;font-size:12px;}
+  #muteBtn{padding:3px 5px!important;font-size:11px!important;}
   .game-panel{padding:12px;justify-content:flex-start!important;}
   #plinkoPanel{flex-direction:column;}
   #luckPanel{overflow:hidden!important;padding:0!important;}
@@ -455,7 +459,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 @keyframes stockPulse{0%,100%{opacity:1;box-shadow:0 0 4px #3fb950}50%{opacity:.4;box-shadow:0 0 8px #3fb950}}
 
 /* Particles */
-#particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;}
 
 /* Win Toast */
 .win-toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
@@ -2335,7 +2339,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 <!-- Firebase -->
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-import{getDatabase,ref,set,get,onValue,push,update,remove,off,onDisconnect,query as fbQuery,limitToLast as fbLimitToLast,runTransaction}from"https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+import{getDatabase,ref,set,get,onValue,push,update,remove,off,onDisconnect,query as fbQuery,limitToLast as fbLimitToLast}from"https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
 import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
 const firebaseConfig={
@@ -2504,41 +2508,34 @@ window._firebaseSave = () => {
 };
 
 // ============ GAME STAT RECORDING ============
-window._recordGameResult = (game, wagered, won) => {
+window._recordGameResult = async (game, wagered, won) => {
   if (!playerRef) return;
   const profit = won - wagered;
-  // Use runTransaction for atomic stats update
   const statsRef = ref(db, 'casino/players/' + playerId + '/stats');
-  runTransaction(statsRef, (current) => {
-    const s = current || { totalWagered: 0, totalWon: 0, totalProfit: 0, gamesPlayed: 0, biggestWin: 0 };
+  try {
+    const snap = await get(statsRef);
+    const s = snap.exists() ? snap.val() : { totalWagered: 0, totalWon: 0, totalProfit: 0, gamesPlayed: 0, biggestWin: 0 };
     s.totalWagered = (s.totalWagered || 0) + wagered;
     s.totalWon = (s.totalWon || 0) + won;
     s.totalProfit = (s.totalProfit || 0) + profit;
     s.gamesPlayed = (s.gamesPlayed || 0) + 1;
     if (won > (s.biggestWin || 0)) s.biggestWin = won;
-    return s;
-  }).then((result) => {
-    if (!result.committed) return;
-    const s = result.snapshot.val() || {};
-    // Sync local playerStats to match server's atomic value
+    await set(statsRef, s);
     if (window._loadStats) window._loadStats(s);
     // Update game-specific leaderboard (only if bigger than current)
     if (won > 0) {
       const lbRef = ref(db, 'casino/leaderboards/' + game + '/' + playerId);
-      get(lbRef).then(lbSnap => {
-        const cur = lbSnap.exists() ? (lbSnap.val().value || 0) : 0;
-        if (won > cur) {
-          set(lbRef, { name: currentUsername, value: won, updated: Date.now() }).catch(() => {});
-        }
-      }).catch(() => {});
+      const lbSnap = await get(lbRef).catch(() => null);
+      const cur = (lbSnap && lbSnap.exists()) ? (lbSnap.val().value || 0) : 0;
+      if (won > cur) {
+        await set(lbRef, { name: currentUsername, value: won, updated: Date.now() }).catch(() => {});
+      }
     }
     // Update profit leaderboard
-    set(ref(db, 'casino/leaderboards/profit/' + playerId), {
-      name: currentUsername,
-      value: s.totalProfit || 0,
-      updated: Date.now()
+    await set(ref(db, 'casino/leaderboards/profit/' + playerId), {
+      name: currentUsername, value: s.totalProfit || 0, updated: Date.now()
     }).catch(() => {});
-  }).catch(() => {});
+  } catch(e) { console.warn('recordGameResult error:', e); }
 };
 
 // ============ LEADERBOARD FETCH ============
@@ -2558,21 +2555,18 @@ window._claimDailyBonus = async () => {
   if (!playerRef) return null;
   const bonusRef = ref(db, 'casino/players/' + playerId + '/dailyBonus');
   const now = Date.now();
-  let txResult = null;
   try {
-    await runTransaction(bonusRef, (current) => {
-      const data = current || { lastClaimed: 0, streak: 0 };
-      const lastDate = new Date(data.lastClaimed).toDateString();
-      const todayDate = new Date(now).toDateString();
-      if (lastDate === todayDate) { txResult = null; return; } // Already claimed
-      const yesterdayDate = new Date(now - 86400000).toDateString();
-      const newStreak = (lastDate === yesterdayDate) ? (data.streak || 0) + 1 : 1;
-      const bonus = Math.min(500 + (newStreak - 1) * 100, 2000);
-      txResult = { amount: bonus, streak: newStreak };
-      return { lastClaimed: now, streak: newStreak };
-    });
-  } catch(e) { return null; }
-  return txResult;
+    const snap = await get(bonusRef);
+    const data = snap.exists() ? snap.val() : { lastClaimed: 0, streak: 0 };
+    const lastDate = new Date(data.lastClaimed).toDateString();
+    const todayDate = new Date(now).toDateString();
+    if (lastDate === todayDate) return null; // Already claimed
+    const yesterdayDate = new Date(now - 86400000).toDateString();
+    const newStreak = (lastDate === yesterdayDate) ? (data.streak || 0) + 1 : 1;
+    const bonus = Math.min(500 + (newStreak - 1) * 100, 2000);
+    await set(bonusRef, { lastClaimed: now, streak: newStreak });
+    return { amount: bonus, streak: newStreak };
+  } catch(e) { console.warn('claimDailyBonus error:', e); return null; }
 };
 
 // ============ GLOBAL MARKET SYNC ============
@@ -2593,21 +2587,20 @@ window._initGlobalMarket = () => {
 window._updateGlobalMarketItem = async (itemId, action, price) => {
   const itemRef = ref(db, 'casino/market/' + itemId);
   try {
-    await runTransaction(itemRef, (current) => {
-      const d = current || { globalSupply: 0, totalOpened: 0, lastTradePrice: 0, lastTradeTs: 0 };
-      if (action === 'opened') {
-        d.globalSupply = (d.globalSupply || 0) + 1;
-        d.totalOpened = (d.totalOpened || 0) + 1;
-      } else if (action === 'sold') {
-        d.globalSupply = Math.max(0, (d.globalSupply || 0) - 1);
-        d.lastTradePrice = price || 0;
-        d.lastTradeTs = Date.now();
-      } else if (action === 'traded') {
-        d.lastTradePrice = price || 0;
-        d.lastTradeTs = Date.now();
-      }
-      return d;
-    });
+    const snap = await get(itemRef);
+    const d = snap.exists() ? snap.val() : { globalSupply: 0, totalOpened: 0, lastTradePrice: 0, lastTradeTs: 0 };
+    if (action === 'opened') {
+      d.globalSupply = (d.globalSupply || 0) + 1;
+      d.totalOpened = (d.totalOpened || 0) + 1;
+    } else if (action === 'sold') {
+      d.globalSupply = Math.max(0, (d.globalSupply || 0) - 1);
+      d.lastTradePrice = price || 0;
+      d.lastTradeTs = Date.now();
+    } else if (action === 'traded') {
+      d.lastTradePrice = price || 0;
+      d.lastTradeTs = Date.now();
+    }
+    await set(itemRef, d);
   } catch(e) {}
 };
 
@@ -3733,8 +3726,9 @@ function closeCat(el){
 }
 // Touch support: toggle nav categories on tap
 function toggleCat(el){el.classList.toggle('open');document.querySelectorAll('.nav-cat').forEach(c=>{if(c!==el)c.classList.remove('open');});}
-// Close dropdowns if clicking outside
+// Close dropdowns if clicking/tapping outside
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-cat'))document.querySelectorAll('.nav-cat').forEach(c=>c.classList.remove('open'));});
+document.addEventListener('touchstart',function(e){if(!e.target.closest('.nav-cat'))document.querySelectorAll('.nav-cat').forEach(c=>c.classList.remove('open'));},{passive:true});
 // How-to-play toggle
 function htpToggle(el){el.closest('.htp-box').classList.toggle('open');}
 function showToast(msg,isWin=true){
@@ -4394,42 +4388,49 @@ async function duelCreate() {
   const code = duelGenCode();
   balance -= wager;
   updateBalDisplay();
-  await window._fbSet('casino/duelRooms/' + code, {
-    host: window._currentPlayerId,
-    hostName: window._currentUsername,
-    hostPrestige: prestigeLevel,
-    wager: wager,
-    status: 'waiting',
-    created: Date.now()
-  });
-  // Auto-cleanup if host disconnects
-  window._fbOnDisconnect('casino/duelRooms/' + code).remove();
-  showToast('Duel created! Waiting for opponent...', true);
-  playClickSound();
-  // Host watches their own room for opponent join
-  duelWatchGame(code, wager);
+  try {
+    await window._fbSet('casino/duelRooms/' + code, {
+      host: window._currentPlayerId,
+      hostName: window._currentUsername,
+      hostPrestige: prestigeLevel,
+      wager: wager,
+      status: 'waiting',
+      created: Date.now()
+    });
+    // Auto-cleanup if host disconnects
+    window._fbOnDisconnect('casino/duelRooms/' + code).remove();
+    showToast('Duel created! Waiting for opponent...', true);
+    playClickSound();
+    duelWatchGame(code, wager);
+  } catch(e) {
+    balance += wager;
+    updateBalDisplay();
+    showToast('Failed to create duel: ' + (e.message || 'Unknown error'), false);
+  }
 }
 
 async function duelJoin(code) {
   if (!window._currentPlayerId) { showToast('Login required!', false); return; }
-  const snap = await window._fbGet('casino/duelRooms/' + code);
-  if (!snap.exists()) { showToast('Duel not found!', false); return; }
-  const room = snap.val();
-  if (room.status !== 'waiting') { showToast('Duel already started!', false); return; }
-  if (room.host === window._currentPlayerId) { showToast("Can't join your own duel!", false); return; }
-  // Deduct wager
-  balance -= room.wager;
-  updateBalDisplay();
-  // Join the room
-  await window._fbUpdate('casino/duelRooms/' + code, {
-    challenger: window._currentPlayerId,
-    challengerName: window._currentUsername,
-    challengerPrestige: prestigeLevel,
-    status: 'playing'
-  });
-  playClickSound();
-  // Both players watch for result
-  duelWatchGame(code, room.wager);
+  try {
+    const snap = await window._fbGet('casino/duelRooms/' + code);
+    if (!snap.exists()) { showToast('Duel not found!', false); return; }
+    const room = snap.val();
+    if (room.status !== 'waiting') { showToast('Duel already started!', false); return; }
+    if (room.host === window._currentPlayerId) { showToast("Can't join your own duel!", false); return; }
+    balance -= room.wager;
+    updateBalDisplay();
+    await window._fbUpdate('casino/duelRooms/' + code, {
+      challenger: window._currentPlayerId,
+      challengerName: window._currentUsername,
+      challengerPrestige: prestigeLevel,
+      status: 'playing'
+    });
+    playClickSound();
+    // Both players watch for result
+    duelWatchGame(code, room.wager);
+  } catch(e) {
+    showToast('Failed to join duel: ' + (e.message || 'Unknown error'), false);
+  }
 }
 
 let _duelAnimating = false;
