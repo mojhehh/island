@@ -2747,8 +2747,8 @@ window._giftMoney = async (recipientUsername, amount) => {
   
   // Update both balances atomically
   const updates = {};
-  updates['casino/players/' + playerId + '/balance'] = newSenderBal;
-  updates['casino/players/' + recipientUid + '/balance'] = newRecipientBal;
+  updates['players/' + playerId + '/balance'] = newSenderBal;
+  updates['players/' + recipientUid + '/balance'] = newRecipientBal;
   
   try {
     await window._fbUpdate('casino', updates);
@@ -3353,7 +3353,7 @@ window._broadcastWin = (username, game, amount) => {
 // ============ GLOBAL STATE ============
 let balance = 1000;
 window.getBalance=()=>balance;
-window.setBalance=(v)=>{balance=v;updateBalDisplay();};
+window.setBalance=(v)=>{balance=Number(v)||0;updateBalDisplay();};
 
 function formatBalance(v){
   const abs=Math.abs(v);
@@ -4376,9 +4376,10 @@ function renderPrestige() {
 
 function prestigeConfirm() {
   const req = getPrestigeReq();
-  console.log('Prestige check - Current balance:', balance, 'Requirement:', req, 'Prestige level:', prestigeLevel);
-  if (balance < req) { 
-    showToast('Need $' + formatBalance(req) + ' to prestige! You have $' + formatBalance(balance), false); 
+  const currentBal = Number(balance) || 0;
+  console.log('Prestige check - Current balance:', currentBal, 'Requirement:', req, 'Prestige level:', prestigeLevel);
+  if (currentBal < req) { 
+    showToast('Need $' + formatBalance(req) + ' to prestige! You have $' + formatBalance(currentBal), false); 
     return; 
   }
   // Show confirmation overlay
@@ -4402,8 +4403,9 @@ function prestigeConfirm() {
 
 function prestigeExecute() {
   const req = getPrestigeReq();
-  if (balance < req) {
-    showToast('Not enough balance!', false);
+  const currentBal = Number(balance) || 0;
+  if (currentBal < req) {
+    showToast('Not enough balance! Need $' + formatBalance(req) + ', have $' + formatBalance(currentBal), false);
     return;
   }
   try {
@@ -5155,14 +5157,25 @@ async function enforceBankLoanRepayment(loanId, repayAmount) {
     const loanSnap = await window._fbGet('casino/loans/' + window._currentPlayerId + '/' + loanId);
     if (!loanSnap.val() || loanSnap.val().repaid) return; // Already repaid
     
-    // Auto-deduct repayment
-    balance -= repayAmount;
-    updateBalDisplay();
-    firebaseSave();
-    
-    // Mark as repaid
-    await window._fbUpdate('casino/loans/' + window._currentPlayerId + '/' + loanId, { repaid: true, repaidAt: Date.now(), autoCollected: true });
-    showToast('🏦 Bank loan auto-collected: -$' + repayAmount.toLocaleString(), false);
+    if (balance >= repayAmount) {
+      // Can pay — auto-collect
+      balance -= repayAmount;
+      updateBalDisplay();
+      firebaseSave();
+      await window._fbUpdate('casino/loans/' + window._currentPlayerId + '/' + loanId, { repaid: true, repaidAt: Date.now(), autoCollected: true });
+      showToast('🏦 Bank loan auto-collected: -$' + repayAmount.toLocaleString(), false);
+    } else {
+      // Can't pay — add 25% penalty, mark overdue
+      const penalty = Math.round(repayAmount * 0.25);
+      const newRepayAmount = repayAmount + penalty;
+      await window._fbUpdate('casino/loans/' + window._currentPlayerId + '/' + loanId, {
+        overdue: true,
+        penalty: penalty,
+        repayAmount: newRepayAmount,
+        overdueAt: Date.now()
+      });
+      showToast('⚠️ Bank loan OVERDUE! 25% penalty added. Now owe $' + newRepayAmount.toLocaleString(), false);
+    }
   } catch(e) {
     console.error('Loan enforcement error:', e);
   }
@@ -5299,9 +5312,10 @@ async function loadMyLoans() {
       const icon = isBank ? '🏦' : '🤝';
       const from = isBank ? 'Bank' : (loan.lender || 'Unknown');
       const dueDateStr = new Date(loan.dueAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-      const isOverdue = !loan.repaid && Date.now() > loan.dueAt;
+      const isOverdue = !loan.repaid && (Date.now() > loan.dueAt || loan.overdue);
       const statusColor = loan.repaid ? 'var(--green)' : (isOverdue ? 'var(--red)' : 'var(--gold)');
-      const statusText = loan.repaid ? '✅ Repaid' : (isOverdue ? '⚠️ OVERDUE' : '⏰ Due ' + dueDateStr);
+      const penaltyText = loan.penalty ? ' (+$' + loan.penalty.toLocaleString() + ' penalty)' : '';
+      const statusText = loan.repaid ? '✅ Repaid' : (isOverdue ? '⚠️ OVERDUE' + penaltyText : '⏰ Due ' + dueDateStr);
       const repayBtn = !loan.repaid ? `<button onclick="repayLoan('${loan.id}')" style="padding:6px 14px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:'Orbitron';">REPAY $${loan.repayAmount.toLocaleString()}</button>` : '';
       
       return `<div style="background:var(--bg);border:1px solid ${loan.repaid ? 'var(--border)' : (isOverdue ? 'rgba(255,107,107,.4)' : 'rgba(255,193,7,.3)')};border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;${loan.repaid ? 'opacity:.6;' : ''}">
