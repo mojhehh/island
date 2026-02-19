@@ -1753,6 +1753,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:v
     <div style="text-align:center;margin-bottom:16px;">
       <div style="font-size:48px;margin-bottom:8px;cursor:pointer;" id="profileAvatar" onclick="openPfpPicker()" title="Click to change avatar">👤</div>
       <button onclick="openPfpPicker()" style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 12px;color:var(--text2);font-size:10px;cursor:pointer;margin-bottom:6px;font-family:Inter,sans-serif;">✏️ Change Avatar</button>
+      <input type="file" id="pfpFileInput" accept="image/*" style="display:none;" onchange="handlePfpUpload(this)">
       <div style="font-family:'Orbitron';font-size:22px;font-weight:900;color:var(--gold);letter-spacing:3px;" id="profileName">PLAYER</div>
       <div id="profilePrestigeBadge" style="margin-top:4px;"></div>
       <div style="font-size:11px;color:var(--text2);letter-spacing:2px;margin-top:4px;" id="profileJoined"></div>
@@ -2410,6 +2411,7 @@ onAuthStateChanged(auth, async (user) => {
       if (data.achievements) window._loadAchievements(data.achievements);
       if (data.tradeHistory) window._loadTradeHistory(data.tradeHistory);
       if (data.prestige != null) window._loadPrestige(data.prestige);
+      if (data.profilePicUrl) window._loadProfilePicUrl(data.profilePicUrl);
     } else {
       currentUsername = emailToUsername(user.email);
     }
@@ -2466,6 +2468,7 @@ window._firebaseSave = () => {
     achievements: window._getAchievements ? window._getAchievements() : null,
     tradeHistory: window._getTradeHistory ? window._getTradeHistory() : null,
     prestige: window._getPrestige ? window._getPrestige() : null,
+    profilePicUrl: window._getProfilePicUrl ? window._getProfilePicUrl() : null,
   };
   // Clean nulls
   Object.keys(saveData).forEach(k => { if (saveData[k] == null) delete saveData[k]; });
@@ -3324,7 +3327,8 @@ window._sendChatMsg = async (text, username, type) => {
     type: type || 'msg', // 'msg', 'win', 'system'
     ts: Date.now(),
     prestige: window._getPrestige ? window._getPrestige() : 0,
-    role: role
+    role: role,
+    profilePicUrl: window._getProfilePicUrl ? window._getProfilePicUrl() : null
   });
   // Trim old messages (keep last 100)
   const snap = await get(chatRef);
@@ -4059,12 +4063,37 @@ const PFP_OPTIONS = [
   '🌊','🌋','❄️','☄️','🌙','☀️','🌈','🍀','💰','🏝️'
 ];
 let selectedPfp = localStorage.getItem('casino_pfp') || '';
+let customPfpUrl = localStorage.getItem('casino_pfp_url') || '';
+const UPLOAD_WORKER_URL = 'https://chatra.modmojheh.workers.dev';
 
 function openPfpPicker() {
   const overlay = document.getElementById('pfpPickerOverlay');
   overlay.style.display = 'flex';
   const grid = document.getElementById('pfpGrid');
   grid.innerHTML = '';
+  
+  // Upload custom button
+  const uploadDiv = document.createElement('div');
+  uploadDiv.style.cssText = 'width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:20px;border-radius:10px;cursor:pointer;border:2px dashed var(--neon);background:rgba(0,240,255,.05);transition:all .15s;';
+  uploadDiv.innerHTML = '📷';
+  uploadDiv.title = 'Upload custom image';
+  uploadDiv.onmouseover = function(){ this.style.transform='scale(1.15)'; };
+  uploadDiv.onmouseout = function(){ this.style.transform='scale(1)'; };
+  uploadDiv.onclick = function(){ document.getElementById('pfpFileInput').click(); };
+  grid.appendChild(uploadDiv);
+  
+  // Show current custom pic if exists
+  if (customPfpUrl) {
+    const customDiv = document.createElement('div');
+    customDiv.style.cssText = 'width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;border:2px solid ' + (!selectedPfp && customPfpUrl ? 'var(--gold)' : 'var(--border)') + ';background:var(--bg);transition:all .15s;overflow:hidden;';
+    customDiv.innerHTML = '<img src="' + customPfpUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">';
+    customDiv.title = 'Your custom avatar';
+    customDiv.onmouseover = function(){ this.style.transform='scale(1.15)'; };
+    customDiv.onmouseout = function(){ this.style.transform='scale(1)'; };
+    customDiv.onclick = function(){ selectCustomPfp(customPfpUrl); };
+    grid.appendChild(customDiv);
+  }
+  
   PFP_OPTIONS.forEach((emoji) => {
     const isSelected = emoji === selectedPfp;
     const div = document.createElement('div');
@@ -4079,16 +4108,84 @@ function openPfpPicker() {
 function closePfpPicker() { document.getElementById('pfpPickerOverlay').style.display = 'none'; }
 function selectPfp(emoji) {
   selectedPfp = emoji;
+  customPfpUrl = ''; // clear custom pic when picking emoji
   localStorage.setItem('casino_pfp', emoji);
+  localStorage.removeItem('casino_pfp_url');
   if(window._firebaseSave) firebaseSave();
   applyPfp();
   closePfpPicker();
   showToast('Avatar updated! ' + emoji, true);
 }
+
+function selectCustomPfp(url) {
+  selectedPfp = '';
+  customPfpUrl = url;
+  localStorage.setItem('casino_pfp_url', url);
+  localStorage.setItem('casino_pfp', '');
+  if(window._firebaseSave) firebaseSave();
+  applyPfp();
+  closePfpPicker();
+  showToast('Custom avatar set!', true);
+}
+
+async function handlePfpUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  if (!file.type.startsWith('image/')) {
+    showToast('❌ Please select an image file', false);
+    return;
+  }
+  
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('❌ Image too large (max 5MB)', false);
+    return;
+  }
+  
+  showToast('⏳ Uploading avatar...', true);
+  closePfpPicker();
+  
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const res = await fetch(UPLOAD_WORKER_URL + '/upload', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await res.json();
+    
+    if (!res.ok || !data.url) {
+      throw new Error(data.error || 'Upload failed');
+    }
+    
+    customPfpUrl = data.url;
+    selectedPfp = '';
+    localStorage.setItem('casino_pfp_url', customPfpUrl);
+    localStorage.setItem('casino_pfp', '');
+    
+    // Save to Firebase player data
+    if (window._currentPlayerId) {
+      await window._fbUpdate('casino/players/' + window._currentPlayerId, { profilePicUrl: customPfpUrl });
+    }
+    if(window._firebaseSave) firebaseSave();
+    applyPfp();
+    showToast('✅ Custom avatar uploaded!', true);
+  } catch(err) {
+    console.error('PFP upload error:', err);
+    showToast('❌ Upload failed: ' + err.message, false);
+  }
+  
+  input.value = ''; // reset file input
+}
 function applyPfp() {
   const name = window._currentUsername || 'Guest';
   const init = name.charAt(0).toUpperCase();
-  if (selectedPfp) {
+  if (customPfpUrl) {
+    document.getElementById('userAvatar').innerHTML = '<img src="' + customPfpUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+    document.getElementById('profileAvatar').innerHTML = '<img src="' + customPfpUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+  } else if (selectedPfp) {
     document.getElementById('userAvatar').innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;">' + selectedPfp + '</div>';
     document.getElementById('profileAvatar').innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;">' + selectedPfp + '</div>';
   } else {
@@ -4155,6 +4252,9 @@ const PRESTIGE_COLORS = ['prestige-1','prestige-2','prestige-3','prestige-4','pr
 
 window._loadPrestige = (val) => { prestigeLevel = val || 0; };
 window._getPrestige = () => prestigeLevel;
+
+window._loadProfilePicUrl = (url) => { customPfpUrl = url || ''; localStorage.setItem('casino_pfp_url', customPfpUrl); if (customPfpUrl) { selectedPfp = ''; localStorage.setItem('casino_pfp', ''); } applyPfp(); };
+window._getProfilePicUrl = () => customPfpUrl || null;
 
 function getPrestigeReq() {
   if (prestigeLevel >= PRESTIGE_REQS.length) return PRESTIGE_REQS[PRESTIGE_REQS.length - 1] * Math.pow(5, prestigeLevel - PRESTIGE_REQS.length + 1);
@@ -8713,7 +8813,8 @@ window._onChatMessages = function(msgs) {
       let roleBadge = '';
       if (m.role === 'owner') roleBadge = '<span class="role-badge-owner">OWNER</span>';
       else if (m.role === 'co-owner') roleBadge = '<span class="role-badge-coowner">CO-OWNER</span>';
-      el.innerHTML = `<div class="chat-msg-avatar">${initial}</div>
+      const avatarContent = m.profilePicUrl ? `<img src="${m.profilePicUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : initial;
+      el.innerHTML = `<div class="chat-msg-avatar">${avatarContent}</div>
         <div class="chat-msg-body">
           <div class="chat-msg-name${isGuest?' guest-name':''}">${escapeHtml(m.user||'Guest')}${roleBadge}${pBadge} <span class="chat-msg-time">${timeStr}</span></div>
           <div class="chat-msg-text">${escapeHtml(m.text)}</div>
