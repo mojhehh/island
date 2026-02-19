@@ -6426,7 +6426,6 @@ function dropPlinkoBall(){
   const bet=parseFloat(document.getElementById('plinkoBet').value)||10;
   if(bet>balance){showToast('Not enough balance!',false);if(autoDropping)toggleAutoDrop();plinkoDropLock=false;return;}
   if(bet<=0){plinkoDropLock=false;return;}
-  if(!checkMaxBet(bet,'Plinko')){plinkoDropLock=false;return;}
 
   balance-=bet;updateBalDisplay();
   plinkoDropLock=false;
