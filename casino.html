@@ -949,14 +949,13 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   <button class="nav-btn-inline" onclick="showInventory()"><span class="icon">🎒</span><span class="nav-label">Inv</span></button>
   <button class="nav-btn-inline" onclick="openStoreOverlay()" style="border-color:rgba(255,215,0,.4);"><span class="icon">🏪</span><span class="nav-label">Store</span></button>
   <button class="nav-btn-inline" onclick="openTradeOverlay()" style="border-color:rgba(0,230,118,.4);"><span class="icon">🔄</span><span class="nav-label">Trade</span></button>
-  <button class="nav-btn-inline" onclick="openLoanOverlay()" style="border-color:rgba(255,193,7,.4);"><span class="icon">🏦</span><span class="nav-label">Loans</span></button>
   <button class="nav-btn-inline" onclick="showFriendsPanel()" style="position:relative;"><span class="icon">👥</span><span class="nav-label">Friends</span><span id="friendReqBadge" style="position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:8px;padding:1px 4px;border-radius:8px;display:none;"></span></button>
 
   <div id="balanceDisplay">
     <button id="muteBtn" onclick="toggleMute()" style="padding:5px 8px;border:none;border-radius:6px;cursor:pointer;background:var(--surface2);color:var(--text);font-size:13px;transition:all .2s;" title="Toggle Sound">🔊</button>
     <button class="daily-bonus-btn" id="dailyBonusBtn" onclick="claimDailyBonus()" style="font-size:11px;padding:4px 10px;">🎁 DAILY</button>
     <div class="bal">$<span id="balText">1000.00</span></div>
-    <button class="add-btn" onclick="addMoney(1000)">+ $1000</button>
+    <button class="add-btn" onclick="addMoney(500)">💸 PITY $500</button>
     <div class="user-info">
       <div class="user-avatar" id="userAvatar"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><linearGradient id="avG0" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#6b2fd9"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#avG0)"/><text x="50" y="58" font-family="Orbitron,Inter,sans-serif" font-weight="900" font-size="48" fill="#fff" text-anchor="middle">G</text></svg></div>
       <span class="user-name" id="userNameDisplay">...</span>
@@ -1984,82 +1983,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   </div>
 </div>
 
-<!-- ============ LOAN OVERLAY ============ -->
-<div id="loanOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.92);z-index:9999;overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch;">
-  <div style="max-width:700px;margin:0 auto;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div style="font-family:'Orbitron';font-size:18px;color:var(--gold);letter-spacing:2px;">🏦 LOANS</div>
-      <button onclick="closeLoanOverlay()" style="padding:8px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:'Orbitron';font-size:12px;">CLOSE</button>
-    </div>
-    <!-- Loan tabs -->
-    <div style="display:flex;gap:6px;margin-bottom:12px;">
-      <button class="inv-tab active" id="loanBankTab" onclick="switchLoanTab('bank',this)" style="border-color:rgba(255,193,7,0.3);color:#ffc107;">🏦 Bank Loans</button>
-      <button class="inv-tab" id="loanPlayerTab" onclick="switchLoanTab('player',this)" style="border-color:rgba(0,230,118,0.3);color:#00e676;">🤝 Player Loans</button>
-      <button class="inv-tab" id="loanMyLoansTab" onclick="switchLoanTab('myloans',this)" style="border-color:rgba(255,107,107,0.3);color:#ff6b6b;">📋 My Loans</button>
-    </div>
-
-    <!-- BANK LOAN TAB -->
-    <div id="loanBankView" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
-      <div style="font-family:'Orbitron';font-size:14px;color:var(--gold);letter-spacing:2px;margin-bottom:12px;text-align:center;">🏦 BANK LOANS</div>
-      <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:16px;">Borrow money from the bank. 10% interest. Must repay within 30 minutes or balance goes further negative.</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;max-width:520px;margin:0 auto;">
-        <button onclick="takeBankLoan(500)" class="loan-card" style="padding:16px;background:linear-gradient(135deg,rgba(255,193,7,.08),rgba(255,193,7,.02));border:1px solid rgba(255,193,7,.3);border-radius:10px;cursor:pointer;text-align:center;color:var(--text);">
-          <div style="font-size:24px;margin-bottom:6px;">💰</div>
-          <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);font-weight:700;">$500</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:4px;">Repay: $550</div>
-        </button>
-        <button onclick="takeBankLoan(2000)" class="loan-card" style="padding:16px;background:linear-gradient(135deg,rgba(255,193,7,.08),rgba(255,193,7,.02));border:1px solid rgba(255,193,7,.3);border-radius:10px;cursor:pointer;text-align:center;color:var(--text);">
-          <div style="font-size:24px;margin-bottom:6px;">💰</div>
-          <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);font-weight:700;">$2,000</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:4px;">Repay: $2,200</div>
-        </button>
-        <button onclick="takeBankLoan(10000)" class="loan-card" style="padding:16px;background:linear-gradient(135deg,rgba(255,193,7,.08),rgba(255,193,7,.02));border:1px solid rgba(255,193,7,.3);border-radius:10px;cursor:pointer;text-align:center;color:var(--text);">
-          <div style="font-size:24px;margin-bottom:6px;">💰</div>
-          <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);font-weight:700;">$10,000</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:4px;">Repay: $11,000</div>
-        </button>
-        <button onclick="takeBankLoan(50000)" class="loan-card" style="padding:16px;background:linear-gradient(135deg,rgba(255,193,7,.08),rgba(255,193,7,.02));border:1px solid rgba(255,193,7,.3);border-radius:10px;cursor:pointer;text-align:center;color:var(--text);">
-          <div style="font-size:24px;margin-bottom:6px;">💰</div>
-          <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);font-weight:700;">$50,000</div>
-          <div style="font-size:10px;color:var(--text2);margin-top:4px;">Repay: $55,000</div>
-        </button>
-      </div>
-      <div id="bankLoanStatus" style="font-size:12px;text-align:center;margin-top:12px;min-height:20px;color:var(--text2);"></div>
-    </div>
-
-    <!-- PLAYER LOAN TAB -->
-    <div id="loanPlayerView" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
-      <div style="font-family:'Orbitron';font-size:14px;color:var(--green);letter-spacing:2px;margin-bottom:12px;text-align:center;">🤝 PLAYER LOANS</div>
-      <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:16px;">Lend money to other players. Set your own interest rate.</div>
-      <div style="max-width:400px;margin:0 auto;">
-        <div style="margin-bottom:10px;">
-          <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;">Borrower Username</label>
-          <input type="text" id="loanPlayerUsername" placeholder="Enter username..." maxlength="16" autocomplete="off" style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;">
-        </div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;">
-          <div style="flex:1;">
-            <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;">Loan Amount ($)</label>
-            <input type="number" id="loanPlayerAmount" placeholder="Amount" min="1" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--gold);font-family:'Orbitron';font-size:13px;box-sizing:border-box;">
-          </div>
-          <div style="width:100px;">
-            <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;">Interest %</label>
-            <input type="number" id="loanPlayerInterest" value="10" min="0" max="100" style="width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;box-sizing:border-box;">
-          </div>
-        </div>
-        <button onclick="sendPlayerLoan()" style="width:100%;padding:12px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Orbitron';font-size:13px;font-weight:700;letter-spacing:1px;">💸 SEND LOAN</button>
-        <div id="playerLoanStatus" style="font-size:12px;text-align:center;margin-top:8px;min-height:20px;color:var(--text2);"></div>
-      </div>
-    </div>
-
-    <!-- MY LOANS TAB -->
-    <div id="loanMyLoansView" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
-      <div style="font-family:'Orbitron';font-size:14px;color:#ff6b6b;letter-spacing:2px;margin-bottom:12px;text-align:center;">📋 MY LOANS</div>
-      <div id="myLoansList" style="display:flex;flex-direction:column;gap:8px;">
-        <div style="color:var(--text2);font-size:12px;text-align:center;padding:20px;">Loading...</div>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- Loans removed -->
 
 <!-- ============ STORE / MARKETPLACE OVERLAY ============ -->
 <div id="storeOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.92);z-index:9999;overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch;">
@@ -3310,7 +3234,7 @@ window._broadcastWin = (username, game, amount) => {
 <script>
 // ============ GLOBAL STATE ============
 const MAX_BALANCE = 1e18; // $1 Quintillion hard cap
-const MIN_BALANCE = -1e18;
+const MIN_BALANCE = 0; // No debt allowed
 function safeNum(v) {
   if (typeof v !== 'number' || !isFinite(v)) return 0;
   return Math.max(MIN_BALANCE, Math.min(MAX_BALANCE, Math.round(v * 100) / 100));
@@ -3340,12 +3264,17 @@ function updateBalDisplay(){
   el.style.transition='transform .15s';
   el.style.transform='scale(1.15)';
   setTimeout(()=>{el.style.transform='scale(1)';},150);
-  // Pity system: notify player they're broke but DON'T auto-give money (preserves debt)
+  // Pity system: auto-give $100 when player hits $0 or below (prevent debt)
   if(balance<=0 && !window._pityOffered){
     window._pityOffered=true;
+    // Clamp balance to 0 (no debt allowed)
+    if(balance<0) balance=0;
     setTimeout(()=>{
       if(balance<=0){
-        showToast('💸 You\'re in debt! Take a loan or get a gift.',false);
+        balance+=100;
+        updateBalDisplay();
+        firebaseSave();
+        showToast('💸 Pity bonus! Here\'s $100 to get back on your feet.',true);
       }
       window._pityOffered=false;
     },1500);
@@ -3353,7 +3282,9 @@ function updateBalDisplay(){
 }
 
 let _lastAddMoney=0;
-function addMoney(amt){if(amt<=0||amt>10000)return;if(Date.now()-_lastAddMoney<3000){showToast('Cooldown!',false);return;}_lastAddMoney=Date.now();balance+=amt;updateBalDisplay();firebaseSave();}
+let _addMoneySessionTotal=0;
+const _ADD_MONEY_SESSION_CAP=5000; // max $5K free money per session
+function addMoney(amt){if(amt<=0||amt>1000)return;if(_addMoneySessionTotal>=_ADD_MONEY_SESSION_CAP){showToast('Free money limit reached for this session!',false);return;}if(balance>100){showToast('Pity money is only for broke players!',false);return;}if(Date.now()-_lastAddMoney<10000){showToast('Cooldown! Wait 10s',false);return;}_lastAddMoney=Date.now();const give=Math.min(amt,_ADD_MONEY_SESSION_CAP-_addMoneySessionTotal);balance+=give;_addMoneySessionTotal+=give;updateBalDisplay();firebaseSave();showToast('+$'+give+' (pity money)',true);}
 let _fbSaveTimer=null, _fbSaveDirty=false;
 function firebaseSave(){
   _fbSaveDirty=true;
@@ -3933,6 +3864,10 @@ function resizeParticles(){pCanvas.width=window.innerWidth;pCanvas.height=window
 resizeParticles();window.addEventListener('resize',resizeParticles);
 
 function spawnParticles(x,y,count=30,colors=['#ffd700','#ff8800','#00f0ff','#ff00e5','#00ff88']){
+  // Cap total particles to prevent freezing from spam
+  const MAX_PARTICLES = 200;
+  if(particles.length >= MAX_PARTICLES) return;
+  count = Math.min(count, MAX_PARTICLES - particles.length);
   for(let i=0;i<count;i++){
     const angle=Math.random()*Math.PI*2;
     const speed=Math.random()*10+3;
@@ -4479,6 +4414,7 @@ async function duelCreate() {
   if (!window._currentPlayerId) { showToast('Login required!', false); return; }
   const wager = parseFloat(document.getElementById('duelWagerInput').value) || 100;
   if (wager < 10) { showToast('Minimum wager is $10', false); return; }
+  if (wager > balance) { showToast('Not enough balance!', false); return; }
   const code = duelGenCode();
   balance -= wager;
   updateBalDisplay();
@@ -4511,6 +4447,7 @@ async function duelJoin(code) {
     const room = snap.val();
     if (room.status !== 'waiting') { showToast('Duel already started!', false); return; }
     if (room.host === window._currentPlayerId) { showToast("Can't join your own duel!", false); return; }
+    if (room.wager > balance) { showToast('Not enough balance!', false); return; }
     balance -= room.wager;
     updateBalDisplay();
     await window._fbUpdate('casino/duelRooms/' + code, {
@@ -4572,6 +4509,29 @@ function duelWatchGame(code, wager) {
       if (room.host === window._currentPlayerId) {
         setTimeout(() => duelResolve(code), 7500);
       }
+      // Fallback: challenger also attempts resolve after 12s in case host disconnected
+      if (room.challenger === window._currentPlayerId) {
+        setTimeout(() => duelResolve(code), 12000);
+      }
+      // Absolute timeout: if still no result after 20s, force-resolve and refund
+      setTimeout(async () => {
+        const checkSnap = await window._fbGet('casino/duelRooms/' + code);
+        if (checkSnap.exists() && !checkSnap.val().result) {
+          // Try to resolve one more time
+          duelResolve(code);
+          // If still stuck after 3 more seconds, refund and close
+          setTimeout(async () => {
+            const finalSnap = await window._fbGet('casino/duelRooms/' + code);
+            if (finalSnap.exists() && !finalSnap.val().result) {
+              balance += wager; updateBalDisplay();
+              showToast('Duel timed out — wager refunded!', false);
+              document.getElementById('duelGameOverlay').style.display = 'none';
+              if (duelRoomUnsub) { duelRoomUnsub(); duelRoomUnsub = null; }
+              window._fbRemove('casino/duelRooms/' + code).catch(()=>{});
+            }
+          }, 3000);
+        }
+      }, 20000);
       // Start the dramatic sequence
       duelDramaticSequence(room);
     }
@@ -5138,246 +5098,15 @@ async function sendGift() {
   }
 }
 
-// ============ LOAN SYSTEM ============
-function openLoanOverlay() {
-  document.getElementById('loanOverlay').style.display = 'block';
-  switchLoanTab('bank', document.getElementById('loanBankTab'));
-}
-function closeLoanOverlay() {
-  document.getElementById('loanOverlay').style.display = 'none';
-}
-function switchLoanTab(tab, btn) {
-  document.querySelectorAll('#loanOverlay .inv-tab').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  document.getElementById('loanBankView').style.display = tab === 'bank' ? 'block' : 'none';
-  document.getElementById('loanPlayerView').style.display = tab === 'player' ? 'block' : 'none';
-  document.getElementById('loanMyLoansView').style.display = tab === 'myloans' ? 'block' : 'none';
-  if (tab === 'myloans') loadMyLoans();
-}
-
-async function takeBankLoan(amount) {
-  const statusEl = document.getElementById('bankLoanStatus');
-  if (!window._currentPlayerId) { statusEl.textContent = '❌ Not logged in'; statusEl.style.color = 'var(--red)'; return; }
-  
-  const interest = Math.round(amount * 0.10);
-  const repayAmount = amount + interest;
-  const dueAt = Date.now() + (30 * 60 * 1000); // 30 minutes
-  
-  statusEl.textContent = '⏳ Processing loan...';
-  statusEl.style.color = 'var(--text2)';
-  
-  try {
-    // Save loan record to Firebase
-    const loanId = 'bank_' + Date.now();
-    await window._fbSet('casino/loans/' + window._currentPlayerId + '/' + loanId, {
-      type: 'bank',
-      amount: amount,
-      interest: interest,
-      repayAmount: repayAmount,
-      takenAt: Date.now(),
-      dueAt: dueAt,
-      repaid: false
-    });
-    
-    // Give player the money
-    balance += amount;
-    updateBalDisplay();
-    firebaseSave();
-    
-    showToast('🏦 Bank loan: +$' + amount.toLocaleString() + ' (repay $' + repayAmount.toLocaleString() + ')', true);
-    statusEl.innerHTML = '✅ Loan approved! Repay <strong style="color:var(--gold);">$' + repayAmount.toLocaleString() + '</strong> within 30 min';
-    statusEl.style.color = 'var(--green)';
-    
-    // Set auto-deduction timer
-    setTimeout(() => {
-      enforceBankLoanRepayment(loanId, repayAmount);
-    }, 30 * 60 * 1000);
-    
-  } catch(e) {
-    statusEl.textContent = '❌ Loan failed: ' + e.message;
-    statusEl.style.color = 'var(--red)';
-  }
-}
-
-async function enforceBankLoanRepayment(loanId, repayAmount) {
-  try {
-    const loanSnap = await window._fbGet('casino/loans/' + window._currentPlayerId + '/' + loanId);
-    if (!loanSnap.val() || loanSnap.val().repaid) return; // Already repaid
-    
-    if (balance >= repayAmount) {
-      // Can pay — auto-collect
-      balance -= repayAmount;
-      updateBalDisplay();
-      firebaseSave();
-      await window._fbUpdate('casino/loans/' + window._currentPlayerId + '/' + loanId, { repaid: true, repaidAt: Date.now(), autoCollected: true });
-      showToast('🏦 Bank loan auto-collected: -$' + repayAmount.toLocaleString(), false);
-    } else {
-      // Can't pay — add 25% penalty, mark overdue
-      const penalty = Math.round(repayAmount * 0.25);
-      const newRepayAmount = repayAmount + penalty;
-      await window._fbUpdate('casino/loans/' + window._currentPlayerId + '/' + loanId, {
-        overdue: true,
-        penalty: penalty,
-        repayAmount: newRepayAmount,
-        overdueAt: Date.now()
-      });
-      showToast('⚠️ Bank loan OVERDUE! 25% penalty added. Now owe $' + newRepayAmount.toLocaleString(), false);
-    }
-  } catch(e) {
-    console.error('Loan enforcement error:', e);
-  }
-}
-
-async function repayLoan(loanId) {
-  try {
-    const loanSnap = await window._fbGet('casino/loans/' + window._currentPlayerId + '/' + loanId);
-    if (!loanSnap.val() || loanSnap.val().repaid) {
-      showToast('Loan already repaid', false);
-      loadMyLoans();
-      return;
-    }
-    const loan = loanSnap.val();
-    const repayAmt = loan.repayAmount;
-    
-    if (balance < repayAmt) {
-      showToast('❌ Need $' + repayAmt.toLocaleString() + ' to repay (you have $' + Math.floor(balance).toLocaleString() + ')', false);
-      return;
-    }
-    
-    // Deduct payment
-    balance -= repayAmt;
-    updateBalDisplay();
-    firebaseSave();
-    
-    // If player loan, send money back to lender
-    if (loan.type === 'player' && loan.lenderUid) {
-      const lenderSnap = await window._fbGet('casino/players/' + loan.lenderUid);
-      const lenderBal = lenderSnap.val()?.balance || 0;
-      await window._fbUpdate('casino/players/' + loan.lenderUid, { balance: lenderBal + repayAmt });
-    }
-    
-    // Mark repaid
-    await window._fbUpdate('casino/loans/' + window._currentPlayerId + '/' + loanId, { repaid: true, repaidAt: Date.now() });
-    showToast('✅ Loan repaid: -$' + repayAmt.toLocaleString(), true);
-    loadMyLoans();
-  } catch(e) {
-    showToast('❌ Repayment failed', false);
-  }
-}
-
-async function sendPlayerLoan() {
-  const statusEl = document.getElementById('playerLoanStatus');
-  const username = document.getElementById('loanPlayerUsername').value.trim();
-  const amount = parseFloat(document.getElementById('loanPlayerAmount').value);
-  const interestPct = parseFloat(document.getElementById('loanPlayerInterest').value) || 0;
-  
-  if (!username) { statusEl.textContent = '❌ Enter a username'; statusEl.style.color = 'var(--red)'; return; }
-  if (!amount || amount < 1) { statusEl.textContent = '❌ Invalid amount'; statusEl.style.color = 'var(--red)'; return; }
-  if (balance < amount) { statusEl.textContent = '❌ Insufficient balance'; statusEl.style.color = 'var(--red)'; return; }
-  
-  statusEl.textContent = '⏳ Processing...';
-  statusEl.style.color = 'var(--text2)';
-  
-  try {
-    // Look up borrower
-    const nameSnap = await window._fbGet('casino/usernames/' + username.toLowerCase());
-    if (!nameSnap.val()) { statusEl.textContent = '❌ Player not found'; statusEl.style.color = 'var(--red)'; return; }
-    const borrowerUid = nameSnap.val();
-    if (borrowerUid === window._currentPlayerId) { statusEl.textContent = "❌ Can't loan to yourself"; statusEl.style.color = 'var(--red)'; return; }
-    
-    const interest = Math.round(amount * (interestPct / 100));
-    const repayAmount = amount + interest;
-    const loanId = 'player_' + Date.now();
-    const lenderUsername = window._currentUsername || 'Unknown';
-    
-    // Save loan under borrower
-    await window._fbSet('casino/loans/' + borrowerUid + '/' + loanId, {
-      type: 'player',
-      lender: lenderUsername,
-      lenderUid: window._currentPlayerId,
-      amount: amount,
-      interest: interest,
-      interestPct: interestPct,
-      repayAmount: repayAmount,
-      takenAt: Date.now(),
-      dueAt: Date.now() + (60 * 60 * 1000), // 1 hour
-      repaid: false
-    });
-    
-    // Deduct from lender
-    balance -= amount;
-    updateBalDisplay();
-    firebaseSave();
-    
-    // Give to borrower
-    const borrowerSnap = await window._fbGet('casino/players/' + borrowerUid);
-    const borrowerBal = borrowerSnap.val()?.balance || 0;
-    await window._fbUpdate('casino/players/' + borrowerUid, { balance: borrowerBal + amount });
-    
-    showToast('💸 Loaned $' + amount.toLocaleString() + ' to ' + username + ' (repay $' + repayAmount.toLocaleString() + ')', true);
-    statusEl.innerHTML = '✅ Loaned <strong>$' + amount.toLocaleString() + '</strong> to <strong>' + username + '</strong>';
-    statusEl.style.color = 'var(--green)';
-    
-    document.getElementById('loanPlayerUsername').value = '';
-    document.getElementById('loanPlayerAmount').value = '';
-  } catch(e) {
-    statusEl.textContent = '❌ Loan failed: ' + e.message;
-    statusEl.style.color = 'var(--red)';
-  }
-}
-
-async function loadMyLoans() {
-  const listEl = document.getElementById('myLoansList');
-  listEl.innerHTML = '<div style="color:var(--text2);font-size:12px;text-align:center;padding:10px;">Loading...</div>';
-  
-  try {
-    const snap = await window._fbGet('casino/loans/' + window._currentPlayerId);
-    if (!snap.val()) {
-      listEl.innerHTML = '<div style="color:var(--text2);font-size:12px;text-align:center;padding:20px;">No loans</div>';
-      return;
-    }
-    
-    const loans = [];
-    const data = snap.val();
-    Object.keys(data).forEach(id => {
-      loans.push({ id, ...data[id] });
-    });
-    
-    // Sort: unpaid first, then by date
-    loans.sort((a, b) => {
-      if (a.repaid !== b.repaid) return a.repaid ? 1 : -1;
-      return b.takenAt - a.takenAt;
-    });
-    
-    if (loans.length === 0) {
-      listEl.innerHTML = '<div style="color:var(--text2);font-size:12px;text-align:center;padding:20px;">No loans</div>';
-      return;
-    }
-    
-    listEl.innerHTML = loans.map(loan => {
-      const isBank = loan.type === 'bank';
-      const icon = isBank ? '🏦' : '🤝';
-      const from = isBank ? 'Bank' : (loan.lender || 'Unknown');
-      const dueDateStr = new Date(loan.dueAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-      const isOverdue = !loan.repaid && (Date.now() > loan.dueAt || loan.overdue);
-      const statusColor = loan.repaid ? 'var(--green)' : (isOverdue ? 'var(--red)' : 'var(--gold)');
-      const penaltyText = loan.penalty ? ' (+$' + loan.penalty.toLocaleString() + ' penalty)' : '';
-      const statusText = loan.repaid ? '✅ Repaid' : (isOverdue ? '⚠️ OVERDUE' + penaltyText : '⏰ Due ' + dueDateStr);
-      const repayBtn = !loan.repaid ? `<button onclick="repayLoan('${loan.id}')" style="padding:6px 14px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:'Orbitron';">REPAY $${loan.repayAmount.toLocaleString()}</button>` : '';
-      
-      return `<div style="background:var(--bg);border:1px solid ${loan.repaid ? 'var(--border)' : (isOverdue ? 'rgba(255,107,107,.4)' : 'rgba(255,193,7,.3)')};border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;${loan.repaid ? 'opacity:.6;' : ''}">
-        <div style="font-size:24px;">${icon}</div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-weight:700;font-size:12px;color:${statusColor};">${statusText}</div>
-          <div style="font-size:11px;color:var(--text2);">From: <strong>${from}</strong> · $${loan.amount.toLocaleString()} (+${loan.interest.toLocaleString()} interest)</div>
-        </div>
-        <div>${repayBtn}</div>
-      </div>`;
-    }).join('');
-  } catch(e) {
-    listEl.innerHTML = '<div style="color:var(--red);font-size:12px;text-align:center;padding:20px;">Error loading loans</div>';
-  }
-}
+// ============ LOAN SYSTEM (REMOVED) ============
+function openLoanOverlay() { showToast('Loans have been removed!', false); }
+function closeLoanOverlay() {}
+function switchLoanTab() {}
+function takeBankLoan() { showToast('Loans have been removed!', false); }
+function enforceBankLoanRepayment() {}
+function repayLoan() {}
+function sendPlayerLoan() {}
+function loadMyLoans() {}
 
 function populateTradeSelect() {
   const sel = document.getElementById('tradeItemSelect');
@@ -5665,7 +5394,7 @@ async function loadStoreListings() {
         + '<div style="font-size:32px;">' + icon + '</div>'
         + '<div style="font-weight:700;font-size:12px;color:' + (rar ? rar.color : 'var(--text)') + ';text-align:center;">' + escapeHtml(l.itemName || l.itemId) + '</div>'
         + (rar ? '<div style="font-size:9px;color:' + rar.color + ';">' + rar.label + '</div>' : '')
-        + '<div style="font-family:Orbitron;font-size:14px;color:var(--gold);">$' + displayPrice.toLocaleString() + '</div>'
+        + '<div style="font-family:Orbitron;font-size:14px;color:var(--gold);">$' + formatBalance(displayPrice) + '</div>'
         + '<div style="font-size:10px;color:var(--text2);">by ' + escapeHtml(l.seller) + '</div>'
         + (isAuction && l.highBidder ? '<div style="font-size:9px;color:var(--neon);">High bid: ' + l.highBidder + '</div>' : '')
         + (timeStr ? '<div style="font-size:9px;color:' + (ended ? 'var(--red)' : 'var(--green)') + ';">' + timeStr + '</div>' : '')
@@ -5696,7 +5425,7 @@ async function loadStoreListings() {
 function renderStoreListings() { loadStoreListings(); }
 
 async function storeBuy(listingId, price) {
-  if (!confirm('Buy this item for $' + price.toLocaleString() + '?')) return;
+  if (!confirm('Buy this item for $' + formatBalance(price) + '?')) return;
   if(price > balance){ showToast('Not enough balance!', false); return; }
   try {
     const res = await window._storeBuyItem(listingId);
@@ -5798,7 +5527,7 @@ async function loadStoreSales() {
         + '<span style="font-size:16px;">' + (cat ? cat.icon : '📦') + '</span>'
         + '<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;color:' + (rar ? rar.color : 'var(--text)') +';">' + (s.itemName || s.itemId) + '</div>'
         + '<div style="font-size:10px;color:var(--text2);">' + s.seller + ' → ' + s.buyer + (s.auction ? ' (auction)' : '') + ' · ' + new Date(s.ts).toLocaleDateString() + '</div></div>'
-        + '<div style="font-family:Orbitron;font-size:12px;color:var(--gold);">$' + s.price.toLocaleString() + '</div></div>';
+        + '<div style="font-family:Orbitron;font-size:12px;color:var(--gold);">$' + formatBalance(s.price) + '</div></div>';
     }).join('');
   } catch(e) { div.innerHTML = '<div style="color:var(--red);font-size:12px;text-align:center;padding:20px;">Error</div>'; }
 }
@@ -6126,6 +5855,7 @@ function spinSlots(){
   const bet=parseFloat(document.getElementById('slotsBet').value)||10;
   if(bet<=0)return;
   if(!checkMaxBet(bet,'Slots'))return;
+  if(bet>balance){showToast('Not enough balance!',false);return;}
   slotsSpinning=true;balance-=bet;updateBalDisplay();
   document.getElementById('spinBtn').disabled=true;
   playClickSound();
@@ -6271,18 +6001,23 @@ function drawCrashGraph(){
 
 function startCrash(){
   if(crashRunning)return;
+  // 2-second cooldown between crash games
+  if(Date.now() - (window._lastCrashEnd||0) < 2000){showToast('Cooldown! Wait...',false);return;}
   const bet=parseFloat(document.getElementById('crashBet').value)||10;
   if(bet<=0)return;
   if(!checkMaxBet(bet,'Crash'))return;
+  if(bet>balance){showToast('Not enough balance!',false);return;}
   crashBetAmount=bet;balance-=bet;updateBalDisplay();
   crashCashedOut=false;crashRunning=true;
+  window._crashCashoutReady=false; // prevent instant cashout
+  setTimeout(()=>{window._crashCashoutReady=true;},1500); // 1.5s min before cashout
   crashMultVal=1;crashHistory=[{t:0,m:1}];
-  // House edge ~4% — clamp random to avoid division by zero
+  // House edge ~8% — clamp random to avoid division by zero
   let rnd = Math.random();
   if (rnd >= 0.99999) rnd = 0.99999; // prevent Infinity
-  crashPoint=1+(0.96/(1-rnd))-0.96;
+  crashPoint=1+(0.92/(1-rnd))-0.92;
   if(crashPoint<1.02)crashPoint=1.02;
-  if(crashPoint>1000)crashPoint=1000;
+  if(crashPoint>100)crashPoint=100;
   if(!isFinite(crashPoint))crashPoint=1.02;
 
   document.getElementById('crashStartBtn').style.display='none';
@@ -6309,6 +6044,7 @@ function animateCrash(){
 
   if(crashMultVal>=crashPoint){
     crashRunning=false;
+    window._lastCrashEnd=Date.now();
     document.getElementById('crashMultiplier').textContent=crashPoint.toFixed(2)+'×';
     document.getElementById('crashMultiplier').className='crash-multiplier crashed';
     document.getElementById('crashStatus').textContent='CRASHED at '+crashPoint.toFixed(2)+'×';
@@ -6326,10 +6062,12 @@ function animateCrash(){
 
 function cashOut(){
   if(!crashRunning||crashCashedOut)return;
+  if(!window._crashCashoutReady){showToast('Wait...',false);return;}
   crashCashedOut=true;
   const winnings=crashBetAmount*crashMultVal;
   balance+=winnings;updateBalDisplay();
   crashRunning=false;
+  window._lastCrashEnd=Date.now();
 
   document.getElementById('crashStatus').textContent='Cashed out at '+crashMultVal.toFixed(2)+'× — Won $'+winnings.toFixed(2);
   document.getElementById('crashStartBtn').style.display='';
@@ -6400,6 +6138,7 @@ function spinRoulette(){
   const bet=parseFloat(document.getElementById('roulBetInput').value)||10;
   if(bet<=0)return;
   if(!checkMaxBet(bet,'Roulette'))return;
+  if(bet>balance){showToast('Not enough balance!',false);return;}
 
   rouletteSpinning=true;balance-=bet;updateBalDisplay();
   document.getElementById('roulSpinBtn').disabled=true;
@@ -6749,6 +6488,7 @@ function addToCaseRecentFeed(cat, rar) {
 function openCase() {
   if (caseOpening) return;
   const c = CASES[selectedCase];
+  if(c.price>balance){showToast('Not enough balance!',false);return;}
   caseOpening = true; balance -= c.price; updateBalDisplay();
   document.getElementById('openCaseBtn').disabled = true;
   const quickBtn = document.getElementById('quickOpenBtn');
@@ -6863,8 +6603,9 @@ function openCase() {
 
 function quickOpenCase() {
   if (caseOpening) return;
-  caseOpening = true;
   const c = CASES[selectedCase];
+  if(c.price>balance){showToast('Not enough balance!',false);return;}
+  caseOpening = true;
   balance -= c.price; updateBalDisplay();
   playClickSound();
 
@@ -8427,13 +8168,14 @@ function bjHandVal(h){let v=0,a=0;h.forEach(c=>{v+=cardNumVal(c);if(c.r==='A')a+
 function bjDeal(){
   if(bjActive)return;const bet=parseFloat(document.getElementById('bjBet').value)||10;if(bet<=0)return;
   if(!checkMaxBet(bet,'Blackjack'))return;
+  if(bet>balance){showToast('Not enough balance!',false);return;}
   bjBetAmt=bet;balance-=bet;updateBalDisplay();bjDeck=newDeck();bjPlayer=[bjDrawCard(),bjDrawCard()];bjDealer=[bjDrawCard(),bjDrawCard()];bjActive=true;bjRender();
   document.getElementById('bjResult').textContent='';
   if(bjHandVal(bjPlayer)===21)bjStand();playClickSound();
 }
 function bjHit(){if(!bjActive)return;bjPlayer.push(bjDrawCard());if(bjHandVal(bjPlayer)>21){bjActive=false;bjRender();bjFinish();}else if(bjHandVal(bjPlayer)===21)bjStand();else bjRender();}
 function bjStand(){if(!bjActive)return;while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
-function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;if(!checkMaxBet(bjBetAmt*2,'Blackjack'))return;balance-=bjBetAmt;bjBetAmt*=2;updateBalDisplay();bjPlayer.push(bjDrawCard());while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
+function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;if(!checkMaxBet(bjBetAmt*2,'Blackjack'))return;if(bjBetAmt>balance){showToast('Not enough balance to double!',false);return;}balance-=bjBetAmt;bjBetAmt*=2;updateBalDisplay();bjPlayer.push(bjDrawCard());while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
 function bjFinish(){
   const pv=bjHandVal(bjPlayer),dv=bjHandVal(bjDealer);let w=0,msg='';
   const isNatural=bjPlayer.length===2&&pv===21;
@@ -8657,6 +8399,7 @@ const SCRATCH_TIERS=[{name:'Basic',price:5,symbols:['🍒','🍋','🔔','💎',
 let scratchTier=0,scratchCells=[],scratchRevealed=0,scratchActive=false;
 function scratchSelectTier(t,btn){scratchTier=t;document.querySelectorAll('.scratch-tier').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');document.getElementById('scratchBuyBtn').textContent='BUY CARD — $'+SCRATCH_TIERS[t].price;playClickSound();}
 function scratchBuy(){if(scratchActive)return;const tier=SCRATCH_TIERS[scratchTier];
+  if(tier.price>balance){showToast('Not enough balance!',false);return;}
   balance-=tier.price;updateBalDisplay();scratchActive=true;scratchRevealed=0;scratchCells=[];
   const r=Math.random();let winCount=0;if(r<0.03)winCount=4;else if(r<0.15)winCount=3;
   if(winCount>0){
@@ -8785,13 +8528,14 @@ const HILO_MAX_MULT=500; // cap multiplier at 500×
 const HILO_SKIP_PENALTY=0.10; // each skip reduces payout by 10%
 function hiloMultiplier(){
   if(hiloStreakCount===0)return 1;
-  let m=1;for(let i=0;i<hiloStreakCount;i++)m*=1.88;
+  let m=1;for(let i=0;i<hiloStreakCount;i++)m*=1.55;
   // Apply skip penalties (each skip ×0.90)
   for(let i=0;i<hiloSkipCount;i++)m*=(1-HILO_SKIP_PENALTY);
   m=Math.round(m*100)/100;
   return Math.min(m,HILO_MAX_MULT);
 }
 function hiloStart(){if(hiloActive)return;const bet=parseFloat(document.getElementById('hiloBet').value)||10;if(bet<=0)return;
+  if(bet>balance){showToast('Not enough balance!',false);return;}
   hiloBetAmt=bet;balance-=bet;updateBalDisplay();hiloActive=true;hiloStreakCount=0;hiloSkipCount=0;hiloDeck=newDeck();hiloCard=hiloDeck.pop();hiloRender();
   document.getElementById('hiloStartBtn').style.display='none';document.getElementById('hiloCashoutBtn').style.display='';playClickSound();
 }
@@ -8805,13 +8549,17 @@ function hiloGuess(guess){if(!hiloActive)return;if(hiloDeck.length<2)hiloDeck=ne
   if(guess==='skip'){hiloSkipCount++;hiloCard=next;hiloRender();playSound(400,'sine',.04,.04);
     showToast('Skipped! (-10% payout penalty)',false);return;}
   let correct=false;
-  // Ties (equal rank) count as WRONG — must be strictly higher or lower
+  const tied = nextRank===curRank;
+  // Ties (equal rank) = push — card redrawn, no streak change
   if(guess==='higher')correct=nextRank>curRank;else if(guess==='lower')correct=nextRank<curRank;
   hiloCard=next;
+  if(tied){hiloRender();playSound(400,'sine',.06,.05);
+    showToast('TIE! Same card — try again.',false);
+    document.getElementById('hiloStreak').innerHTML='<span style="color:var(--gold)">TIE!</span> Card was '+next.r+next.s+' — guess again';return;}
   if(correct){hiloStreakCount++;playSound(500+hiloStreakCount*60,'sine',.08,.06);hiloRender();}
   else{hiloActive=false;hiloRender();showToast('-$'+hiloBetAmt.toFixed(2),false);playLoseSound();
     document.getElementById('hiloStartBtn').style.display='';document.getElementById('hiloCashoutBtn').style.display='none';
-    document.getElementById('hiloStreak').innerHTML='<span style="color:var(--red)">WRONG!</span> Card was '+next.r+next.s+(nextRank===curRank?' (tie = loss)':'');recordGame('hilo',hiloBetAmt,0);
+    document.getElementById('hiloStreak').innerHTML='<span style="color:var(--red)">WRONG!</span> Card was '+next.r+next.s;recordGame('hilo',hiloBetAmt,0);
   }
 }
 function hiloRender(){const c=hiloCard;document.getElementById('hiloCard').className='hilo-card'+(cardIsRed(c)?' red':'');document.getElementById('hiloCard').innerHTML=c.r+'<br>'+c.s;
@@ -8935,12 +8683,15 @@ document.getElementById('chatInput').addEventListener('keydown', function(e) {
   }
 });
 
-// Broadcast big wins to chat
+// Broadcast big wins to chat (throttled to prevent spam)
+let _lastBroadcast = 0;
 const _origRecordGame = recordGame;
 recordGame = function(game, wagered, won) {
   _origRecordGame(game, wagered, won);
-  // Broadcast wins over $500 to chat
-  if (won >= 500 && window._broadcastWin) {
+  // Only broadcast wins over $5000, max once per 15 seconds
+  const now = Date.now();
+  if (won >= 5000 && window._broadcastWin && (now - _lastBroadcast > 15000)) {
+    _lastBroadcast = now;
     const username = window._currentUsername || 'Guest';
     const gameNames = {slots:'Slots',crash:'Crash',roulette:'Roulette',cases:'Cases',plinko:'Plinko',
       blackjack:'Blackjack',mines:'Mines',dice:'Dice',tower:'Tower',coinflip:'Coin Flip',
@@ -8973,6 +8724,18 @@ window.addEventListener('load',()=>{
   // iPad Safari: set --vh initially and on visual viewport resize (address bar show/hide)
   if(window.visualViewport){document.documentElement.style.setProperty('--vh',window.visualViewport.height+'px');window.visualViewport.addEventListener('resize',()=>{document.documentElement.style.setProperty('--vh',window.visualViewport.height+'px');});}
   setInterval(firebaseSave,30000);
+  // Poll for incoming trade requests every 10s and notify
+  let _lastTradeReqCount = 0;
+  setInterval(async ()=>{
+    if(!window._loadTradeRequests || !window._currentPlayerId) return;
+    try {
+      const reqs = await window._loadTradeRequests();
+      if(reqs.length > 0 && reqs.length > _lastTradeReqCount){
+        showToast('🤝 You have ' + reqs.length + ' trade request(s)! Check Trade → Inbox', true);
+      }
+      _lastTradeReqCount = reqs.length;
+    } catch(e){}
+  }, 10000);
   // Logo should show the catalog
   const logo = document.querySelector('.logo'); if(logo){ logo.addEventListener('click',()=>{ const catalog=document.getElementById('gameCatalog'); if(catalog) catalog.style.display='flex'; document.querySelectorAll('.game-panel').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); }); }
 });
