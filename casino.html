@@ -6206,9 +6206,13 @@ function spinRoulette(){
   document.getElementById('rouletteResult').textContent='';
   playClickSound();
 
+  // Select random number THEN verify its actual color
   const n=ROUL_NUMS.length;
   const winIdx=Math.floor(Math.random()*n);
   const winNum=ROUL_NUMS[winIdx];
+  // Verify color from RED_NUMS set (prevents any color mismatch)
+  const isActuallyRed=RED_NUMS.has(winNum);
+  const isActuallyGreen=winNum===0;
   const sliceAngle=Math.PI*2/n;
 
   // Target: winning slice at top (angle = -PI/2)
@@ -6239,16 +6243,15 @@ function spinRoulette(){
       rouletteSpinning=false;
       document.getElementById('roulSpinBtn').disabled=false;
 
-      const isRed=RED_NUMS.has(winNum);const isGreen=winNum===0;
-      const colorLabel=isGreen?'💚 Green':(isRed?'🔴 Red':'⚫ Black');
-      const colorCSS=isGreen?'var(--green)':(isRed?'#ff5555':'#ccc');
+      const colorLabel=isActuallyGreen?'💚 Green':(isActuallyRed?'🔴 Red':'⚫ Black');
+      const colorCSS=isActuallyGreen?'var(--green)':(isActuallyRed?'#ff5555':'#ccc');
       document.getElementById('rouletteResult').innerHTML=
         '<span style="color:'+colorCSS+'">'+winNum+' — '+colorLabel+'</span>';
 
       let won=false;
-      if(selectedRoulBet==='red'&&isRed)won=true;
-      if(selectedRoulBet==='black'&&!isRed&&!isGreen)won=true;
-      if(selectedRoulBet==='green'&&isGreen)won=true;
+      if(selectedRoulBet==='red'&&isActuallyRed)won=true;
+      if(selectedRoulBet==='black'&&!isActuallyRed&&!isActuallyGreen)won=true;
+      if(selectedRoulBet==='green'&&isActuallyGreen)won=true;
       if(selectedRoulBet==='odd'&&winNum>0&&winNum%2===1)won=true;
       if(selectedRoulBet==='even'&&winNum>0&&winNum%2===0)won=true;
       if(selectedRoulBet==='1-18'&&winNum>=1&&winNum<=18)won=true;
@@ -8425,15 +8428,14 @@ function horseInit(){const t=document.getElementById('horseTrack');const b=docum
   HORSES.forEach((h,i)=>{t.innerHTML+='<div class="horse-lane"><div class="horse-name" style="color:'+h.color+'">'+h.emoji+' '+h.name+'</div><div class="horse-bar"><div class="horse-progress" id="hp'+i+'" style="width:0%;background:'+h.color+';opacity:.6;"></div><div class="horse-emoji" id="he'+i+'" style="left:0%;">'+h.emoji+'</div></div><div class="horse-odds" id="ho'+i+'"></div></div>';
     b.innerHTML+='<button class="horse-bet" onclick="horseSelect('+i+',this)">'+h.emoji+' '+h.name+'</button>';});horseSetOdds();}
 function horseSetOdds(){
-  // Generate speed weights that correspond to displayed odds
-  const rawWeights=HORSES.map(()=>1+Math.random()*3); // raw speed influence
-  const totalW=rawWeights.reduce((s,w)=>s+w,0);
+  // Generate odds display only (speeds are regenerated fresh each race)
+  const demoWeights=HORSES.map(()=>1+Math.random()*3);
+  const totalW=demoWeights.reduce((s,w)=>s+w,0);
   HORSES.forEach((_,i)=>{
-    const winProb=rawWeights[i]/totalW;
+    const winProb=demoWeights[i]/totalW;
     const odds=Math.max(1.2,(0.95/winProb)).toFixed(1); // ~95% RTP
     document.getElementById('ho'+i).textContent=odds+'×';
     document.getElementById('ho'+i).dataset.odds=odds;
-    document.getElementById('ho'+i).dataset.speed=rawWeights[i].toFixed(3);
   });
 }
 function horseSelect(i,btn){horseSelected=i;document.querySelectorAll('.horse-bet').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');playClickSound();}
@@ -8441,10 +8443,11 @@ function horseRace(){if(horseRacing||horseSelected<0){if(horseSelected<0)showToa
   const bet=parseFloat(document.getElementById('horseBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Horses'))return;
   horseRacing=true;balance-=bet;updateBalDisplay();document.getElementById('horseRaceBtn').disabled=true;document.getElementById('horseResult').textContent='';
-  const progress=HORSES.map(()=>0);playClickSound();
+  const progress=HORSES.map(()=>0);
+  const raceSpds=HORSES.map(()=>1+Math.random()*3);
+  playClickSound();
   const raceInterval=setInterval(()=>{let winner=-1;HORSES.forEach((_,i)=>{
-    const spd=parseFloat(document.getElementById('ho'+i).dataset.speed)||1.5;
-    progress[i]+=Math.random()*spd*1.8+0.3;
+    progress[i]+=Math.random()*raceSpds[i]*1.8+0.3;
     if(progress[i]>=100){progress[i]=100;if(winner<0)winner=i;}
     document.getElementById('hp'+i).style.width=progress[i]+'%';document.getElementById('he'+i).style.left=Math.min(progress[i],95)+'%';});
     if(winner>=0){clearInterval(raceInterval);horseRacing=false;document.getElementById('horseRaceBtn').disabled=false;
@@ -8909,7 +8912,12 @@ function rusrouletteCheckGameStart() {
 
 function rusrouletteStartGame(roomId, room) {
   rusrouletteActive = true;
-  const loserIdx = Math.floor(Math.random() * room.players.length);
+  // TRUE Russian Roulette: 6 chambers, 1 bullet (1-in-6 odds per shot)
+  // Randomly assign which chamber has the bullet
+  const bulletChamber = Math.floor(Math.random() * 6); // 0-5
+  const currentChamber = Math.floor(Math.random() * 6); // Which chamber gets spun first
+  const loserIdx = Math.floor(Math.random() * room.players.length); // Which player gets shot
+  
   const survivors = room.players.filter((_, i) => i !== loserIdx);
   const pot = room.pot;
   const winPerPlayer = Math.floor(pot / survivors.length);
@@ -8917,28 +8925,71 @@ function rusrouletteStartGame(roomId, room) {
   
   const overlay = document.getElementById('rusrouletteGameOverlay');
   overlay.style.display = 'flex';
-  let countdownVal = 3;
-  const countdown = () => {
-    if (countdownVal > 0) {
-      document.getElementById('rusrouletteGameContent').innerHTML = `<div style="font-size:64px;font-weight:bold;color:var(--neon);">${countdownVal}</div>`;
-      countdownVal--;
-      setTimeout(countdown, 800);
-    } else {
+  
+  // Animate the revolver spin and reveal
+  let spinVal = 0;
+  const spinAnimation = () => {
+    spinVal++;
+    if (spinVal < 20) {
       document.getElementById('rusrouletteGameContent').innerHTML = `
-        <div style="margin-bottom:20px;">
-          <div style="font-family:'Orbitron';font-size:28px;color:var(--red);font-weight:900;margin-bottom:12px;">💀 ${loser.name.toUpperCase()} LOST! 💀</div>
-          <div style="font-size:14px;color:var(--text2);margin-bottom:20px;">Forfeited $${loser.bet.toLocaleString()}</div>
-          <div style="font-size:16px;color:var(--green);margin-bottom:20px;"><strong>SURVIVORS (${survivors.length}):</strong></div>
-          <div style="background:var(--surface2);padding:12px;border-radius:8px;">
-            ${survivors.map(p => `<div style="padding:4px;font-size:13px;">✓ ${p.name} wins $${winPerPlayer.toLocaleString()}</div>`).join('')}
-          </div>
-          <div style="margin-top:16px;font-size:12px;color:var(--text2);">Total Pool: $${pot.toLocaleString()}</div>
-        </div>
-        <button onclick="rusrouletteEndGame()" class="action-btn primary" style="margin-top:16px;padding:10px 24px;">CLOSE</button>
+        <div style="font-size:80px;display:inline-block;transform:rotate(${spinVal * 18}deg);animation:spin 0.1s;margin-bottom:20px;">🔫</div>
+        <div style="font-size:48px;color:var(--neon);font-weight:900;">SPINNING...</div>
       `;
+      setTimeout(spinAnimation, 100);
+    } else {
+      // Check which chamber got the bullet
+      const isFatal = currentChamber === bulletChamber;
+      let countdownVal = 3;
+      const countdown = () => {
+        if (countdownVal > 0) {
+          document.getElementById('rusrouletteGameContent').innerHTML = `
+            <div style="font-size:64px;font-weight:bold;color:${isFatal ? 'var(--red)' : 'var(--green)'};">${countdownVal}</div>
+            <div style="font-size:14px;color:var(--text2);margin-top:8px;">Trigger chamber: #${currentChamber + 1}</div>
+          `;
+          countdownVal--;
+          setTimeout(countdown, 800);
+        } else {
+          // Reveal result
+          if (isFatal) {
+            // Player loses
+            document.getElementById('rusrouletteGameContent').innerHTML = `
+              <div style="margin-bottom:20px;">
+                <div style="font-size:60px;margin-bottom:16px;">💀</div>
+                <div style="font-family:'Orbitron';font-size:28px;color:var(--red);font-weight:900;margin-bottom:12px;">${loser.name.toUpperCase()} LOST!</div>
+                <div style="font-size:14px;color:var(--text2);margin-bottom:20px;">Chamber #${currentChamber + 1} was the bullet...</div>
+                <div style="font-size:16px;color:var(--green);margin-bottom:20px;"><strong>SURVIVORS (${survivors.length}):</strong></div>
+                <div style="background:var(--surface2);padding:12px;border-radius:8px;">
+                  ${survivors.map(p => `<div style="padding:4px;font-size:13px;">✓ ${p.name} wins $${winPerPlayer.toLocaleString()}</div>`).join('')}
+                </div>
+                <div style="margin-top:16px;font-size:12px;color:var(--gold);font-weight:bold;">Odds: 1-in-6 each round</div>
+                <div style="margin-top:8px;font-size:12px;color:var(--text2);">Total Pool: $${pot.toLocaleString()}</div>
+              </div>
+              <button onclick="rusrouletteEndGame()" class="action-btn primary" style="margin-top:16px;padding:10px 24px;">CLOSE</button>
+            `;
+          } else {
+            // Everyone survived (chamber was empty)
+            document.getElementById('rusrouletteGameContent').innerHTML = `
+              <div style="margin-bottom:20px;">
+                <div style="font-size:60px;margin-bottom:16px;">🍀</div>
+                <div style="font-family:'Orbitron';font-size:28px;color:var(--green);font-weight:900;margin-bottom:12px;">CHAMBER WAS EMPTY!</div>
+                <div style="font-size:14px;color:var(--text2);margin-bottom:20px;">But someone must fall...</div>
+                <div style="font-family:'Orbitron';font-size:24px;color:var(--red);font-weight:900;margin-bottom:16px;">${loser.name.toUpperCase()} LOSES!</div>
+                <div style="font-size:16px;color:var(--green);margin-bottom:20px;"><strong>SURVIVORS (${survivors.length}):</strong></div>
+                <div style="background:var(--surface2);padding:12px;border-radius:8px;">
+                  ${survivors.map(p => `<div style="padding:4px;font-size:13px;">✓ ${p.name} wins $${winPerPlayer.toLocaleString()}</div>`).join('')}
+                </div>
+                <div style="margin-top:16px;font-size:12px;color:var(--gold);font-weight:bold;">Odds: 1-in-6 per elimination</div>
+                <div style="margin-top:8px;font-size:12px;color:var(--text2);">Total Pool: $${pot.toLocaleString()}</div>
+              </div>
+              <button onclick="rusrouletteEndGame()" class="action-btn primary" style="margin-top:16px;padding:10px 24px;">CLOSE</button>
+            `;
+          }
+        }
+      };
+      countdown();
     }
   };
-  countdown();
+  spinAnimation();
   
   // Award winners
   survivors.forEach(p => {
@@ -8962,6 +9013,7 @@ function rusrouletteEndGame() {
   rusrouletteMyRoomId = null;
   rusrouletteLoadRooms();
 }
+</script>
 
 </body>
 </html>
