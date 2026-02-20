@@ -438,6 +438,8 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 /* ============ STOCKS ============ */
 #stocksPanel{flex-direction:column;align-items:center;gap:0;overflow-y:auto;
   padding:70px 16px 20px!important;background:radial-gradient(ellipse at top,#0f1923 0%,#080c10 70%);}
+#cryptoPanel{flex-direction:column;align-items:center;gap:0;overflow-y:auto;
+  padding:70px 16px 20px!important;}
 .stock-hero{text-align:center;margin-bottom:6px;}
 .stock-hero .sh-ticker{font-family:'Orbitron';font-size:14px;font-weight:700;color:#58a6ff;
   letter-spacing:3px;text-transform:uppercase;}
@@ -962,8 +964,10 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   <button class="nav-btn-inline" onclick="switchGame('profile',this)"><span class="icon">👤</span><span class="nav-label">Profile</span></button>
   <button class="nav-btn-inline" onclick="showInventory()"><span class="icon">🎒</span><span class="nav-label">Inv</span></button>
   <button class="nav-btn-inline" onclick="openStoreOverlay()" style="border-color:rgba(255,215,0,.4);"><span class="icon">🏪</span><span class="nav-label">Store</span></button>
+  <button class="nav-btn-inline" onclick="openShopOverlay()" style="border-color:rgba(0,200,255,.4);"><span class="icon">🛒</span><span class="nav-label">Shop</span></button>
   <button class="nav-btn-inline" onclick="openTradeOverlay()" style="border-color:rgba(0,230,118,.4);"><span class="icon">🔄</span><span class="nav-label">Trade</span></button>
   <button class="nav-btn-inline" onclick="showFriendsPanel()" style="position:relative;"><span class="icon">👥</span><span class="nav-label">Friends</span><span id="friendReqBadge" style="position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:8px;padding:1px 4px;border-radius:8px;display:none;"></span></button>
+  <button class="nav-btn-inline" onclick="openSettingsPanel()" style="border-color:rgba(255,255,255,.2);"><span class="icon">⚙️</span><span class="nav-label">Settings</span></button>
 
   <div id="balanceDisplay">
     <button id="muteBtn" onclick="toggleMute()" style="padding:5px 8px;border:none;border-radius:6px;cursor:pointer;background:var(--surface2);color:var(--text);font-size:13px;transition:all .2s;" title="Toggle Sound">🔊</button>
@@ -991,6 +995,120 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   </div>
 </div>
 
+<!-- ============ SETTINGS OVERLAY ============ -->
+<div id="settingsOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.94);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:500px;margin:60px auto 40px;padding:20px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <span style="font-family:'Orbitron';font-size:22px;color:var(--neon);font-weight:900;letter-spacing:2px;">⚙️ SETTINGS</span>
+      <button onclick="closeSettingsPanel()" style="background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;">✕</button>
+    </div>
+
+    <!-- Sound -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+      <div style="font-family:'Orbitron';font-size:12px;color:var(--gold);letter-spacing:2px;margin-bottom:12px;">🔊 SOUND</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="color:var(--text);font-size:13px;">Sound Effects</span>
+        <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer;">
+          <input type="checkbox" id="settingSound" onchange="settingToggle('sound',this.checked)" style="opacity:0;width:0;height:0;">
+          <span style="position:absolute;inset:0;background:var(--surface2);border-radius:26px;transition:.3s;"></span>
+          <span id="settingSoundKnob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;background:var(--text2);border-radius:50%;transition:.3s;"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- VFX -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+      <div style="font-family:'Orbitron';font-size:12px;color:var(--gold);letter-spacing:2px;margin-bottom:12px;">✨ VISUAL EFFECTS</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span style="color:var(--text);font-size:13px;">Particles</span>
+        <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer;">
+          <input type="checkbox" id="settingParticles" onchange="settingToggle('particles',this.checked)" style="opacity:0;width:0;height:0;">
+          <span style="position:absolute;inset:0;background:var(--surface2);border-radius:26px;transition:.3s;"></span>
+          <span id="settingParticlesKnob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;background:var(--text2);border-radius:50%;transition:.3s;"></span>
+        </label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="color:var(--text);font-size:13px;">Reduced Animations</span>
+        <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer;">
+          <input type="checkbox" id="settingReducedAnim" onchange="settingToggle('reducedAnim',this.checked)" style="opacity:0;width:0;height:0;">
+          <span style="position:absolute;inset:0;background:var(--surface2);border-radius:26px;transition:.3s;"></span>
+          <span id="settingReducedAnimKnob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;background:var(--text2);border-radius:50%;transition:.3s;"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Theme -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+      <div style="font-family:'Orbitron';font-size:12px;color:var(--gold);letter-spacing:2px;margin-bottom:12px;">🎨 THEME</div>
+      <div id="themeButtons" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+        <button onclick="setTheme('dark')" class="theme-btn" data-theme="dark" style="padding:10px;border-radius:8px;border:2px solid var(--border);background:linear-gradient(135deg,#040814,#0a0f2e);color:#00f0ff;cursor:pointer;font-size:12px;font-weight:700;">🌑 Dark</button>
+        <button onclick="setTheme('midnight')" class="theme-btn" data-theme="midnight" style="padding:10px;border-radius:8px;border:2px solid var(--border);background:linear-gradient(135deg,#0d0221,#1a0533);color:#d32ce6;cursor:pointer;font-size:12px;font-weight:700;">🌌 Midnight</button>
+        <button onclick="setTheme('ocean')" class="theme-btn" data-theme="ocean" style="padding:10px;border-radius:8px;border:2px solid var(--border);background:linear-gradient(135deg,#001a33,#003366);color:#00bfff;cursor:pointer;font-size:12px;font-weight:700;">🌊 Ocean</button>
+        <button onclick="setTheme('forest')" class="theme-btn" data-theme="forest" style="padding:10px;border-radius:8px;border:2px solid var(--border);background:linear-gradient(135deg,#0a1f0a,#183a18);color:#00e676;cursor:pointer;font-size:12px;font-weight:700;">🌲 Forest</button>
+        <button onclick="setTheme('crimson')" class="theme-btn" data-theme="crimson" style="padding:10px;border-radius:8px;border:2px solid var(--border);background:linear-gradient(135deg,#1a0505,#330a0a);color:#ff4444;cursor:pointer;font-size:12px;font-weight:700;">🔥 Crimson</button>
+        <button onclick="setTheme('gold')" class="theme-btn" data-theme="gold" style="padding:10px;border-radius:8px;border:2px solid var(--border);background:linear-gradient(135deg,#1a1500,#332a00);color:#ffd700;cursor:pointer;font-size:12px;font-weight:700;">👑 Gold</button>
+      </div>
+    </div>
+
+    <!-- Version -->
+    <div style="text-align:center;color:var(--text2);font-size:11px;margin-top:16px;">Casino v3.0 · Island</div>
+  </div>
+</div>
+
+<!-- ============ SHOP OVERLAY ============ -->
+<div id="shopOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.94);z-index:9999;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:600px;margin:60px auto 40px;padding:20px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <span style="font-family:'Orbitron';font-size:22px;color:var(--gold);font-weight:900;letter-spacing:2px;">🛒 SHOP</span>
+      <button onclick="closeShopOverlay()" style="background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;">✕</button>
+    </div>
+    <div style="color:var(--text2);font-size:12px;margin-bottom:16px;">Balance: $<span id="shopBalText">0</span></div>
+
+    <!-- Potions Section -->
+    <div style="font-family:'Orbitron';font-size:13px;color:var(--neon);letter-spacing:2px;margin-bottom:12px;">🧪 POTIONS</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <!-- Luck Potion -->
+      <div style="background:var(--surface);border:1px solid rgba(255,215,0,.3);border-radius:12px;padding:16px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:6px;">🍀</div>
+        <div style="font-weight:700;color:var(--gold);margin-bottom:4px;">Luck Potion</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">+5% better odds for 10 minutes. Stacks up to 5x!</div>
+        <div style="font-size:11px;color:var(--neon);margin-bottom:8px;">Active: <span id="shopLuckCount">0</span>/5 stacks</div>
+        <button onclick="shopBuyPotion('luck')" class="action-btn primary" style="padding:8px 16px;font-size:12px;">$2,000</button>
+      </div>
+      <!-- Speed Potion -->
+      <div style="background:var(--surface);border:1px solid rgba(0,240,255,.3);border-radius:12px;padding:16px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:6px;">⚡</div>
+        <div style="font-weight:700;color:var(--neon);margin-bottom:4px;">Speed Potion</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">2x faster game animations for 15 minutes.</div>
+        <div style="font-size:11px;color:var(--neon);margin-bottom:8px;">Active: <span id="shopSpeedActive">OFF</span></div>
+        <button onclick="shopBuyPotion('speed')" class="action-btn primary" style="padding:8px 16px;font-size:12px;">$3,000</button>
+      </div>
+      <!-- Shield Potion -->
+      <div style="background:var(--surface);border:1px solid rgba(0,230,118,.3);border-radius:12px;padding:16px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:6px;">🛡️</div>
+        <div style="font-weight:700;color:var(--green);margin-bottom:4px;">Shield Potion</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">Prevents loss of more than 50% of your bet for 5 mins.</div>
+        <div style="font-size:11px;color:var(--neon);margin-bottom:8px;">Active: <span id="shopShieldActive">OFF</span></div>
+        <button onclick="shopBuyPotion('shield')" class="action-btn primary" style="padding:8px 16px;font-size:12px;">$5,000</button>
+      </div>
+      <!-- XP Potion -->
+      <div style="background:var(--surface);border:1px solid rgba(138,43,226,.3);border-radius:12px;padding:16px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:6px;">📈</div>
+        <div style="font-weight:700;color:#8a2be2;margin-bottom:4px;">XP Boost</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">2x stats tracking multiplier for 20 minutes.</div>
+        <div style="font-size:11px;color:var(--neon);margin-bottom:8px;">Active: <span id="shopXPActive">OFF</span></div>
+        <button onclick="shopBuyPotion('xp')" class="action-btn primary" style="padding:8px 16px;font-size:12px;">$4,000</button>
+      </div>
+    </div>
+
+    <!-- Active Effects -->
+    <div style="font-family:'Orbitron';font-size:13px;color:var(--gold);letter-spacing:2px;margin-bottom:12px;">⏱️ ACTIVE EFFECTS</div>
+    <div id="shopActiveEffects" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;min-height:40px;">
+      <div style="color:var(--text2);font-size:12px;text-align:center;">No active effects</div>
+    </div>
+  </div>
+</div>
+
 <!-- Particles Canvas -->
 <div id="gameCatalog" style="position:fixed;top:50px;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;gap:32px;padding:32px 16px 60px;background:var(--surface1);z-index:10;overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div class="catalog-card" onclick="switchGame('slots',this)"><span class="icon">🎰</span><div>Slots</div></div>
@@ -1013,6 +1131,9 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   <div class="catalog-card" onclick="switchGame('scratch',this)"><span class="icon">🎫</span><div>Scratch Cards</div></div>
   <div class="catalog-card" onclick="switchGame('luck',this)"><span class="icon">🎲</span><div>Push Your Luck</div></div>
   <div class="catalog-card" onclick="switchGame('stocks',this)"><span class="icon">📊</span><div>Stocks</div></div>
+  <div class="catalog-card" onclick="switchGame('rusroulette',this)"><span class="icon">🔫</span><div>Buckshot Roulette</div></div>
+  <div class="catalog-card" onclick="switchGame('crypto',this)"><span class="icon">₿</span><div>Crypto</div></div>
+  <div class="catalog-card" onclick="switchGame('duels',this)"><span class="icon">⚔️</span><div>Duels</div></div>
 </div>
 
 <canvas id="particles"></canvas>
@@ -1130,6 +1251,12 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   
   <!-- Recent unboxings feed -->
   <div id="caseRecentFeed" style="display:flex;gap:6px;overflow-x:auto;width:min(700px,92vw);padding:4px 0;margin-top:4px;"></div>
+
+  <!-- Limited Edition Cases -->
+  <div style="margin-top:16px;width:min(700px,92vw);">
+    <div style="font-family:'Orbitron';font-size:13px;color:var(--gold);letter-spacing:2px;margin-bottom:10px;">⏱️ LIMITED EDITION CASES</div>
+    <div id="limitedCasesContainer" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;"></div>
+  </div>
 </div>
 
 <!-- ============ PLINKO ============ -->
@@ -1355,6 +1482,22 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   
   <!-- Portfolio overview for all stocks -->
   <div id="stockPortfolioOverview" style="width:100%;margin-top:8px;"></div>
+</div>
+
+<!-- ============ CRYPTO PANEL ============ -->
+<div class="game-panel" id="cryptoPanel">
+  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul>
+    <li>Buy and sell <strong>cryptocurrencies</strong> with your casino balance.</li>
+    <li>Prices update every 3 seconds with realistic volatility.</li>
+    <li>Enter a <strong>dollar amount</strong> and click BUY to acquire coins.</li>
+    <li>SELL to sell a specific dollar amount, or <strong>SELL ALL</strong> to liquidate.</li>
+    <li>Watch the sparkline charts for trends. Meme coins swing wildly!</li>
+  </ul></div></div>
+  <div style="text-align:center;margin-bottom:12px;">
+    <span style="font-family:'Orbitron';font-size:24px;font-weight:900;background:linear-gradient(135deg,#f7931a,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">₿ CRYPTO TRADING</span>
+    <div style="font-size:11px;color:var(--text2);margin-top:4px;">Buy, hold, and trade cryptocurrencies</div>
+  </div>
+  <div id="cryptoContent" style="max-height:600px;overflow-y:auto;"></div>
 </div>
 
 <!-- ============ BLACKJACK ============ -->
@@ -1660,26 +1803,86 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   </div>
 </div>
 
-<!-- ============ RUSSIAN ROULETTE ============ -->
+<!-- ============ BUCKSHOT ROULETTE ============ -->
 <div class="game-panel" id="rusroulettePanel">
-  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Challenge up to 5 other players to a game of Russian Roulette.</li><li>Each player sets a <strong>bet amount</strong> (Pool grows with each joiner!).</li><li>One player is randomly selected to <strong>LOSE</strong> and forfeit their bet.</li><li>All surviving players share the <strong>total pot</strong> equally.</li><li>With 6 players & $100 bets: 5 winners split $600 ($120 each) 🎱</li><li>Higher your bet = higher risk but bigger reward if you survive!</li></ul></div></div>
+  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul>
+    <li>Play against the <strong>Dealer (CPU)</strong> in a deadly shotgun duel.</li>
+    <li>A shotgun is loaded with a random mix of <strong>LIVE (red)</strong> and <strong>BLANK (blue)</strong> shells.</li>
+    <li><strong>Shoot Dealer</strong>: If LIVE → dealer takes 1 damage (2 with Saw). If BLANK → turn passes.</li>
+    <li><strong>Shoot Self</strong>: If LIVE → you take 1 damage (2 with Saw). If BLANK → you get another turn!</li>
+    <li><strong>Items</strong> (use before shooting):<br>
+      🔗 <em>Handcuffs</em> – Dealer skips next 2 turns<br>
+      🚬 <em>Cigarettes</em> – Heal +1 HP<br>
+      🍬 <em>Rotten Gummy</em> – 40% chance +2 HP, 60% chance −1 HP<br>
+      🪚 <em>Saw</em> – Next LIVE shell does double damage (2)<br>
+      📱 <em>Phone</em> – Reveals a random future shell<br>
+      🔍 <em>Magnifying Glass</em> – Shows current shell (only you see it)
+    </li>
+    <li>Win all rounds to <strong>double your bet</strong>!</li>
+  </ul></div></div>
+
   <div style="text-align:center;margin-bottom:12px;">
-    <span style="font-family:'Orbitron';font-size:24px;font-weight:900;background:linear-gradient(135deg,#ff4444,#ff00e5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🎱 RUSSIAN ROULETTE</span>
-    <div style="font-size:11px;color:var(--text2);margin-top:4px;">Multiplayer chance game - survive to win!</div>
+    <span style="font-family:'Orbitron';font-size:24px;font-weight:900;background:linear-gradient(135deg,#ff4444,#ff8800);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🔫 BUCKSHOT ROULETTE</span>
+    <div style="font-size:11px;color:var(--text2);margin-top:4px;">Survive the shotgun duel against the Dealer!</div>
   </div>
-  <div id="rusrouletteRoomList" style="background:var(--surface);border-radius:8px;padding:12px;margin-bottom:12px;min-height:80px;overflow-y:auto;max-height:150px;"></div>
-  <div style="display:flex;gap:8px;margin-bottom:12px;">
-    <div class="bet-controls">
-      <span style="color:var(--text2);font-size:12px;font-weight:600;">BET</span>
-      <button class="bet-btn bet-half" onclick="adjustBet('rusrouletteBet',0.5)">½</button>
-      <input class="bet-input" type="number" id="rusrouletteBet" value="100" min="10">
-      <button class="bet-btn bet-double" onclick="adjustBet('rusrouletteBet',2)">2×</button>
+
+  <!-- Pre-game: bet & start -->
+  <div id="bsrLobby">
+    <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:12px;">
+      <div class="bet-controls">
+        <span style="color:var(--text2);font-size:12px;font-weight:600;">BET</span>
+        <button class="bet-btn bet-half" onclick="adjustBet('bsrBet',0.5)">½</button>
+        <input class="bet-input" type="number" id="bsrBet" value="100" min="10">
+        <button class="bet-btn bet-double" onclick="adjustBet('bsrBet',2)">2×</button>
+      </div>
+      <button class="action-btn primary" onclick="bsrStartGame()" style="padding:10px 24px;font-size:14px;">⚔️ PLAY</button>
     </div>
-    <button class="action-btn primary" onclick="rusrouletteCreateRoom()">CREATE ROOM</button>
-    <button class="action-btn secondary" onclick="rusrouletteLoadRooms()" style="flex:0;">🔄</button>
   </div>
-  <div id="rusrouletteGameOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.97);z-index:10003;align-items:center;justify-content:center;flex-direction:column;">
-    <div id="rusrouletteGameContent" style="text-align:center;max-width:600px;width:92vw;"></div>
+
+  <!-- In-game UI -->
+  <div id="bsrGame" style="display:none;">
+    <!-- Round & Shell info -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div id="bsrRoundInfo" style="font-family:'Orbitron';font-size:13px;color:var(--neon);letter-spacing:1px;"></div>
+      <div id="bsrShellInfo" style="font-size:12px;color:var(--text2);"></div>
+    </div>
+
+    <!-- Shell rack visual -->
+    <div id="bsrShellRack" style="display:flex;gap:6px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;"></div>
+
+    <!-- Health bars -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
+        <div style="font-size:11px;color:var(--neon);font-weight:700;margin-bottom:6px;">🧑 YOU</div>
+        <div id="bsrPlayerHP" style="font-size:22px;font-weight:900;color:var(--green);"></div>
+        <div id="bsrPlayerHearts" style="font-size:16px;margin-top:4px;"></div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
+        <div style="font-size:11px;color:var(--red);font-weight:700;margin-bottom:6px;">🤖 DEALER</div>
+        <div id="bsrDealerHP" style="font-size:22px;font-weight:900;color:var(--red);"></div>
+        <div id="bsrDealerHearts" style="font-size:16px;margin-top:4px;"></div>
+      </div>
+    </div>
+
+    <!-- Items -->
+    <div id="bsrItems" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;"></div>
+
+    <!-- Status message -->
+    <div id="bsrStatus" style="text-align:center;font-size:13px;color:var(--gold);min-height:20px;margin-bottom:10px;font-weight:600;"></div>
+
+    <!-- Action buttons -->
+    <div id="bsrActions" style="display:flex;gap:10px;justify-content:center;margin-bottom:8px;">
+      <button class="action-btn danger" id="bsrShootDealer" onclick="bsrShoot('dealer')" style="padding:12px 28px;font-size:14px;">🔫 SHOOT DEALER</button>
+      <button class="action-btn secondary" id="bsrShootSelf" onclick="bsrShoot('self')" style="padding:12px 28px;font-size:14px;">🫵 SHOOT SELF</button>
+    </div>
+
+    <!-- Log -->
+    <div id="bsrLog" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;max-height:120px;overflow-y:auto;font-size:11px;color:var(--text2);margin-top:8px;"></div>
+  </div>
+
+  <!-- Game over overlay -->
+  <div id="bsrGameOver" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.97);z-index:10003;align-items:center;justify-content:center;flex-direction:column;">
+    <div id="bsrGameOverContent" style="text-align:center;max-width:500px;width:92vw;"></div>
   </div>
 </div>
 
@@ -2444,8 +2647,7 @@ window._firebaseSave = () => {
     gameStats: window._getGameStats ? window._getGameStats() : null,
     achievements: window._getAchievements ? window._getAchievements() : null,
     prestige: window._getPrestige ? window._getPrestige() : null,
-    profilePicUrl: window._getProfilePicUrl ? window._getProfilePicUrl() : null,
-    gamesOwned: gamesOwned
+    profilePicUrl: window._getProfilePicUrl ? window._getProfilePicUrl() : null
   };
   // Clean nulls
   Object.keys(saveData).forEach(k => { if (saveData[k] == null) delete saveData[k]; });
@@ -3746,40 +3948,39 @@ document.addEventListener('click',function(e){if(!e.target.closest('.nav-cat'))d
 document.addEventListener('touchstart',function(e){if(!e.target.closest('.nav-cat'))document.querySelectorAll('.nav-cat').forEach(c=>c.classList.remove('open'));},{passive:true});
 
 // ============ GAMES MENU ============
-const GAME_PRICES = { plinko: 0, crash: 0, slots: 0, mines: 0, roulette: 0, cases: 5000, blackjack: 10000, poker: 15000, baccarat: 12000, hilo: 20000, wheel: 25000, keno: 8000, horses: 18000, dice: 3000, limbo: 7000, coinflip: 2000, tower: 22000, scratch: 6000, luck: 30000, stocks: 50000, duels: 0, rusroulette: 75000 };
-let gamesOwned = JSON.parse(localStorage.getItem('casino_games_owned')) || { plinko: true, crash: true, slots: true, mines: true, roulette: true };
 const gamesData = [
-  { cat: '⭐ Starter Pack (FREE)', games: [
-    { name: 'Plinko', icon: '⚡', id: 'plinko', price: 0 },
-    { name: 'Crash', icon: '📈', id: 'crash', price: 0 },
-    { name: 'Slots', icon: '🎰', id: 'slots', price: 0 },
-    { name: 'Mines', icon: '💣', id: 'mines', price: 0 },
-    { name: 'Roulette', icon: '🎡', id: 'roulette', price: 0 }
+  { cat: '⭐ Classic', games: [
+    { name: 'Plinko', icon: '⚡', id: 'plinko' },
+    { name: 'Crash', icon: '📈', id: 'crash' },
+    { name: 'Slots', icon: '🎰', id: 'slots' },
+    { name: 'Mines', icon: '💣', id: 'mines' },
+    { name: 'Roulette', icon: '🎡', id: 'roulette' }
   ]},
   { cat: '🃏 Card Games', games: [
-    { name: 'Blackjack', icon: '🃏', id: 'blackjack', price: 10000 },
-    { name: 'Video Poker', icon: '♠️', id: 'poker', price: 15000 },
-    { name: 'Baccarat', icon: '🎴', id: 'baccarat', price: 12000 },
-    { name: 'Hi-Lo', icon: '↕️', id: 'hilo', price: 20000 }
+    { name: 'Blackjack', icon: '🃏', id: 'blackjack' },
+    { name: 'Video Poker', icon: '♠️', id: 'poker' },
+    { name: 'Baccarat', icon: '🎴', id: 'baccarat' },
+    { name: 'Hi-Lo', icon: '↕️', id: 'hilo' }
   ]},
   { cat: '🎡 Table Games', games: [
-    { name: 'Wheel', icon: '💫', id: 'wheel', price: 25000 },
-    { name: 'Keno', icon: '🔢', id: 'keno', price: 8000 },
-    { name: 'Horse Racing', icon: '🏇', id: 'horses', price: 18000 },
-    { name: 'Russian Roulette', icon: '🎱', id: 'rusroulette', price: 75000 }
+    { name: 'Wheel', icon: '💫', id: 'wheel' },
+    { name: 'Keno', icon: '🔢', id: 'keno' },
+    { name: 'Horse Racing', icon: '🏇', id: 'horses' },
+    { name: 'Buckshot Roulette', icon: '🔫', id: 'rusroulette' }
   ]},
   { cat: '⚡ Quick & Special', games: [
-    { name: 'Dice', icon: '🎯', id: 'dice', price: 3000 },
-    { name: 'Tower', icon: '🗼', id: 'tower', price: 22000 },
-    { name: 'Scratch Cards', icon: '🎫', id: 'scratch', price: 6000 },
-    { name: 'Limbo', icon: '🚀', id: 'limbo', price: 7000 },
-    { name: 'Coin Flip', icon: '🪙', id: 'coinflip', price: 2000 },
-    { name: 'Push Your Luck', icon: '🎲', id: 'luck', price: 30000 },
-    { name: 'Cases', icon: '📦', id: 'cases', price: 5000 }
+    { name: 'Dice', icon: '🎯', id: 'dice' },
+    { name: 'Tower', icon: '🗼', id: 'tower' },
+    { name: 'Scratch Cards', icon: '🎫', id: 'scratch' },
+    { name: 'Limbo', icon: '🚀', id: 'limbo' },
+    { name: 'Coin Flip', icon: '🪙', id: 'coinflip' },
+    { name: 'Push Your Luck', icon: '🎲', id: 'luck' },
+    { name: 'Cases', icon: '📦', id: 'cases' }
   ]},
   { cat: '💎 Pro Games', games: [
-    { name: 'Stocks', icon: '📊', id: 'stocks', price: 50000 },
-    { name: 'Duels', icon: '⚔️', id: 'duels', price: 0 }
+    { name: 'Stocks', icon: '📊', id: 'stocks' },
+    { name: 'Crypto', icon: '₿', id: 'crypto' },
+    { name: 'Duels', icon: '⚔️', id: 'duels' }
   ]}
 ];
 
@@ -3789,23 +3990,11 @@ function openGamesMenu(){
   const container = document.getElementById('gamesCategoriesContainer');
   container.innerHTML = gamesData.map((cat, i) => {
     const games = cat.games.map(g => {
-      const owned = gamesOwned[g.id];
-      if (owned) {
-        return `<button class="game-btn" onclick="switchGame('${g.id}',this);closeGamesMenu();" style="border-color:var(--green);"><span class="game-icon">${g.icon}</span><div>${g.name}</div></button>`;
-      } else {
-        const price = g.price || GAME_PRICES[g.id] || 0;
-        return `<button class="game-btn" onclick="buyGame('${g.id}')" style="border-color:var(--red);opacity:0.6;"><span class="game-icon">🔒</span><div>${g.name}<br><span style="font-size:10px;color:var(--gold);">$${price.toLocaleString()}</span></div></button>`;
-      }
+      return `<button class="game-btn" onclick="switchGame('${g.id}',this);closeGamesMenu();" style="border-color:var(--green);"><span class="game-icon">${g.icon}</span><div>${g.name}</div></button>`;
     }).join('');
     return `<div class="games-category"><div class="games-category-title"><span>${cat.cat}</span></div><div class="games-grid">${games}</div></div>`;
   }).join('');
   setTimeout(() => overlay.style.opacity = '1', 10);
-}
-function buyGame(gameId) {
-  const price = GAME_PRICES[gameId] || 0;
-  if (price === 0) { gamesOwned[gameId] = true; localStorage.setItem('casino_games_owned', JSON.stringify(gamesOwned)); showToast(gameId + ' unlocked!', true); openGamesMenu(); return; }
-  if (balance < price) { showToast('Not enough! Need $' + price.toLocaleString(), false); return; }
-  balance -= price; updateBalDisplay(); gamesOwned[gameId] = true; localStorage.setItem('casino_games_owned', JSON.stringify(gamesOwned)); window._firebaseSave && firebaseSave(); showToast('🎮 ' + gameId + ' UNLOCKED for $' + price.toLocaleString() + '!', true); openGamesMenu();
 }
 
 function closeGamesMenu(){
@@ -3870,7 +4059,6 @@ function showBigWin(amount) {
 }
 
 function switchGame(game,btn){
-  if (!gamesOwned[game] && GAME_PRICES[game] > 0) { showToast('Game locked! Buy it from the menu.', false); return; }
   document.querySelectorAll('.game-panel').forEach(p=>p.classList.remove('active'));
   const targetPanel = document.getElementById(game+'Panel');
   if(targetPanel) targetPanel.classList.add('active'); else return;
@@ -3890,7 +4078,8 @@ function switchGame(game,btn){
   if(game==='horses')horseInit();
   if(game==='mines')minesRenderGrid();
   if(game==='dice')diceUpdateSlider();
-  if(game==='rusroulette')initRussianRoulette();
+  if(game==='rusroulette')initBuckshotRoulette();
+  if(game==='crypto')initCrypto();
   if(game==='luck'){
     let iframe=document.getElementById('pylIframe');
     if(!iframe){
@@ -5915,7 +6104,10 @@ function spinSlots(){
   if(bet<=0)return;
   if(!checkMaxBet(bet,'Slots'))return;
   if(bet>balance){showToast('Not enough balance!',false);return;}
-  slotsSpinning=true;balance-=bet;updateBalDisplay();
+  slotsSpinning=true;
+  // Shield potion: refund half on loss (applied at bet time, settled after result)
+  const slotsShielded = typeof isShieldActive==='function' && isShieldActive();
+  balance-=bet;updateBalDisplay();
   document.getElementById('spinBtn').disabled=true;
   playClickSound();
 
@@ -5960,6 +6152,8 @@ function spinSlots(){
       if(maxCount===3)winAmount=bet*mult*0.5;
       else if(maxCount===4)winAmount=bet*mult*2;
       else winAmount=bet*mult*10;
+      // Apply luck potion bonus
+      if(typeof getLuckBonus==='function') winAmount*=getLuckBonus();
       winAmount=Math.round(winAmount*100)/100;
     }
 
@@ -5971,7 +6165,9 @@ function spinSlots(){
       const rect=document.querySelector('.slots-machine').getBoundingClientRect();
       spawnParticles(rect.left+rect.width/2,rect.top+rect.height/2,40+winAmount/10);
     }else{
-      showToast('-$'+bet.toFixed(2),false);
+      // Shield potion: refund half of bet on loss
+      if(slotsShielded){ const refund=Math.floor(bet*0.5); balance+=refund; updateBalDisplay(); showToast('🛡️ Shield! -$'+(bet-refund).toFixed(2),false); }
+      else{ showToast('-$'+bet.toFixed(2),false); }
       playLoseSound();
     }
 
@@ -6076,6 +6272,8 @@ function startCrash(){
   let rnd = Math.random();
   if (rnd >= 0.99999) rnd = 0.99999; // prevent Infinity
   crashPoint=1+(0.92/(1-rnd))-0.92;
+  // Apply luck potion: nudge crash point slightly higher
+  if(typeof getLuckBonus==='function'){ const lb=getLuckBonus(); if(lb>1) crashPoint*=lb; }
   if(crashPoint<1.02)crashPoint=1.02;
   if(crashPoint>100)crashPoint=100;
   if(!isFinite(crashPoint))crashPoint=1.02;
@@ -6112,7 +6310,10 @@ function animateCrash(){
     document.getElementById('cashoutBtn').style.display='none';
 
     if(!crashCashedOut){
-      showToast('CRASHED! -$'+crashBetAmount.toFixed(2),false);playLoseSound();
+      const crashShielded = typeof isShieldActive==='function' && isShieldActive();
+      if(crashShielded){ const refund=Math.floor(crashBetAmount*0.5); balance+=refund; updateBalDisplay(); showToast('🛡️ Shield! -$'+(crashBetAmount-refund).toFixed(2),false); }
+      else{ showToast('CRASHED! -$'+crashBetAmount.toFixed(2),false); }
+      playLoseSound();
       recordGame('crash', crashBetAmount, 0);
     }
     drawCrashGraph();return;
@@ -6258,7 +6459,9 @@ function spinRoulette(){
       if(selectedRoulBet==='19-36'&&winNum>=19&&winNum<=36)won=true;
 
       if(won){
-        const payout=selectedRoulBet==='green'?bet*36:bet*2;
+        let payout=selectedRoulBet==='green'?bet*36:bet*2;
+        // Apply luck potion bonus
+        if(typeof getLuckBonus==='function') payout=Math.round(payout*getLuckBonus()*100)/100;
         balance+=payout;updateBalDisplay();
         showBigWin(payout);
         showToast('WIN $'+payout.toFixed(2)+'!');playWinSound();
@@ -6266,7 +6469,10 @@ function spinRoulette(){
         spawnParticles(rect.left+rect.width/2,rect.top+rect.height/2,40);
         recordGame('roulette', bet, payout);
       }else{
-        showToast('-$'+bet.toFixed(2),false);playLoseSound();
+        const roulShielded = typeof isShieldActive==='function' && isShieldActive();
+        if(roulShielded){ const refund=Math.floor(bet*0.5); balance+=refund; updateBalDisplay(); showToast('🛡️ Shield! -$'+(bet-refund).toFixed(2),false); }
+        else{ showToast('-$'+bet.toFixed(2),false); }
+        playLoseSound();
         recordGame('roulette', bet, 0);
       }
     }
@@ -8839,180 +9045,1107 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-// ============ RUSSIAN ROULETTE ============
-let rusrouletteRooms = {};
-let rusrouletteMyRoomId = null;
-let rusrouletteActive = false;
+// ============ BUCKSHOT ROULETTE ============
+let bsrState = null; // full game state
 
-function initRussianRoulette() {
-  rusrouletteLoadRooms();
+function initBuckshotRoulette() {
+  // Reset to lobby view
+  if (!bsrState || !bsrState.active) {
+    document.getElementById('bsrLobby').style.display = 'block';
+    document.getElementById('bsrGame').style.display = 'none';
+    document.getElementById('bsrGameOver').style.display = 'none';
+  }
 }
 
-function rusrouletteLoadRooms() {
-  window._fbRef('casino/rusroulette/rooms', (data) => {
-    rusrouletteRooms = data || {};
-    const listHtml = Object.entries(rusrouletteRooms)
-      .filter(([id,r]) => r.status === 'waiting' && r.players.length < 6)
-      .map(([id, r]) => {
-        const playersDisplay = `${r.players.length}/6 players`;
-        const potDisplay = `Pool: $${(r.pot || 0).toLocaleString()}`;
-        return `<div style="background:var(--surface2);padding:8px;border-radius:6px;margin:4px 0;display:flex;justify-content:space-between;align-items:center;">
-          <div><div style="font-weight:bold">Bet: $${r.betAmount.toLocaleString()}</div><div style="font-size:10px;color:var(--text2);">${playersDisplay} · ${potDisplay}</div></div>
-          <button onclick="rusrouletteJoinRoom('${id}')" class="action-btn primary" style="padding:6px 12px;font-size:11px;">JOIN</button>
-        </div>`;
-      }).join('');
-    document.getElementById('rusrouletteRoomList').innerHTML = listHtml || '<div style="text-align:center;color:var(--text2);padding:20px;">No open rooms. Create one!</div>';
-  });
-}
-
-function rusrouletteCreateRoom() {
-  const bet = parseFloat(document.getElementById('rusrouletteBet').value) || 100;
+function bsrStartGame() {
+  const bet = parseFloat(document.getElementById('bsrBet').value) || 100;
   if (bet <= 0 || bet > balance) { showToast('Invalid bet!', false); return; }
-  const roomId = 'rr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-  const room = { betAmount: bet, players: [{ id: window._currentPlayerId, name: window._currentUsername, bet: bet }], pot: bet, status: 'waiting', createdAt: Date.now() };
-  window._fbSet(`casino/rusroulette/rooms/${roomId}`, room, () => {
-    rusrouletteMyRoomId = roomId;
-    balance -= bet;
-    updateBalDisplay();
-    showToast('Room created! Waiting for players...', true);
-    rusrouletteLoadRooms();
-    setTimeout(rusrouletteCheckGameStart, 2000);
-  });
-}
+  balance -= bet; updateBalDisplay();
+  playClickSound();
 
-function rusrouletteJoinRoom(roomId) {
-  window._fbRef(`casino/rusroulette/rooms/${roomId}`, (room) => {
-    if (!room || room.status !== 'waiting' || room.players.length >= 6) { showToast('Room full or closed!', false); return; }
-    const bet = room.betAmount;
-    if (bet > balance) { showToast('Not enough balance!', false); return; }
-    const joined = room.players.some(p => p.id === window._currentPlayerId);
-    if (joined) { showToast('Already in this room!', false); return; }
-    room.players.push({ id: window._currentPlayerId, name: window._currentUsername, bet: bet });
-    room.pot = (room.pot || 0) + bet;
-    balance -= bet;
-    updateBalDisplay();
-    rusrouletteMyRoomId = roomId;
-    window._fbSet(`casino/rusroulette/rooms/${roomId}`, room, () => {
-      showToast('Joined! Waiting for game start...', true);
-      rusrouletteLoadRooms();
-      setTimeout(rusrouletteCheckGameStart, 1000);
-    });
-  });
-}
-
-function rusrouletteCheckGameStart() {
-  if (!rusrouletteMyRoomId) return;
-  window._fbRef(`casino/rusroulette/rooms/${rusrouletteMyRoomId}`, (room) => {
-    if (!room || room.status !== 'waiting') return;
-    if (room.players.length >= 2 && Date.now() - room.createdAt > 3000) {
-      rusrouletteStartGame(rusrouletteMyRoomId, room);
-    }
-  });
-}
-
-function rusrouletteStartGame(roomId, room) {
-  rusrouletteActive = true;
-  // TRUE Russian Roulette: 6 chambers, 1 bullet (1-in-6 odds per shot)
-  // Randomly assign which chamber has the bullet
-  const bulletChamber = Math.floor(Math.random() * 6); // 0-5
-  const currentChamber = Math.floor(Math.random() * 6); // Which chamber gets spun first
-  const loserIdx = Math.floor(Math.random() * room.players.length); // Which player gets shot
-  
-  const survivors = room.players.filter((_, i) => i !== loserIdx);
-  const pot = room.pot;
-  const winPerPlayer = Math.floor(pot / survivors.length);
-  const loser = room.players[loserIdx];
-  
-  const overlay = document.getElementById('rusrouletteGameOverlay');
-  overlay.style.display = 'flex';
-  
-  // Animate the revolver spin and reveal
-  let spinVal = 0;
-  const spinAnimation = () => {
-    spinVal++;
-    if (spinVal < 20) {
-      document.getElementById('rusrouletteGameContent').innerHTML = `
-        <div style="font-size:80px;display:inline-block;transform:rotate(${spinVal * 18}deg);animation:spin 0.1s;margin-bottom:20px;">🔫</div>
-        <div style="font-size:48px;color:var(--neon);font-weight:900;">SPINNING...</div>
-      `;
-      setTimeout(spinAnimation, 100);
-    } else {
-      // Check which chamber got the bullet
-      const isFatal = currentChamber === bulletChamber;
-      let countdownVal = 3;
-      const countdown = () => {
-        if (countdownVal > 0) {
-          document.getElementById('rusrouletteGameContent').innerHTML = `
-            <div style="font-size:64px;font-weight:bold;color:${isFatal ? 'var(--red)' : 'var(--green)'};">${countdownVal}</div>
-            <div style="font-size:14px;color:var(--text2);margin-top:8px;">Trigger chamber: #${currentChamber + 1}</div>
-          `;
-          countdownVal--;
-          setTimeout(countdown, 800);
-        } else {
-          // Reveal result
-          if (isFatal) {
-            // Player loses
-            document.getElementById('rusrouletteGameContent').innerHTML = `
-              <div style="margin-bottom:20px;">
-                <div style="font-size:60px;margin-bottom:16px;">💀</div>
-                <div style="font-family:'Orbitron';font-size:28px;color:var(--red);font-weight:900;margin-bottom:12px;">${loser.name.toUpperCase()} LOST!</div>
-                <div style="font-size:14px;color:var(--text2);margin-bottom:20px;">Chamber #${currentChamber + 1} was the bullet...</div>
-                <div style="font-size:16px;color:var(--green);margin-bottom:20px;"><strong>SURVIVORS (${survivors.length}):</strong></div>
-                <div style="background:var(--surface2);padding:12px;border-radius:8px;">
-                  ${survivors.map(p => `<div style="padding:4px;font-size:13px;">✓ ${p.name} wins $${winPerPlayer.toLocaleString()}</div>`).join('')}
-                </div>
-                <div style="margin-top:16px;font-size:12px;color:var(--gold);font-weight:bold;">Odds: 1-in-6 each round</div>
-                <div style="margin-top:8px;font-size:12px;color:var(--text2);">Total Pool: $${pot.toLocaleString()}</div>
-              </div>
-              <button onclick="rusrouletteEndGame()" class="action-btn primary" style="margin-top:16px;padding:10px 24px;">CLOSE</button>
-            `;
-          } else {
-            // Everyone survived (chamber was empty)
-            document.getElementById('rusrouletteGameContent').innerHTML = `
-              <div style="margin-bottom:20px;">
-                <div style="font-size:60px;margin-bottom:16px;">🍀</div>
-                <div style="font-family:'Orbitron';font-size:28px;color:var(--green);font-weight:900;margin-bottom:12px;">CHAMBER WAS EMPTY!</div>
-                <div style="font-size:14px;color:var(--text2);margin-bottom:20px;">But someone must fall...</div>
-                <div style="font-family:'Orbitron';font-size:24px;color:var(--red);font-weight:900;margin-bottom:16px;">${loser.name.toUpperCase()} LOSES!</div>
-                <div style="font-size:16px;color:var(--green);margin-bottom:20px;"><strong>SURVIVORS (${survivors.length}):</strong></div>
-                <div style="background:var(--surface2);padding:12px;border-radius:8px;">
-                  ${survivors.map(p => `<div style="padding:4px;font-size:13px;">✓ ${p.name} wins $${winPerPlayer.toLocaleString()}</div>`).join('')}
-                </div>
-                <div style="margin-top:16px;font-size:12px;color:var(--gold);font-weight:bold;">Odds: 1-in-6 per elimination</div>
-                <div style="margin-top:8px;font-size:12px;color:var(--text2);">Total Pool: $${pot.toLocaleString()}</div>
-              </div>
-              <button onclick="rusrouletteEndGame()" class="action-btn primary" style="margin-top:16px;padding:10px 24px;">CLOSE</button>
-            `;
-          }
-        }
-      };
-      countdown();
-    }
+  bsrState = {
+    active: true,
+    bet: bet,
+    round: 1,
+    maxRounds: 3,
+    playerHP: 4,
+    playerMaxHP: 4,
+    dealerHP: 4,
+    dealerMaxHP: 4,
+    shells: [],      // array of 'live' or 'blank'
+    shellIndex: 0,
+    turn: 'player',  // 'player' or 'dealer'
+    sawActive: false, // next live does 2 damage
+    handcuffs: 0,     // dealer skip turns remaining
+    playerHandcuffed: 0, // player skip turns remaining (from dealer handcuffs)
+    items: [],        // player items
+    dealerItems: [],  // dealer items
+    log: [],
+    animating: false,
   };
-  spinAnimation();
+
+  document.getElementById('bsrLobby').style.display = 'none';
+  document.getElementById('bsrGame').style.display = 'block';
+  document.getElementById('bsrGameOver').style.display = 'none';
+
+  bsrNewRound();
+}
+
+function bsrNewRound() {
+  const s = bsrState;
+  // Load shells: 2-8 shells, at least 1 live and 1 blank
+  const totalShells = Math.floor(Math.random() * 5) + 3; // 3-7
+  const liveCount = Math.max(1, Math.floor(Math.random() * (totalShells - 1)) + 1);
+  const blankCount = totalShells - liveCount;
+  s.shells = [];
+  for (let i = 0; i < liveCount; i++) s.shells.push('live');
+  for (let i = 0; i < blankCount; i++) s.shells.push('blank');
+  // Shuffle
+  for (let i = s.shells.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [s.shells[i], s.shells[j]] = [s.shells[j], s.shells[i]];
+  }
+  s.shellIndex = 0;
+  s.sawActive = false;
+  s.handcuffs = 0;
+  s.playerHandcuffed = 0;
+  s._dealerKnowsCurrent = null;
+
+  // Give items (2-4 random items each)
+  const allItems = ['handcuffs','cigarettes','gummy','saw','phone','magnifying'];
+  const itemCount = Math.floor(Math.random() * 3) + 2;
+  s.items = [];
+  s.dealerItems = [];
+  for (let i = 0; i < itemCount; i++) {
+    s.items.push(allItems[Math.floor(Math.random() * allItems.length)]);
+    s.dealerItems.push(allItems[Math.floor(Math.random() * allItems.length)]);
+  }
+
+  s.turn = Math.random() < 0.5 ? 'player' : 'dealer';
+  bsrLog(`⚡ Round ${s.round}: Shotgun loaded with ${liveCount} LIVE 🔴 and ${blankCount} BLANK 🔵 shells.`);
+  bsrLog(`Items distributed! ${s.turn === 'player' ? 'Your' : "Dealer's"} turn first.`);
+
+  bsrRender();
+
+  if (s.turn === 'dealer') {
+    bsrDisableActions();
+    setTimeout(() => bsrDealerTurn(), 1200);
+  }
+}
+
+function bsrLog(msg) {
+  if (!bsrState) return;
+  bsrState.log.push(msg);
+  const el = document.getElementById('bsrLog');
+  if (el) {
+    el.innerHTML = bsrState.log.map(m => '<div style="padding:2px 0;border-bottom:1px solid var(--border);">' + m + '</div>').join('');
+    el.scrollTop = el.scrollHeight;
+  }
+}
+
+function bsrRender() {
+  const s = bsrState;
+  if (!s) return;
+
+  // Round info
+  document.getElementById('bsrRoundInfo').textContent = `ROUND ${s.round}/${s.maxRounds}`;
   
-  // Award winners
-  survivors.forEach(p => {
-    if (p.id === window._currentPlayerId) {
-      balance += winPerPlayer;
-      updateBalDisplay();
+  // Shell info
+  const remaining = s.shells.length - s.shellIndex;
+  const livesLeft = s.shells.slice(s.shellIndex).filter(x => x === 'live').length;
+  const blanksLeft = remaining - livesLeft;
+  document.getElementById('bsrShellInfo').innerHTML = `${remaining} shells: <span style="color:#ff4444;">${livesLeft} live</span> / <span style="color:#4488ff;">${blanksLeft} blank</span>`;
+
+  // Shell rack
+  const rack = document.getElementById('bsrShellRack');
+  rack.innerHTML = s.shells.map((sh, i) => {
+    if (i < s.shellIndex) {
+      return `<div style="width:28px;height:38px;border-radius:4px;background:var(--surface2);opacity:0.3;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text2);">✓</div>`;
+    } else if (i === s.shellIndex) {
+      return `<div style="width:28px;height:38px;border-radius:4px;background:linear-gradient(135deg,var(--gold),#ff8800);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 10px rgba(255,200,0,.5);">?</div>`;
+    } else {
+      return `<div style="width:28px;height:38px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2);">?</div>`;
     }
+  }).join('');
+
+  // Health
+  document.getElementById('bsrPlayerHP').textContent = s.playerHP + ' HP';
+  document.getElementById('bsrPlayerHearts').textContent = '❤️'.repeat(Math.max(0, s.playerHP)) + '🖤'.repeat(Math.max(0, s.playerMaxHP - s.playerHP));
+  document.getElementById('bsrDealerHP').textContent = s.dealerHP + ' HP';
+  document.getElementById('bsrDealerHearts').textContent = '❤️'.repeat(Math.max(0, s.dealerHP)) + '🖤'.repeat(Math.max(0, s.dealerMaxHP - s.dealerHP));
+
+  // Items
+  const itemIcons = { handcuffs: '🔗', cigarettes: '🚬', gummy: '🍬', saw: '🪚', phone: '📱', magnifying: '🔍' };
+  const itemNames = { handcuffs: 'Handcuffs', cigarettes: 'Cigarettes', gummy: 'Rotten Gummy', saw: 'Saw', phone: 'Phone', magnifying: 'Magnifying Glass' };
+  const itemDescs = { handcuffs: 'Dealer skips 2 turns', cigarettes: 'Heal +1 HP', gummy: '40% +2HP / 60% -1HP', saw: 'Next live = 2 dmg', phone: 'Reveal a future shell', magnifying: 'See current shell' };
+
+  const itemsEl = document.getElementById('bsrItems');
+  if (s.turn === 'player' && !s.animating) {
+    itemsEl.innerHTML = s.items.map((it, i) => 
+      `<button onclick="bsrUseItem(${i})" style="padding:6px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);cursor:pointer;color:var(--text);font-size:12px;transition:all .2s;" title="${itemDescs[it]}">${itemIcons[it]} ${itemNames[it]}</button>`
+    ).join('');
+  } else {
+    itemsEl.innerHTML = s.items.map(it => 
+      `<div style="padding:6px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--text2);font-size:12px;opacity:0.5;">${itemIcons[it]} ${itemNames[it]}</div>`
+    ).join('');
+  }
+
+  // Action buttons
+  if (s.turn === 'player' && !s.animating) {
+    bsrEnableActions();
+  } else {
+    bsrDisableActions();
+  }
+}
+
+function bsrEnableActions() {
+  document.getElementById('bsrShootDealer').disabled = false;
+  document.getElementById('bsrShootDealer').style.opacity = '1';
+  document.getElementById('bsrShootSelf').disabled = false;
+  document.getElementById('bsrShootSelf').style.opacity = '1';
+}
+
+function bsrDisableActions() {
+  document.getElementById('bsrShootDealer').disabled = true;
+  document.getElementById('bsrShootDealer').style.opacity = '0.4';
+  document.getElementById('bsrShootSelf').disabled = true;
+  document.getElementById('bsrShootSelf').style.opacity = '0.4';
+}
+
+function bsrSetStatus(msg) {
+  document.getElementById('bsrStatus').textContent = msg;
+}
+
+function bsrUseItem(index) {
+  const s = bsrState;
+  if (!s || !s.active || s.turn !== 'player' || s.animating) return;
+  if (index < 0 || index >= s.items.length) return;
+
+  const item = s.items[index];
+  s.items.splice(index, 1);
+  playClickSound();
+
+  switch(item) {
+    case 'handcuffs':
+      s.handcuffs = 2;
+      bsrLog('🔗 You used Handcuffs! Dealer will skip 2 turns.');
+      bsrSetStatus('Dealer is handcuffed for 2 turns!');
+      break;
+    case 'cigarettes':
+      if (s.playerHP < s.playerMaxHP) {
+        s.playerHP = Math.min(s.playerHP + 1, s.playerMaxHP);
+        bsrLog('🚬 You smoked a Cigarette. +1 HP! (' + s.playerHP + ' HP)');
+        bsrSetStatus('+1 HP! Health: ' + s.playerHP);
+      } else {
+        bsrLog('🚬 Cigarette used but HP already full.');
+        bsrSetStatus('Already at max HP!');
+      }
+      break;
+    case 'gummy':
+      if (Math.random() < 0.4) {
+        s.playerHP = Math.min(s.playerHP + 2, s.playerMaxHP + 1);
+        bsrLog('🍬 Rotten Gummy worked! +2 HP! (' + s.playerHP + ' HP)');
+        bsrSetStatus('Lucky! +2 HP!');
+      } else {
+        s.playerHP -= 1;
+        bsrLog('🍬 Rotten Gummy backfired! -1 HP (' + s.playerHP + ' HP)');
+        bsrSetStatus('Food poisoning! -1 HP');
+        if (s.playerHP <= 0) { setTimeout(() => bsrEndGame(false), 800); return; }
+      }
+      break;
+    case 'saw':
+      s.sawActive = true;
+      bsrLog('🪚 Saw attached! Next LIVE shell deals 2 damage.');
+      bsrSetStatus('Saw equipped! Next live = 2 damage');
+      break;
+    case 'phone': {
+      const remaining = s.shells.slice(s.shellIndex);
+      if (remaining.length > 1) {
+        const futureIdx = Math.floor(Math.random() * (remaining.length - 1)) + 1;
+        const actual = s.shellIndex + futureIdx + 1;
+        bsrLog('📱 Phone call: "Shell #' + actual + ' is ' + remaining[futureIdx].toUpperCase() + '"');
+        bsrSetStatus('Shell #' + actual + ' is ' + remaining[futureIdx].toUpperCase());
+      } else {
+        bsrLog('📱 Phone: No future shells to reveal.');
+        bsrSetStatus('No future shells to reveal');
+      }
+      break;
+    }
+    case 'magnifying': {
+      const current = s.shells[s.shellIndex];
+      bsrLog('🔍 Magnifying Glass: Current shell is ' + current.toUpperCase() + '!');
+      bsrSetStatus('Current shell: ' + current.toUpperCase() + (current === 'live' ? ' 🔴' : ' 🔵'));
+      break;
+    }
+  }
+
+  bsrRender();
+}
+
+function bsrShoot(target) {
+  const s = bsrState;
+  if (!s || !s.active || s.animating || s.turn !== 'player') return;
+  s.animating = true;
+  bsrDisableActions();
+
+  const shell = s.shells[s.shellIndex];
+  s.shellIndex++;
+  const damage = shell === 'live' ? (s.sawActive ? 2 : 1) : 0;
+  if (shell === 'live') s.sawActive = false;
+
+  // Animate
+  bsrSetStatus('💥 BANG!');
+  playSound(shell === 'live' ? 200 : 600, 'sawtooth', 0.15, shell === 'live' ? 0.3 : 0.1);
+
+  setTimeout(() => {
+    if (target === 'dealer') {
+      if (shell === 'live') {
+        s.dealerHP -= damage;
+        bsrLog(`🔫 You shot the Dealer! LIVE shell! ${damage > 1 ? '(SAW: 2 dmg!) ' : ''}Dealer: ${s.dealerHP} HP`);
+        bsrSetStatus(`LIVE! Dealer takes ${damage} damage!`);
+      } else {
+        bsrLog('🔫 You shot the Dealer! BLANK shell. No damage.');
+        bsrSetStatus('BLANK! No damage.');
+      }
+      // Turn always passes to dealer after shooting dealer
+      s.turn = 'dealer';
+    } else {
+      // Shoot self
+      if (shell === 'live') {
+        s.playerHP -= damage;
+        bsrLog(`🫵 You shot yourself! LIVE shell! ${damage > 1 ? '(SAW: 2 dmg!) ' : ''}You: ${s.playerHP} HP`);
+        bsrSetStatus(`LIVE! You take ${damage} damage!`);
+        s.turn = 'dealer';
+      } else {
+        bsrLog('🫵 You shot yourself. BLANK! You get another turn!');
+        bsrSetStatus('BLANK! Extra turn!');
+        s.turn = 'player'; // keep turn
+      }
+    }
+
+    s.animating = false;
+
+    // Check win/lose
+    if (s.dealerHP <= 0) {
+      bsrRender();
+      setTimeout(() => bsrRoundWin(), 800);
+      return;
+    }
+    if (s.playerHP <= 0) {
+      bsrRender();
+      setTimeout(() => bsrEndGame(false), 800);
+      return;
+    }
+
+    // Check if shells exhausted
+    if (s.shellIndex >= s.shells.length) {
+      bsrLog('📦 All shells spent! Reloading...');
+      bsrRender();
+      setTimeout(() => bsrNewRound(), 1200);
+      return;
+    }
+
+    bsrRender();
+
+    if (s.turn === 'dealer') {
+      // Check handcuffs
+      if (s.handcuffs > 0) {
+        s.handcuffs--;
+        bsrLog('🔗 Dealer is handcuffed! Skip turn. (' + s.handcuffs + ' remaining)');
+        bsrSetStatus('Dealer handcuffed! Skipping...');
+        s.turn = 'player';
+        setTimeout(() => bsrRender(), 800);
+      } else {
+        setTimeout(() => bsrDealerTurn(), 1200);
+      }
+    } else if (s.turn === 'player') {
+      // Check if player is handcuffed (by dealer's handcuffs)
+      if (s.playerHandcuffed > 0) {
+        s.playerHandcuffed--;
+        bsrLog('🔗 You are handcuffed! Skip turn. (' + s.playerHandcuffed + ' remaining)');
+        bsrSetStatus('You are handcuffed! Skipping...');
+        s.turn = 'dealer';
+        setTimeout(() => bsrDealerTurn(), 1200);
+      }
+    }
+  }, 600);
+}
+
+function bsrDealerTurn() {
+  const s = bsrState;
+  if (!s || !s.active) return;
+
+  bsrSetStatus("🤖 Dealer's turn...");
+  s.animating = true;
+  bsrDisableActions();
+
+  // Dealer AI: use items first
+  setTimeout(() => {
+    bsrDealerUseItems(() => {
+      // After using items, dealer decides to shoot
+      bsrDealerShoot();
+    });
+  }, 600);
+}
+
+function bsrDealerUseItems(callback) {
+  const s = bsrState;
+  if (!s.dealerItems.length) { callback(); return; }
+
+  // AI: use magnifying glass first, then decide based on info
+  const mgIdx = s.dealerItems.indexOf('magnifying');
+  if (mgIdx !== -1) {
+    s.dealerItems.splice(mgIdx, 1);
+    const current = s.shells[s.shellIndex];
+    bsrLog('🤖🔍 Dealer used Magnifying Glass.');
+    // Dealer now "knows" the current shell - store it
+    s._dealerKnowsCurrent = current;
+    bsrRender();
+    setTimeout(() => bsrDealerUseItemsPhase2(callback), 700);
+    return;
+  }
+  bsrDealerUseItemsPhase2(callback);
+}
+
+function bsrDealerUseItemsPhase2(callback) {
+  const s = bsrState;
+
+  // Use saw if current is known to be live
+  const sawIdx = s.dealerItems.indexOf('saw');
+  if (sawIdx !== -1 && s._dealerKnowsCurrent === 'live') {
+    s.dealerItems.splice(sawIdx, 1);
+    s.sawActive = true;
+    bsrLog('🤖🪚 Dealer used Saw! Next live = 2 damage.');
+    bsrRender();
+    setTimeout(() => bsrDealerUseItemsPhase3(callback), 700);
+    return;
+  }
+
+  // Use handcuffs 40% chance
+  const hcIdx = s.dealerItems.indexOf('handcuffs');
+  if (hcIdx !== -1 && Math.random() < 0.4) {
+    s.dealerItems.splice(hcIdx, 1);
+    s.playerHandcuffed = 2;
+    bsrLog('🤖🔗 Dealer used Handcuffs! You skip 2 turns.');
+    bsrSetStatus('You are handcuffed for 2 turns!');
+    bsrRender();
+    setTimeout(() => bsrDealerUseItemsPhase3(callback), 700);
+    return;
+  }
+
+  bsrDealerUseItemsPhase3(callback);
+}
+
+function bsrDealerUseItemsPhase3(callback) {
+  const s = bsrState;
+
+  // Use cigarettes if HP < max
+  const cigIdx = s.dealerItems.indexOf('cigarettes');
+  if (cigIdx !== -1 && s.dealerHP < s.dealerMaxHP) {
+    s.dealerItems.splice(cigIdx, 1);
+    s.dealerHP = Math.min(s.dealerHP + 1, s.dealerMaxHP);
+    bsrLog('🤖🚬 Dealer smoked a Cigarette. +1 HP (' + s.dealerHP + ' HP)');
+    bsrRender();
+    setTimeout(callback, 700);
+    return;
+  }
+
+  // Use phone randomly 50% chance
+  const phoneIdx = s.dealerItems.indexOf('phone');
+  if (phoneIdx !== -1 && Math.random() < 0.5) {
+    s.dealerItems.splice(phoneIdx, 1);
+    bsrLog('🤖📱 Dealer used Phone (information hidden).');
+    bsrRender();
+    setTimeout(callback, 700);
+    return;
+  }
+
+  callback();
+}
+
+function bsrDealerShoot() {
+  const s = bsrState;
+  s.animating = true;
+
+  const shell = s.shells[s.shellIndex];
+  s.shellIndex++;
+
+  // Dealer decision: if it knows shell is blank, shoot self; if live, shoot player
+  let target = 'player';
+  if (s._dealerKnowsCurrent === 'blank') {
+    target = 'self';
+  } else if (s._dealerKnowsCurrent === 'live') {
+    target = 'player';
+  } else {
+    // Unknown: consider odds
+    const remaining = s.shells.slice(s.shellIndex - 1);
+    const liveRatio = remaining.filter(x => x === 'live').length / remaining.length;
+    if (liveRatio < 0.35) {
+      target = 'self'; // likely blank
+    } else {
+      target = 'player';
+    }
+  }
+  s._dealerKnowsCurrent = null;
+
+  const damage = shell === 'live' ? (s.sawActive ? 2 : 1) : 0;
+  if (shell === 'live') s.sawActive = false;
+
+  bsrSetStatus('🤖 Dealer shoots ' + (target === 'player' ? 'YOU' : 'itself') + '...');
+  playSound(shell === 'live' ? 180 : 550, 'sawtooth', 0.12, shell === 'live' ? 0.3 : 0.1);
+
+  setTimeout(() => {
+    if (target === 'player') {
+      if (shell === 'live') {
+        s.playerHP -= damage;
+        bsrLog(`🤖🔫 Dealer shot you! LIVE! ${damage > 1 ? '(SAW: 2 dmg!) ' : ''}You: ${s.playerHP} HP`);
+        bsrSetStatus(`Dealer hits you for ${damage}!`);
+      } else {
+        bsrLog('🤖🔫 Dealer shot you! BLANK. No damage.');
+        bsrSetStatus('Dealer missed! BLANK!');
+      }
+      s.turn = 'player';
+    } else {
+      if (shell === 'live') {
+        s.dealerHP -= damage;
+        bsrLog(`🤖🫵 Dealer shot itself! LIVE! ${damage > 1 ? '(SAW: 2 dmg!) ' : ''}Dealer: ${s.dealerHP} HP`);
+        bsrSetStatus('Dealer shot itself! LIVE!');
+        s.turn = 'player';
+      } else {
+        bsrLog('🤖🫵 Dealer shot itself. BLANK! Dealer gets another turn.');
+        bsrSetStatus('Dealer shot itself - BLANK! Extra turn.');
+        s.turn = 'dealer';
+      }
+    }
+
+    s.animating = false;
+
+    // Check outcomes
+    if (s.playerHP <= 0) {
+      bsrRender();
+      setTimeout(() => bsrEndGame(false), 800);
+      return;
+    }
+    if (s.dealerHP <= 0) {
+      bsrRender();
+      setTimeout(() => bsrRoundWin(), 800);
+      return;
+    }
+
+    if (s.shellIndex >= s.shells.length) {
+      bsrLog('📦 All shells spent! Reloading...');
+      bsrRender();
+      setTimeout(() => bsrNewRound(), 1200);
+      return;
+    }
+
+    bsrRender();
+
+    if (s.turn === 'dealer') {
+      setTimeout(() => bsrDealerTurn(), 1200);
+    } else if (s.turn === 'player') {
+      // Check if player is handcuffed by dealer
+      if (s.playerHandcuffed > 0) {
+        s.playerHandcuffed--;
+        bsrLog('🔗 You are handcuffed! Skip turn. (' + s.playerHandcuffed + ' remaining)');
+        bsrSetStatus('You are handcuffed! Skipping...');
+        s.turn = 'dealer';
+        setTimeout(() => bsrDealerTurn(), 1200);
+      }
+    }
+  }, 700);
+}
+
+function bsrRoundWin() {
+  const s = bsrState;
+  if (s.round >= s.maxRounds) {
+    // Won all rounds!
+    bsrEndGame(true);
+    return;
+  }
+
+  bsrLog(`✅ Round ${s.round} won! Dealer is down. Advancing...`);
+  s.round++;
+  // Increase difficulty: dealer gets more HP each round
+  s.dealerHP = 4 + s.round;
+  s.dealerMaxHP = 4 + s.round;
+  // Restore some player HP (cap at original max)
+  s.playerHP = Math.min(s.playerHP + 2, s.playerMaxHP);
+  bsrSetStatus('Round won! Next round starting...');
+  bsrRender();
+  setTimeout(() => bsrNewRound(), 1500);
+}
+
+function bsrEndGame(won) {
+  const s = bsrState;
+  s.active = false;
+
+  const overlay = document.getElementById('bsrGameOver');
+  overlay.style.display = 'flex';
+
+  if (won) {
+    // Scale multiplier by round: 3x for full win, tiered
+    const winMulti = 1 + s.round; // round 3 = 4x
+    const winnings = Math.floor(s.bet * winMulti);
+    balance += winnings;
+    updateBalDisplay();
+    window._firebaseSave && firebaseSave();
+
+    document.getElementById('bsrGameOverContent').innerHTML = `
+      <div style="font-size:64px;margin-bottom:16px;">🏆</div>
+      <div style="font-family:'Orbitron';font-size:28px;color:var(--green);font-weight:900;margin-bottom:12px;">YOU WIN!</div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:8px;">Survived all ${s.maxRounds} rounds! (${winMulti}× payout)</div>
+      <div style="font-size:22px;color:var(--gold);font-weight:900;margin-bottom:20px;">+$${winnings.toLocaleString()}</div>
+      <button onclick="bsrCloseGameOver()" class="action-btn primary" style="padding:12px 28px;">PLAY AGAIN</button>
+    `;
+  } else {
+    document.getElementById('bsrGameOverContent').innerHTML = `
+      <div style="font-size:64px;margin-bottom:16px;">💀</div>
+      <div style="font-family:'Orbitron';font-size:28px;color:var(--red);font-weight:900;margin-bottom:12px;">YOU DIED</div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:8px;">Round ${s.round} — the Dealer got you.</div>
+      <div style="font-size:22px;color:var(--red);font-weight:900;margin-bottom:20px;">-$${s.bet.toLocaleString()}</div>
+      <button onclick="bsrCloseGameOver()" class="action-btn primary" style="padding:12px 28px;">TRY AGAIN</button>
+    `;
+    window._firebaseSave && firebaseSave();
+  }
+}
+
+function bsrCloseGameOver() {
+  document.getElementById('bsrGameOver').style.display = 'none';
+  bsrState = null;
+  document.getElementById('bsrLobby').style.display = 'block';
+  document.getElementById('bsrGame').style.display = 'none';
+}
+
+// ============ SETTINGS ============
+let casinoSettings = JSON.parse(localStorage.getItem('casino_settings')) || {
+  sound: true,
+  particles: true,
+  reducedAnim: false,
+  theme: 'dark'
+};
+
+function openSettingsPanel() {
+  document.getElementById('settingsOverlay').style.display = 'block';
+  // Sync toggles
+  const snd = document.getElementById('settingSound');
+  const part = document.getElementById('settingParticles');
+  const ra = document.getElementById('settingReducedAnim');
+  if (snd) { snd.checked = casinoSettings.sound; updateToggleVisual('settingSound', casinoSettings.sound); }
+  if (part) { part.checked = casinoSettings.particles; updateToggleVisual('settingParticles', casinoSettings.particles); }
+  if (ra) { ra.checked = casinoSettings.reducedAnim; updateToggleVisual('settingReducedAnim', casinoSettings.reducedAnim); }
+  // Highlight active theme
+  document.querySelectorAll('.theme-btn').forEach(b => {
+    b.style.borderColor = b.dataset.theme === casinoSettings.theme ? 'var(--neon)' : 'var(--border)';
   });
-  
-  // Update Firebase
-  room.status = 'finished';
-  room.loser = loser.name;
-  room.survivors = survivors.map(p => p.name);
-  window._fbSet(`casino/rusroulette/rooms/${roomId}`, room);
+}
+
+function closeSettingsPanel() {
+  document.getElementById('settingsOverlay').style.display = 'none';
+}
+
+function updateToggleVisual(id, on) {
+  const knob = document.getElementById(id + 'Knob');
+  if (!knob) return;
+  knob.style.left = on ? '25px' : '3px';
+  knob.style.background = on ? 'var(--neon)' : 'var(--text2)';
+  knob.parentElement.querySelector('span').style.background = on ? 'rgba(0,240,255,.3)' : 'var(--surface2)';
+}
+
+function settingToggle(key, val) {
+  casinoSettings[key] = val;
+  localStorage.setItem('casino_settings', JSON.stringify(casinoSettings));
+  updateToggleVisual('setting' + key.charAt(0).toUpperCase() + key.slice(1), val);
+
+  // Apply settings
+  if (key === 'sound') {
+    soundMuted = !val;
+    const mb = document.getElementById('muteBtn');
+    if (mb) mb.textContent = val ? '🔊' : '🔇';
+  }
+  if (key === 'particles') {
+    const c = document.getElementById('particles');
+    if (c) c.style.display = val ? 'block' : 'none';
+  }
+  if (key === 'reducedAnim') {
+    document.body.style.setProperty('--anim-speed', val ? '0.1s' : '');
+    if (val) document.body.classList.add('reduced-motion'); else document.body.classList.remove('reduced-motion');
+  }
+}
+
+const THEMES = {
+  dark: { bg:'#040814', surface1:'#0a0f2e', surface:'rgba(255,255,255,0.03)', surface2:'rgba(255,255,255,0.06)', border:'rgba(255,255,255,0.08)', text:'#e8eaed', text2:'rgba(255,255,255,0.5)', neon:'#00f0ff', gold:'#ffd700', green:'#00e676', red:'#ff4444' },
+  midnight: { bg:'#0d0221', surface1:'#150330', surface:'rgba(211,44,230,0.04)', surface2:'rgba(211,44,230,0.08)', border:'rgba(211,44,230,0.15)', text:'#e8d5f5', text2:'rgba(255,255,255,0.5)', neon:'#d32ce6', gold:'#ffd700', green:'#00e676', red:'#ff4444' },
+  ocean: { bg:'#001a33', surface1:'#002244', surface:'rgba(0,191,255,0.04)', surface2:'rgba(0,191,255,0.08)', border:'rgba(0,191,255,0.15)', text:'#d4efff', text2:'rgba(255,255,255,0.5)', neon:'#00bfff', gold:'#ffd700', green:'#00e676', red:'#ff4444' },
+  forest: { bg:'#0a1f0a', surface1:'#122812', surface:'rgba(0,230,118,0.04)', surface2:'rgba(0,230,118,0.08)', border:'rgba(0,230,118,0.15)', text:'#d4f5d4', text2:'rgba(255,255,255,0.5)', neon:'#00e676', gold:'#ffd700', green:'#00e676', red:'#ff4444' },
+  crimson: { bg:'#1a0505', surface1:'#260808', surface:'rgba(255,68,68,0.04)', surface2:'rgba(255,68,68,0.08)', border:'rgba(255,68,68,0.15)', text:'#f5d4d4', text2:'rgba(255,255,255,0.5)', neon:'#ff4444', gold:'#ffd700', green:'#00e676', red:'#ff4444' },
+  gold: { bg:'#1a1500', surface1:'#262000', surface:'rgba(255,215,0,0.04)', surface2:'rgba(255,215,0,0.08)', border:'rgba(255,215,0,0.15)', text:'#f5eed4', text2:'rgba(255,255,255,0.5)', neon:'#ffd700', gold:'#ffd700', green:'#00e676', red:'#ff4444' },
+};
+
+function setTheme(name) {
+  const t = THEMES[name];
+  if (!t) return;
+  casinoSettings.theme = name;
+  localStorage.setItem('casino_settings', JSON.stringify(casinoSettings));
+  const root = document.documentElement;
+  Object.entries(t).forEach(([k, v]) => {
+    root.style.setProperty('--' + k.replace(/([A-Z])/g, m => '-' + m.toLowerCase()), v);
+  });
+  // Highlight active
+  document.querySelectorAll('.theme-btn').forEach(b => {
+    b.style.borderColor = b.dataset.theme === name ? 'var(--neon)' : 'var(--border)';
+  });
+}
+
+// Apply saved settings on load
+(function applySavedSettings() {
+  if (!casinoSettings.sound) {
+    soundMuted = true;
+    setTimeout(() => {
+      const mb = document.getElementById('muteBtn');
+      if (mb) mb.textContent = '🔇';
+    }, 100);
+  }
+  if (!casinoSettings.particles) {
+    const c = document.getElementById('particles');
+    if (c) c.style.display = 'none';
+  }
+  if (casinoSettings.reducedAnim) {
+    document.body.classList.add('reduced-motion');
+  }
+  if (casinoSettings.theme && casinoSettings.theme !== 'dark') {
+    setTheme(casinoSettings.theme);
+  }
+})();
+
+// ============ SHOP / POTIONS ============
+let activePotions = JSON.parse(localStorage.getItem('casino_potions')) || {};
+// { luck: { stacks: 0, expires: 0 }, speed: { active: false, expires: 0 }, shield: {...}, xp: {...} }
+
+function openShopOverlay() {
+  document.getElementById('shopOverlay').style.display = 'block';
+  shopRefresh();
+}
+
+function closeShopOverlay() {
+  document.getElementById('shopOverlay').style.display = 'none';
+}
+
+function shopRefresh() {
+  document.getElementById('shopBalText').textContent = (typeof balance !== 'undefined' ? balance : 0).toLocaleString();
+  // Luck
+  const lp = activePotions.luck || { stacks: 0, expires: 0 };
+  const luckActive = lp.stacks > 0 && lp.expires > Date.now();
+  document.getElementById('shopLuckCount').textContent = luckActive ? lp.stacks : '0';
+  // Speed
+  const sp = activePotions.speed || { active: false, expires: 0 };
+  document.getElementById('shopSpeedActive').textContent = sp.active && sp.expires > Date.now() ? 'ON' : 'OFF';
+  document.getElementById('shopSpeedActive').style.color = sp.active && sp.expires > Date.now() ? 'var(--green)' : 'var(--text2)';
+  // Shield
+  const sh = activePotions.shield || { active: false, expires: 0 };
+  document.getElementById('shopShieldActive').textContent = sh.active && sh.expires > Date.now() ? 'ON' : 'OFF';
+  document.getElementById('shopShieldActive').style.color = sh.active && sh.expires > Date.now() ? 'var(--green)' : 'var(--text2)';
+  // XP
+  const xp = activePotions.xp || { active: false, expires: 0 };
+  document.getElementById('shopXPActive').textContent = xp.active && xp.expires > Date.now() ? 'ON' : 'OFF';
+  document.getElementById('shopXPActive').style.color = xp.active && xp.expires > Date.now() ? 'var(--green)' : 'var(--text2)';
+
+  // Active effects panel
+  const eff = [];
+  if (luckActive) { const rem = Math.ceil((lp.expires - Date.now()) / 60000); eff.push(`<div style="padding:6px;border-radius:6px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);"><span style="font-size:14px;">🍀</span> Luck ×${lp.stacks} — ${rem}m left</div>`); }
+  if (sp.active && sp.expires > Date.now()) { const rem = Math.ceil((sp.expires - Date.now()) / 60000); eff.push(`<div style="padding:6px;border-radius:6px;background:rgba(0,240,255,.1);border:1px solid rgba(0,240,255,.2);"><span style="font-size:14px;">⚡</span> Speed 2× — ${rem}m left</div>`); }
+  if (sh.active && sh.expires > Date.now()) { const rem = Math.ceil((sh.expires - Date.now()) / 60000); eff.push(`<div style="padding:6px;border-radius:6px;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.2);"><span style="font-size:14px;">🛡️</span> Shield — ${rem}m left</div>`); }
+  if (xp.active && xp.expires > Date.now()) { const rem = Math.ceil((xp.expires - Date.now()) / 60000); eff.push(`<div style="padding:6px;border-radius:6px;background:rgba(138,43,226,.1);border:1px solid rgba(138,43,226,.2);"><span style="font-size:14px;">📈</span> XP 2× — ${rem}m left</div>`); }
+  document.getElementById('shopActiveEffects').innerHTML = eff.length ? eff.join('') : '<div style="color:var(--text2);font-size:12px;text-align:center;">No active effects</div>';
+}
+
+function shopBuyPotion(type) {
+  const prices = { luck: 2000, speed: 3000, shield: 5000, xp: 4000 };
+  const price = prices[type];
+  if (!price) return;
+  if (balance < price) { showToast('Not enough balance! Need $' + price.toLocaleString(), false); return; }
+
+  balance -= price;
+  updateBalDisplay();
+  playClickSound();
+
+  if (type === 'luck') {
+    if (!activePotions.luck) activePotions.luck = { stacks: 0, expires: 0 };
+    if (activePotions.luck.stacks >= 5 && activePotions.luck.expires > Date.now()) {
+      showToast('Max 5 luck stacks!', false);
+      balance += price; updateBalDisplay(); return;
+    }
+    activePotions.luck.stacks = Math.min(5, (activePotions.luck.stacks || 0) + 1);
+    activePotions.luck.expires = Date.now() + 10 * 60 * 1000; // 10 min
+    showToast('🍀 Luck Potion active! Stack: ' + activePotions.luck.stacks + '/5', true);
+  } else if (type === 'speed') {
+    activePotions.speed = { active: true, expires: Date.now() + 15 * 60 * 1000 };
+    showToast('⚡ Speed Potion active! 2× speed for 15 min', true);
+  } else if (type === 'shield') {
+    activePotions.shield = { active: true, expires: Date.now() + 5 * 60 * 1000 };
+    showToast('🛡️ Shield active! Loss protection for 5 min', true);
+  } else if (type === 'xp') {
+    activePotions.xp = { active: true, expires: Date.now() + 20 * 60 * 1000 };
+    showToast('📈 XP Boost active! 2× stats for 20 min', true);
+  }
+
+  localStorage.setItem('casino_potions', JSON.stringify(activePotions));
+  window._firebaseSave && firebaseSave();
+  shopRefresh();
+}
+
+// Helper: get current luck bonus multiplier
+function getLuckBonus() {
+  const lp = activePotions.luck || { stacks: 0, expires: 0 };
+  if (lp.stacks > 0 && lp.expires > Date.now()) return 1 + (lp.stacks * 0.05);
+  return 1;
+}
+
+// Helper: check speed potion
+function isSpeedActive() {
+  const sp = activePotions.speed || { active: false, expires: 0 };
+  return sp.active && sp.expires > Date.now();
+}
+
+// Helper: check shield
+function isShieldActive() {
+  const sh = activePotions.shield || { active: false, expires: 0 };
+  return sh.active && sh.expires > Date.now();
+}
+
+// ============ SERIAL NUMBERED ITEMS ============
+let serialCounter = parseInt(localStorage.getItem('casino_serial_counter')) || 100000;
+
+function generateSerial() {
+  serialCounter++;
+  localStorage.setItem('casino_serial_counter', serialCounter);
+  // Format: SN-XXXXX-XXXX
+  const hex = serialCounter.toString(16).toUpperCase().padStart(9, '0');
+  return 'SN-' + hex.slice(0, 5) + '-' + hex.slice(5);
+}
+
+// Patch addToInventory to include serial numbers
+const _origAddToInventory = addToInventory;
+addToInventory = function(itemId) {
+  _origAddToInventory(itemId);
+  // Attach serial number to the most recently added item
+  if (inventory.length > 0) {
+    const lastItem = inventory[inventory.length - 1];
+    if (!lastItem.serial) lastItem.serial = generateSerial();
+  }
+};
+
+// ============ SPECIAL LIMITED CASES ============
+let limitedCases = [];
+let limitedCaseTimer = null;
+
+function initLimitedCases() {
+  // Generate a new limited case every 30 minutes if none exists
+  const saved = JSON.parse(localStorage.getItem('casino_limited_cases')) || [];
+  limitedCases = saved.filter(c => c.expires > Date.now());
+  if (limitedCases.length === 0) {
+    spawnLimitedCase();
+  }
+  renderLimitedCases();
+  // Check every minute
+  if (limitedCaseTimer) clearInterval(limitedCaseTimer);
+  limitedCaseTimer = setInterval(() => {
+    limitedCases = limitedCases.filter(c => c.expires > Date.now());
+    if (limitedCases.length === 0) spawnLimitedCase();
+    renderLimitedCases();
+    localStorage.setItem('casino_limited_cases', JSON.stringify(limitedCases));
+  }, 60000);
+}
+
+function spawnLimitedCase() {
+  const names = ['Neon Surge', 'Void Eclipse', 'Golden Rush', 'Crimson Tide', 'Frost Bite', 'Shadow Drop', 'Star Burst'];
+  const icons = ['⚡', '🌑', '🌟', '🔥', '❄️', '🖤', '💫'];
+  const idx = Math.floor(Math.random() * names.length);
+  const multiplier = 1.5 + Math.random() * 2; // 1.5x - 3.5x value multiplier
+  const price = Math.floor((Math.random() * 9000 + 1000) / 100) * 100;
+  const qty = Math.floor(Math.random() * 20) + 5; // 5-24 available
+  const duration = (Math.random() * 20 + 10) * 60 * 1000; // 10-30 min
+
+  // Pick items with boosted rare odds
+  const possibleItems = Object.keys(ITEM_CATALOG);
+  const items = [];
+  for (let i = 0; i < 10; i++) {
+    const itId = possibleItems[Math.floor(Math.random() * possibleItems.length)];
+    const cat = ITEM_CATALOG[itId];
+    const rar = RARITY[cat.rarity];
+    items.push({ id: itId, w: Math.max(1, 15 - rar.tier * 2) });
+  }
+
+  const lc = {
+    id: 'ltd_' + Date.now(),
+    name: names[idx] + ' Edition',
+    icon: icons[idx],
+    price: price,
+    items: items,
+    remaining: qty,
+    total: qty,
+    expires: Date.now() + duration,
+    valueMult: multiplier
+  };
+  limitedCases.push(lc);
+  localStorage.setItem('casino_limited_cases', JSON.stringify(limitedCases));
+  showToast('🌟 NEW LIMITED CASE: ' + lc.name + '!', true);
+}
+
+function renderLimitedCases() {
+  const container = document.getElementById('limitedCasesContainer');
+  if (!container) return;
+  if (limitedCases.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:var(--text2);font-size:12px;padding:20px;">No limited cases available right now. Check back soon!</div>';
+    return;
+  }
+  container.innerHTML = limitedCases.map(lc => {
+    const remainMin = Math.max(0, Math.ceil((lc.expires - Date.now()) / 60000));
+    return `<div style="background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,68,68,.05));border:1px solid rgba(255,215,0,.3);border-radius:12px;padding:14px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:4px;">${lc.icon}</div>
+      <div style="font-weight:700;color:var(--gold);font-size:13px;">${lc.name}</div>
+      <div style="font-size:10px;color:var(--text2);margin:4px 0;">Boosted: ${lc.valueMult.toFixed(1)}× value</div>
+      <div style="font-size:10px;color:var(--red);margin-bottom:6px;">⏱️ ${remainMin}m left · ${lc.remaining}/${lc.total} remaining</div>
+      <button onclick="openLimitedCase('${lc.id}')" class="action-btn primary" style="padding:6px 14px;font-size:12px;${lc.remaining <= 0 ? 'opacity:0.4;pointer-events:none;' : ''}" ${lc.remaining <= 0 ? 'disabled' : ''}>$${lc.price.toLocaleString()}</button>
+    </div>`;
+  }).join('');
+}
+
+function openLimitedCase(lcId) {
+  const lc = limitedCases.find(c => c.id === lcId);
+  if (!lc || lc.remaining <= 0 || lc.expires < Date.now()) { showToast('Case no longer available!', false); return; }
+  if (balance < lc.price) { showToast('Not enough balance!', false); return; }
+  balance -= lc.price;
+  updateBalDisplay();
+  lc.remaining--;
+  localStorage.setItem('casino_limited_cases', JSON.stringify(limitedCases));
+
+  // Pick a random item with luck bonus
+  const lucky = getLuckBonus();
+  let totalW = lc.items.reduce((s, it) => {
+    const cat = ITEM_CATALOG[it.id];
+    const rar = RARITY[cat.rarity];
+    // Luck bonus slightly increases rare item weights
+    return s + it.w * (rar.tier >= 3 ? lucky : 1);
+  }, 0);
+  let rng = Math.random() * totalW;
+  let wonItem = lc.items[0];
+  for (const it of lc.items) {
+    const cat = ITEM_CATALOG[it.id];
+    const rar = RARITY[cat.rarity];
+    rng -= it.w * (rar.tier >= 3 ? lucky : 1);
+    if (rng <= 0) { wonItem = it; break; }
+  }
+
+  const cat = ITEM_CATALOG[wonItem.id];
+  const rar = RARITY[cat.rarity];
+  addToInventory(wonItem.id);
+  const val = Math.floor(cat.baseValue * lc.valueMult);
+
+  showToast(`${lc.icon} ${cat.icon} ${cat.name} (${rar.label}) — Worth ~$${val.toLocaleString()}!`, true);
+  playClickSound();
+  renderLimitedCases();
   window._firebaseSave && firebaseSave();
 }
 
-function rusrouletteEndGame() {
-  rusrouletteActive = false;
-  document.getElementById('rusrouletteGameOverlay').style.display = 'none';
-  rusrouletteMyRoomId = null;
-  rusrouletteLoadRooms();
+// ============ CRYPTO / BITCOIN TRADING ============
+let cryptoPortfolio = JSON.parse(localStorage.getItem('casino_crypto')) || {};
+// { BTC: { amount: 0, avgBuy: 0 }, ETH: {...}, ... }
+let cryptoPrices = {};
+let cryptoHistory = {};
+let cryptoInterval = null;
+
+const CRYPTO_COINS = [
+  { id: 'BTC', name: 'Bitcoin', icon: '₿', basePrice: 45000, volatility: 0.03 },
+  { id: 'ETH', name: 'Ethereum', icon: 'Ξ', basePrice: 2800, volatility: 0.04 },
+  { id: 'DOGE', name: 'Dogecoin', icon: '🐕', basePrice: 0.15, volatility: 0.08 },
+  { id: 'SOL', name: 'Solana', icon: '◎', basePrice: 120, volatility: 0.05 },
+  { id: 'PEPE', name: 'PepeCoin', icon: '🐸', basePrice: 0.001, volatility: 0.12 },
+  { id: 'ISLAND', name: 'IslandCoin', icon: '🏝️', basePrice: 5.50, volatility: 0.10 },
+];
+
+function initCrypto() {
+  if (!cryptoInterval) {
+    // Initialize prices
+    CRYPTO_COINS.forEach(c => {
+      if (!cryptoPrices[c.id]) {
+        cryptoPrices[c.id] = c.basePrice * (0.8 + Math.random() * 0.4);
+      }
+      if (!cryptoHistory[c.id]) {
+        cryptoHistory[c.id] = [];
+        // Generate some history
+        let p = cryptoPrices[c.id];
+        for (let i = 0; i < 30; i++) {
+          p *= (1 + (Math.random() - 0.5) * c.volatility);
+          cryptoHistory[c.id].push(p);
+        }
+      }
+      if (!cryptoPortfolio[c.id]) {
+        cryptoPortfolio[c.id] = { amount: 0, avgBuy: 0, totalInvested: 0 };
+      }
+    });
+
+    // Tick every 3 seconds
+    cryptoInterval = setInterval(cryptoTick, 3000);
+  }
+  renderCrypto();
 }
+
+function cryptoTick() {
+  CRYPTO_COINS.forEach(c => {
+    const change = (Math.random() - 0.48) * c.volatility; // slight upward bias
+    cryptoPrices[c.id] *= (1 + change);
+    cryptoPrices[c.id] = Math.max(c.basePrice * 0.01, cryptoPrices[c.id]); // floor
+    cryptoHistory[c.id].push(cryptoPrices[c.id]);
+    if (cryptoHistory[c.id].length > 60) cryptoHistory[c.id].shift();
+  });
+  // Re-render if crypto panel is active
+  if (document.querySelector('#cryptoPanel.active')) renderCrypto();
+}
+
+function renderCrypto() {
+  const panel = document.getElementById('cryptoContent');
+  if (!panel) return;
+
+  panel.innerHTML = CRYPTO_COINS.map(c => {
+    const price = cryptoPrices[c.id] || c.basePrice;
+    const hist = cryptoHistory[c.id] || [];
+    const prev = hist.length > 1 ? hist[hist.length - 2] : price;
+    const change = prev ? ((price - prev) / prev * 100) : 0;
+    const isUp = change >= 0;
+    const port = cryptoPortfolio[c.id] || { amount: 0, avgBuy: 0, totalInvested: 0 };
+    const holdings = port.amount * price;
+    const pnl = port.amount > 0 ? holdings - port.totalInvested : 0;
+
+    // Mini sparkline
+    const sparkline = cryptoSparkline(hist);
+
+    return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:20px;">${c.icon}</span>
+          <div>
+            <div style="font-weight:700;color:var(--text);font-size:14px;">${c.name}</div>
+            <div style="font-size:10px;color:var(--text2);">${c.id}</div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Orbitron';font-size:14px;color:var(--text);font-weight:700;">$${cryptoFormatPrice(price)}</div>
+          <div style="font-size:11px;color:${isUp ? 'var(--green)' : 'var(--red)'};">${isUp ? '▲' : '▼'} ${Math.abs(change).toFixed(2)}%</div>
+        </div>
+      </div>
+
+      ${sparkline}
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+        <div style="font-size:11px;color:var(--text2);">Holdings: ${port.amount.toFixed(6)} ${c.id} ($${cryptoFormatPrice(holdings)}) <span style="color:${pnl >= 0 ? 'var(--green)' : 'var(--red)'};">${pnl >= 0 ? '+' : ''}$${cryptoFormatPrice(pnl)}</span></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <input type="number" id="cryptoAmt_${c.id}" placeholder="$ amount" min="1" value="100" style="flex:1;padding:6px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;">
+        <button onclick="cryptoBuy('${c.id}')" class="action-btn primary" style="padding:6px 14px;font-size:11px;">BUY</button>
+        <button onclick="cryptoSell('${c.id}')" class="action-btn danger" style="padding:6px 14px;font-size:11px;">SELL</button>
+        <button onclick="cryptoSellAll('${c.id}')" class="action-btn secondary" style="padding:6px 10px;font-size:10px;">SELL ALL</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function cryptoSparkline(hist) {
+  if (hist.length < 2) return '';
+  const w = 200, h = 40;
+  const min = Math.min(...hist);
+  const max = Math.max(...hist);
+  const range = max - min || 1;
+  const points = hist.map((v, i) => {
+    const x = (i / (hist.length - 1)) * w;
+    const y = h - ((v - min) / range) * h;
+    return `${x},${y}`;
+  }).join(' ');
+  const isUp = hist[hist.length - 1] >= hist[0];
+  const color = isUp ? '#00e676' : '#ff4444';
+  return `<svg width="100%" viewBox="0 0 ${w} ${h}" style="display:block;max-height:40px;"><polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.5" /></svg>`;
+}
+
+function cryptoFormatPrice(p) {
+  if (Math.abs(p) >= 1) return p.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (Math.abs(p) >= 0.01) return p.toFixed(4);
+  return p.toFixed(8);
+}
+
+function cryptoBuy(coinId) {
+  const coin = CRYPTO_COINS.find(c => c.id === coinId);
+  if (!coin) return;
+  const amtInput = document.getElementById('cryptoAmt_' + coinId);
+  const dollars = parseFloat(amtInput.value) || 0;
+  if (dollars <= 0 || dollars > balance) { showToast('Invalid amount!', false); return; }
+
+  const price = cryptoPrices[coinId];
+  const coinAmount = dollars / price;
+
+  balance -= dollars;
+  updateBalDisplay();
+
+  const port = cryptoPortfolio[coinId];
+  port.totalInvested += dollars;
+  port.amount += coinAmount;
+  port.avgBuy = port.totalInvested / port.amount;
+
+  localStorage.setItem('casino_crypto', JSON.stringify(cryptoPortfolio));
+  playClickSound();
+  showToast(`Bought ${coinAmount.toFixed(6)} ${coinId} for $${dollars.toLocaleString()}`, true);
+  renderCrypto();
+  window._firebaseSave && firebaseSave();
+}
+
+function cryptoSell(coinId) {
+  const coin = CRYPTO_COINS.find(c => c.id === coinId);
+  if (!coin) return;
+  const amtInput = document.getElementById('cryptoAmt_' + coinId);
+  const dollars = parseFloat(amtInput.value) || 0;
+  if (dollars <= 0) { showToast('Enter a valid amount!', false); return; }
+  const price = cryptoPrices[coinId];
+  const coinAmount = dollars / price;
+
+  const port = cryptoPortfolio[coinId];
+  if (!port || port.amount <= 0) { showToast('No ' + coinId + ' to sell!', false); return; }
+  if (coinAmount > port.amount) { showToast('Not enough ' + coinId + '!', false); return; }
+
+  const originalAmount = port.amount;
+  port.amount -= coinAmount;
+  const sellPortion = coinAmount / originalAmount;
+  port.totalInvested = Math.max(0, port.totalInvested * (1 - sellPortion));
+
+  balance += dollars;
+  updateBalDisplay();
+
+  localStorage.setItem('casino_crypto', JSON.stringify(cryptoPortfolio));
+  playClickSound();
+  showToast(`Sold ${coinAmount.toFixed(6)} ${coinId} for $${dollars.toLocaleString()}`, true);
+  renderCrypto();
+  window._firebaseSave && firebaseSave();
+}
+
+function cryptoSellAll(coinId) {
+  const port = cryptoPortfolio[coinId];
+  if (!port || port.amount <= 0) { showToast('No ' + coinId + ' to sell!', false); return; }
+  const price = cryptoPrices[coinId];
+  const dollars = port.amount * price;
+
+  balance += dollars;
+  updateBalDisplay();
+  port.amount = 0;
+  port.totalInvested = 0;
+  port.avgBuy = 0;
+
+  localStorage.setItem('casino_crypto', JSON.stringify(cryptoPortfolio));
+  playClickSound();
+  showToast(`Sold all ${coinId} for $${Math.floor(dollars).toLocaleString()}`, true);
+  renderCrypto();
+  window._firebaseSave && firebaseSave();
+}
+
+// Init limited cases on load
+setTimeout(initLimitedCases, 1000);
 </script>
 
 </body>
