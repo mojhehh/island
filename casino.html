@@ -911,6 +911,124 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .duel-tension-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),#ff4444);transition:width .1s linear;}
 .duel-history{margin-top:16px;}
 .duel-history-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:4px;font-size:11px;}
+
+/* ============ BUCKSHOT ROULETTE ============ */
+#rusroulettePanel{padding-top:60px!important;}
+.bsr-title{font-family:'Orbitron';font-size:28px;font-weight:900;text-align:center;
+  background:linear-gradient(135deg,#ff4444,#ff8800,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:4px;letter-spacing:2px;}
+.bsr-subtitle{font-size:12px;color:var(--text2);text-align:center;margin-bottom:18px;}
+
+/* Lobby */
+.bsr-lobby{max-width:480px;width:100%;margin:0 auto;text-align:center;}
+.bsr-lobby .bsr-difficulty{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0;}
+.bsr-diff-card{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:16px 10px;cursor:pointer;transition:all .25s;}
+.bsr-diff-card:hover,.bsr-diff-card.selected{border-color:var(--neon);background:rgba(0,240,255,.06);transform:translateY(-2px);}
+.bsr-diff-card .diff-icon{font-size:28px;margin-bottom:6px;}
+.bsr-diff-card .diff-name{font-family:'Orbitron';font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.bsr-diff-card .diff-desc{font-size:10px;color:var(--text2);line-height:1.4;}
+.bsr-diff-card .diff-mult{font-family:'Orbitron';font-size:14px;font-weight:900;color:var(--gold);margin-top:6px;}
+
+/* Game area */
+.bsr-game{max-width:560px;width:100%;margin:0 auto;}
+.bsr-top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;
+  padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;}
+.bsr-round-badge{font-family:'Orbitron';font-size:14px;color:var(--neon);font-weight:800;letter-spacing:2px;}
+.bsr-multiplier{font-family:'Orbitron';font-size:16px;color:var(--gold);font-weight:900;}
+.bsr-shell-count{font-size:12px;color:var(--text2);}
+
+/* Table area - the centerpiece */
+.bsr-table{position:relative;background:linear-gradient(180deg,rgba(40,20,10,.5),rgba(20,10,5,.7));
+  border:2px solid rgba(255,140,50,.2);border-radius:20px;padding:24px 16px;margin-bottom:14px;
+  box-shadow:inset 0 0 60px rgba(0,0,0,.3),0 0 30px rgba(255,100,0,.08);}
+.bsr-shotgun{display:flex;justify-content:center;align-items:center;margin:16px 0;min-height:60px;}
+.bsr-shotgun-img{font-size:56px;transition:transform .3s;filter:drop-shadow(0 4px 12px rgba(255,100,0,.4));}
+.bsr-shotgun-img.shake{animation:bsrShake .4s ease-in-out;}
+.bsr-shotgun-img.recoil-left{animation:bsrRecoilLeft .5s ease-out;}
+.bsr-shotgun-img.recoil-right{animation:bsrRecoilRight .5s ease-out;}
+@keyframes bsrShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg) translateX(-4px)}50%{transform:rotate(2deg) translateX(3px)}75%{transform:rotate(-1deg)}}
+@keyframes bsrRecoilLeft{0%{transform:rotate(0) translateX(0)}30%{transform:rotate(-15deg) translateX(-20px) scale(1.1)}100%{transform:rotate(0) translateX(0)}}
+@keyframes bsrRecoilRight{0%{transform:rotate(0) translateX(0)}30%{transform:rotate(15deg) translateX(20px) scale(1.1)}100%{transform:rotate(0) translateX(0)}}
+
+/* Shell rack */
+.bsr-rack{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;}
+.bsr-shell{width:32px;height:44px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;transition:all .3s;position:relative;}
+.bsr-shell.used{background:var(--surface2);opacity:0.25;}
+.bsr-shell.used.was-live{border:1px solid rgba(255,68,68,.3);}
+.bsr-shell.used.was-blank{border:1px solid rgba(68,136,255,.3);}
+.bsr-shell.current{background:linear-gradient(135deg,var(--gold),#ff8800);box-shadow:0 0 14px rgba(255,200,0,.5);
+  animation:bsrPulse 1.5s ease-in-out infinite;font-size:16px;}
+.bsr-shell.unknown{background:var(--surface2);border:1px solid var(--border);}
+.bsr-shell.reveal-live{background:linear-gradient(135deg,#ff4444,#cc0000);border-color:#ff4444;
+  animation:bsrReveal .4s ease-out;}
+.bsr-shell.reveal-blank{background:linear-gradient(135deg,#4488ff,#2255cc);border-color:#4488ff;
+  animation:bsrReveal .4s ease-out;}
+@keyframes bsrPulse{0%,100%{box-shadow:0 0 14px rgba(255,200,0,.5)}50%{box-shadow:0 0 24px rgba(255,200,0,.8)}}
+@keyframes bsrReveal{0%{transform:scale(0.5);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* Health panels */
+.bsr-combatants{display:grid;grid-template-columns:1fr auto 1fr;gap:0;margin-bottom:16px;}
+.bsr-fighter{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;transition:all .3s;}
+.bsr-fighter.hit{animation:bsrHit .4s ease-out;border-color:var(--red);}
+@keyframes bsrHit{0%{background:rgba(255,68,68,.3)}100%{background:var(--surface)}}
+.bsr-fighter-label{font-family:'Orbitron';font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:8px;}
+.bsr-hp-text{font-family:'Orbitron';font-size:26px;font-weight:900;margin-bottom:6px;}
+.bsr-hp-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-bottom:6px;}
+.bsr-hp-fill{height:100%;border-radius:4px;transition:width .5s ease-out;}
+.bsr-hearts{font-size:14px;letter-spacing:2px;}
+.bsr-vs{display:flex;align-items:center;justify-content:center;padding:0 10px;
+  font-family:'Orbitron';font-size:16px;color:var(--red);font-weight:900;}
+
+/* Items */
+.bsr-items-section{margin-bottom:14px;}
+.bsr-items-label{font-family:'Orbitron';font-size:10px;color:var(--text2);letter-spacing:2px;margin-bottom:8px;text-align:center;}
+.bsr-items{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.bsr-item-btn{padding:8px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--border);
+  cursor:pointer;color:var(--text);font-size:12px;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.bsr-item-btn:hover{border-color:var(--neon);background:rgba(0,240,255,.06);transform:translateY(-1px);}
+.bsr-item-btn:disabled,.bsr-item-btn.disabled{opacity:0.35;cursor:default;transform:none!important;border-color:var(--border)!important;}
+.bsr-item-btn .item-icon{font-size:16px;}
+.bsr-dealer-items{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+.bsr-dealer-item{padding:4px 8px;border-radius:6px;background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.15);
+  font-size:11px;color:var(--text2);}
+
+/* Status */
+.bsr-status{text-align:center;font-size:15px;color:var(--gold);min-height:28px;margin-bottom:12px;
+  font-weight:700;font-family:'Orbitron';letter-spacing:1px;}
+
+/* Action buttons */
+.bsr-actions{display:flex;gap:12px;justify-content:center;margin-bottom:14px;}
+.bsr-shoot-btn{padding:14px 32px;font-size:15px;font-weight:800;border-radius:12px;border:2px solid;
+  cursor:pointer;transition:all .25s;font-family:'Orbitron';letter-spacing:1px;}
+.bsr-shoot-btn:disabled{opacity:0.3;cursor:default;transform:none!important;}
+.bsr-shoot-dealer{background:linear-gradient(135deg,rgba(255,68,68,.15),rgba(255,68,68,.05));
+  border-color:rgba(255,68,68,.5);color:#ff4444;}
+.bsr-shoot-dealer:hover:not(:disabled){background:linear-gradient(135deg,rgba(255,68,68,.3),rgba(255,68,68,.1));transform:translateY(-2px);}
+.bsr-shoot-self{background:linear-gradient(135deg,rgba(0,240,255,.1),rgba(0,240,255,.03));
+  border-color:rgba(0,240,255,.4);color:#00f0ff;}
+.bsr-shoot-self:hover:not(:disabled){background:linear-gradient(135deg,rgba(0,240,255,.2),rgba(0,240,255,.06));transform:translateY(-2px);}
+
+/* Log */
+.bsr-log{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;
+  max-height:150px;overflow-y:auto;font-size:12px;color:var(--text2);line-height:1.6;}
+.bsr-log-entry{padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.bsr-log-entry:last-child{border-bottom:none;}
+.bsr-log-line{padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.bsr-log-line:last-child{border-bottom:none;}
+
+/* Game over */
+.bsr-gameover{display:none;position:fixed;inset:0;background:rgba(4,8,20,.97);z-index:10003;
+  align-items:center;justify-content:center;flex-direction:column;}
+.bsr-gameover-box{text-align:center;max-width:480px;width:92vw;animation:bsrFadeIn .5s ease-out;}
+@keyframes bsrFadeIn{0%{opacity:0;transform:translateY(30px)}100%{opacity:1;transform:translateY(0)}}
+
+/* Round transition */
+.bsr-round-splash{position:fixed;inset:0;background:rgba(4,8,20,.95);z-index:10004;
+  display:flex;align-items:center;justify-content:center;transition:opacity .4s ease;}
+.bsr-round-splash-text{font-family:'Orbitron';font-size:36px;font-weight:900;color:var(--gold);
+  text-shadow:0 0 30px rgba(255,215,0,.5);animation:bsrPulse 1s ease-in-out infinite;}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -1806,83 +1924,133 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 <!-- ============ BUCKSHOT ROULETTE ============ -->
 <div class="game-panel" id="rusroulettePanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul>
-    <li>Play against the <strong>Dealer (CPU)</strong> in a deadly shotgun duel.</li>
-    <li>A shotgun is loaded with a random mix of <strong>LIVE (red)</strong> and <strong>BLANK (blue)</strong> shells.</li>
-    <li><strong>Shoot Dealer</strong>: If LIVE → dealer takes 1 damage (2 with Saw). If BLANK → turn passes.</li>
-    <li><strong>Shoot Self</strong>: If LIVE → you take 1 damage (2 with Saw). If BLANK → you get another turn!</li>
-    <li><strong>Items</strong> (use before shooting):<br>
-      🔗 <em>Handcuffs</em> – Dealer skips next 2 turns<br>
-      🚬 <em>Cigarettes</em> – Heal +1 HP<br>
-      🍬 <em>Rotten Gummy</em> – 40% chance +2 HP, 60% chance −1 HP<br>
-      🪚 <em>Saw</em> – Next LIVE shell does double damage (2)<br>
-      📱 <em>Phone</em> – Reveals a random future shell<br>
-      🔍 <em>Magnifying Glass</em> – Shows current shell (only you see it)
+    <li>Face the <strong>Dealer</strong> in a deadly shotgun standoff across multiple rounds.</li>
+    <li>The shotgun is loaded with a mix of <strong style="color:#ff4444;">LIVE</strong> and <strong style="color:#4488ff;">BLANK</strong> shells — you can see the counts but not the order.</li>
+    <li><strong>Shoot Dealer</strong>: LIVE = dealer takes damage, BLANK = turn passes.</li>
+    <li><strong>Shoot Self</strong>: LIVE = you take damage, <strong style="color:#00e676;">BLANK = FREE EXTRA TURN!</strong></li>
+    <li>Use <strong>items</strong> before shooting to gain an edge:<br>
+      🔗 <em>Handcuffs</em> — Dealer skips next turn<br>
+      🚬 <em>Cigarettes</em> — Heal +1 HP<br>
+      🍬 <em>Rotten Gummy</em> — 40% chance +2 HP, 60% chance −1 HP<br>
+      🪚 <em>Saw</em> — Next LIVE shell deals <strong>double damage</strong><br>
+      📱 <em>Burner Phone</em> — Reveals a random upcoming shell<br>
+      🔍 <em>Magnifying Glass</em> — Peek at the current shell
     </li>
-    <li>Win all rounds to <strong>double your bet</strong>!</li>
+    <li>Difficulty sets rounds, HP, items, and your <strong>payout multiplier</strong>.</li>
+    <li>Beat all rounds to win <strong>Bet × Multiplier</strong>. Die and you lose your bet.</li>
   </ul></div></div>
 
-  <div style="text-align:center;margin-bottom:12px;">
-    <span style="font-family:'Orbitron';font-size:24px;font-weight:900;background:linear-gradient(135deg,#ff4444,#ff8800);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🔫 BUCKSHOT ROULETTE</span>
-    <div style="font-size:11px;color:var(--text2);margin-top:4px;">Survive the shotgun duel against the Dealer!</div>
-  </div>
+  <div class="bsr-title">🔫 BUCKSHOT ROULETTE</div>
+  <div class="bsr-subtitle">Man vs. Machine. One shotgun. Who walks away?</div>
 
-  <!-- Pre-game: bet & start -->
-  <div id="bsrLobby">
-    <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:12px;">
+  <!-- LOBBY -->
+  <div id="bsrLobby" class="bsr-lobby">
+    <!-- Difficulty select -->
+    <div style="font-family:'Orbitron';font-size:11px;color:var(--text2);letter-spacing:2px;margin-bottom:6px;">CHOOSE DIFFICULTY</div>
+    <div class="bsr-difficulty">
+      <div class="bsr-diff-card" onclick="bsrSelectDiff('easy',this)">
+        <div class="diff-icon">😎</div>
+        <div class="diff-name">EASY</div>
+        <div class="diff-desc">2 rounds · 5 HP · 4 items</div>
+        <div class="diff-mult">2.5×</div>
+      </div>
+      <div class="bsr-diff-card selected" onclick="bsrSelectDiff('normal',this)">
+        <div class="diff-icon">💀</div>
+        <div class="diff-name">NORMAL</div>
+        <div class="diff-desc">3 rounds · 4 HP · 3 items</div>
+        <div class="diff-mult">4×</div>
+      </div>
+      <div class="bsr-diff-card" onclick="bsrSelectDiff('hard',this)">
+        <div class="diff-icon">☠️</div>
+        <div class="diff-name">HARD</div>
+        <div class="diff-desc">4 rounds · 3 HP · 2 items</div>
+        <div class="diff-mult">7×</div>
+      </div>
+    </div>
+    <!-- Bet -->
+    <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:16px;">
       <div class="bet-controls">
         <span style="color:var(--text2);font-size:12px;font-weight:600;">BET</span>
         <button class="bet-btn bet-half" onclick="adjustBet('bsrBet',0.5)">½</button>
         <input class="bet-input" type="number" id="bsrBet" value="100" min="10">
         <button class="bet-btn bet-double" onclick="adjustBet('bsrBet',2)">2×</button>
       </div>
-      <button class="action-btn primary" onclick="bsrStartGame()" style="padding:10px 24px;font-size:14px;">⚔️ PLAY</button>
+      <button class="action-btn primary" onclick="bsrStartGame()" style="padding:12px 28px;font-size:15px;font-family:'Orbitron';letter-spacing:1px;">⚔️ PLAY</button>
+    </div>
+    <!-- Stats -->
+    <div id="bsrStats" style="display:flex;gap:12px;justify-content:center;margin-top:14px;font-size:11px;color:var(--text2);">
+      <span>Win rate: <span id="bsrStatWinRate" style="color:var(--green);font-weight:700;">--</span></span>
+      <span>Biggest win: <span id="bsrStatBigWin" style="color:var(--gold);font-weight:700;">--</span></span>
+      <span>Streak: <span id="bsrStatStreak" style="color:var(--neon);font-weight:700;">0</span></span>
     </div>
   </div>
 
-  <!-- In-game UI -->
-  <div id="bsrGame" style="display:none;">
-    <!-- Round & Shell info -->
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-      <div id="bsrRoundInfo" style="font-family:'Orbitron';font-size:13px;color:var(--neon);letter-spacing:1px;"></div>
-      <div id="bsrShellInfo" style="font-size:12px;color:var(--text2);"></div>
+  <!-- GAME AREA -->
+  <div id="bsrGame" class="bsr-game" style="display:none;">
+    <!-- Top bar: round + multiplier -->
+    <div class="bsr-top-bar">
+      <div class="bsr-round-badge" id="bsrRoundInfo">ROUND 1/3</div>
+      <div class="bsr-multiplier" id="bsrMultiplier">4× PAYOUT</div>
+      <div class="bsr-shell-count" id="bsrShellInfo">5 shells</div>
     </div>
 
-    <!-- Shell rack visual -->
-    <div id="bsrShellRack" style="display:flex;gap:6px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;"></div>
+    <!-- Shell rack -->
+    <div class="bsr-rack" id="bsrShellRack"></div>
 
-    <!-- Health bars -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
-        <div style="font-size:11px;color:var(--neon);font-weight:700;margin-bottom:6px;">🧑 YOU</div>
-        <div id="bsrPlayerHP" style="font-size:22px;font-weight:900;color:var(--green);"></div>
-        <div id="bsrPlayerHearts" style="font-size:16px;margin-top:4px;"></div>
+    <!-- Table area with shotgun -->
+    <div class="bsr-table">
+      <!-- Combatants -->
+      <div class="bsr-combatants">
+        <div class="bsr-fighter" id="bsrPlayerCard">
+          <div class="bsr-fighter-label" style="color:var(--neon);">🧑 YOU</div>
+          <div class="bsr-hp-text" id="bsrPlayerHP" style="color:var(--green);">4 HP</div>
+          <div class="bsr-hp-bar"><div class="bsr-hp-fill" id="bsrPlayerHPBar" style="width:100%;background:linear-gradient(90deg,var(--green),#66ff99);"></div></div>
+          <div class="bsr-hearts" id="bsrPlayerHearts">❤️❤️❤️❤️</div>
+        </div>
+        <div class="bsr-vs">VS</div>
+        <div class="bsr-fighter" id="bsrDealerCard">
+          <div class="bsr-fighter-label" style="color:var(--red);">🤖 DEALER</div>
+          <div class="bsr-hp-text" id="bsrDealerHP" style="color:var(--red);">4 HP</div>
+          <div class="bsr-hp-bar"><div class="bsr-hp-fill" id="bsrDealerHPBar" style="width:100%;background:linear-gradient(90deg,#ff4444,#ff8888);"></div></div>
+          <div class="bsr-hearts" id="bsrDealerHearts">❤️❤️❤️❤️</div>
+        </div>
       </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;">
-        <div style="font-size:11px;color:var(--red);font-weight:700;margin-bottom:6px;">🤖 DEALER</div>
-        <div id="bsrDealerHP" style="font-size:22px;font-weight:900;color:var(--red);"></div>
-        <div id="bsrDealerHearts" style="font-size:16px;margin-top:4px;"></div>
+
+      <!-- Shotgun visual -->
+      <div class="bsr-shotgun">
+        <div class="bsr-shotgun-img" id="bsrShotgun">🔫</div>
+      </div>
+
+      <!-- Status -->
+      <div class="bsr-status" id="bsrStatus">Your turn — choose wisely.</div>
+
+      <!-- Actions -->
+      <div class="bsr-actions">
+        <button class="bsr-shoot-btn bsr-shoot-dealer" id="bsrShootDealer" onclick="bsrShoot('dealer')">🔫 SHOOT DEALER</button>
+        <button class="bsr-shoot-btn bsr-shoot-self" id="bsrShootSelf" onclick="bsrShoot('self')">🫵 SHOOT SELF</button>
       </div>
     </div>
 
-    <!-- Items -->
-    <div id="bsrItems" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;"></div>
-
-    <!-- Status message -->
-    <div id="bsrStatus" style="text-align:center;font-size:13px;color:var(--gold);min-height:20px;margin-bottom:10px;font-weight:600;"></div>
-
-    <!-- Action buttons -->
-    <div id="bsrActions" style="display:flex;gap:10px;justify-content:center;margin-bottom:8px;">
-      <button class="action-btn danger" id="bsrShootDealer" onclick="bsrShoot('dealer')" style="padding:12px 28px;font-size:14px;">🔫 SHOOT DEALER</button>
-      <button class="action-btn secondary" id="bsrShootSelf" onclick="bsrShoot('self')" style="padding:12px 28px;font-size:14px;">🫵 SHOOT SELF</button>
+    <!-- Items section -->
+    <div class="bsr-items-section">
+      <div class="bsr-items-label">YOUR ITEMS</div>
+      <div class="bsr-items" id="bsrItems"></div>
+      <div class="bsr-items-label" style="margin-top:10px;color:rgba(255,68,68,.5);">DEALER'S ITEMS</div>
+      <div class="bsr-dealer-items" id="bsrDealerItemsDisplay"></div>
     </div>
 
     <!-- Log -->
-    <div id="bsrLog" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;max-height:120px;overflow-y:auto;font-size:11px;color:var(--text2);margin-top:8px;"></div>
+    <div class="bsr-log" id="bsrLog"></div>
   </div>
 
-  <!-- Game over overlay -->
-  <div id="bsrGameOver" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.97);z-index:10003;align-items:center;justify-content:center;flex-direction:column;">
-    <div id="bsrGameOverContent" style="text-align:center;max-width:500px;width:92vw;"></div>
+  <!-- ROUND TRANSITION SPLASH -->
+  <div id="bsrRoundSplash" class="bsr-round-splash" style="display:none;">
+    <div class="bsr-round-splash-text" id="bsrRoundSplashText">ROUND 2</div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="bsrGameOver" class="bsr-gameover">
+    <div class="bsr-gameover-box" id="bsrGameOverContent"></div>
   </div>
 </div>
 
@@ -3757,7 +3925,8 @@ let gameStats = {
   wheel: { played: 0, won: 0, biggestWin: 0 },
   baccarat: { played: 0, won: 0, biggestWin: 0 },
   hilo: { played: 0, won: 0, biggestWin: 0 },
-  duels: { played: 0, won: 0, biggestWin: 0 }
+  duels: { played: 0, won: 0, biggestWin: 0 },
+  rusroulette: { played: 0, won: 0, biggestWin: 0 }
 };
 let dailyBonusData = { lastClaimed: 0, streak: 0 };
 
@@ -9046,62 +9215,133 @@ document.addEventListener('keydown',e=>{
 });
 
 // ============ BUCKSHOT ROULETTE ============
-let bsrState = null; // full game state
+let bsrState = null;
+let bsrDifficulty = 'normal'; // 'easy', 'normal', 'hard'
+const BSR_DIFF = {
+  easy:   { rounds:2, hp:5, items:4, mult:2.5, dealerHpScale:1, label:'EASY',   icon:'😎' },
+  normal: { rounds:3, hp:4, items:3, mult:4,   dealerHpScale:1, label:'NORMAL', icon:'💀' },
+  hard:   { rounds:4, hp:3, items:2, mult:7,   dealerHpScale:1, label:'HARD',   icon:'☠️' },
+};
+const BSR_ITEM_ICONS = { handcuffs:'🔗', cigarettes:'🚬', gummy:'🍬', saw:'🪚', phone:'📱', magnifying:'🔍' };
+const BSR_ITEM_NAMES = { handcuffs:'Handcuffs', cigarettes:'Cigarettes', gummy:'Rotten Gummy', saw:'Saw', phone:'Burner Phone', magnifying:'Magnifying Glass' };
+const BSR_ITEM_DESCS = { handcuffs:'Dealer skips next turn', cigarettes:'Heal +1 HP', gummy:'40% +2HP / 60% −1HP', saw:'Next live = 2 dmg', phone:'Reveal random shell', magnifying:'See current shell' };
+const BSR_ALL_ITEMS = ['handcuffs','cigarettes','gummy','saw','phone','magnifying'];
+
+// Stats persisted in localStorage
+let bsrStats = JSON.parse(localStorage.getItem('bsr_stats')) || { wins:0, losses:0, biggestWin:0, streak:0, bestStreak:0 };
+function bsrSaveStats(){ localStorage.setItem('bsr_stats', JSON.stringify(bsrStats)); }
+
+function bsrSelectDiff(diff, el) {
+  bsrDifficulty = diff;
+  document.querySelectorAll('.bsr-diff-card').forEach(c => c.classList.remove('selected'));
+  if(el) el.classList.add('selected');
+  playClickSound();
+}
 
 function initBuckshotRoulette() {
-  // Reset to lobby view
   if (!bsrState || !bsrState.active) {
     document.getElementById('bsrLobby').style.display = 'block';
     document.getElementById('bsrGame').style.display = 'none';
     document.getElementById('bsrGameOver').style.display = 'none';
+    document.getElementById('bsrRoundSplash').style.display = 'none';
+    bsrUpdateStats();
   }
 }
 
+function bsrUpdateStats() {
+  const total = bsrStats.wins + bsrStats.losses;
+  const wr = total > 0 ? Math.round(bsrStats.wins / total * 100) + '%' : '--';
+  const bw = bsrStats.biggestWin > 0 ? '$' + bsrStats.biggestWin.toLocaleString() : '--';
+  const el1 = document.getElementById('bsrStatWinRate');
+  const el2 = document.getElementById('bsrStatBigWin');
+  const el3 = document.getElementById('bsrStatStreak');
+  if(el1) el1.textContent = wr;
+  if(el2) el2.textContent = bw;
+  if(el3) el3.textContent = bsrStats.streak;
+}
+
+/* ─── START GAME ─── */
 function bsrStartGame() {
   const bet = parseFloat(document.getElementById('bsrBet').value) || 100;
-  if (bet <= 0 || bet > balance) { showToast('Invalid bet!', false); return; }
+  if (bet <= 0) { showToast('Bet must be positive!', false); return; }
+  if (bet > balance) { showToast('Not enough balance!', false); return; }
   balance -= bet; updateBalDisplay();
   playClickSound();
 
+  const diff = BSR_DIFF[bsrDifficulty];
   bsrState = {
     active: true,
     bet: bet,
+    diff: bsrDifficulty,
+    mult: diff.mult,
     round: 1,
-    maxRounds: 3,
-    playerHP: 4,
-    playerMaxHP: 4,
-    dealerHP: 4,
-    dealerMaxHP: 4,
-    shells: [],      // array of 'live' or 'blank'
+    maxRounds: diff.rounds,
+    playerHP: diff.hp,
+    playerMaxHP: diff.hp,
+    dealerHP: diff.hp,
+    dealerMaxHP: diff.hp,
+    shells: [],
     shellIndex: 0,
-    turn: 'player',  // 'player' or 'dealer'
-    sawActive: false, // next live does 2 damage
-    handcuffs: 0,     // dealer skip turns remaining
-    playerHandcuffed: 0, // player skip turns remaining (from dealer handcuffs)
-    items: [],        // player items
-    dealerItems: [],  // dealer items
+    turn: 'player',
+    sawActive: false,
+    handcuffs: 0,       // dealer skip count
+    playerHandcuffed: 0,// player skip count
+    maxItems: diff.items,
+    items: [],
+    dealerItems: [],
     log: [],
     animating: false,
+    _dealerKnowsCurrent: null,
+    _revealedShells: {},  // index => type, for phone reveals
   };
 
   document.getElementById('bsrLobby').style.display = 'none';
   document.getElementById('bsrGame').style.display = 'block';
   document.getElementById('bsrGameOver').style.display = 'none';
+  document.getElementById('bsrLog').innerHTML = '';
 
-  bsrNewRound();
+  bsrShowRoundSplash(1, () => bsrNewRound());
 }
 
+/* ─── ROUND SPLASH ─── */
+function bsrShowRoundSplash(roundNum, callback) {
+  const splash = document.getElementById('bsrRoundSplash');
+  const txt = document.getElementById('bsrRoundSplashText');
+  txt.textContent = 'ROUND ' + roundNum;
+  splash.style.display = 'flex';
+  splash.style.opacity = '0';
+  requestAnimationFrame(() => {
+    splash.style.transition = 'opacity 0.4s';
+    splash.style.opacity = '1';
+  });
+  setTimeout(() => {
+    splash.style.transition = 'opacity 0.5s';
+    splash.style.opacity = '0';
+    setTimeout(() => {
+      splash.style.display = 'none';
+      if(callback) callback();
+    }, 500);
+  }, 1600);
+}
+
+/* ─── NEW ROUND ─── */
 function bsrNewRound() {
   const s = bsrState;
-  // Load shells: 2-8 shells, at least 1 live and 1 blank
-  const totalShells = Math.floor(Math.random() * 5) + 3; // 3-7
-  const liveCount = Math.max(1, Math.floor(Math.random() * (totalShells - 1)) + 1);
+  if(!s) return;
+  s.animating = false;
+  s._dealerKnowsCurrent = null;
+  s._revealedShells = {};
+
+  // Shell loading: 3–8 shells, at least 1 live and 1 blank
+  const totalShells = Math.floor(Math.random() * 4) + 4; // 4-7
+  let liveCount = Math.max(1, Math.floor(Math.random() * (totalShells - 1)) + 1);
+  if(liveCount >= totalShells) liveCount = totalShells - 1; // ensure ≥1 blank
   const blankCount = totalShells - liveCount;
   s.shells = [];
-  for (let i = 0; i < liveCount; i++) s.shells.push('live');
-  for (let i = 0; i < blankCount; i++) s.shells.push('blank');
-  // Shuffle
-  for (let i = s.shells.length - 1; i > 0; i--) {
+  for(let i = 0; i < liveCount; i++) s.shells.push('live');
+  for(let i = 0; i < blankCount; i++) s.shells.push('blank');
+  // Fisher-Yates shuffle
+  for(let i = s.shells.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [s.shells[i], s.shells[j]] = [s.shells[j], s.shells[i]];
   }
@@ -9109,117 +9349,159 @@ function bsrNewRound() {
   s.sawActive = false;
   s.handcuffs = 0;
   s.playerHandcuffed = 0;
-  s._dealerKnowsCurrent = null;
 
-  // Give items (2-4 random items each)
-  const allItems = ['handcuffs','cigarettes','gummy','saw','phone','magnifying'];
-  const itemCount = Math.floor(Math.random() * 3) + 2;
+  // Distribute items
   s.items = [];
   s.dealerItems = [];
-  for (let i = 0; i < itemCount; i++) {
-    s.items.push(allItems[Math.floor(Math.random() * allItems.length)]);
-    s.dealerItems.push(allItems[Math.floor(Math.random() * allItems.length)]);
+  for(let i = 0; i < s.maxItems; i++) {
+    s.items.push(BSR_ALL_ITEMS[Math.floor(Math.random() * BSR_ALL_ITEMS.length)]);
+    s.dealerItems.push(BSR_ALL_ITEMS[Math.floor(Math.random() * BSR_ALL_ITEMS.length)]);
   }
 
-  s.turn = Math.random() < 0.5 ? 'player' : 'dealer';
-  bsrLog(`⚡ Round ${s.round}: Shotgun loaded with ${liveCount} LIVE 🔴 and ${blankCount} BLANK 🔵 shells.`);
-  bsrLog(`Items distributed! ${s.turn === 'player' ? 'Your' : "Dealer's"} turn first.`);
+  // Who goes first (alternate or random)
+  s.turn = s.round % 2 === 1 ? 'player' : 'dealer';
+
+  bsrLog(`⚡ ROUND ${s.round} — Shotgun loaded: ${liveCount} LIVE 🔴, ${blankCount} BLANK 🔵`);
+  bsrLog(`${s.items.length} items each. ${s.turn === 'player' ? 'Your' : "Dealer's"} turn first.`);
 
   bsrRender();
+  bsrSetStatus(s.turn === 'player' ? 'Your turn — choose wisely.' : "Dealer's turn...");
 
-  if (s.turn === 'dealer') {
+  if(s.turn === 'dealer') {
     bsrDisableActions();
-    setTimeout(() => bsrDealerTurn(), 1200);
+    setTimeout(() => bsrDealerTurn(), 2000);
   }
 }
 
+/* ─── LOGGING ─── */
 function bsrLog(msg) {
-  if (!bsrState) return;
+  if(!bsrState) return;
   bsrState.log.push(msg);
   const el = document.getElementById('bsrLog');
-  if (el) {
-    el.innerHTML = bsrState.log.map(m => '<div style="padding:2px 0;border-bottom:1px solid var(--border);">' + m + '</div>').join('');
-    el.scrollTop = el.scrollHeight;
-  }
+  if(!el) return;
+  el.innerHTML = bsrState.log.map(m => '<div class="bsr-log-line">' + m + '</div>').join('');
+  el.scrollTop = el.scrollHeight;
 }
 
+/* ─── RENDER ─── */
 function bsrRender() {
   const s = bsrState;
-  if (!s) return;
+  if(!s) return;
 
-  // Round info
+  // Round & multiplier
   document.getElementById('bsrRoundInfo').textContent = `ROUND ${s.round}/${s.maxRounds}`;
-  
+  document.getElementById('bsrMultiplier').textContent = `${s.mult}× PAYOUT`;
+
   // Shell info
   const remaining = s.shells.length - s.shellIndex;
   const livesLeft = s.shells.slice(s.shellIndex).filter(x => x === 'live').length;
   const blanksLeft = remaining - livesLeft;
-  document.getElementById('bsrShellInfo').innerHTML = `${remaining} shells: <span style="color:#ff4444;">${livesLeft} live</span> / <span style="color:#4488ff;">${blanksLeft} blank</span>`;
+  document.getElementById('bsrShellInfo').innerHTML = `<span style="color:#ff4444;">${livesLeft} live</span> / <span style="color:#4488ff;">${blanksLeft} blank</span>`;
 
   // Shell rack
   const rack = document.getElementById('bsrShellRack');
   rack.innerHTML = s.shells.map((sh, i) => {
-    if (i < s.shellIndex) {
-      return `<div style="width:28px;height:38px;border-radius:4px;background:var(--surface2);opacity:0.3;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text2);">✓</div>`;
-    } else if (i === s.shellIndex) {
-      return `<div style="width:28px;height:38px;border-radius:4px;background:linear-gradient(135deg,var(--gold),#ff8800);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 10px rgba(255,200,0,.5);">?</div>`;
-    } else {
-      return `<div style="width:28px;height:38px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2);">?</div>`;
+    let cls = 'bsr-shell';
+    if(i < s.shellIndex) cls += ' used';
+    else if(i === s.shellIndex) cls += ' current';
+    else cls += ' unknown';
+    // If phone revealed this shell, show it
+    if(i >= s.shellIndex && s._revealedShells[i]) {
+      cls += s._revealedShells[i] === 'live' ? ' reveal-live' : ' reveal-blank';
     }
+    const label = i < s.shellIndex ? '✓' : (s._revealedShells[i] && i > s.shellIndex ? (s._revealedShells[i] === 'live' ? '🔴' : '🔵') : '?');
+    return `<div class="${cls}">${label}</div>`;
   }).join('');
 
-  // Health
+  // HP bars + hearts
+  const pPct = Math.max(0, s.playerHP / s.playerMaxHP * 100);
+  const dPct = Math.max(0, s.dealerHP / s.dealerMaxHP * 100);
   document.getElementById('bsrPlayerHP').textContent = s.playerHP + ' HP';
-  document.getElementById('bsrPlayerHearts').textContent = '❤️'.repeat(Math.max(0, s.playerHP)) + '🖤'.repeat(Math.max(0, s.playerMaxHP - s.playerHP));
+  document.getElementById('bsrPlayerHPBar').style.width = pPct + '%';
+  document.getElementById('bsrPlayerHearts').textContent = '❤️'.repeat(Math.max(0,s.playerHP)) + '🖤'.repeat(Math.max(0,s.playerMaxHP - s.playerHP));
   document.getElementById('bsrDealerHP').textContent = s.dealerHP + ' HP';
-  document.getElementById('bsrDealerHearts').textContent = '❤️'.repeat(Math.max(0, s.dealerHP)) + '🖤'.repeat(Math.max(0, s.dealerMaxHP - s.dealerHP));
+  document.getElementById('bsrDealerHPBar').style.width = dPct + '%';
+  document.getElementById('bsrDealerHearts').textContent = '❤️'.repeat(Math.max(0,s.dealerHP)) + '🖤'.repeat(Math.max(0,s.dealerMaxHP - s.dealerHP));
 
-  // Items
-  const itemIcons = { handcuffs: '🔗', cigarettes: '🚬', gummy: '🍬', saw: '🪚', phone: '📱', magnifying: '🔍' };
-  const itemNames = { handcuffs: 'Handcuffs', cigarettes: 'Cigarettes', gummy: 'Rotten Gummy', saw: 'Saw', phone: 'Phone', magnifying: 'Magnifying Glass' };
-  const itemDescs = { handcuffs: 'Dealer skips 2 turns', cigarettes: 'Heal +1 HP', gummy: '40% +2HP / 60% -1HP', saw: 'Next live = 2 dmg', phone: 'Reveal a future shell', magnifying: 'See current shell' };
+  // Color HP bar by health percentage
+  const pBar = document.getElementById('bsrPlayerHPBar');
+  pBar.style.background = pPct > 50 ? 'linear-gradient(90deg,var(--green),#66ff99)' : pPct > 25 ? 'linear-gradient(90deg,#ff8800,#ffbb00)' : 'linear-gradient(90deg,#ff4444,#ff6666)';
+  const dBar = document.getElementById('bsrDealerHPBar');
+  dBar.style.background = dPct > 50 ? 'linear-gradient(90deg,#ff4444,#ff8888)' : dPct > 25 ? 'linear-gradient(90deg,#ff8800,#ffbb00)' : 'linear-gradient(90deg,#ff4444,#880000)';
 
+  // Player items
   const itemsEl = document.getElementById('bsrItems');
-  if (s.turn === 'player' && !s.animating) {
-    itemsEl.innerHTML = s.items.map((it, i) => 
-      `<button onclick="bsrUseItem(${i})" style="padding:6px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);cursor:pointer;color:var(--text);font-size:12px;transition:all .2s;" title="${itemDescs[it]}">${itemIcons[it]} ${itemNames[it]}</button>`
-    ).join('');
-  } else {
-    itemsEl.innerHTML = s.items.map(it => 
-      `<div style="padding:6px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--text2);font-size:12px;opacity:0.5;">${itemIcons[it]} ${itemNames[it]}</div>`
-    ).join('');
-  }
+  const canUse = s.turn === 'player' && !s.animating;
+  itemsEl.innerHTML = s.items.map((it, i) =>
+    `<button class="bsr-item-btn${canUse ? '' : ' disabled'}" onclick="bsrUseItem(${i})" title="${BSR_ITEM_DESCS[it]}" ${canUse ? '' : 'disabled'}>${BSR_ITEM_ICONS[it]} ${BSR_ITEM_NAMES[it]}</button>`
+  ).join('');
+
+  // Dealer items (visible but not clickable)
+  const dealerItemsEl = document.getElementById('bsrDealerItemsDisplay');
+  dealerItemsEl.innerHTML = s.dealerItems.map(it =>
+    `<span style="display:inline-block;padding:3px 7px;border-radius:6px;background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.15);font-size:11px;color:rgba(255,68,68,.6);">${BSR_ITEM_ICONS[it]}</span>`
+  ).join(' ');
+
+  // Saw indicator on shotgun
+  const shotgunEl = document.getElementById('bsrShotgun');
+  shotgunEl.textContent = s.sawActive ? '🪚🔫' : '🔫';
+  if(s.sawActive) shotgunEl.style.filter = 'drop-shadow(0 0 8px rgba(255,136,0,.6))';
+  else shotgunEl.style.filter = '';
 
   // Action buttons
-  if (s.turn === 'player' && !s.animating) {
-    bsrEnableActions();
-  } else {
-    bsrDisableActions();
-  }
+  if(canUse) bsrEnableActions(); else bsrDisableActions();
 }
 
 function bsrEnableActions() {
-  document.getElementById('bsrShootDealer').disabled = false;
-  document.getElementById('bsrShootDealer').style.opacity = '1';
-  document.getElementById('bsrShootSelf').disabled = false;
-  document.getElementById('bsrShootSelf').style.opacity = '1';
+  const d = document.getElementById('bsrShootDealer');
+  const s = document.getElementById('bsrShootSelf');
+  if(d){ d.disabled = false; d.style.opacity = '1'; d.style.pointerEvents = 'auto'; }
+  if(s){ s.disabled = false; s.style.opacity = '1'; s.style.pointerEvents = 'auto'; }
 }
-
 function bsrDisableActions() {
-  document.getElementById('bsrShootDealer').disabled = true;
-  document.getElementById('bsrShootDealer').style.opacity = '0.4';
-  document.getElementById('bsrShootSelf').disabled = true;
-  document.getElementById('bsrShootSelf').style.opacity = '0.4';
+  const d = document.getElementById('bsrShootDealer');
+  const s = document.getElementById('bsrShootSelf');
+  if(d){ d.disabled = true; d.style.opacity = '0.35'; d.style.pointerEvents = 'none'; }
+  if(s){ s.disabled = true; s.style.opacity = '0.35'; s.style.pointerEvents = 'none'; }
 }
-
 function bsrSetStatus(msg) {
-  document.getElementById('bsrStatus').textContent = msg;
+  const el = document.getElementById('bsrStatus');
+  if(el) el.textContent = msg;
 }
 
+/* ─── SHOTGUN ANIMATION ─── */
+function bsrAnimateShotgun(direction, isLive) {
+  // direction: 'left' (shoot dealer) or 'right' (shoot self)
+  const gun = document.getElementById('bsrShotgun');
+  if(!gun) return;
+  gun.classList.add('shake');
+  setTimeout(() => {
+    gun.classList.remove('shake');
+    gun.classList.add(direction === 'left' ? 'recoil-left' : 'recoil-right');
+    // Flash the current shell
+    const shells = document.querySelectorAll('.bsr-shell.current');
+    if(shells.length) {
+      shells[0].classList.add(isLive ? 'reveal-live' : 'reveal-blank');
+    }
+    setTimeout(() => {
+      gun.classList.remove('recoil-left', 'recoil-right');
+    }, 400);
+  }, 600);
+}
+
+function bsrAnimateHit(who) {
+  // who: 'player' or 'dealer'
+  const card = document.getElementById(who === 'player' ? 'bsrPlayerCard' : 'bsrDealerCard');
+  if(!card) return;
+  card.classList.add('hit');
+  setTimeout(() => card.classList.remove('hit'), 500);
+}
+
+/* ─── USE ITEM (PLAYER) ─── */
 function bsrUseItem(index) {
   const s = bsrState;
-  if (!s || !s.active || s.turn !== 'player' || s.animating) return;
-  if (index < 0 || index >= s.items.length) return;
+  if(!s || !s.active || s.turn !== 'player' || s.animating) return;
+  if(index < 0 || index >= s.items.length) return;
 
   const item = s.items[index];
   s.items.splice(index, 1);
@@ -9227,386 +9509,471 @@ function bsrUseItem(index) {
 
   switch(item) {
     case 'handcuffs':
-      s.handcuffs = 2;
-      bsrLog('🔗 You used Handcuffs! Dealer will skip 2 turns.');
-      bsrSetStatus('Dealer is handcuffed for 2 turns!');
+      s.handcuffs = Math.max(s.handcuffs, 1); // doesn't stack, just ensures 1 skip
+      bsrLog('🔗 You used Handcuffs! Dealer skips their next turn.');
+      bsrSetStatus('Dealer is handcuffed!');
       break;
     case 'cigarettes':
-      if (s.playerHP < s.playerMaxHP) {
+      if(s.playerHP < s.playerMaxHP) {
         s.playerHP = Math.min(s.playerHP + 1, s.playerMaxHP);
-        bsrLog('🚬 You smoked a Cigarette. +1 HP! (' + s.playerHP + ' HP)');
-        bsrSetStatus('+1 HP! Health: ' + s.playerHP);
+        bsrLog('🚬 You smoked a Cigarette. +1 HP! (' + s.playerHP + '/' + s.playerMaxHP + ')');
+        bsrSetStatus('+1 HP! Health: ' + s.playerHP + '/' + s.playerMaxHP);
       } else {
         bsrLog('🚬 Cigarette used but HP already full.');
         bsrSetStatus('Already at max HP!');
       }
       break;
     case 'gummy':
-      if (Math.random() < 0.4) {
-        s.playerHP = Math.min(s.playerHP + 2, s.playerMaxHP + 1);
-        bsrLog('🍬 Rotten Gummy worked! +2 HP! (' + s.playerHP + ' HP)');
-        bsrSetStatus('Lucky! +2 HP!');
+      if(Math.random() < 0.4) {
+        const heal = Math.min(2, s.playerMaxHP + 1 - s.playerHP); // can overheal by 1
+        s.playerHP += heal;
+        bsrLog('🍬 Rotten Gummy worked! +' + heal + ' HP! (' + s.playerHP + ')');
+        bsrSetStatus('Lucky! +' + heal + ' HP!');
       } else {
         s.playerHP -= 1;
-        bsrLog('🍬 Rotten Gummy backfired! -1 HP (' + s.playerHP + ' HP)');
-        bsrSetStatus('Food poisoning! -1 HP');
-        if (s.playerHP <= 0) { setTimeout(() => bsrEndGame(false), 800); return; }
+        bsrLog('🍬 Rotten Gummy backfired! −1 HP (' + s.playerHP + ')');
+        bsrSetStatus('Food poisoning! −1 HP');
+        if(s.playerHP <= 0) {
+          bsrRender();
+          bsrAnimateHit('player');
+          setTimeout(() => bsrEndGame(false), 1200);
+          return;
+        }
       }
       break;
     case 'saw':
       s.sawActive = true;
-      bsrLog('🪚 Saw attached! Next LIVE shell deals 2 damage.');
-      bsrSetStatus('Saw equipped! Next live = 2 damage');
+      bsrLog('🪚 Saw attached! Next LIVE shell deals double damage.');
+      bsrSetStatus('Saw equipped — next live = 2 damage!');
       break;
     case 'phone': {
-      const remaining = s.shells.slice(s.shellIndex);
-      if (remaining.length > 1) {
-        const futureIdx = Math.floor(Math.random() * (remaining.length - 1)) + 1;
-        const actual = s.shellIndex + futureIdx + 1;
-        bsrLog('📱 Phone call: "Shell #' + actual + ' is ' + remaining[futureIdx].toUpperCase() + '"');
-        bsrSetStatus('Shell #' + actual + ' is ' + remaining[futureIdx].toUpperCase());
+      const rem = s.shells.slice(s.shellIndex);
+      if(rem.length > 1) {
+        // Pick a random future shell (not current)
+        const futureIdx = Math.floor(Math.random() * (rem.length - 1)) + 1;
+        const absIdx = s.shellIndex + futureIdx;
+        const shellType = rem[futureIdx];
+        s._revealedShells[absIdx] = shellType;
+        bsrLog('📱 Phone call: "Shell #' + (absIdx + 1) + ' is ' + shellType.toUpperCase() + '"');
+        bsrSetStatus('Shell #' + (absIdx+1) + ' is ' + shellType.toUpperCase() + (shellType === 'live' ? ' 🔴' : ' 🔵'));
       } else {
-        bsrLog('📱 Phone: No future shells to reveal.');
-        bsrSetStatus('No future shells to reveal');
+        bsrLog('📱 No future shells to reveal.');
+        bsrSetStatus('No more shells ahead.');
       }
       break;
     }
     case 'magnifying': {
-      const current = s.shells[s.shellIndex];
-      bsrLog('🔍 Magnifying Glass: Current shell is ' + current.toUpperCase() + '!');
-      bsrSetStatus('Current shell: ' + current.toUpperCase() + (current === 'live' ? ' 🔴' : ' 🔵'));
+      const cur = s.shells[s.shellIndex];
+      bsrLog('🔍 Current shell: ' + cur.toUpperCase() + (cur === 'live' ? ' 🔴' : ' 🔵'));
+      bsrSetStatus('Current shell: ' + cur.toUpperCase() + (cur === 'live' ? ' 🔴' : ' 🔵'));
       break;
     }
   }
-
   bsrRender();
 }
 
+/* ─── SHOOT (PLAYER) ─── */
 function bsrShoot(target) {
   const s = bsrState;
-  if (!s || !s.active || s.animating || s.turn !== 'player') return;
+  if(!s || !s.active || s.animating || s.turn !== 'player') return;
   s.animating = true;
   bsrDisableActions();
 
   const shell = s.shells[s.shellIndex];
   s.shellIndex++;
   const damage = shell === 'live' ? (s.sawActive ? 2 : 1) : 0;
-  if (shell === 'live') s.sawActive = false;
+  if(shell === 'live' || shell === 'blank') s.sawActive = false; // saw consumed on any shot
 
-  // Animate
-  bsrSetStatus('💥 BANG!');
-  playSound(shell === 'live' ? 200 : 600, 'sawtooth', 0.15, shell === 'live' ? 0.3 : 0.1);
+  // Animate shotgun
+  bsrAnimateShotgun(target === 'dealer' ? 'left' : 'right', shell === 'live');
+  bsrSetStatus('💥 ...');
 
+  // Sound: loud bang for live, click for blank
+  if(shell === 'live') {
+    playSound(120, 'sawtooth', 0.35, 0.2);
+    setTimeout(() => playSound(80, 'square', 0.2, 0.1), 100);
+  } else {
+    playSound(600, 'sine', 0.08, 0.06);
+  }
+
+  // Resolve after animation
   setTimeout(() => {
-    if (target === 'dealer') {
-      if (shell === 'live') {
+    if(target === 'dealer') {
+      if(shell === 'live') {
         s.dealerHP -= damage;
-        bsrLog(`🔫 You shot the Dealer! LIVE shell! ${damage > 1 ? '(SAW: 2 dmg!) ' : ''}Dealer: ${s.dealerHP} HP`);
-        bsrSetStatus(`LIVE! Dealer takes ${damage} damage!`);
+        bsrAnimateHit('dealer');
+        bsrLog(`🔫 You shot the Dealer — LIVE! ${damage > 1 ? '🪚 SAW: 2 dmg! ' : ''}Dealer: ${Math.max(0,s.dealerHP)} HP`);
+        bsrSetStatus(`💥 LIVE! Dealer takes ${damage} damage!`);
       } else {
-        bsrLog('🔫 You shot the Dealer! BLANK shell. No damage.');
-        bsrSetStatus('BLANK! No damage.');
+        bsrLog('🔫 You shot the Dealer — BLANK. No damage.');
+        bsrSetStatus('*click* — BLANK. No damage.');
       }
-      // Turn always passes to dealer after shooting dealer
-      s.turn = 'dealer';
+      s.turn = 'dealer'; // always pass turn
     } else {
-      // Shoot self
-      if (shell === 'live') {
+      if(shell === 'live') {
         s.playerHP -= damage;
-        bsrLog(`🫵 You shot yourself! LIVE shell! ${damage > 1 ? '(SAW: 2 dmg!) ' : ''}You: ${s.playerHP} HP`);
-        bsrSetStatus(`LIVE! You take ${damage} damage!`);
+        bsrAnimateHit('player');
+        bsrLog(`🫵 You shot yourself — LIVE! ${damage > 1 ? '🪚 SAW: 2 dmg! ' : ''}You: ${Math.max(0,s.playerHP)} HP`);
+        bsrSetStatus(`💥 LIVE! You take ${damage} damage!`);
         s.turn = 'dealer';
       } else {
-        bsrLog('🫵 You shot yourself. BLANK! You get another turn!');
-        bsrSetStatus('BLANK! Extra turn!');
-        s.turn = 'player'; // keep turn
+        bsrLog('🫵 You shot yourself — BLANK! Free extra turn!');
+        bsrSetStatus('*click* — BLANK! You get another turn!');
+        s.turn = 'player'; // keep turn on blank self-shot
       }
     }
 
     s.animating = false;
-
-    // Check win/lose
-    if (s.dealerHP <= 0) {
-      bsrRender();
-      setTimeout(() => bsrRoundWin(), 800);
-      return;
-    }
-    if (s.playerHP <= 0) {
-      bsrRender();
-      setTimeout(() => bsrEndGame(false), 800);
-      return;
-    }
-
-    // Check if shells exhausted
-    if (s.shellIndex >= s.shells.length) {
-      bsrLog('📦 All shells spent! Reloading...');
-      bsrRender();
-      setTimeout(() => bsrNewRound(), 1200);
-      return;
-    }
-
     bsrRender();
 
-    if (s.turn === 'dealer') {
-      // Check handcuffs
-      if (s.handcuffs > 0) {
-        s.handcuffs--;
-        bsrLog('🔗 Dealer is handcuffed! Skip turn. (' + s.handcuffs + ' remaining)');
-        bsrSetStatus('Dealer handcuffed! Skipping...');
-        s.turn = 'player';
-        setTimeout(() => bsrRender(), 800);
-      } else {
-        setTimeout(() => bsrDealerTurn(), 1200);
-      }
-    } else if (s.turn === 'player') {
-      // Check if player is handcuffed (by dealer's handcuffs)
-      if (s.playerHandcuffed > 0) {
-        s.playerHandcuffed--;
-        bsrLog('🔗 You are handcuffed! Skip turn. (' + s.playerHandcuffed + ' remaining)');
-        bsrSetStatus('You are handcuffed! Skipping...');
-        s.turn = 'dealer';
-        setTimeout(() => bsrDealerTurn(), 1200);
-      }
+    // Check death / round win / shells exhausted
+    if(s.dealerHP <= 0) {
+      setTimeout(() => bsrRoundWin(), 1200);
+      return;
     }
-  }, 600);
+    if(s.playerHP <= 0) {
+      setTimeout(() => bsrEndGame(false), 1200);
+      return;
+    }
+    if(s.shellIndex >= s.shells.length) {
+      bsrLog('📦 All shells spent! Reloading...');
+      setTimeout(() => {
+        bsrShowRoundSplash(s.round, () => bsrNewRound());
+      }, 1500);
+      return;
+    }
+
+    // Turn management with handcuff checks
+    bsrResolveTurn();
+  }, 1100);
 }
 
+/* ─── TURN RESOLUTION (handles handcuffs for both sides) ─── */
+function bsrResolveTurn() {
+  const s = bsrState;
+  if(!s || !s.active) return;
+
+  if(s.turn === 'dealer') {
+    if(s.handcuffs > 0) {
+      s.handcuffs--;
+      bsrLog('🔗 Dealer is handcuffed! Skipping turn.');
+      bsrSetStatus('Dealer is chained! Skipping...');
+      s.turn = 'player';
+      setTimeout(() => {
+        // Player may also be cuffed
+        if(s.playerHandcuffed > 0) {
+          s.playerHandcuffed--;
+          bsrLog('🔗 You are also handcuffed! Skipping turn.');
+          bsrSetStatus('You are chained too! Skipping...');
+          s.turn = 'dealer';
+          bsrRender();
+          setTimeout(() => bsrDealerTurn(), 1800);
+        } else {
+          bsrRender();
+        }
+      }, 1000);
+    } else {
+      setTimeout(() => bsrDealerTurn(), 1800);
+    }
+  } else { // player turn
+    if(s.playerHandcuffed > 0) {
+      s.playerHandcuffed--;
+      bsrLog('🔗 You are handcuffed! Skipping turn.');
+      bsrSetStatus('You are chained! Skipping...');
+      s.turn = 'dealer';
+      bsrRender();
+      setTimeout(() => {
+        if(s.handcuffs > 0) {
+          s.handcuffs--;
+          bsrLog('🔗 Dealer also handcuffed! Skipping turn.');
+          s.turn = 'player';
+          bsrRender();
+        } else {
+          bsrDealerTurn();
+        }
+      }, 1800);
+    } else {
+      bsrRender(); // player's turn, enable actions
+    }
+  }
+}
+
+/* ─── DEALER AI ─── */
 function bsrDealerTurn() {
   const s = bsrState;
-  if (!s || !s.active) return;
+  if(!s || !s.active) return;
+  // Guard: if shells exhausted mid-turn
+  if(s.shellIndex >= s.shells.length) {
+    bsrLog('📦 All shells spent! Reloading...');
+    setTimeout(() => bsrShowRoundSplash(s.round, () => bsrNewRound()), 1000);
+    return;
+  }
 
-  bsrSetStatus("🤖 Dealer's turn...");
+  bsrSetStatus("🤖 Dealer is thinking...");
   s.animating = true;
   bsrDisableActions();
+  bsrRender();
 
-  // Dealer AI: use items first
-  setTimeout(() => {
-    bsrDealerUseItems(() => {
-      // After using items, dealer decides to shoot
-      bsrDealerShoot();
-    });
-  }, 600);
+  // Dealer uses items one at a time with delays
+  setTimeout(() => bsrDealerItemLoop(() => bsrDealerShoot()), 1200);
 }
 
-function bsrDealerUseItems(callback) {
+function bsrDealerItemLoop(callback) {
   const s = bsrState;
-  if (!s.dealerItems.length) { callback(); return; }
+  if(!s || !s.active || !s.dealerItems.length) { callback(); return; }
 
-  // AI: use magnifying glass first, then decide based on info
+  // Priority: magnifying > saw (if know live) > cigarettes (if hurt) > handcuffs > phone
+  let used = false;
+
+  // 1. Magnifying glass — always use if available
   const mgIdx = s.dealerItems.indexOf('magnifying');
-  if (mgIdx !== -1) {
+  if(mgIdx !== -1) {
     s.dealerItems.splice(mgIdx, 1);
-    const current = s.shells[s.shellIndex];
-    bsrLog('🤖🔍 Dealer used Magnifying Glass.');
-    // Dealer now "knows" the current shell - store it
-    s._dealerKnowsCurrent = current;
+    s._dealerKnowsCurrent = s.shells[s.shellIndex];
+    bsrLog('🤖🔍 Dealer peers through a magnifying glass...');
     bsrRender();
-    setTimeout(() => bsrDealerUseItemsPhase2(callback), 700);
+    used = true;
+    setTimeout(() => bsrDealerItemLoop(callback), 1100);
     return;
   }
-  bsrDealerUseItemsPhase2(callback);
-}
 
-function bsrDealerUseItemsPhase2(callback) {
-  const s = bsrState;
-
-  // Use saw if current is known to be live
+  // 2. Saw — use if dealer knows current is live
   const sawIdx = s.dealerItems.indexOf('saw');
-  if (sawIdx !== -1 && s._dealerKnowsCurrent === 'live') {
+  if(sawIdx !== -1 && s._dealerKnowsCurrent === 'live') {
     s.dealerItems.splice(sawIdx, 1);
     s.sawActive = true;
-    bsrLog('🤖🪚 Dealer used Saw! Next live = 2 damage.');
+    bsrLog('🤖🪚 Dealer saws the barrel! Next live = 2 damage.');
     bsrRender();
-    setTimeout(() => bsrDealerUseItemsPhase3(callback), 700);
+    used = true;
+    setTimeout(() => bsrDealerItemLoop(callback), 1100);
     return;
   }
 
-  // Use handcuffs 40% chance
-  const hcIdx = s.dealerItems.indexOf('handcuffs');
-  if (hcIdx !== -1 && Math.random() < 0.4) {
-    s.dealerItems.splice(hcIdx, 1);
-    s.playerHandcuffed = 2;
-    bsrLog('🤖🔗 Dealer used Handcuffs! You skip 2 turns.');
-    bsrSetStatus('You are handcuffed for 2 turns!');
-    bsrRender();
-    setTimeout(() => bsrDealerUseItemsPhase3(callback), 700);
-    return;
-  }
-
-  bsrDealerUseItemsPhase3(callback);
-}
-
-function bsrDealerUseItemsPhase3(callback) {
-  const s = bsrState;
-
-  // Use cigarettes if HP < max
+  // 3. Cigarettes — use if HP below max
   const cigIdx = s.dealerItems.indexOf('cigarettes');
-  if (cigIdx !== -1 && s.dealerHP < s.dealerMaxHP) {
+  if(cigIdx !== -1 && s.dealerHP < s.dealerMaxHP) {
     s.dealerItems.splice(cigIdx, 1);
     s.dealerHP = Math.min(s.dealerHP + 1, s.dealerMaxHP);
-    bsrLog('🤖🚬 Dealer smoked a Cigarette. +1 HP (' + s.dealerHP + ' HP)');
+    bsrLog('🤖🚬 Dealer lights a cigarette. +1 HP (' + s.dealerHP + '/' + s.dealerMaxHP + ')');
     bsrRender();
-    setTimeout(callback, 700);
+    used = true;
+    setTimeout(() => bsrDealerItemLoop(callback), 1100);
     return;
   }
 
-  // Use phone randomly 50% chance
+  // 4. Handcuffs — use ~50% of the time
+  const hcIdx = s.dealerItems.indexOf('handcuffs');
+  if(hcIdx !== -1 && s.playerHandcuffed <= 0 && Math.random() < 0.5) {
+    s.dealerItems.splice(hcIdx, 1);
+    s.playerHandcuffed = 1;
+    bsrLog('🤖🔗 Dealer slaps handcuffs on you! Skip next turn.');
+    bsrSetStatus('You are handcuffed!');
+    bsrRender();
+    used = true;
+    setTimeout(() => bsrDealerItemLoop(callback), 1100);
+    return;
+  }
+
+  // 5. Phone — use ~40% of the time
   const phoneIdx = s.dealerItems.indexOf('phone');
-  if (phoneIdx !== -1 && Math.random() < 0.5) {
+  if(phoneIdx !== -1 && Math.random() < 0.4) {
     s.dealerItems.splice(phoneIdx, 1);
-    bsrLog('🤖📱 Dealer used Phone (information hidden).');
+    bsrLog('🤖📱 Dealer makes a phone call... (intel hidden)');
+    // Actually give dealer info about a random future shell
+    const rem = s.shells.slice(s.shellIndex);
+    if(rem.length > 1) {
+      const fi = Math.floor(Math.random() * (rem.length - 1)) + 1;
+      // Dealer doesn't share this info with player
+    }
     bsrRender();
-    setTimeout(callback, 700);
+    used = true;
+    setTimeout(() => bsrDealerItemLoop(callback), 1100);
     return;
   }
 
+  // 6. Gummy — use if HP below max, 30% chance
+  const gummyIdx = s.dealerItems.indexOf('gummy');
+  if(gummyIdx !== -1 && s.dealerHP < s.dealerMaxHP && Math.random() < 0.3) {
+    s.dealerItems.splice(gummyIdx, 1);
+    if(Math.random() < 0.4) {
+      const heal = Math.min(2, s.dealerMaxHP + 1 - s.dealerHP);
+      s.dealerHP += heal;
+      bsrLog('🤖🍬 Dealer ate Rotten Gummy... +' + heal + ' HP!');
+    } else {
+      s.dealerHP -= 1;
+      bsrLog('🤖🍬 Dealer ate Rotten Gummy... −1 HP (' + s.dealerHP + ')');
+      if(s.dealerHP <= 0) {
+        bsrRender();
+        setTimeout(() => bsrRoundWin(), 1200);
+        return;
+      }
+    }
+    bsrRender();
+    used = true;
+    setTimeout(() => bsrDealerItemLoop(callback), 1100);
+    return;
+  }
+
+  // No more items to use
   callback();
 }
 
 function bsrDealerShoot() {
   const s = bsrState;
-  s.animating = true;
+  if(!s || !s.active) return;
+  // Guard: shells might be exhausted
+  if(s.shellIndex >= s.shells.length) {
+    bsrLog('📦 All shells spent! Reloading...');
+    s.animating = false;
+    setTimeout(() => bsrShowRoundSplash(s.round, () => bsrNewRound()), 1000);
+    return;
+  }
 
   const shell = s.shells[s.shellIndex];
   s.shellIndex++;
+  s.animating = true;
 
-  // Dealer decision: if it knows shell is blank, shoot self; if live, shoot player
+  // Dealer decides target
   let target = 'player';
-  if (s._dealerKnowsCurrent === 'blank') {
+  if(s._dealerKnowsCurrent === 'blank') {
     target = 'self';
-  } else if (s._dealerKnowsCurrent === 'live') {
+  } else if(s._dealerKnowsCurrent === 'live') {
     target = 'player';
   } else {
-    // Unknown: consider odds
-    const remaining = s.shells.slice(s.shellIndex - 1);
-    const liveRatio = remaining.filter(x => x === 'live').length / remaining.length;
-    if (liveRatio < 0.35) {
-      target = 'self'; // likely blank
-    } else {
-      target = 'player';
-    }
+    // Heuristic: count live/blank ratio in remaining shells (before this shot)
+    const allRemaining = s.shells.slice(s.shellIndex - 1); // include current
+    const liveR = allRemaining.filter(x => x === 'live').length / allRemaining.length;
+    target = liveR < 0.4 ? 'self' : 'player';
   }
   s._dealerKnowsCurrent = null;
 
   const damage = shell === 'live' ? (s.sawActive ? 2 : 1) : 0;
-  if (shell === 'live') s.sawActive = false;
+  if(shell === 'live' || shell === 'blank') s.sawActive = false;
 
-  bsrSetStatus('🤖 Dealer shoots ' + (target === 'player' ? 'YOU' : 'itself') + '...');
-  playSound(shell === 'live' ? 180 : 550, 'sawtooth', 0.12, shell === 'live' ? 0.3 : 0.1);
+  bsrSetStatus('🤖 Dealer aims at ' + (target === 'player' ? 'YOU' : 'ITSELF') + '...');
 
+  // Dramatic pause
   setTimeout(() => {
-    if (target === 'player') {
-      if (shell === 'live') {
-        s.playerHP -= damage;
-        bsrLog(`🤖🔫 Dealer shot you! LIVE! ${damage > 1 ? '(SAW: 2 dmg!) ' : ''}You: ${s.playerHP} HP`);
-        bsrSetStatus(`Dealer hits you for ${damage}!`);
-      } else {
-        bsrLog('🤖🔫 Dealer shot you! BLANK. No damage.');
-        bsrSetStatus('Dealer missed! BLANK!');
-      }
-      s.turn = 'player';
+    // Animate
+    bsrAnimateShotgun(target === 'player' ? 'left' : 'right', shell === 'live');
+    if(shell === 'live') {
+      playSound(120, 'sawtooth', 0.35, 0.18);
+      setTimeout(() => playSound(80, 'square', 0.2, 0.08), 100);
     } else {
-      if (shell === 'live') {
-        s.dealerHP -= damage;
-        bsrLog(`🤖🫵 Dealer shot itself! LIVE! ${damage > 1 ? '(SAW: 2 dmg!) ' : ''}Dealer: ${s.dealerHP} HP`);
-        bsrSetStatus('Dealer shot itself! LIVE!');
+      playSound(600, 'sine', 0.08, 0.05);
+    }
+
+    setTimeout(() => {
+      if(target === 'player') {
+        if(shell === 'live') {
+          s.playerHP -= damage;
+          bsrAnimateHit('player');
+          bsrLog(`🤖🔫 Dealer shot you — LIVE! ${damage > 1 ? '🪚 2 dmg! ' : ''}You: ${Math.max(0,s.playerHP)} HP`);
+          bsrSetStatus(`💥 Dealer hits you for ${damage}!`);
+        } else {
+          bsrLog('🤖🔫 Dealer shot you — BLANK. No damage.');
+          bsrSetStatus('*click* — Dealer missed. BLANK!');
+        }
         s.turn = 'player';
       } else {
-        bsrLog('🤖🫵 Dealer shot itself. BLANK! Dealer gets another turn.');
-        bsrSetStatus('Dealer shot itself - BLANK! Extra turn.');
-        s.turn = 'dealer';
+        if(shell === 'live') {
+          s.dealerHP -= damage;
+          bsrAnimateHit('dealer');
+          bsrLog(`🤖🫵 Dealer shot itself — LIVE! ${damage > 1 ? '🪚 2 dmg! ' : ''}Dealer: ${Math.max(0,s.dealerHP)} HP`);
+          bsrSetStatus('Dealer shot itself! LIVE!');
+          s.turn = 'player';
+        } else {
+          bsrLog('🤖🫵 Dealer shot itself — BLANK! Extra turn.');
+          bsrSetStatus('*click* — Dealer gets another turn.');
+          s.turn = 'dealer';
+        }
       }
-    }
 
-    s.animating = false;
-
-    // Check outcomes
-    if (s.playerHP <= 0) {
+      s.animating = false;
       bsrRender();
-      setTimeout(() => bsrEndGame(false), 800);
-      return;
-    }
-    if (s.dealerHP <= 0) {
-      bsrRender();
-      setTimeout(() => bsrRoundWin(), 800);
-      return;
-    }
 
-    if (s.shellIndex >= s.shells.length) {
-      bsrLog('📦 All shells spent! Reloading...');
-      bsrRender();
-      setTimeout(() => bsrNewRound(), 1200);
-      return;
-    }
-
-    bsrRender();
-
-    if (s.turn === 'dealer') {
-      setTimeout(() => bsrDealerTurn(), 1200);
-    } else if (s.turn === 'player') {
-      // Check if player is handcuffed by dealer
-      if (s.playerHandcuffed > 0) {
-        s.playerHandcuffed--;
-        bsrLog('🔗 You are handcuffed! Skip turn. (' + s.playerHandcuffed + ' remaining)');
-        bsrSetStatus('You are handcuffed! Skipping...');
-        s.turn = 'dealer';
-        setTimeout(() => bsrDealerTurn(), 1200);
+      if(s.playerHP <= 0) { setTimeout(() => bsrEndGame(false), 1200); return; }
+      if(s.dealerHP <= 0) { setTimeout(() => bsrRoundWin(), 1200); return; }
+      if(s.shellIndex >= s.shells.length) {
+        bsrLog('📦 All shells spent! Reloading...');
+        setTimeout(() => bsrShowRoundSplash(s.round, () => bsrNewRound()), 1500);
+        return;
       }
-    }
-  }, 700);
+
+      bsrResolveTurn();
+    }, 1100);
+  }, 800);
 }
 
+/* ─── ROUND WIN ─── */
 function bsrRoundWin() {
   const s = bsrState;
-  if (s.round >= s.maxRounds) {
-    // Won all rounds!
+  if(!s) return;
+  if(s.round >= s.maxRounds) {
     bsrEndGame(true);
     return;
   }
-
-  bsrLog(`✅ Round ${s.round} won! Dealer is down. Advancing...`);
+  bsrLog(`✅ ROUND ${s.round} WON! The Dealer is down.`);
   s.round++;
-  // Increase difficulty: dealer gets more HP each round
-  s.dealerHP = 4 + s.round;
-  s.dealerMaxHP = 4 + s.round;
-  // Restore some player HP (cap at original max)
+  // Scale dealer HP each round (+1 per round past first)
+  const diff = BSR_DIFF[s.diff];
+  s.dealerHP = diff.hp + (s.round - 1);
+  s.dealerMaxHP = diff.hp + (s.round - 1);
+  // Heal player a bit (2 HP, capped at max)
   s.playerHP = Math.min(s.playerHP + 2, s.playerMaxHP);
-  bsrSetStatus('Round won! Next round starting...');
+
+  bsrSetStatus('Round won! Advancing...');
   bsrRender();
-  setTimeout(() => bsrNewRound(), 1500);
+
+  setTimeout(() => {
+    bsrShowRoundSplash(s.round, () => bsrNewRound());
+  }, 1200);
 }
 
+/* ─── END GAME ─── */
 function bsrEndGame(won) {
   const s = bsrState;
+  if(!s) return;
   s.active = false;
 
   const overlay = document.getElementById('bsrGameOver');
   overlay.style.display = 'flex';
 
-  if (won) {
-    // Scale multiplier by round: 3x for full win, tiered
-    const winMulti = 1 + s.round; // round 3 = 4x
-    const winnings = Math.floor(s.bet * winMulti);
+  if(won) {
+    const winnings = Math.floor(s.bet * s.mult);
     balance += winnings;
     updateBalDisplay();
-    window._firebaseSave && firebaseSave();
+    recordGame('rusroulette', s.bet, winnings);
+
+    // Update stats
+    bsrStats.wins++;
+    bsrStats.streak++;
+    if(bsrStats.streak > bsrStats.bestStreak) bsrStats.bestStreak = bsrStats.streak;
+    if(winnings > bsrStats.biggestWin) bsrStats.biggestWin = winnings;
+    bsrSaveStats();
 
     document.getElementById('bsrGameOverContent').innerHTML = `
-      <div style="font-size:64px;margin-bottom:16px;">🏆</div>
-      <div style="font-family:'Orbitron';font-size:28px;color:var(--green);font-weight:900;margin-bottom:12px;">YOU WIN!</div>
-      <div style="font-size:14px;color:var(--text2);margin-bottom:8px;">Survived all ${s.maxRounds} rounds! (${winMulti}× payout)</div>
-      <div style="font-size:22px;color:var(--gold);font-weight:900;margin-bottom:20px;">+$${winnings.toLocaleString()}</div>
-      <button onclick="bsrCloseGameOver()" class="action-btn primary" style="padding:12px 28px;">PLAY AGAIN</button>
+      <div style="font-size:72px;margin-bottom:16px;">🏆</div>
+      <div style="font-family:'Orbitron';font-size:30px;color:var(--green);font-weight:900;margin-bottom:8px;">YOU WIN!</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:4px;">Survived all ${s.maxRounds} rounds on ${BSR_DIFF[s.diff].label}</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">${s.mult}× multiplier</div>
+      <div style="font-size:28px;color:var(--gold);font-weight:900;margin-bottom:6px;">+$${winnings.toLocaleString()}</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:20px;">Streak: ${bsrStats.streak} 🔥</div>
+      <button onclick="bsrCloseGameOver()" class="action-btn primary" style="padding:14px 32px;font-size:15px;font-family:'Orbitron';">PLAY AGAIN</button>
     `;
   } else {
+    recordGame('rusroulette', s.bet, 0);
+    bsrStats.losses++;
+    bsrStats.streak = 0;
+    bsrSaveStats();
+
     document.getElementById('bsrGameOverContent').innerHTML = `
-      <div style="font-size:64px;margin-bottom:16px;">💀</div>
-      <div style="font-family:'Orbitron';font-size:28px;color:var(--red);font-weight:900;margin-bottom:12px;">YOU DIED</div>
-      <div style="font-size:14px;color:var(--text2);margin-bottom:8px;">Round ${s.round} — the Dealer got you.</div>
-      <div style="font-size:22px;color:var(--red);font-weight:900;margin-bottom:20px;">-$${s.bet.toLocaleString()}</div>
-      <button onclick="bsrCloseGameOver()" class="action-btn primary" style="padding:12px 28px;">TRY AGAIN</button>
+      <div style="font-size:72px;margin-bottom:16px;">💀</div>
+      <div style="font-family:'Orbitron';font-size:30px;color:var(--red);font-weight:900;margin-bottom:8px;">YOU DIED</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:4px;">Eliminated in Round ${s.round}/${s.maxRounds} on ${BSR_DIFF[s.diff].label}</div>
+      <div style="font-size:28px;color:var(--red);font-weight:900;margin-bottom:20px;">-$${s.bet.toLocaleString()}</div>
+      <button onclick="bsrCloseGameOver()" class="action-btn primary" style="padding:14px 32px;font-size:15px;font-family:'Orbitron';">TRY AGAIN</button>
     `;
-    window._firebaseSave && firebaseSave();
   }
 }
 
@@ -9615,6 +9982,8 @@ function bsrCloseGameOver() {
   bsrState = null;
   document.getElementById('bsrLobby').style.display = 'block';
   document.getElementById('bsrGame').style.display = 'none';
+  document.getElementById('bsrRoundSplash').style.display = 'none';
+  bsrUpdateStats();
 }
 
 // ============ SETTINGS ============
