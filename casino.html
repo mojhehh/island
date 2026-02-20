@@ -1660,6 +1660,29 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   </div>
 </div>
 
+<!-- ============ RUSSIAN ROULETTE ============ -->
+<div class="game-panel" id="rusroulettePanel">
+  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Challenge up to 5 other players to a game of Russian Roulette.</li><li>Each player sets a <strong>bet amount</strong> (Pool grows with each joiner!).</li><li>One player is randomly selected to <strong>LOSE</strong> and forfeit their bet.</li><li>All surviving players share the <strong>total pot</strong> equally.</li><li>With 6 players & $100 bets: 5 winners split $600 ($120 each) 🎱</li><li>Higher your bet = higher risk but bigger reward if you survive!</li></ul></div></div>
+  <div style="text-align:center;margin-bottom:12px;">
+    <span style="font-family:'Orbitron';font-size:24px;font-weight:900;background:linear-gradient(135deg,#ff4444,#ff00e5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🎱 RUSSIAN ROULETTE</span>
+    <div style="font-size:11px;color:var(--text2);margin-top:4px;">Multiplayer chance game - survive to win!</div>
+  </div>
+  <div id="rusrouletteRoomList" style="background:var(--surface);border-radius:8px;padding:12px;margin-bottom:12px;min-height:80px;overflow-y:auto;max-height:150px;"></div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;">
+    <div class="bet-controls">
+      <span style="color:var(--text2);font-size:12px;font-weight:600;">BET</span>
+      <button class="bet-btn bet-half" onclick="adjustBet('rusrouletteBet',0.5)">½</button>
+      <input class="bet-input" type="number" id="rusrouletteBet" value="100" min="10">
+      <button class="bet-btn bet-double" onclick="adjustBet('rusrouletteBet',2)">2×</button>
+    </div>
+    <button class="action-btn primary" onclick="rusrouletteCreateRoom()">CREATE ROOM</button>
+    <button class="action-btn secondary" onclick="rusrouletteLoadRooms()" style="flex:0;">🔄</button>
+  </div>
+  <div id="rusrouletteGameOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,8,20,.97);z-index:10003;align-items:center;justify-content:center;flex-direction:column;">
+    <div id="rusrouletteGameContent" style="text-align:center;max-width:600px;width:92vw;"></div>
+  </div>
+</div>
+
 <!-- ============ DUELS PANEL ============ -->
 <div class="game-panel" id="duelsPanel">
   <div class="duel-lobby">
@@ -2417,22 +2440,19 @@ window._firebaseSave = () => {
     username: currentUsername,
     balance: safeNum(window.getBalance()),
     lastPlayed: Date.now(),
-    stocks: window._getStocksData ? window._getStocksData() : null,
-    inventory: window._getInventoryData ? window._getInventoryData() : null,
-    itemDemand: window._getDemandData ? window._getDemandData() : null,
     stats: window._getStats ? window._getStats() : null,
     gameStats: window._getGameStats ? window._getGameStats() : null,
-    dailyBonus: window._getDailyBonus ? window._getDailyBonus() : null,
     achievements: window._getAchievements ? window._getAchievements() : null,
-    tradeHistory: window._getTradeHistory ? window._getTradeHistory() : null,
     prestige: window._getPrestige ? window._getPrestige() : null,
     profilePicUrl: window._getProfilePicUrl ? window._getProfilePicUrl() : null,
+    gamesOwned: gamesOwned
   };
   // Clean nulls
   Object.keys(saveData).forEach(k => { if (saveData[k] == null) delete saveData[k]; });
   update(playerRef, saveData).catch(() => {});
-  // Also update leaderboard entry for "richest"
-  if (playerId && currentUsername) {
+  // Also update leaderboard entry for "richest" — but only every 30 seconds
+  if (playerId && currentUsername && (!window._lastLBUpdate || Date.now() - window._lastLBUpdate > 30000)) {
+    window._lastLBUpdate = Date.now();
     set(ref(db, 'casino/leaderboards/richest/' + playerId), {
       name: currentUsername,
       value: safeNum(window.getBalance()),
@@ -2464,8 +2484,10 @@ async function _flushStats() {
     });
     await set(statsRef, s);
     if (window._loadStats) window._loadStats(s);
-    // Update leaderboards only on significant wins
-    if (won > 500) {
+    // Update leaderboards only on significant wins (>$1000) and only once per 60 seconds per game
+    if (won > 1000 && (!window._lastGameLBUpdate || !window._lastGameLBUpdate[game] || Date.now() - window._lastGameLBUpdate[game] > 60000)) {
+      if (!window._lastGameLBUpdate) window._lastGameLBUpdate = {};
+      window._lastGameLBUpdate[game] = Date.now();
       const lbRef = ref(db, 'casino/leaderboards/' + game + '/' + playerId);
       const lbSnap = await get(lbRef).catch(() => null);
       const cur = (lbSnap && lbSnap.exists()) ? (lbSnap.val().value || 0) : 0;
@@ -2473,10 +2495,13 @@ async function _flushStats() {
         await set(lbRef, { name: currentUsername, value: won, updated: Date.now() }).catch(() => {});
       }
     }
-    // Profit leaderboard — update with current total
-    await set(ref(db, 'casino/leaderboards/profit/' + playerId), {
-      name: currentUsername, value: safeNum(s.totalProfit || 0), updated: Date.now()
-    }).catch(() => {});
+    // Profit leaderboard — update only if substantial change (>$100) and not too frequent (60s)
+    if (!window._lastProfitUpdate || Date.now() - window._lastProfitUpdate > 60000) {
+      window._lastProfitUpdate = Date.now();
+      await set(ref(db, 'casino/leaderboards/profit/' + playerId), {
+        name: currentUsername, value: safeNum(s.totalProfit || 0), updated: Date.now()
+      }).catch(() => {});
+    }
   } catch(e) { console.warn('recordGameResult error:', e); }
 }
 
@@ -3721,37 +3746,40 @@ document.addEventListener('click',function(e){if(!e.target.closest('.nav-cat'))d
 document.addEventListener('touchstart',function(e){if(!e.target.closest('.nav-cat'))document.querySelectorAll('.nav-cat').forEach(c=>c.classList.remove('open'));},{passive:true});
 
 // ============ GAMES MENU ============
+const GAME_PRICES = { plinko: 0, crash: 0, slots: 0, mines: 0, roulette: 0, cases: 5000, blackjack: 10000, poker: 15000, baccarat: 12000, hilo: 20000, wheel: 25000, keno: 8000, horses: 18000, dice: 3000, limbo: 7000, coinflip: 2000, tower: 22000, scratch: 6000, luck: 30000, stocks: 50000, duels: 0, rusroulette: 75000 };
+let gamesOwned = JSON.parse(localStorage.getItem('casino_games_owned')) || { plinko: true, crash: true, slots: true, mines: true, roulette: true };
 const gamesData = [
-  { cat: '⭐ Popular', games: [
-    { name: 'Slots', icon: '🎰', id: 'slots' },
-    { name: 'Crash', icon: '📈', id: 'crash' },
-    { name: 'Mines', icon: '💣', id: 'mines' },
-    { name: 'Plinko', icon: '⚡', id: 'plinko' },
-    { name: 'Cases', icon: '📦', id: 'cases' }
+  { cat: '⭐ Starter Pack (FREE)', games: [
+    { name: 'Plinko', icon: '⚡', id: 'plinko', price: 0 },
+    { name: 'Crash', icon: '📈', id: 'crash', price: 0 },
+    { name: 'Slots', icon: '🎰', id: 'slots', price: 0 },
+    { name: 'Mines', icon: '💣', id: 'mines', price: 0 },
+    { name: 'Roulette', icon: '🎡', id: 'roulette', price: 0 }
   ]},
   { cat: '🃏 Card Games', games: [
-    { name: 'Blackjack', icon: '🃏', id: 'blackjack' },
-    { name: 'Poker', icon: '♠️', id: 'poker' },
-    { name: 'Baccarat', icon: '🎴', id: 'baccarat' },
-    { name: 'Hi-Lo', icon: '↕️', id: 'hilo' }
+    { name: 'Blackjack', icon: '🃏', id: 'blackjack', price: 10000 },
+    { name: 'Video Poker', icon: '♠️', id: 'poker', price: 15000 },
+    { name: 'Baccarat', icon: '🎴', id: 'baccarat', price: 12000 },
+    { name: 'Hi-Lo', icon: '↕️', id: 'hilo', price: 20000 }
   ]},
   { cat: '🎡 Table Games', games: [
-    { name: 'Roulette', icon: '🎡', id: 'roulette' },
-    { name: 'Wheel', icon: '💫', id: 'wheel' },
-    { name: 'Keno', icon: '🔢', id: 'keno' },
-    { name: 'Horse Racing', icon: '🏇', id: 'horses' }
+    { name: 'Wheel', icon: '💫', id: 'wheel', price: 25000 },
+    { name: 'Keno', icon: '🔢', id: 'keno', price: 8000 },
+    { name: 'Horse Racing', icon: '🏇', id: 'horses', price: 18000 },
+    { name: 'Russian Roulette', icon: '🎱', id: 'rusroulette', price: 75000 }
   ]},
-  { cat: '⚡ Quick Games', games: [
-    { name: 'Dice', icon: '🎯', id: 'dice' },
-    { name: 'Limbo', icon: '🚀', id: 'limbo' },
-    { name: 'Coin Flip', icon: '🪙', id: 'coinflip' },
-    { name: 'Tower', icon: '🗼', id: 'tower' },
-    { name: 'Scratch Cards', icon: '🎫', id: 'scratch' }
+  { cat: '⚡ Quick & Special', games: [
+    { name: 'Dice', icon: '🎯', id: 'dice', price: 3000 },
+    { name: 'Tower', icon: '🗼', id: 'tower', price: 22000 },
+    { name: 'Scratch Cards', icon: '🎫', id: 'scratch', price: 6000 },
+    { name: 'Limbo', icon: '🚀', id: 'limbo', price: 7000 },
+    { name: 'Coin Flip', icon: '🪙', id: 'coinflip', price: 2000 },
+    { name: 'Push Your Luck', icon: '🎲', id: 'luck', price: 30000 },
+    { name: 'Cases', icon: '📦', id: 'cases', price: 5000 }
   ]},
-  { cat: '💎 Special', games: [
-    { name: 'Push Your Luck', icon: '🎲', id: 'luck' },
-    { name: 'Stocks', icon: '📊', id: 'stocks' },
-    { name: 'Duels', icon: '⚔️', id: 'duels' }
+  { cat: '💎 Pro Games', games: [
+    { name: 'Stocks', icon: '📊', id: 'stocks', price: 50000 },
+    { name: 'Duels', icon: '⚔️', id: 'duels', price: 0 }
   ]}
 ];
 
@@ -3760,10 +3788,24 @@ function openGamesMenu(){
   overlay.style.display = 'block';
   const container = document.getElementById('gamesCategoriesContainer');
   container.innerHTML = gamesData.map((cat, i) => {
-    const games = cat.games.map(g => `<button class="game-btn" onclick="switchGame('${g.id}',this);closeGamesMenu();"><span class="game-icon">${g.icon}</span>${g.name}</button>`).join('');
+    const games = cat.games.map(g => {
+      const owned = gamesOwned[g.id];
+      if (owned) {
+        return `<button class="game-btn" onclick="switchGame('${g.id}',this);closeGamesMenu();" style="border-color:var(--green);"><span class="game-icon">${g.icon}</span><div>${g.name}</div></button>`;
+      } else {
+        const price = g.price || GAME_PRICES[g.id] || 0;
+        return `<button class="game-btn" onclick="buyGame('${g.id}')" style="border-color:var(--red);opacity:0.6;"><span class="game-icon">🔒</span><div>${g.name}<br><span style="font-size:10px;color:var(--gold);">$${price.toLocaleString()}</span></div></button>`;
+      }
+    }).join('');
     return `<div class="games-category"><div class="games-category-title"><span>${cat.cat}</span></div><div class="games-grid">${games}</div></div>`;
   }).join('');
   setTimeout(() => overlay.style.opacity = '1', 10);
+}
+function buyGame(gameId) {
+  const price = GAME_PRICES[gameId] || 0;
+  if (price === 0) { gamesOwned[gameId] = true; localStorage.setItem('casino_games_owned', JSON.stringify(gamesOwned)); showToast(gameId + ' unlocked!', true); openGamesMenu(); return; }
+  if (balance < price) { showToast('Not enough! Need $' + price.toLocaleString(), false); return; }
+  balance -= price; updateBalDisplay(); gamesOwned[gameId] = true; localStorage.setItem('casino_games_owned', JSON.stringify(gamesOwned)); window._firebaseSave && firebaseSave(); showToast('🎮 ' + gameId + ' UNLOCKED for $' + price.toLocaleString() + '!', true); openGamesMenu();
 }
 
 function closeGamesMenu(){
@@ -3828,6 +3870,7 @@ function showBigWin(amount) {
 }
 
 function switchGame(game,btn){
+  if (!gamesOwned[game] && GAME_PRICES[game] > 0) { showToast('Game locked! Buy it from the menu.', false); return; }
   document.querySelectorAll('.game-panel').forEach(p=>p.classList.remove('active'));
   const targetPanel = document.getElementById(game+'Panel');
   if(targetPanel) targetPanel.classList.add('active'); else return;
@@ -3847,6 +3890,7 @@ function switchGame(game,btn){
   if(game==='horses')horseInit();
   if(game==='mines')minesRenderGrid();
   if(game==='dice')diceUpdateSlider();
+  if(game==='rusroulette')initRussianRoulette();
   if(game==='luck'){
     let iframe=document.getElementById('pylIframe');
     if(!iframe){
@@ -4123,8 +4167,8 @@ async function handlePfpUpload(input) {
   const file = input.files[0];
   if (!file) return;
   
-  if (!file.type.startsWith('image/')) {
-    showToast('❌ Please select an image file', false);
+  if (!file.type.startsWith('image/') && file.type !== 'image/gif') {
+    showToast('❌ Please select an image or GIF file', false);
     return;
   }
   
@@ -8456,7 +8500,7 @@ let wheelAngle=0,wheelSpinning=false,wheelDrawn=false;
 function drawWheel(angle){wheelDrawn=true;const c=document.getElementById('wheelCanvas');if(!c)return;const ctx=c.getContext('2d');const cx=c.width/2,cy=c.height/2,r=c.width/2-8;ctx.clearRect(0,0,c.width,c.height);
   const totalW=WHEEL_SEGMENTS.reduce((s,seg)=>s+seg.weight,0);let curAngle=angle;
   WHEEL_SEGMENTS.forEach(seg=>{const sliceAngle=(seg.weight/totalW)*Math.PI*2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,curAngle,curAngle+sliceAngle);ctx.closePath();ctx.fillStyle=seg.color;ctx.fill();ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=2;ctx.stroke();
-    const ta=curAngle+sliceAngle/2;const tx=cx+Math.cos(ta)*(r*.7);const ty=cy+Math.sin(ta)*(r*.7);ctx.save();ctx.translate(tx,ty);ctx.rotate(ta+Math.PI/2);ctx.fillStyle='#fff';ctx.font='bold 13px Orbitron';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(seg.label,0,0);ctx.restore();curAngle+=sliceAngle;});
+    const ta=curAngle+sliceAngle/2;const tx=cx+Math.cos(ta)*(r*.62);const ty=cy+Math.sin(ta)*(r*.62);ctx.save();ctx.translate(tx,ty);ctx.rotate(ta+Math.PI/2);ctx.fillStyle='#fff';ctx.font='bold 11px Orbitron';ctx.textAlign='center';ctx.textBaseline='middle';ctx.globalAlpha=0.95;ctx.fillText(seg.label,0,0);ctx.restore();curAngle+=sliceAngle;});
   ctx.beginPath();ctx.arc(cx,cy,r*.12,0,Math.PI*2);ctx.fillStyle='#1a1a3e';ctx.fill();ctx.strokeStyle='rgba(255,215,0,.4)';ctx.lineWidth=2;ctx.stroke();
   ctx.beginPath();ctx.arc(cx,cy,r+2,0,Math.PI*2);ctx.strokeStyle='rgba(255,215,0,.2)';ctx.lineWidth=4;ctx.stroke();
 }
@@ -8791,6 +8835,133 @@ document.addEventListener('keydown',e=>{
     else if(panel.id==='hiloPanel'){if(hiloActive)hiloCashout();else hiloStart();}
   }
 });
-</script>
+
+// ============ RUSSIAN ROULETTE ============
+let rusrouletteRooms = {};
+let rusrouletteMyRoomId = null;
+let rusrouletteActive = false;
+
+function initRussianRoulette() {
+  rusrouletteLoadRooms();
+}
+
+function rusrouletteLoadRooms() {
+  window._fbRef('casino/rusroulette/rooms', (data) => {
+    rusrouletteRooms = data || {};
+    const listHtml = Object.entries(rusrouletteRooms)
+      .filter(([id,r]) => r.status === 'waiting' && r.players.length < 6)
+      .map(([id, r]) => {
+        const playersDisplay = `${r.players.length}/6 players`;
+        const potDisplay = `Pool: $${(r.pot || 0).toLocaleString()}`;
+        return `<div style="background:var(--surface2);padding:8px;border-radius:6px;margin:4px 0;display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-weight:bold">Bet: $${r.betAmount.toLocaleString()}</div><div style="font-size:10px;color:var(--text2);">${playersDisplay} · ${potDisplay}</div></div>
+          <button onclick="rusrouletteJoinRoom('${id}')" class="action-btn primary" style="padding:6px 12px;font-size:11px;">JOIN</button>
+        </div>`;
+      }).join('');
+    document.getElementById('rusrouletteRoomList').innerHTML = listHtml || '<div style="text-align:center;color:var(--text2);padding:20px;">No open rooms. Create one!</div>';
+  });
+}
+
+function rusrouletteCreateRoom() {
+  const bet = parseFloat(document.getElementById('rusrouletteBet').value) || 100;
+  if (bet <= 0 || bet > balance) { showToast('Invalid bet!', false); return; }
+  const roomId = 'rr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  const room = { betAmount: bet, players: [{ id: window._currentPlayerId, name: window._currentUsername, bet: bet }], pot: bet, status: 'waiting', createdAt: Date.now() };
+  window._fbSet(`casino/rusroulette/rooms/${roomId}`, room, () => {
+    rusrouletteMyRoomId = roomId;
+    balance -= bet;
+    updateBalDisplay();
+    showToast('Room created! Waiting for players...', true);
+    rusrouletteLoadRooms();
+    setTimeout(rusrouletteCheckGameStart, 2000);
+  });
+}
+
+function rusrouletteJoinRoom(roomId) {
+  window._fbRef(`casino/rusroulette/rooms/${roomId}`, (room) => {
+    if (!room || room.status !== 'waiting' || room.players.length >= 6) { showToast('Room full or closed!', false); return; }
+    const bet = room.betAmount;
+    if (bet > balance) { showToast('Not enough balance!', false); return; }
+    const joined = room.players.some(p => p.id === window._currentPlayerId);
+    if (joined) { showToast('Already in this room!', false); return; }
+    room.players.push({ id: window._currentPlayerId, name: window._currentUsername, bet: bet });
+    room.pot = (room.pot || 0) + bet;
+    balance -= bet;
+    updateBalDisplay();
+    rusrouletteMyRoomId = roomId;
+    window._fbSet(`casino/rusroulette/rooms/${roomId}`, room, () => {
+      showToast('Joined! Waiting for game start...', true);
+      rusrouletteLoadRooms();
+      setTimeout(rusrouletteCheckGameStart, 1000);
+    });
+  });
+}
+
+function rusrouletteCheckGameStart() {
+  if (!rusrouletteMyRoomId) return;
+  window._fbRef(`casino/rusroulette/rooms/${rusrouletteMyRoomId}`, (room) => {
+    if (!room || room.status !== 'waiting') return;
+    if (room.players.length >= 2 && Date.now() - room.createdAt > 3000) {
+      rusrouletteStartGame(rusrouletteMyRoomId, room);
+    }
+  });
+}
+
+function rusrouletteStartGame(roomId, room) {
+  rusrouletteActive = true;
+  const loserIdx = Math.floor(Math.random() * room.players.length);
+  const survivors = room.players.filter((_, i) => i !== loserIdx);
+  const pot = room.pot;
+  const winPerPlayer = Math.floor(pot / survivors.length);
+  const loser = room.players[loserIdx];
+  
+  const overlay = document.getElementById('rusrouletteGameOverlay');
+  overlay.style.display = 'flex';
+  let countdownVal = 3;
+  const countdown = () => {
+    if (countdownVal > 0) {
+      document.getElementById('rusrouletteGameContent').innerHTML = `<div style="font-size:64px;font-weight:bold;color:var(--neon);">${countdownVal}</div>`;
+      countdownVal--;
+      setTimeout(countdown, 800);
+    } else {
+      document.getElementById('rusrouletteGameContent').innerHTML = `
+        <div style="margin-bottom:20px;">
+          <div style="font-family:'Orbitron';font-size:28px;color:var(--red);font-weight:900;margin-bottom:12px;">💀 ${loser.name.toUpperCase()} LOST! 💀</div>
+          <div style="font-size:14px;color:var(--text2);margin-bottom:20px;">Forfeited $${loser.bet.toLocaleString()}</div>
+          <div style="font-size:16px;color:var(--green);margin-bottom:20px;"><strong>SURVIVORS (${survivors.length}):</strong></div>
+          <div style="background:var(--surface2);padding:12px;border-radius:8px;">
+            ${survivors.map(p => `<div style="padding:4px;font-size:13px;">✓ ${p.name} wins $${winPerPlayer.toLocaleString()}</div>`).join('')}
+          </div>
+          <div style="margin-top:16px;font-size:12px;color:var(--text2);">Total Pool: $${pot.toLocaleString()}</div>
+        </div>
+        <button onclick="rusrouletteEndGame()" class="action-btn primary" style="margin-top:16px;padding:10px 24px;">CLOSE</button>
+      `;
+    }
+  };
+  countdown();
+  
+  // Award winners
+  survivors.forEach(p => {
+    if (p.id === window._currentPlayerId) {
+      balance += winPerPlayer;
+      updateBalDisplay();
+    }
+  });
+  
+  // Update Firebase
+  room.status = 'finished';
+  room.loser = loser.name;
+  room.survivors = survivors.map(p => p.name);
+  window._fbSet(`casino/rusroulette/rooms/${roomId}`, room);
+  window._firebaseSave && firebaseSave();
+}
+
+function rusrouletteEndGame() {
+  rusrouletteActive = false;
+  document.getElementById('rusrouletteGameOverlay').style.display = 'none';
+  rusrouletteMyRoomId = null;
+  rusrouletteLoadRooms();
+}
+
 </body>
 </html>
