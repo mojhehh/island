@@ -938,7 +938,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 
 <!-- Top Navigation -->
 <nav id="topNav" style="display:none;">
-  <div class="logo" onclick="switchGame('leaderboard',null)" title="Home" style="cursor:pointer;">🏠 HOME</div>
+  <div class="logo" title="Home" style="cursor:pointer;">🏠 HOME</div>
 
   <!-- Games Menu Button -->
   <button class="nav-btn-inline" onclick="openGamesMenu()" style="margin-left:3px;"><span class="icon">🎮</span><span class="nav-label">Games</span></button>
@@ -977,10 +977,9 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
     <div id="gamesCategoriesContainer" style="display:grid;gap:20px;"></div>
   </div>
 </div>
-</nav>
 
 <!-- Particles Canvas -->
-<div id="gameCatalog" style="position:fixed;top:50px;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;gap:32px;padding:32px 16px 60px;background:var(--surface1);z-index:999;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+<div id="gameCatalog" style="position:fixed;top:50px;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;gap:32px;padding:32px 16px 60px;background:var(--surface1);z-index:10;overflow-y:auto;-webkit-overflow-scrolling:touch;">
   <div class="catalog-card" onclick="switchGame('slots',this)"><span class="icon">🎰</span><div>Slots</div></div>
   <div class="catalog-card" onclick="switchGame('crash',this)"><span class="icon">📈</span><div>Crash</div></div>
   <div class="catalog-card" onclick="switchGame('mines',this)"><span class="icon">💣</span><div>Mines</div></div>
@@ -2350,6 +2349,10 @@ window._authSubmit = async (username, password, isRegister) => {
   if (username.length < 3) throw new Error('Username must be at least 3 characters');
   if (username.length > 16) throw new Error('Username max 16 characters');
   if (!/^[a-zA-Z0-9_]+$/.test(username)) throw new Error('Letters, numbers, and _ only');
+  // Profanity filter
+  const _badWords = ['nigger','nigga','faggot','fag','retard','chink','spic','kike','beaner','tranny','coon','wetback','gook'];
+  const _uLow = username.toLowerCase();
+  for (const w of _badWords) { if (_uLow.includes(w)) throw new Error('Username contains inappropriate language'); }
   if (password.length < 6) throw new Error('Password must be at least 6 characters');
 
   if (isRegister) {
@@ -2399,7 +2402,7 @@ onAuthStateChanged(auth, async (user) => {
     if (snap.exists()) {
       const data = snap.val();
       currentUsername = data.username || emailToUsername(user.email);
-      if (data.balance != null) window.setBalance(data.balance);
+      if (data.balance != null) window.setBalance(safeNum(data.balance));
       if (data.stocks) window._loadStocks(data.stocks);
       if (data.inventory) window._loadInventory(data.inventory);
       if (data.itemDemand) window._loadDemand(data.itemDemand);
@@ -2428,20 +2431,39 @@ onAuthStateChanged(auth, async (user) => {
     // Show casino, hide login
     if (typeof window._onAuthReady === 'function') window._onAuthReady(currentUsername, playerId);
 
-    // Live balance sync — listen for server-side balance changes
-    if (window._balanceUnsub) { window._balanceUnsub(); window._balanceUnsub = null; }
-    const balRef = ref(db, 'casino/players/' + playerId + '/balance');
-    window._balanceUnsub = onValue(balRef, (snap) => {
-      if (snap.exists()) {
-        const serverBal = snap.val();
-        // Only accept server value if we're not currently in a game action (avoid flickering)
-        if (Math.abs(serverBal - window.getBalance()) > 0.02) {
-          window.setBalance(serverBal);
+    // Balance sync — poll every 30s + full sync on tab focus for cross-device
+    async function _syncBalance() {
+      try {
+        const balSnap = await get(ref(db, 'casino/players/' + playerId + '/balance'));
+        if (balSnap.exists()) {
+          const serverBal = safeNum(balSnap.val());
+          if (Math.abs(serverBal - window.getBalance()) > 0.02) {
+            window.setBalance(serverBal);
+          }
         }
-      }
+      } catch(e) {}
+    }
+    async function _fullSync() {
+      try {
+        const snap = await get(playerRef);
+        if (!snap.exists()) return;
+        const data = snap.val();
+        if (data.balance != null) window.setBalance(safeNum(data.balance));
+        if (data.inventory && window._loadInventory) window._loadInventory(data.inventory);
+        if (data.stats && window._loadStats) window._loadStats(data.stats);
+        if (data.gameStats && window._loadGameStats) window._loadGameStats(data.gameStats);
+        if (data.prestige != null && window._loadPrestige) window._loadPrestige(data.prestige);
+        if (data.achievements && window._loadAchievements) window._loadAchievements(data.achievements);
+      } catch(e) {}
+    }
+    if (window._balanceUnsub) { clearInterval(window._balanceUnsub); window._balanceUnsub = null; }
+    window._balanceUnsub = setInterval(_syncBalance, 30000);
+    // Full sync when user switches back to tab (cross-device fix)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && playerId) _fullSync();
     });
   } else {
-    if (window._balanceUnsub) { window._balanceUnsub(); window._balanceUnsub = null; }
+    if (window._balanceUnsub) { clearInterval(window._balanceUnsub); window._balanceUnsub = null; }
     currentUser = null;
     currentUsername = '';
     playerId = '';
@@ -2455,7 +2477,7 @@ window._firebaseSave = () => {
   if (!playerRef) return;
   const saveData = {
     username: currentUsername,
-    balance: window.getBalance(),
+    balance: safeNum(window.getBalance()),
     lastPlayed: Date.now(),
     stocks: window._getStocksData ? window._getStocksData() : null,
     inventory: window._getInventoryData ? window._getInventoryData() : null,
@@ -2475,29 +2497,37 @@ window._firebaseSave = () => {
   if (playerId && currentUsername) {
     set(ref(db, 'casino/leaderboards/richest/' + playerId), {
       name: currentUsername,
-      value: window.getBalance(),
+      value: safeNum(window.getBalance()),
       updated: Date.now()
     }).catch(() => {});
   }
 };
 
 // ============ GAME STAT RECORDING ============
-window._recordGameResult = async (game, wagered, won) => {
-  if (!playerRef) return;
-  const profit = won - wagered;
+// Debounced — stats accumulate locally, only writes to Firebase every 10 seconds
+let _pendingStats = null;
+let _statsTimer = null;
+
+async function _flushStats() {
+  if (!_pendingStats || !playerRef) return;
+  const { game, wagered, won } = _pendingStats;
+  _pendingStats = null;
   const statsRef = ref(db, 'casino/players/' + playerId + '/stats');
   try {
     const snap = await get(statsRef);
     const s = snap.exists() ? snap.val() : { totalWagered: 0, totalWon: 0, totalProfit: 0, gamesPlayed: 0, biggestWin: 0 };
-    s.totalWagered = (s.totalWagered || 0) + wagered;
-    s.totalWon = (s.totalWon || 0) + won;
-    s.totalProfit = (s.totalProfit || 0) + profit;
-    s.gamesPlayed = (s.gamesPlayed || 0) + 1;
-    if (won > (s.biggestWin || 0)) s.biggestWin = won;
+    // Apply accumulated local stats directly (already tracked in playerStats)
+    Object.assign(s, {
+      totalWagered: playerStats.totalWagered,
+      totalWon: playerStats.totalWon,
+      totalProfit: playerStats.totalProfit,
+      gamesPlayed: playerStats.gamesPlayed,
+      biggestWin: playerStats.biggestWin
+    });
     await set(statsRef, s);
     if (window._loadStats) window._loadStats(s);
-    // Update game-specific leaderboard (only if bigger than current)
-    if (won > 0) {
+    // Update leaderboards only on significant wins
+    if (won > 500) {
       const lbRef = ref(db, 'casino/leaderboards/' + game + '/' + playerId);
       const lbSnap = await get(lbRef).catch(() => null);
       const cur = (lbSnap && lbSnap.exists()) ? (lbSnap.val().value || 0) : 0;
@@ -2505,11 +2535,18 @@ window._recordGameResult = async (game, wagered, won) => {
         await set(lbRef, { name: currentUsername, value: won, updated: Date.now() }).catch(() => {});
       }
     }
-    // Update profit leaderboard
+    // Profit leaderboard — update with current total
     await set(ref(db, 'casino/leaderboards/profit/' + playerId), {
-      name: currentUsername, value: s.totalProfit || 0, updated: Date.now()
+      name: currentUsername, value: safeNum(s.totalProfit || 0), updated: Date.now()
     }).catch(() => {});
   } catch(e) { console.warn('recordGameResult error:', e); }
+}
+
+window._recordGameResult = async (game, wagered, won) => {
+  if (!playerRef) return;
+  _pendingStats = { game, wagered, won };
+  if (_statsTimer) clearTimeout(_statsTimer);
+  _statsTimer = setTimeout(() => { _statsTimer = null; _flushStats(); }, 10000); // flush every 10s
 };
 
 // ============ LEADERBOARD FETCH ============
@@ -2518,7 +2555,7 @@ window._getLeaderboard = async (category) => {
     const snap = await get(ref(db, 'casino/leaderboards/' + category));
     if (!snap.exists()) return [];
     const data = snap.val();
-    const entries = Object.entries(data).map(([uid, e]) => ({ uid, name: e.name, value: e.value, updated: e.updated }));
+    const entries = Object.entries(data).map(([uid, e]) => ({ uid, name: e.name, value: safeNum(e.value), updated: e.updated }));
     entries.sort((a, b) => b.value - a.value);
     return entries.slice(0, 50);
   } catch { return []; }
@@ -2710,6 +2747,8 @@ window._respondTradeRequest = async (requestId, accepted) => {
 window._giftMoney = async (recipientUsername, amount) => {
   if (!playerId || !currentUsername) return { error: 'Not logged in' };
   if (!recipientUsername || !amount || amount < 1) return { error: 'Invalid recipient or amount' };
+  if (amount > 1e15) return { error: 'Gift amount too large (max $1Q)' };
+  amount = safeNum(amount);
   
   // Look up recipient by username
   const nameSnap = await window._fbGet('casino/usernames/' + recipientUsername.toLowerCase());
@@ -2729,8 +2768,8 @@ window._giftMoney = async (recipientUsername, amount) => {
   const recipientBal = recipientSnap.val()?.balance || 0;
   
   // Transfer money
-  const newSenderBal = senderBal - amount;
-  const newRecipientBal = recipientBal + amount;
+  const newSenderBal = safeNum(senderBal - amount);
+  const newRecipientBal = safeNum(recipientBal + amount);
   
   // Update both balances atomically
   const updates = {};
@@ -3208,21 +3247,27 @@ window._initChat = () => {
     // Update presence periodically
     window._chatPresenceInterval = setInterval(() => {
       if (chatPresenceRef) set(chatPresenceRef, { online: true, username: currentUsername || 'Guest', lastSeen: Date.now() }).catch(()=>{});
-    }, 30000);
+    }, 120000); // Every 2 min instead of 30s — reduces presence writes by 4x
   }
 
-  // Listen for online count (compatible with unified presence schema)
-  onValue(ref(db, 'casino/presence'), (snap) => {
-    let count = 0;
-    const now = Date.now();
-    snap.forEach(child => {
-      const v = child.val();
-      if (!v) return;
-      const lastActive = v.lastSeen || v.ts || 0;
-      if (v.online || (lastActive && (now - lastActive) < 120000)) count++;
-    });
-    window._onChatOnlineCount(count);
-  });
+  // Poll online count every 30s instead of real-time listener (saves HUGE bandwidth)
+  // Each onValue on /presence downloads ALL entries on every single write
+  async function _pollOnlineCount() {
+    try {
+      const snap = await get(ref(db, 'casino/presence'));
+      let count = 0;
+      const now = Date.now();
+      snap.forEach(child => {
+        const v = child.val();
+        if (!v) return;
+        const lastActive = v.lastSeen || v.ts || 0;
+        if (v.online || (lastActive && (now - lastActive) < 120000)) count++;
+      });
+      window._onChatOnlineCount(count);
+    } catch(e) {}
+  }
+  _pollOnlineCount();
+  window._presenceCountInterval = setInterval(_pollOnlineCount, 30000);
 };
 
 window._sendChatMsg = async (text, username, type) => {
@@ -3256,28 +3301,39 @@ window._sendChatMsg = async (text, username, type) => {
 
 window._broadcastWin = (username, game, amount) => {
   if (!username || amount < 500) return; // Only broadcast wins over $500
-  const text = `${username} just won $${amount.toFixed(2)} on ${game}! 🎉`;
+  amount = safeNum(amount);
+  const text = `${username} just won $${formatBalance(amount)} on ${game}! 🎉`;
   window._sendChatMsg(text, 'System', 'win').catch(()=>{});
 };
 </script>
 
 <script>
 // ============ GLOBAL STATE ============
+const MAX_BALANCE = 1e18; // $1 Quintillion hard cap
+const MIN_BALANCE = -1e18;
+function safeNum(v) {
+  if (typeof v !== 'number' || !isFinite(v)) return 0;
+  return Math.max(MIN_BALANCE, Math.min(MAX_BALANCE, Math.round(v * 100) / 100));
+}
 let balance = 1000;
 window.getBalance=()=>balance;
-window.setBalance=(v)=>{balance=Number(v)||0;updateBalDisplay();};
+window.setBalance=(v)=>{balance=safeNum(v);updateBalDisplay();};
 
 function formatBalance(v){
+  if(typeof v!=='number'||!isFinite(v))return'$0.00';
+  v=safeNum(v);
+  const sign=v<0?'-':'';
   const abs=Math.abs(v);
-  if(abs>=1e15)return(v/1e15).toFixed(2)+'Q';
-  if(abs>=1e12)return(v/1e12).toFixed(2)+'T';
-  if(abs>=1e9)return(v/1e9).toFixed(2)+'B';
-  if(abs>=1e6)return(v/1e6).toFixed(2)+'M';
-  if(abs>=1e4)return(v/1e3).toFixed(1)+'K';
+  if(abs>=1e18)return sign+(abs/1e18).toFixed(2)+'Qi';
+  if(abs>=1e15)return sign+(abs/1e15).toFixed(2)+'Q';
+  if(abs>=1e12)return sign+(abs/1e12).toFixed(2)+'T';
+  if(abs>=1e9)return sign+(abs/1e9).toFixed(2)+'B';
+  if(abs>=1e6)return sign+(abs/1e6).toFixed(2)+'M';
+  if(abs>=1e4)return sign+(abs/1e3).toFixed(1)+'K';
   return v.toFixed(2);
 }
 function updateBalDisplay(){
-  balance=Math.round(balance*100)/100; // prevent floating-point drift
+  balance=safeNum(balance);
   const el=document.getElementById('balText');
   el.textContent=formatBalance(balance);
   el.title='$'+balance.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -3298,7 +3354,20 @@ function updateBalDisplay(){
 
 let _lastAddMoney=0;
 function addMoney(amt){if(amt<=0||amt>10000)return;if(Date.now()-_lastAddMoney<3000){showToast('Cooldown!',false);return;}_lastAddMoney=Date.now();balance+=amt;updateBalDisplay();firebaseSave();}
-function firebaseSave(){if(window._firebaseSave)window._firebaseSave();}
+let _fbSaveTimer=null, _fbSaveDirty=false;
+function firebaseSave(){
+  _fbSaveDirty=true;
+  if(_fbSaveTimer)return; // already scheduled
+  _fbSaveTimer=setTimeout(()=>{
+    _fbSaveTimer=null;
+    if(_fbSaveDirty && window._firebaseSave){ _fbSaveDirty=false; window._firebaseSave(); }
+  },5000);
+}
+function firebaseSaveNow(){ // immediate save for critical actions (logout, prestige, trade)
+  if(_fbSaveTimer){clearTimeout(_fbSaveTimer);_fbSaveTimer=null;}
+  _fbSaveDirty=false;
+  if(window._firebaseSave) window._firebaseSave();
+}
 
 // ============ AUTH UI ============
 let authIsRegister = false;
@@ -3313,7 +3382,7 @@ function authGuestMode() {
   }
   // Load from localStorage
   const savedBal = localStorage.getItem('casino_guest_balance');
-  if (savedBal != null) { balance = parseFloat(savedBal); }
+  if (savedBal != null) { balance = safeNum(parseFloat(savedBal)); }
   const savedStats = localStorage.getItem('casino_guest_stats');
   if (savedStats) try { playerStats = JSON.parse(savedStats); } catch(e) {}
   const savedGameStats = localStorage.getItem('casino_guest_gameStats');
@@ -3388,7 +3457,7 @@ async function authSubmit() {
 }
 
 function authLogout() {
-  firebaseSave();
+  firebaseSaveNow();
   isGuestMode = false;
   if (window._authLogout) window._authLogout();
   else window._onAuthLoggedOut(); // For guest mode (no Firebase auth to sign out of)
@@ -3463,6 +3532,7 @@ window._onAuthLoggedOut = function() {
   if (window._refundInterval) { clearInterval(window._refundInterval); window._refundInterval = null; }
   if (window._onlineStatusInterval) { clearInterval(window._onlineStatusInterval); window._onlineStatusInterval = null; }
   if (window._chatPresenceInterval) { clearInterval(window._chatPresenceInterval); window._chatPresenceInterval = null; }
+  if (window._presenceCountInterval) { clearInterval(window._presenceCountInterval); window._presenceCountInterval = null; }
   if (typeof stockTickInterval !== 'undefined' && stockTickInterval) { clearInterval(stockTickInterval); stockTickInterval = null; }
   // Reset active game states to prevent cross-account leaks
   try {
@@ -3526,7 +3596,7 @@ function checkMaxBet(bet, game) {
   return true;
 }
 
-window._loadStats = (s) => { if (s) playerStats = { ...playerStats, ...s }; };
+window._loadStats = (s) => { if (s) { Object.keys(s).forEach(k => { if(typeof s[k]==='number') s[k]=safeNum(s[k]); }); playerStats = { ...playerStats, ...s }; } };
 window._loadGameStats = (gs) => { if (!gs) return; Object.keys(gs).forEach(g => { gameStats[g] = { ...(gameStats[g]||{}), ...gs[g] }; }); };
 window._loadDailyBonus = (db) => { if (db) dailyBonusData = { ...dailyBonusData, ...db }; checkDailyBonus(); };
 window._getStats = () => playerStats;
@@ -3534,15 +3604,16 @@ window._getGameStats = () => gameStats;
 window._getDailyBonus = () => dailyBonusData;
 
 function recordGame(game, wagered, won) {
+  wagered = safeNum(wagered); won = safeNum(won);
   const profit = won - wagered;
-  playerStats.totalWagered += wagered;
-  playerStats.totalWon += won;
-  playerStats.totalProfit += profit;
+  playerStats.totalWagered = safeNum(playerStats.totalWagered + wagered);
+  playerStats.totalWon = safeNum(playerStats.totalWon + won);
+  playerStats.totalProfit = safeNum(playerStats.totalProfit + profit);
   playerStats.gamesPlayed++;
   if (won > playerStats.biggestWin) playerStats.biggestWin = won;
   if (gameStats[game]) {
     gameStats[game].played = (gameStats[game].played || 0) + 1;
-    if (won > 0) gameStats[game].won = (gameStats[game].won || 0) + 1;
+    if (won > wagered) gameStats[game].won = (gameStats[game].won || 0) + 1;
     if (won > (gameStats[game].biggestWin || 0)) gameStats[game].biggestWin = won;
   }
   if (window._recordGameResult) window._recordGameResult(game, wagered, won);
@@ -3813,7 +3884,8 @@ function showBigWin(amount) {
 
 function switchGame(game,btn){
   document.querySelectorAll('.game-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById(game+'Panel').classList.add('active');
+  const targetPanel = document.getElementById(game+'Panel');
+  if(targetPanel) targetPanel.classList.add('active'); else return;
   // hide catalog when a game is selected
   const catalog = document.getElementById('gameCatalog'); if(catalog) catalog.style.display = 'none';
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -3845,7 +3917,7 @@ function switchGame(game,btn){
     }
     pylLoadLeaderboard();
   }
-  firebaseSave(); // Save on every game switch
+  // firebaseSave handled by debounce timer — no need to save on every switch
 }
 
 function adjustBet(id,mult){
@@ -4233,7 +4305,8 @@ function getPrestigeReq() {
 
 // ============ ADMIN FUNCTIONS ============
 async function adminGiveMoney() {
-  if (!window._currentUsername || window._currentUsername.toLowerCase() !== 'mojheh') {
+  const _aName = (window._currentUsername||'').toLowerCase();
+  if (_aName !== 'mojheh' && _aName !== 'terpez') {
     showToast('Admin only!', false);
     return;
   }
@@ -4262,9 +4335,8 @@ async function adminGiveMoney() {
     
     console.log('Current balance:', currentBal, 'Adding:', amount, 'New balance:', newBal);
     
-    // Update balance using SET to ensure write succeeds
-    await window._fbSet('casino/players/' + userId, {
-      ...currentData,
+    // Update balance using UPDATE to avoid overwriting concurrent changes
+    await window._fbUpdate('casino/players/' + userId, {
       balance: newBal,
       lastAdminGift: {
         from: window._currentUsername,
@@ -4284,7 +4356,8 @@ async function adminGiveMoney() {
 }
 
 async function adminSetSelfBalance() {
-  if (!window._currentUsername || window._currentUsername.toLowerCase() !== 'mojheh') {
+  const _aName2 = (window._currentUsername||'').toLowerCase();
+  if (_aName2 !== 'mojheh' && _aName2 !== 'terpez') {
     showToast('Admin only!', false);
     return;
   }
@@ -4298,13 +4371,8 @@ async function adminSetSelfBalance() {
     balance = amount;
     updateBalDisplay();
     
-    // Get current player data
-    const playerSnap = await window._fbGet('casino/players/' + window._currentPlayerId);
-    const currentData = playerSnap.exists() ? playerSnap.val() : {};
-    
     // Update with new balance
-    await window._fbSet('casino/players/' + window._currentPlayerId, {
-      ...currentData,
+    await window._fbUpdate('casino/players/' + window._currentPlayerId, {
       balance: amount,
       lastBalanceSet: Date.now()
     });
@@ -4317,11 +4385,6 @@ async function adminSetSelfBalance() {
     console.error('Admin set balance error:', e);
     showToast('❌ Error: ' + (e.message || 'Unknown'), false);
   }
-}
-
-function getPrestigeReq() {
-  if (prestigeLevel >= PRESTIGE_REQS.length) return PRESTIGE_REQS[PRESTIGE_REQS.length - 1] * Math.pow(5, prestigeLevel - PRESTIGE_REQS.length + 1);
-  return PRESTIGE_REQS[prestigeLevel];
 }
 
 function getPrestigeBadgeHTML(level) {
@@ -4460,6 +4523,7 @@ async function duelJoin(code) {
     // Both players watch for result
     duelWatchGame(code, room.wager);
   } catch(e) {
+    balance += room.wager; updateBalDisplay();
     showToast('Failed to join duel: ' + (e.message || 'Unknown error'), false);
   }
 }
@@ -4618,6 +4682,7 @@ function duelDramaticSequence(room) {
             tensionBar.style.display = 'none';
             gameOverlay.style.filter = 'saturate(1) brightness(1)';
             fogTint.style.opacity = '0';
+            setTimeout(()=>{ fogTint.remove(); }, 500);
           }
         }, 85);
       }, 600);
@@ -4755,40 +4820,45 @@ function duelCloseOverlay() {
 }
 
 function duelLoadLobby() {
-  // Listen for all open duels
-  if (duelLobbyUnsub) { duelLobbyUnsub(); duelLobbyUnsub = null; }
-  duelLobbyUnsub = window._fbOnValue('casino/duelRooms', (snap) => {
-    const list = document.getElementById('duelList');
-    if (!snap.exists()) {
-      list.innerHTML = '<div style="text-align:center;color:var(--text2);font-size:12px;padding:20px;">No open duels. Create one!</div>';
-      return;
-    }
-    const rooms = snap.val();
-    let html = '';
-    let hasOpen = false;
-    Object.entries(rooms).forEach(([code, room]) => {
-      if (room.status !== 'waiting') return;
-      // Don't show stale rooms (older than 5 minutes)
-      if (Date.now() - room.created > 300000) return;
-      hasOpen = true;
-      const isHost = room.host === window._currentPlayerId;
-      const badge = room.hostPrestige > 0 ? getPrestigeBadgeHTML(room.hostPrestige) : '';
-      html += `<div class="duel-card">
-        <div>
-          <div class="duel-host">${escapeHtml(room.hostName || 'Unknown')} ${badge}</div>
-          <div style="font-size:10px;color:var(--text2);">${isHost ? 'Your duel — waiting...' : 'Open duel'}</div>
-        </div>
-        <div class="duel-wager">$${formatBalance(room.wager)}</div>
-        ${isHost
-          ? `<button class="duel-join" style="background:var(--red);" onclick="duelCancel('${code}')">CANCEL</button>`
-          : `<button class="duel-join" onclick="duelJoin('${code}')">JOIN ⚔️</button>`}
-      </div>`;
-    });
-    if (!hasOpen) {
-      html = '<div style="text-align:center;color:var(--text2);font-size:12px;padding:20px;">No open duels. Create one!</div>';
-    }
-    list.innerHTML = html;
-  });
+  // Poll for open duels every 5s instead of real-time listener (saves bandwidth)
+  if (duelLobbyUnsub) { clearInterval(duelLobbyUnsub); duelLobbyUnsub = null; }
+  async function _pollDuels() {
+    try {
+      const snap = await window._fbGet('casino/duelRooms');
+      const list = document.getElementById('duelList');
+      if (!list) return;
+      if (!snap.exists()) {
+        list.innerHTML = '<div style="text-align:center;color:var(--text2);font-size:12px;padding:20px;">No open duels. Create one!</div>';
+        return;
+      }
+      const rooms = snap.val();
+      let html = '';
+      let hasOpen = false;
+      Object.entries(rooms).forEach(([code, room]) => {
+        if (room.status !== 'waiting') return;
+        if (Date.now() - room.created > 300000) return;
+        hasOpen = true;
+        const isHost = room.host === window._currentPlayerId;
+        const badge = room.hostPrestige > 0 ? getPrestigeBadgeHTML(room.hostPrestige) : '';
+        html += `<div class="duel-card">
+          <div>
+            <div class="duel-host">${escapeHtml(room.hostName || 'Unknown')} ${badge}</div>
+            <div style="font-size:10px;color:var(--text2);">${isHost ? 'Your duel — waiting...' : 'Open duel'}</div>
+          </div>
+          <div class="duel-wager">$${formatBalance(room.wager)}</div>
+          ${isHost
+            ? `<button class="duel-join" style="background:var(--red);" onclick="duelCancel('${code}')">CANCEL</button>`
+            : `<button class="duel-join" onclick="duelJoin('${code}')">JOIN ⚔️</button>`}
+        </div>`;
+      });
+      if (!hasOpen) {
+        html = '<div style="text-align:center;color:var(--text2);font-size:12px;padding:20px;">No open duels. Create one!</div>';
+      }
+      list.innerHTML = html;
+    } catch(e) {}
+  }
+  _pollDuels();
+  duelLobbyUnsub = setInterval(_pollDuels, 5000);
   
   // Render local duel history
   renderDuelHistory();
@@ -5456,7 +5526,8 @@ async function declineTrade(tradeId) {
     if (window._declineTradeOffer) {
       await window._declineTradeOffer(tradeId);
     } else {
-      await window._acceptTradeOffer(tradeId);
+      showToast('Decline function unavailable', false);
+      return;
     }
     loadIncomingTrades();
     showToast('Trade declined — items returned to sender', false);
@@ -5471,8 +5542,8 @@ function renderTradeHistory() {
     return '<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;">'
       + '<span style="font-size:16px;">' + (isSent ? '📤' : '📥') + '</span>'
       + '<span style="font-size:16px;">' + (t.itemIcon || '📦') + '</span>'
-      + '<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;">' + t.itemName + (t.cash > 0 ? ' + $' + t.cash.toFixed(0) : '') + '</div>'
-      + '<div style="font-size:10px;color:var(--text2);">' + (isSent ? 'Sent to ' + (t.to || '?') : 'Received') + ' · ' + new Date(t.ts).toLocaleDateString() + '</div></div>'
+      + '<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;">' + escapeHtml(t.itemName) + (t.cash > 0 ? ' + $' + t.cash.toFixed(0) : '') + '</div>'
+      + '<div style="font-size:10px;color:var(--text2);">' + (isSent ? 'Sent to ' + escapeHtml(t.to || '?') : 'Received') + ' · ' + new Date(t.ts).toLocaleDateString() + '</div></div>'
       + '<span style="font-size:10px;color:' + (isSent ? 'var(--red)' : 'var(--green)') + ';font-weight:700;">' + (isSent ? 'SENT' : 'RECEIVED') + '</span></div>';
   }).join('');
 }
@@ -5592,10 +5663,10 @@ async function loadStoreListings() {
       return '<div style="background:var(--bg);border:1px solid ' + (rar ? rar.color : 'var(--border)') + ';border-radius:10px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;">'
         + (isAuction ? '<div style="position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;background:rgba(136,71,255,.25);border:1px solid rgba(136,71,255,.5);border-radius:4px;color:#8847ff;">🔨 AUCTION</div>' : '')
         + '<div style="font-size:32px;">' + icon + '</div>'
-        + '<div style="font-weight:700;font-size:12px;color:' + (rar ? rar.color : 'var(--text)') + ';text-align:center;">' + (l.itemName || l.itemId) + '</div>'
+        + '<div style="font-weight:700;font-size:12px;color:' + (rar ? rar.color : 'var(--text)') + ';text-align:center;">' + escapeHtml(l.itemName || l.itemId) + '</div>'
         + (rar ? '<div style="font-size:9px;color:' + rar.color + ';">' + rar.label + '</div>' : '')
         + '<div style="font-family:Orbitron;font-size:14px;color:var(--gold);">$' + displayPrice.toLocaleString() + '</div>'
-        + '<div style="font-size:10px;color:var(--text2);">by ' + l.seller + '</div>'
+        + '<div style="font-size:10px;color:var(--text2);">by ' + escapeHtml(l.seller) + '</div>'
         + (isAuction && l.highBidder ? '<div style="font-size:9px;color:var(--neon);">High bid: ' + l.highBidder + '</div>' : '')
         + (timeStr ? '<div style="font-size:9px;color:' + (ended ? 'var(--red)' : 'var(--green)') + ';">' + timeStr + '</div>' : '')
         + '<div style="width:100%;margin-top:4px;">'
@@ -5626,6 +5697,7 @@ function renderStoreListings() { loadStoreListings(); }
 
 async function storeBuy(listingId, price) {
   if (!confirm('Buy this item for $' + price.toLocaleString() + '?')) return;
+  if(price > balance){ showToast('Not enough balance!', false); return; }
   try {
     const res = await window._storeBuyItem(listingId);
     if (res.error) { showToast(res.error, false); return; }
@@ -5691,7 +5763,7 @@ async function loadMyListings() {
       const ended = isAuction && Date.now() > l.endsAt;
       return '<div style="background:var(--bg);border:1px solid ' + (rar ? rar.color : 'var(--border)') + ';border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;">'
         + '<div style="font-size:28px;">' + (cat ? cat.icon : '📦') + '</div>'
-        + '<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;color:' + (rar ? rar.color : 'var(--text)') + ';">' + (l.itemName || l.itemId) + '</div>'
+        + '<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;color:' + (rar ? rar.color : 'var(--text)') + ';">' + escapeHtml(l.itemName || l.itemId) + '</div>'
         + '<div style="font-size:11px;color:var(--text2);">' + (isAuction ? '🔨 Auction' : '💰 Fixed') + ' — $' + (isAuction ? l.currentBid : l.price) + '</div>'
         + (isAuction && l.highBidder ? '<div style="font-size:10px;color:var(--neon);">High bid: ' + l.highBidder + '</div>' : '')
         + (ended ? '<div style="font-size:10px;color:var(--gold);">Auction ended</div>' : '') + '</div>'
@@ -6024,7 +6096,7 @@ async function savePrivacySettings() {
 // Set online status on page load/unload
 window.addEventListener('load', () => { if (window._setOnlineStatus) window._setOnlineStatus(true); });
 window.addEventListener('beforeunload', () => { if (window._setOnlineStatus) window._setOnlineStatus(false); });
-window._onlineStatusInterval = setInterval(() => { if (window._setOnlineStatus) window._setOnlineStatus(true); }, 60000);
+// Removed redundant 60s presence heartbeat — _chatPresenceInterval handles it
 
 // ============ SLOTS ============
 const SYMBOLS=['🍒','🍋','🔔','💎','7️⃣','🍀','⭐','👑'];
@@ -6201,6 +6273,7 @@ function startCrash(){
   if(crashRunning)return;
   const bet=parseFloat(document.getElementById('crashBet').value)||10;
   if(bet<=0)return;
+  if(!checkMaxBet(bet,'Crash'))return;
   crashBetAmount=bet;balance-=bet;updateBalDisplay();
   crashCashedOut=false;crashRunning=true;
   crashMultVal=1;crashHistory=[{t:0,m:1}];
@@ -8360,7 +8433,7 @@ function bjDeal(){
 }
 function bjHit(){if(!bjActive)return;bjPlayer.push(bjDrawCard());if(bjHandVal(bjPlayer)>21){bjActive=false;bjRender();bjFinish();}else if(bjHandVal(bjPlayer)===21)bjStand();else bjRender();}
 function bjStand(){if(!bjActive)return;while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
-function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;balance-=bjBetAmt;bjBetAmt*=2;updateBalDisplay();bjPlayer.push(bjDrawCard());while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
+function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;if(!checkMaxBet(bjBetAmt*2,'Blackjack'))return;balance-=bjBetAmt;bjBetAmt*=2;updateBalDisplay();bjPlayer.push(bjDrawCard());while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
 function bjFinish(){
   const pv=bjHandVal(bjPlayer),dv=bjHandVal(bjDealer);let w=0,msg='';
   const isNatural=bjPlayer.length===2&&pv===21;
@@ -8690,7 +8763,7 @@ function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}cons
       setTimeout(()=>{
         if(payout>bet){balance+=payout;updateBalDisplay();showToast((winner==='tie'?'TIE':winner.toUpperCase())+' +$'+(payout-bet).toFixed(2));playWinSound();
           spawnParticles(window.innerWidth/2,window.innerHeight/2,25);document.getElementById('baccResult').innerHTML='<span style="color:var(--green)">'+winner.toUpperCase()+' WINS! +$'+payout.toFixed(2)+'</span>';recordGame('baccarat',bet,payout);addResultDot('baccHistory',winner[0].toUpperCase(),true);}
-        else if(payout===bet){balance+=payout;updateBalDisplay();showToast('Push');document.getElementById('baccResult').innerHTML='<span style="color:var(--gold)">PUSH</span>';recordGame('baccarat',bet,bet);addResultDot('baccHistory','T',true);}
+        else if(payout===bet){balance+=payout;updateBalDisplay();showToast('Push');document.getElementById('baccResult').innerHTML='<span style="color:var(--gold)">PUSH</span>';recordGame('baccarat',bet,bet);addResultDot('baccHistory','T',false);}
         else{showToast('-$'+bet.toFixed(2),false);playLoseSound();document.getElementById('baccResult').innerHTML='<span style="color:var(--red)">'+winner.toUpperCase()+' WINS</span>';recordGame('baccarat',bet,0);addResultDot('baccHistory',winner[0].toUpperCase(),false);}
       },400);
       return;
@@ -8905,7 +8978,7 @@ window.addEventListener('load',()=>{
 });
 
 // Save on page close/refresh
-window.addEventListener('beforeunload',()=>{ firebaseSave(); });
+window.addEventListener('beforeunload',()=>{ if(_statsTimer){clearTimeout(_statsTimer);_statsTimer=null;_flushStats();} firebaseSaveNow(); });
 window.addEventListener('visibilitychange',()=>{ if(document.hidden) firebaseSave(); });
 
 // Handle keyboard shortcuts

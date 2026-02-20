@@ -1,0 +1,47 @@
+[debug] [2026-02-20T02:51:03.680Z] ----------------------------------------------------------------------
+[debug] [2026-02-20T02:51:03.682Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\sebmo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js database:remove /casino/presence/gEXoOW0amVTfu7mH45nEnj4wmKv1 --project gamble-2d365 --force
+[debug] [2026-02-20T02:51:03.682Z] CLI Version:   15.5.1
+[debug] [2026-02-20T02:51:03.682Z] Platform:      win32
+[debug] [2026-02-20T02:51:03.682Z] Node Version:  v22.20.0
+[debug] [2026-02-20T02:51:03.682Z] Time:          Thu Feb 19 2026 18:51:03 GMT-0800 (Pacific Standard Time)
+[debug] [2026-02-20T02:51:03.682Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-20T02:51:04.809Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-20T02:51:04.809Z] > authorizing via signed-in user (mojhehmod1@gmail.com)
+[debug] [2026-02-20T02:51:04.809Z] [iam] checking project gamble-2d365 for permissions ["firebase.projects.get","firebasedatabase.instances.update"]
+[debug] [2026-02-20T02:51:04.810Z] Checked if tokens are valid: true, expires at: 1771557609422
+[debug] [2026-02-20T02:51:04.810Z] Checked if tokens are valid: true, expires at: 1771557609422
+[debug] [2026-02-20T02:51:04.810Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/gamble-2d365:testIamPermissions [none]
+[debug] [2026-02-20T02:51:04.810Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/gamble-2d365:testIamPermissions  x-goog-user-project=gamble-2d365
+[debug] [2026-02-20T02:51:04.811Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/gamble-2d365:testIamPermissions {"permissions":["firebase.projects.get","firebasedatabase.instances.update"]}
+[debug] [2026-02-20T02:51:05.087Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/gamble-2d365:testIamPermissions 200
+[debug] [2026-02-20T02:51:05.087Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/gamble-2d365:testIamPermissions {"permissions":["firebase.projects.get","firebasedatabase.instances.update"]}
+[debug] [2026-02-20T02:51:05.088Z] Checked if tokens are valid: true, expires at: 1771557609422
+[debug] [2026-02-20T02:51:05.088Z] Checked if tokens are valid: true, expires at: 1771557609422
+[debug] [2026-02-20T02:51:05.088Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/gamble-2d365 [none]
+[debug] [2026-02-20T02:51:06.017Z] ----------------------------------------------------------------------
+[debug] [2026-02-20T02:51:06.019Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\sebmo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js database:get /casino/presence --project gamble-2d365 --shallow
+[debug] [2026-02-20T02:51:06.019Z] CLI Version:   15.5.1
+[debug] [2026-02-20T02:51:06.019Z] Platform:      win32
+[debug] [2026-02-20T02:51:06.019Z] Node Version:  v22.20.0
+[debug] [2026-02-20T02:51:06.019Z] Time:          Thu Feb 19 2026 18:51:06 GMT-0800 (Pacific Standard Time)
+[debug] [2026-02-20T02:51:06.019Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-20T02:51:07.105Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-20T02:51:07.106Z] > authorizing via signed-in user (mojhehmod1@gmail.com)
+[debug] [2026-02-20T02:51:07.106Z] [iam] checking project gamble-2d365 for permissions ["firebase.projects.get","firebasedatabase.instances.get"]
+[debug] [2026-02-20T02:51:07.106Z] Checked if tokens are valid: true, expires at: 1771557609422
+[debug] [2026-02-20T02:51:07.106Z] Checked if tokens are valid: true, expires at: 1771557609422
+[debug] [2026-02-20T02:51:07.107Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/gamble-2d365:testIamPermissions [none]
+[debug] [2026-02-20T02:51:07.107Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/gamble-2d365:testIamPermissions  x-goog-user-project=gamble-2d365
+[debug] [2026-02-20T02:51:07.107Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/gamble-2d365:testIamPermissions {"permissions":["firebase.projects.get","firebasedatabase.instances.get"]}
+[debug] [2026-02-20T02:51:07.377Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/gamble-2d365:testIamPermissions 200
+[debug] [2026-02-20T02:51:07.377Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/gamble-2d365:testIamPermissions {"permissions":["firebase.projects.get","firebasedatabase.instances.get"]}
+[debug] [2026-02-20T02:51:07.377Z] Checked if tokens are valid: true, expires at: 1771557609422
+[debug] [2026-02-20T02:51:07.377Z] Checked if tokens are valid: true, expires at: 1771557609422
+[debug] [2026-02-20T02:51:07.377Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/gamble-2d365 [none]
+[debug] [2026-02-20T02:51:07.577Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/gamble-2d365 200
+[debug] [2026-02-20T02:51:07.577Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/gamble-2d365 {"projectId":"gamble-2d365","projectNumber":"542391725781","displayName":"GAMBLE","name":"projects/gamble-2d365","resources":{"hostingSite":"gamble-2d365","realtimeDatabaseInstance":"gamble-2d365-default-rtdb"},"state":"ACTIVE","etag":"1_7931a365-b667-41b8-85fd-83fcb30f94a3"}
+[debug] [2026-02-20T02:51:07.577Z] Checked if tokens are valid: true, expires at: 1771557609422
+[debug] [2026-02-20T02:51:07.577Z] Checked if tokens are valid: true, expires at: 1771557609422
+[debug] [2026-02-20T02:51:07.577Z] >>> [apiv2][query] GET https://firebasedatabase.googleapis.com/v1beta/projects/gamble-2d365/locations/-/instances/gamble-2d365-default-rtdb [none]
