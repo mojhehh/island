@@ -984,11 +984,15 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .bsr-items-section{margin-bottom:14px;}
 .bsr-items-label{font-family:'Orbitron';font-size:10px;color:var(--text2);letter-spacing:2px;margin-bottom:8px;text-align:center;}
 .bsr-items{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
-.bsr-item-btn{padding:8px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--border);
-  cursor:pointer;color:var(--text);font-size:12px;transition:all .2s;display:flex;align-items:center;gap:6px;}
-.bsr-item-btn:hover{border-color:var(--neon);background:rgba(0,240,255,.06);transform:translateY(-1px);}
-.bsr-item-btn:disabled,.bsr-item-btn.disabled{opacity:0.35;cursor:default;transform:none!important;border-color:var(--border)!important;}
-.bsr-item-btn .item-icon{font-size:16px;}
+.bsr-item-btn{padding:8px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--border);
+  cursor:pointer;color:var(--text);font-size:12px;transition:all .2s;display:flex;align-items:center;gap:8px;text-align:left;}
+.bsr-item-btn:hover:not(:disabled){border-color:var(--neon);background:rgba(0,240,255,.06);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,240,255,.1);}
+.bsr-item-btn:active:not(:disabled){transform:translateY(0);}
+.bsr-item-btn:disabled,.bsr-item-btn.disabled{opacity:0.35;cursor:default;pointer-events:none;border-color:var(--border)!important;}
+.bsr-item-btn .item-icon{font-size:20px;flex-shrink:0;}
+.bsr-item-btn .item-info{display:flex;flex-direction:column;gap:1px;}
+.bsr-item-btn .item-name{font-size:12px;font-weight:700;color:var(--text);line-height:1.2;}
+.bsr-item-btn .item-desc{font-size:10px;color:var(--text2);line-height:1.3;}
 .bsr-dealer-items{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
 .bsr-dealer-item{padding:4px 8px;border-radius:6px;background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.15);
   font-size:11px;color:var(--text2);}
@@ -9402,7 +9406,7 @@ function bsrRender() {
   const rack = document.getElementById('bsrShellRack');
   rack.innerHTML = s.shells.map((sh, i) => {
     let cls = 'bsr-shell';
-    if(i < s.shellIndex) cls += ' used';
+    if(i < s.shellIndex) cls += ' used' + (sh === 'live' ? ' was-live' : ' was-blank');
     else if(i === s.shellIndex) cls += ' current';
     else cls += ' unknown';
     // If phone revealed this shell, show it
@@ -9416,12 +9420,14 @@ function bsrRender() {
   // HP bars + hearts
   const pPct = Math.max(0, s.playerHP / s.playerMaxHP * 100);
   const dPct = Math.max(0, s.dealerHP / s.dealerMaxHP * 100);
-  document.getElementById('bsrPlayerHP').textContent = s.playerHP + ' HP';
+  const pHP = Math.max(0, s.playerHP);
+  const dHP = Math.max(0, s.dealerHP);
+  document.getElementById('bsrPlayerHP').textContent = pHP + ' HP';
   document.getElementById('bsrPlayerHPBar').style.width = pPct + '%';
-  document.getElementById('bsrPlayerHearts').textContent = '❤️'.repeat(Math.max(0,s.playerHP)) + '🖤'.repeat(Math.max(0,s.playerMaxHP - s.playerHP));
-  document.getElementById('bsrDealerHP').textContent = s.dealerHP + ' HP';
+  document.getElementById('bsrPlayerHearts').textContent = '❤️'.repeat(pHP) + '🖤'.repeat(Math.max(0, s.playerMaxHP - pHP));
+  document.getElementById('bsrDealerHP').textContent = dHP + ' HP';
   document.getElementById('bsrDealerHPBar').style.width = dPct + '%';
-  document.getElementById('bsrDealerHearts').textContent = '❤️'.repeat(Math.max(0,s.dealerHP)) + '🖤'.repeat(Math.max(0,s.dealerMaxHP - s.dealerHP));
+  document.getElementById('bsrDealerHearts').textContent = '❤️'.repeat(dHP) + '🖤'.repeat(Math.max(0, s.dealerMaxHP - dHP));
 
   // Color HP bar by health percentage
   const pBar = document.getElementById('bsrPlayerHPBar');
@@ -9433,7 +9439,10 @@ function bsrRender() {
   const itemsEl = document.getElementById('bsrItems');
   const canUse = s.turn === 'player' && !s.animating;
   itemsEl.innerHTML = s.items.map((it, i) =>
-    `<button class="bsr-item-btn${canUse ? '' : ' disabled'}" onclick="bsrUseItem(${i})" title="${BSR_ITEM_DESCS[it]}" ${canUse ? '' : 'disabled'}>${BSR_ITEM_ICONS[it]} ${BSR_ITEM_NAMES[it]}</button>`
+    `<button class="bsr-item-btn${canUse ? '' : ' disabled'}" onclick="bsrUseItem(${i})" ${canUse ? '' : 'disabled'}>` +
+    `<span class="item-icon">${BSR_ITEM_ICONS[it]}</span>` +
+    `<span class="item-info"><span class="item-name">${BSR_ITEM_NAMES[it]}</span><span class="item-desc">${BSR_ITEM_DESCS[it]}</span></span>` +
+    `</button>`
   ).join('');
 
   // Dealer items (visible but not clickable)
@@ -9582,7 +9591,7 @@ function bsrShoot(target) {
   const shell = s.shells[s.shellIndex];
   s.shellIndex++;
   const damage = shell === 'live' ? (s.sawActive ? 2 : 1) : 0;
-  if(shell === 'live' || shell === 'blank') s.sawActive = false; // saw consumed on any shot
+  if(shell === 'live') s.sawActive = false; // saw only consumed when it fires (live shell)
 
   // Animate shotgun
   bsrAnimateShotgun(target === 'dealer' ? 'left' : 'right', shell === 'live');
@@ -9643,8 +9652,13 @@ function bsrShoot(target) {
       return;
     }
 
-    // Turn management with handcuff checks
-    bsrResolveTurn();
+    // A blank self-shot grants an immediate bonus shot (not a new "turn"),
+    // so handcuffs should NOT consume the skip for that free shot.
+    if(target === 'self' && shell === 'blank') {
+      bsrRender(); // just stay in player's turn
+    } else {
+      bsrResolveTurn();
+    }
   }, 1100);
 }
 
@@ -9848,7 +9862,7 @@ function bsrDealerShoot() {
   s._dealerKnowsCurrent = null;
 
   const damage = shell === 'live' ? (s.sawActive ? 2 : 1) : 0;
-  if(shell === 'live' || shell === 'blank') s.sawActive = false;
+  if(shell === 'live') s.sawActive = false; // saw only consumed when it fires (live shell)
 
   bsrSetStatus('🤖 Dealer aims at ' + (target === 'player' ? 'YOU' : 'ITSELF') + '...');
 
@@ -9908,7 +9922,7 @@ function bsrDealerShoot() {
 /* ─── ROUND WIN ─── */
 function bsrRoundWin() {
   const s = bsrState;
-  if(!s) return;
+  if(!s || !s.active) return; // guard against double-calls
   if(s.round >= s.maxRounds) {
     bsrEndGame(true);
     return;
@@ -9933,7 +9947,7 @@ function bsrRoundWin() {
 /* ─── END GAME ─── */
 function bsrEndGame(won) {
   const s = bsrState;
-  if(!s) return;
+  if(!s || !s.active) return; // guard against double-calls from async paths
   s.active = false;
 
   const overlay = document.getElementById('bsrGameOver');
