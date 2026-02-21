@@ -1254,6 +1254,8 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   <div class="catalog-card" onclick="switchGame('luck',this)"><span class="icon">🎲</span><div>Push Your Luck</div></div>
   <div class="catalog-card" onclick="switchGame('stocks',this)"><span class="icon">📊</span><div>Stocks</div></div>
   <div class="catalog-card" onclick="switchGame('rusroulette',this)"><span class="icon">🔫</span><div>Buckshot Roulette</div></div>
+  <div class="catalog-card" onclick="switchGame('russianr',this)"><span class="icon">🎰</span><div>Russian Roulette</div></div>
+  <div class="catalog-card" onclick="switchGame('mpbsr',this)"><span class="icon">💥</span><div>MP Buckshot</div></div>
   <div class="catalog-card" onclick="switchGame('crypto',this)"><span class="icon">₿</span><div>Crypto</div></div>
   <div class="catalog-card" onclick="switchGame('duels',this)"><span class="icon">⚔️</span><div>Duels</div></div>
 </div>
@@ -1280,6 +1282,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('slotsBet',0.5)">½</button>
       <input class="bet-input" type="number" id="slotsBet" value="10" min="1" title="Bet amount">
       <button class="bet-btn bet-double" onclick="adjustBet('slotsBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('slotsBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" id="spinBtn" onclick="spinSlots()">SPIN</button>
   </div>
@@ -1300,6 +1303,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('crashBet',0.5)">½</button>
       <input class="bet-input" type="number" id="crashBet" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('crashBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('crashBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" id="crashStartBtn" onclick="startCrash()">START</button>
     <button class="action-btn danger" id="cashoutBtn" onclick="cashOut()" style="display:none">CASH OUT</button>
@@ -1331,6 +1335,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('roulBetInput',0.5)">½</button>
       <input class="bet-input" type="number" id="roulBetInput" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('roulBetInput',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('roulBetInput')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" id="roulSpinBtn" onclick="spinRoulette()">SPIN</button>
   </div>
@@ -1392,6 +1397,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
         <input type="number" id="plinkoBet" value="10" min="1" style="flex:1;">
         <button class="bet-btn bet-half" onclick="adjustBet('plinkoBet',0.5)" style="padding:6px 10px;">½</button>
         <button class="bet-btn bet-double" onclick="adjustBet('plinkoBet',2)" style="padding:6px 10px;">2×</button>
+        <button class="bet-btn" onclick="betAll('plinkoBet')" style="padding:6px 10px;background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
       </div>
     </div>
     <div>
@@ -1640,6 +1646,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('bjBet',0.5)">½</button>
       <input class="bet-input" type="number" id="bjBet" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('bjBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('bjBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" id="bjDealBtn" onclick="bjDeal()">DEAL</button>
     <button class="action-btn primary" id="bjHitBtn" onclick="bjHit()" disabled style="background:linear-gradient(135deg,#3355cc,#2244aa);">HIT</button>
@@ -1659,6 +1666,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
         <input type="number" id="minesBet" value="10" min="1" style="flex:1;">
         <button class="bet-btn bet-half" onclick="adjustBet('minesBet',0.5)" style="padding:4px 8px;">½</button>
         <button class="bet-btn bet-double" onclick="adjustBet('minesBet',2)" style="padding:4px 8px;">2×</button>
+        <button class="bet-btn" onclick="betAll('minesBet')" style="padding:4px 8px;background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
       </div>
       <label>Mines</label>
       <select id="mineCount"><option value="1">1</option><option value="3" selected>3</option><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="24">24</option></select>
@@ -1695,6 +1703,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('diceBet',0.5)">½</button>
       <input class="bet-input" type="number" id="diceBet" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('diceBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('diceBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" onclick="diceRoll()">ROLL</button>
   </div>
@@ -1713,6 +1722,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('towerBet',0.5)">½</button>
       <input class="bet-input" type="number" id="towerBet" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('towerBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('towerBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <select id="towerDiff" style="padding:7px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;">
       <option value="easy">Easy (4 cols)</option><option value="medium" selected>Medium (3 cols)</option><option value="hard">Hard (4 cols, 2 safe)</option><option value="insane">Insane (4 cols, 1 safe)</option>
@@ -1737,6 +1747,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('coinBet',0.5)">½</button>
       <input class="bet-input" type="number" id="coinBet" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('coinBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('coinBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" id="coinFlipBtn" onclick="coinFlip()">FLIP</button>
   </div>
@@ -1756,6 +1767,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('kenoBet',0.5)">½</button>
       <input class="bet-input" type="number" id="kenoBet" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('kenoBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('kenoBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" id="kenoDrawBtn" onclick="kenoDraw()">DRAW</button>
     <button class="bet-btn" onclick="kenoClear()" style="color:var(--red);">CLEAR</button>
@@ -1782,6 +1794,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('limboBet',0.5)">½</button>
       <input class="bet-input" type="number" id="limboBet" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('limboBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('limboBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" id="limboGoBtn" onclick="limboGo()">BET</button>
   </div>
@@ -1811,6 +1824,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <input class="bet-input" type="number" id="pokerBet" value="10" min="1">
   
       <button class="bet-btn bet-double" onclick="adjustBet('pokerBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('pokerBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" id="pokerDealBtn" onclick="pokerDeal()">DEAL</button>
     <button class="action-btn primary" id="pokerDrawBtn" onclick="pokerDrawCards()" style="display:none;background:linear-gradient(135deg,#cc8800,#996600);">DRAW</button>
@@ -1831,6 +1845,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('horseBet',0.5)">½</button>
       <input class="bet-input" type="number" id="horseBet" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('horseBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('horseBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" id="horseRaceBtn" onclick="horseRace()">RACE!</button>
   </div>
@@ -1868,6 +1883,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('wheelBet',0.5)">½</button>
       <input class="bet-input" type="number" id="wheelBet" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('wheelBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('wheelBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" id="wheelSpinBtn" onclick="wheelSpin()">SPIN</button>
   </div>
@@ -1896,6 +1912,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('baccBet',0.5)">½</button>
       <input class="bet-input" type="number" id="baccBet" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('baccBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('baccBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" onclick="baccDeal()">DEAL</button>
   </div>
@@ -1919,6 +1936,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
       <button class="bet-btn bet-half" onclick="adjustBet('hiloBet',0.5)">½</button>
       <input class="bet-input" type="number" id="hiloBet" value="10" min="1">
       <button class="bet-btn bet-double" onclick="adjustBet('hiloBet',2)">2×</button>
+      <button class="bet-btn" onclick="betAll('hiloBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
     </div>
     <button class="action-btn primary" id="hiloStartBtn" onclick="hiloStart()">START</button>
     <button class="action-btn danger" id="hiloCashoutBtn" onclick="hiloCashout()" style="display:none;">CASH OUT</button>
@@ -1978,6 +1996,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
         <button class="bet-btn bet-half" onclick="adjustBet('bsrBet',0.5)">½</button>
         <input class="bet-input" type="number" id="bsrBet" value="100" min="10">
         <button class="bet-btn bet-double" onclick="adjustBet('bsrBet',2)">2×</button>
+        <button class="bet-btn" onclick="betAll('bsrBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
       </div>
       <button class="action-btn primary" onclick="bsrStartGame()" style="padding:12px 28px;font-size:15px;font-family:'Orbitron';letter-spacing:1px;">⚔️ PLAY</button>
     </div>
@@ -2058,6 +2077,190 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
   </div>
 </div>
 
+<!-- ============ RUSSIAN ROULETTE ============ -->
+<div class="game-panel" id="russianrPanel" style="padding-top:60px!important;">
+  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul>
+    <li>6-chamber revolver, <strong>1 bullet</strong>. Take turns pulling the trigger.</li>
+    <li><strong>Pull Trigger</strong>: 1-in-6 chance (decreasing chambers) of death.</li>
+    <li><strong>Spin Cylinder</strong>: Reset to 1-in-6 (uses your turn).</li>
+    <li>Survive all rounds and the opponent dies? <strong>You win the pot!</strong></li>
+    <li><strong>Bot mode</strong>: Play against the Dealer AI. <strong>PvP</strong>: Challenge a real player live.</li>
+    <li>Higher difficulty = more rounds, bigger multiplier.</li>
+  </ul></div></div>
+
+  <div style="text-align:center;margin-bottom:14px;">
+    <span style="font-family:'Orbitron';font-size:26px;font-weight:900;background:linear-gradient(135deg,#ff4444,#ff8800);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🎰 RUSSIAN ROULETTE</span>
+    <div style="font-size:11px;color:var(--text2);margin-top:4px;">One bullet. Six chambers. Who survives?</div>
+  </div>
+
+  <!-- MODE TABS -->
+  <div style="display:flex;gap:6px;justify-content:center;margin-bottom:14px;">
+    <button class="inv-tab active" id="rrBotTab" onclick="rrSwitchMode('bot',this)" style="border-color:rgba(255,68,68,.3);color:#ff4444;">🤖 vs Bot</button>
+    <button class="inv-tab" id="rrPvpTab" onclick="rrSwitchMode('pvp',this)" style="border-color:rgba(0,240,255,.3);color:var(--neon);">👥 PvP</button>
+  </div>
+
+  <!-- BOT LOBBY -->
+  <div id="rrBotLobby">
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:10px;">
+      <div class="bsr-diff-card selected" onclick="rrSelectDiff('easy',this)" style="padding:10px 14px;min-width:90px;">
+        <div class="diff-icon">😎</div><div class="diff-name">EASY</div><div class="diff-desc">3 rounds</div><div class="diff-mult">2×</div>
+      </div>
+      <div class="bsr-diff-card" onclick="rrSelectDiff('normal',this)" style="padding:10px 14px;min-width:90px;">
+        <div class="diff-icon">💀</div><div class="diff-name">NORMAL</div><div class="diff-desc">5 rounds</div><div class="diff-mult">4×</div>
+      </div>
+      <div class="bsr-diff-card" onclick="rrSelectDiff('hard',this)" style="padding:10px 14px;min-width:90px;">
+        <div class="diff-icon">☠️</div><div class="diff-name">HARD</div><div class="diff-desc">8 rounds</div><div class="diff-mult">8×</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:10px;">
+      <div class="bet-controls">
+        <span style="color:var(--text2);font-size:12px;font-weight:600;">BET</span>
+        <button class="bet-btn bet-half" onclick="adjustBet('rrBet',0.5)">½</button>
+        <input class="bet-input" type="number" id="rrBet" value="100" min="10">
+        <button class="bet-btn bet-double" onclick="adjustBet('rrBet',2)">2×</button>
+        <button class="bet-btn" onclick="betAll('rrBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
+      </div>
+      <button class="action-btn primary" onclick="rrStartBot()" style="padding:12px 28px;font-size:15px;font-family:'Orbitron';">⚔️ PLAY</button>
+    </div>
+  </div>
+
+  <!-- PVP LOBBY -->
+  <div id="rrPvpLobby" style="display:none;text-align:center;">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Challenge another player — loser loses their bet!</div>
+    <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:12px;">
+      <div class="bet-controls">
+        <span style="color:var(--text2);font-size:12px;font-weight:600;">WAGER</span>
+        <button class="bet-btn bet-half" onclick="adjustBet('rrPvpBet',0.5)">½</button>
+        <input class="bet-input" type="number" id="rrPvpBet" value="100" min="10">
+        <button class="bet-btn bet-double" onclick="adjustBet('rrPvpBet',2)">2×</button>
+        <button class="bet-btn" onclick="betAll('rrPvpBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
+      </div>
+    </div>
+    <input type="text" id="rrPvpOpponent" placeholder="Enter opponent username..." maxlength="16" autocomplete="off" style="width:90%;max-width:300px;padding:10px 14px;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;text-align:center;margin-bottom:10px;">
+    <br>
+    <button class="action-btn primary" onclick="rrStartPvP()" style="padding:12px 28px;font-size:15px;font-family:'Orbitron';">🎯 CHALLENGE</button>
+    <div id="rrPvpStatus" style="font-size:12px;color:var(--text2);margin-top:8px;min-height:20px;"></div>
+  </div>
+
+  <!-- GAME AREA -->
+  <div id="rrGameArea" style="display:none;max-width:500px;margin:0 auto;">
+    <!-- Revolver visual -->
+    <div style="text-align:center;margin-bottom:16px;">
+      <div id="rrRevolver" style="font-size:90px;transition:transform .3s;filter:drop-shadow(0 0 20px rgba(255,68,68,.3));">🔫</div>
+      <div id="rrChamberInfo" style="font-family:'Orbitron';font-size:12px;color:var(--text2);margin-top:6px;letter-spacing:2px;"></div>
+    </div>
+    <!-- Round info -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div id="rrRoundInfo" style="font-family:'Orbitron';font-size:14px;color:var(--gold);letter-spacing:1px;"></div>
+      <div id="rrMultInfo" style="font-family:'Orbitron';font-size:14px;color:var(--green);"></div>
+    </div>
+    <!-- Players -->
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-bottom:14px;">
+      <div id="rrPlayerCard" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;transition:all .3s;">
+        <div style="font-family:'Orbitron';font-size:11px;color:var(--neon);letter-spacing:2px;margin-bottom:6px;">🧑 YOU</div>
+        <div id="rrPlayerStatus" style="font-size:22px;">😐</div>
+        <div id="rrPlayerAlive" style="font-size:11px;color:var(--green);margin-top:4px;">ALIVE</div>
+      </div>
+      <div style="font-family:'Orbitron';font-size:16px;color:var(--text2);">VS</div>
+      <div id="rrDealerCard" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;transition:all .3s;">
+        <div style="font-family:'Orbitron';font-size:11px;color:var(--red);letter-spacing:2px;margin-bottom:6px;" id="rrOpponentLabel">🤖 DEALER</div>
+        <div id="rrDealerStatus" style="font-size:22px;">😐</div>
+        <div id="rrDealerAlive" style="font-size:11px;color:var(--green);margin-top:4px;">ALIVE</div>
+      </div>
+    </div>
+    <!-- Status -->
+    <div id="rrStatusMsg" style="text-align:center;font-size:15px;color:var(--gold);font-weight:700;min-height:24px;margin-bottom:12px;font-family:'Orbitron';"></div>
+    <!-- Actions -->
+    <div id="rrActions" style="display:flex;gap:12px;justify-content:center;margin-bottom:14px;">
+      <button class="bsr-shoot-btn bsr-shoot-dealer" id="rrPullBtn" onclick="rrPullTrigger()" style="flex:1;max-width:200px;">💀 PULL TRIGGER</button>
+      <button class="bsr-shoot-btn bsr-shoot-self" id="rrSpinBtn" onclick="rrSpinCylinder()" style="flex:1;max-width:200px;">🔄 SPIN CYLINDER</button>
+    </div>
+    <!-- Log -->
+    <div id="rrLog" class="bsr-log" style="max-height:120px;"></div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="rrGameOver" class="bsr-gameover">
+    <div class="bsr-gameover-box" id="rrGameOverContent"></div>
+  </div>
+</div>
+MULTIPLAYER BUCKSHOT ROULETTE ============ -->
+<div class="game-panel" id="mpbsrPanel" style="padding-top:60px!important;">
+  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul>
+    <li>PvP Buckshot Roulette — challenge a real player!</li>
+    <li>Both players start with <strong>4 HP</strong>. Shotgun loaded with LIVE & BLANK shells.</li>
+    <li>On your turn: <strong>Shoot Opponent</strong> or <strong>Shoot Self</strong> (blank self = bonus turn).</li>
+    <li>Use <strong>items</strong> strategically: Saw (2× damage), Magnifying Glass (peek shell), Cigarette (+1 HP), Handcuffs (skip turn).</li>
+    <li>Winner takes the full pot (both bets)!</li>
+  </ul></div></div>
+
+  <div style="text-align:center;margin-bottom:14px;">
+    <span style="font-family:'Orbitron';font-size:24px;font-weight:900;background:linear-gradient(135deg,#ff4444,#ff8800);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">💥 MULTIPLAYER BUCKSHOT</span>
+    <div style="font-size:11px;color:var(--text2);margin-top:4px;">PvP Shotgun Standoff — Who walks away?</div>
+  </div>
+
+  <!-- LOBBY -->
+  <div id="mpbsrLobby">
+    <div style="text-align:center;margin-bottom:12px;">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Challenge another player to a live Buckshot Roulette match!</div>
+      <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:12px;">
+        <div class="bet-controls">
+          <span style="color:var(--text2);font-size:12px;font-weight:600;">WAGER</span>
+          <button class="bet-btn bet-half" onclick="adjustBet('mpbsrBet',0.5)">½</button>
+          <input class="bet-input" type="number" id="mpbsrBet" value="100" min="10">
+          <button class="bet-btn bet-double" onclick="adjustBet('mpbsrBet',2)">2×</button>
+          <button class="bet-btn" onclick="betAll('mpbsrBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
+        </div>
+      </div>
+      <input type="text" id="mpbsrOpponent" placeholder="Enter opponent username..." maxlength="16" autocomplete="off" style="width:90%;max-width:300px;padding:10px 14px;background:var(--bg);border:2px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;text-align:center;margin-bottom:10px;">
+      <br>
+      <button class="action-btn primary" onclick="mpbsrChallenge()" style="padding:12px 28px;font-size:15px;font-family:'Orbitron';">⚔️ CHALLENGE</button>
+      <div id="mpbsrStatus" style="font-size:12px;color:var(--text2);margin-top:8px;min-height:20px;"></div>
+    </div>
+  </div>
+
+  <!-- GAME AREA -->
+  <div id="mpbsrGameArea" style="display:none;max-width:500px;margin:0 auto;">
+    <!-- Top bar -->
+    <div class="bsr-top-bar">
+      <div class="bsr-round-badge" id="mpbsrRoundInfo">ROUND 1</div>
+      <div class="bsr-multiplier" id="mpbsrPotInfo">POT: $0</div>
+      <div class="bsr-shell-count" id="mpbsrShellInfo">0 shells</div>
+    </div>
+    <!-- Shell rack -->
+    <div class="bsr-rack" id="mpbsrShellRack"></div>
+    <!-- Players -->
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start;margin:14px 0;">
+      <div id="mpbsrMyCard" class="bsr-player-card">
+        <div class="bsr-player-label" style="color:var(--neon);">YOU</div>
+        <div class="bsr-hp" id="mpbsrMyHP"></div>
+        <div class="bsr-items" id="mpbsrMyItems"></div>
+      </div>
+      <div style="font-family:'Orbitron';font-size:16px;color:var(--text2);align-self:center;">VS</div>
+      <div id="mpbsrOpCard" class="bsr-player-card">
+        <div class="bsr-player-label" style="color:var(--red);" id="mpbsrOpLabel">OPPONENT</div>
+        <div class="bsr-hp" id="mpbsrOpHP"></div>
+        <div class="bsr-items" id="mpbsrOpItems"></div>
+      </div>
+    </div>
+    <!-- Status -->
+    <div id="mpbsrStatusMsg" class="bsr-status"></div>
+    <!-- Actions -->
+    <div id="mpbsrActions" style="display:flex;gap:10px;justify-content:center;margin:12px 0;">
+      <button class="bsr-shoot-btn bsr-shoot-dealer" id="mpbsrShootOp" onclick="mpbsrShoot('opponent')">🔫 SHOOT OPPONENT</button>
+      <button class="bsr-shoot-btn bsr-shoot-self" id="mpbsrShootSelf" onclick="mpbsrShoot('self')">🤕 SHOOT SELF</button>
+    </div>
+    <!-- Log -->
+    <div id="mpbsrLog" class="bsr-log" style="max-height:120px;"></div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="mpbsrGameOver" class="bsr-gameover">
+    <div class="bsr-gameover-box" id="mpbsrGameOverContent"></div>
+  </div>
+</div>
+
+<!-- ============ 
 <!-- ============ DUELS PANEL ============ -->
 <div class="game-panel" id="duelsPanel">
   <div class="duel-lobby">
@@ -2309,46 +2512,40 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
         <button onclick="tradeCancelRequest()" style="margin-top:16px;padding:10px 24px;background:transparent;border:1px solid var(--red);border-radius:8px;color:var(--red);cursor:pointer;font-size:12px;font-family:'Orbitron';">CANCEL</button>
       </div>
 
-      <!-- STEP 3: Full trade interface (shown after both accept) -->
+      <!-- STEP 3: Live two-way trade interface -->
       <div id="tradeStep3" style="display:none;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div style="font-family:'Orbitron';font-size:14px;color:var(--gold);letter-spacing:2px;">🔄 TRADE WITH <span id="tradePartnerName" style="color:var(--neon);"></span></div>
+          <div style="font-family:'Orbitron';font-size:14px;color:var(--gold);letter-spacing:2px;">🔄 LIVE TRADE WITH <span id="tradePartnerName" style="color:var(--neon);"></span></div>
           <button onclick="tradeCancelSession()" style="padding:6px 14px;background:transparent;border:1px solid var(--red);border-radius:6px;color:var(--red);cursor:pointer;font-size:10px;">✕ CANCEL</button>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-          <!-- Left: Your offer -->
-          <div style="background:rgba(0,240,255,.03);border:1px solid rgba(0,240,255,.15);border-radius:10px;padding:14px;">
-            <div style="font-size:12px;font-weight:700;color:var(--neon);margin-bottom:10px;">YOUR OFFER</div>
-            <div style="margin-bottom:10px;">
-              <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;">Select Item</label>
-              <select id="tradeItemSelect" style="width:100%;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;"></select>
-            </div>
-            <div id="tradeItemPreview" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;min-height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;">
-              <div style="color:var(--text2);font-size:12px;">Select an item above</div>
-            </div>
-            <div style="margin-top:10px;">
-              <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;">+ Add Cash (optional)</label>
-              <div style="display:flex;gap:6px;">
-                <input type="number" id="tradeCashAmount" value="0" min="0" style="flex:1;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--gold);font-family:'Orbitron';font-size:13px;text-align:right;">
-                <button class="bet-btn bet-half" onclick="adjustBet('tradeCashAmount',0.5)" style="padding:6px 8px;">½</button>
-                <button class="bet-btn bet-double" onclick="adjustBet('tradeCashAmount',2)" style="padding:6px 8px;">2×</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <!-- Your offer -->
+          <div style="background:rgba(0,240,255,.03);border:1px solid rgba(0,240,255,.15);border-radius:10px;padding:12px;">
+            <div style="font-size:12px;font-weight:700;color:var(--neon);margin-bottom:8px;">🧑 YOUR OFFER</div>
+            <select id="tradeItemSelect" onchange="liveTradeAddItem()" style="width:100%;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;margin-bottom:6px;"></select>
+            <div id="liveTradeMyItems" style="min-height:40px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px;margin-bottom:8px;font-size:12px;color:var(--text2);">No items added</div>
+            <div style="margin-bottom:6px;">
+              <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;">+ Cash</label>
+              <div style="display:flex;gap:4px;">
+                <input type="number" id="tradeCashAmount" value="0" min="0" onchange="liveTradeUpdateCash()" oninput="liveTradeUpdateCash()" style="flex:1;padding:6px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--gold);font-family:'Orbitron';font-size:12px;text-align:right;">
+                <button class="bet-btn" onclick="betAll('tradeCashAmount');liveTradeUpdateCash()" style="padding:4px 8px;background:var(--gold);color:#000;font-weight:900;font-size:9px;">MAX</button>
               </div>
             </div>
+            <div id="liveTradeMyReady" style="text-align:center;margin-top:8px;">
+              <button onclick="liveTradeToggleReady()" id="liveTradeReadyBtn" style="padding:10px 24px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Orbitron';font-size:12px;font-weight:700;">✅ LOCK IN</button>
+            </div>
           </div>
-          <!-- Right: Message + Summary -->
-          <div style="background:rgba(255,184,107,.03);border:1px solid rgba(255,184,107,.15);border-radius:10px;padding:14px;">
-            <div style="font-size:12px;font-weight:700;color:#ffb86b;margin-bottom:10px;">DETAILS</div>
-            <div style="margin-bottom:10px;">
-              <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:4px;">Message (optional)</label>
-              <input type="text" id="tradeMessage" placeholder="Hey, check this out!" maxlength="100" style="width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;">
-            </div>
-            <div id="tradeSummary" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;min-height:60px;">
-              <div style="color:var(--text2);font-size:11px;text-align:center;">Select items above</div>
-            </div>
+          <!-- Their offer (live) -->
+          <div style="background:rgba(255,184,107,.03);border:1px solid rgba(255,184,107,.15);border-radius:10px;padding:12px;">
+            <div style="font-size:12px;font-weight:700;color:#ffb86b;margin-bottom:8px;">👤 THEIR OFFER</div>
+            <div id="liveTradeTheirItems" style="min-height:40px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px;margin-bottom:8px;font-size:12px;color:var(--text2);">Waiting...</div>
+            <div id="liveTradeTheirCash" style="font-family:'Orbitron';font-size:14px;color:var(--gold);margin-bottom:8px;">$0</div>
+            <div id="liveTradeTheirReadyStatus" style="text-align:center;font-size:12px;color:var(--text2);margin-top:8px;">⏳ Not locked in</div>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:14px;">
-          <button onclick="sendTrade()" style="flex:1;padding:12px;background:linear-gradient(135deg,#00cc66,#009944);border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Orbitron';font-size:14px;font-weight:700;letter-spacing:2px;transition:all .2s;">SEND TRADE OFFER</button>
+        <div id="liveTradeConfirmArea" style="display:none;text-align:center;margin-top:12px;">
+          <div style="font-size:13px;color:var(--green);margin-bottom:8px;">✅ Both players locked in!</div>
+          <button onclick="liveTradeExecute()" style="padding:12px 32px;background:linear-gradient(135deg,#ffc107,#ff9800);border:none;border-radius:10px;color:#000;cursor:pointer;font-family:'Orbitron';font-size:14px;font-weight:700;">🤝 CONFIRM TRADE</button>
         </div>
         <div id="tradeStatus" style="font-size:12px;color:var(--text2);margin-top:8px;text-align:center;"></div>
       </div>
@@ -3078,6 +3275,79 @@ window._respondTradeRequest = async (requestId, accepted) => {
   await set(ref(db, 'casino/tradeRequests/' + playerId + '/' + requestId + '/response'), accepted ? 'accepted' : 'declined');
   // Auto-cleanup after 10s
   setTimeout(() => { remove(ref(db, 'casino/tradeRequests/' + playerId + '/' + requestId)).catch(()=>{}); }, 10000);
+};
+
+// ============ LIVE TRADE SYSTEM (Firebase) ============
+window._createLiveTrade = async (partnerUid, partnerName) => {
+  if (!playerId || !currentUsername) return null;
+  const tradeId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  await set(ref(db, 'casino/liveTrades/' + tradeId), {
+    host: playerId,
+    hostName: currentUsername,
+    guest: partnerUid,
+    guestName: partnerName,
+    hostOffer: { items: '', cash: 0 },
+    guestOffer: { items: '', cash: 0 },
+    hostReady: false,
+    guestReady: false,
+    status: 'active',
+    created: Date.now()
+  });
+  return tradeId;
+};
+
+window._executeLiveTrade = async (tradeId) => {
+  if (!playerId) return { error: 'Not logged in' };
+  const snap = await get(ref(db, 'casino/liveTrades/' + tradeId));
+  if (!snap.exists()) return { error: 'Trade not found' };
+  const t = snap.val();
+  if (t.status !== 'active') return { error: 'Trade not active' };
+  if (!t.hostReady || !t.guestReady) return { error: 'Both must confirm' };
+  
+  // Execute trade: swap items and cash
+  const hostSnap = await get(ref(db, 'casino/players/' + t.host));
+  const guestSnap = await get(ref(db, 'casino/players/' + t.guest));
+  if (!hostSnap.exists() || !guestSnap.exists()) return { error: 'Player data missing' };
+  
+  const hostData = hostSnap.val();
+  const guestData = guestSnap.val();
+  const hostBal = safeNum(hostData.balance || 0);
+  const guestBal = safeNum(guestData.balance || 0);
+  
+  const hostCash = safeNum(t.hostOffer?.cash || 0);
+  const guestCash = safeNum(t.guestOffer?.cash || 0);
+  
+  // Check balances
+  if (hostBal < hostCash) return { error: 'Host cannot afford' };
+  if (guestBal < guestCash) return { error: 'Guest cannot afford' };
+  
+  // Transfer cash
+  const updates = {};
+  updates['players/' + t.host + '/balance'] = safeNum(hostBal - hostCash + guestCash);
+  updates['players/' + t.guest + '/balance'] = safeNum(guestBal - guestCash + hostCash);
+  
+  // Transfer items via pending refunds (items are identified by itemId)
+  const hostItems = (t.hostOffer?.items || '').split(',').filter(Boolean);
+  const guestItems = (t.guestOffer?.items || '').split(',').filter(Boolean);
+  
+  // Host items go to guest, guest items go to host
+  for (const itemId of hostItems) {
+    const refKey = Date.now().toString(36) + Math.random().toString(36).slice(2,4);
+    updates['pendingRefunds/' + t.guest + '/' + refKey] = { item: itemId, cash: 0, reason: 'live_trade', from: t.hostName, ts: Date.now() };
+  }
+  for (const itemId of guestItems) {
+    const refKey = Date.now().toString(36) + Math.random().toString(36).slice(2,4);
+    updates['pendingRefunds/' + t.host + '/' + refKey] = { item: itemId, cash: 0, reason: 'live_trade', from: t.guestName, ts: Date.now() };
+  }
+  
+  updates['liveTrades/' + tradeId + '/status'] = 'completed';
+  
+  try {
+    await update(ref(db, 'casino'), updates);
+    return { success: true, tradeId };
+  } catch(e) {
+    return { error: 'Trade failed: ' + e.message };
+  }
 };
 
 // ============ GIFT SYSTEM (Firebase) ============
@@ -3865,6 +4135,8 @@ window._onAuthReady = function(username, uid) {
   if (!window._refundInterval) {
     window._refundInterval = setInterval(checkPendingRefunds, 30000);
   }
+  // Listen for RR PvP challenges
+  if (typeof rrListenForChallenges === 'function') rrListenForChallenges();
 };
 
 window._onAuthLoggedOut = function() {
@@ -3930,14 +4202,15 @@ let gameStats = {
   baccarat: { played: 0, won: 0, biggestWin: 0 },
   hilo: { played: 0, won: 0, biggestWin: 0 },
   duels: { played: 0, won: 0, biggestWin: 0 },
-  rusroulette: { played: 0, won: 0, biggestWin: 0 }
+  rusroulette: { played: 0, won: 0, biggestWin: ,
+  mpbsr: { played: 0, won: 0, biggestWin: 0 }0 },
+  russianr: { played: 0, won: 0, biggestWin: 0 }
 };
 let dailyBonusData = { lastClaimed: 0, streak: 0 };
 
-// Global max bet to prevent runaway compounding (client-side safety net)
-const MAX_BET = 1000000; // $1M max bet across all games
+// Bet validation: max you can bet is what you have
 function checkMaxBet(bet, game) {
-  if (bet > MAX_BET) { showToast('Max bet is $' + MAX_BET.toLocaleString() + ' for ' + game, false); return false; }
+  if (bet > balance) { showToast('Max bet is your balance: $' + Math.floor(balance).toLocaleString(), false); return false; }
   return true;
 }
 
@@ -4139,7 +4412,9 @@ const gamesData = [
     { name: 'Wheel', icon: '💫', id: 'wheel' },
     { name: 'Keno', icon: '🔢', id: 'keno' },
     { name: 'Horse Racing', icon: '🏇', id: 'horses' },
-    { name: 'Buckshot Roulette', icon: '🔫', id: 'rusroulette' }
+    { name: 'Buckshot Roulette', icon: '🔫', id: 'rusroulett,
+    { name: 'MP Buckshot', icon: '💥', id: 'mpbsr' }e' },
+    { name: 'Russian Roulette', icon: '🎰', id: 'russianr' }
   ]},
   { cat: '⚡ Quick & Special', games: [
     { name: 'Dice', icon: '🎯', id: 'dice' },
@@ -4251,7 +4526,9 @@ function switchGame(game,btn){
   if(game==='horses')horseInit();
   if(game==='mines')minesRenderGrid();
   if(game==='dice')diceUpdateSlider();
-  if(game==='rusroulette')initBuckshotRoulette();
+  if(game==='rusroulette')initBuckshotRoulett
+  if(game==='mpbsr')initMPBSR();e();
+  if(game==='russianr')initRussianRoulette();
   if(game==='crypto')initCrypto();
   if(game==='luck'){
     let iframe=document.getElementById('pylIframe');
@@ -4273,7 +4550,14 @@ function switchGame(game,btn){
 
 function adjustBet(id,mult){
   const el=document.getElementById(id);
-  el.value=Math.max(1,Math.round(parseFloat(el.value||10)*mult));
+  let v=Math.max(1,Math.round(parseFloat(el.value||10)*mult));
+  if(v>balance)v=Math.floor(balance);
+  el.value=v;
+}
+function betAll(id){
+  const el=document.getElementById(id);
+  el.value=Math.max(1,Math.floor(balance));
+  playClickSound();
 }
 
 // ============ PARTICLES ============
@@ -5374,12 +5658,20 @@ async function tradeRequestSend() {
     const dotsI = setInterval(() => { dots = (dots + 1) % 4; dotsEl.textContent = '.'.repeat(dots + 1); }, 600);
     // Listen for response
     _tradeRequestUnsub = window._listenTradeRequestResponse(res.recipientUid, res.requestId,
-      () => { // accepted
+      async () => { // accepted
         clearInterval(dotsI);
         document.getElementById('tradePartnerName').textContent = u;
-        tradeGoToStep(3);
-        populateTradeSelect();
-        showToast('🤝 ' + u + ' accepted your trade request!', true);
+        // Create live trade session
+        const tradeId = await window._createLiveTrade(res.recipientUid, u);
+        if (tradeId) {
+          _liveTradeId = tradeId;
+          _liveTradeIsHost = true;
+          _liveTradePartner = u;
+          tradeGoToStep(3);
+          populateTradeSelect();
+          startLiveTradeListener(tradeId);
+        }
+        showToast('🤝 ' + u + ' accepted! Live trade started!', true);
       },
       () => { // declined
         clearInterval(dotsI);
@@ -5398,7 +5690,181 @@ function tradeCancelRequest() {
 
 function tradeCancelSession() {
   if (_tradeRequestUnsub) { _tradeRequestUnsub(); _tradeRequestUnsub = null; }
+  if (_liveTradeUnsub) { try { _liveTradeUnsub(); } catch(e) {} _liveTradeUnsub = null; }
+  if (_liveTradeId) { window._fbUpdate('casino/liveTrades/' + _liveTradeId, { status: 'cancelled' }); }
+  _liveTradeId = null;
   tradeGoToStep(1);
+}
+
+// ============ LIVE TRADE FUNCTIONS ============
+let _liveTradeId = null;
+let _liveTradeIsHost = false;
+let _liveTradePartner = '';
+let _liveTradeUnsub = null;
+let _liveTradeMyItems = []; // array of itemIds currently offered
+let _liveTradeReady = false;
+
+function startLiveTradeListener(tradeId) {
+  if (_liveTradeUnsub) { try { _liveTradeUnsub(); } catch(e) {} }
+  _liveTradeMyItems = [];
+  _liveTradeReady = false;
+  
+  _liveTradeUnsub = window._fbOnValue('casino/liveTrades/' + tradeId, snap => {
+    const t = snap.val();
+    if (!t) return;
+    
+    if (t.status === 'cancelled') {
+      showToast('Trade was cancelled', false);
+      if (_liveTradeUnsub) { try { _liveTradeUnsub(); } catch(e) {} _liveTradeUnsub = null; }
+      tradeGoToStep(1);
+      return;
+    }
+    
+    if (t.status === 'completed') {
+      showToast('🤝 Trade completed successfully!', true);
+      if (_liveTradeUnsub) { try { _liveTradeUnsub(); } catch(e) {} _liveTradeUnsub = null; }
+      // Refresh balance and inventory
+      if (typeof checkPendingRefunds === 'function') setTimeout(checkPendingRefunds, 1000);
+      tradeGoToStep(1);
+      return;
+    }
+    
+    // Update "their offer" display
+    const isHost = _liveTradeIsHost;
+    const theirOffer = isHost ? t.guestOffer : t.hostOffer;
+    const theirReady = isHost ? t.guestReady : t.hostReady;
+    const myReady = isHost ? t.hostReady : t.guestReady;
+    
+    // Their items
+    const theirItemsEl = document.getElementById('liveTradeTheirItems');
+    const theirItems = (theirOffer?.items || '').split(',').filter(Boolean);
+    if (theirItems.length === 0) {
+      theirItemsEl.textContent = 'No items offered';
+    } else {
+      theirItemsEl.innerHTML = theirItems.map(id => {
+        const cat = (typeof ITEM_CATALOG !== 'undefined') ? ITEM_CATALOG[id] : null;
+        return cat ? `<span style="margin-right:4px;">${cat.icon} ${cat.name}</span>` : id;
+      }).join('<br>');
+    }
+    
+    // Their cash
+    document.getElementById('liveTradeTheirCash').textContent = '$' + Math.floor(theirOffer?.cash || 0).toLocaleString();
+    
+    // Their ready status
+    document.getElementById('liveTradeTheirReadyStatus').innerHTML = theirReady ? 
+      '<span style="color:var(--green);">✅ LOCKED IN</span>' : 
+      '<span style="color:var(--text2);">⏳ Not locked in</span>';
+    
+    // Show confirm button if both ready
+    document.getElementById('liveTradeConfirmArea').style.display = (myReady && theirReady) ? 'block' : 'none';
+  });
+}
+
+function liveTradeAddItem() {
+  if (_liveTradeReady) return; // Can't modify after lock-in
+  const sel = document.getElementById('tradeItemSelect');
+  const invId = parseInt(sel.value);
+  if (!invId) return;
+  
+  const item = inventory.find(x => x.id === invId);
+  if (!item) return;
+  
+  // Check if already added
+  if (_liveTradeMyItems.includes(item.itemId)) {
+    showToast('Item already in offer', false);
+    return;
+  }
+  
+  _liveTradeMyItems.push(item.itemId);
+  sel.value = '';
+  liveTradeUpdateMyDisplay();
+  liveTradeSync();
+}
+
+function liveTradeRemoveItem(idx) {
+  if (_liveTradeReady) return;
+  _liveTradeMyItems.splice(idx, 1);
+  liveTradeUpdateMyDisplay();
+  liveTradeSync();
+}
+
+function liveTradeUpdateMyDisplay() {
+  const el = document.getElementById('liveTradeMyItems');
+  if (_liveTradeMyItems.length === 0) {
+    el.textContent = 'No items added';
+    return;
+  }
+  el.innerHTML = _liveTradeMyItems.map((id, i) => {
+    const cat = (typeof ITEM_CATALOG !== 'undefined') ? ITEM_CATALOG[id] : null;
+    const name = cat ? `${cat.icon} ${cat.name}` : id;
+    return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">${name} <button onclick="liveTradeRemoveItem(${i})" style="padding:1px 6px;background:var(--red);border:none;border-radius:4px;color:#fff;cursor:pointer;font-size:9px;">✕</button></div>`;
+  }).join('');
+}
+
+function liveTradeUpdateCash() {
+  if (_liveTradeReady) return;
+  liveTradeSync();
+}
+
+async function liveTradeSync() {
+  if (!_liveTradeId) return;
+  const offerKey = _liveTradeIsHost ? 'hostOffer' : 'guestOffer';
+  const cash = Math.max(0, parseInt(document.getElementById('tradeCashAmount').value) || 0);
+  await window._fbUpdate('casino/liveTrades/' + _liveTradeId, {
+    [offerKey]: {
+      items: _liveTradeMyItems.join(','),
+      cash: cash
+    },
+    [_liveTradeIsHost ? 'hostReady' : 'guestReady']: false
+  });
+  _liveTradeReady = false;
+  document.getElementById('liveTradeReadyBtn').textContent = '✅ LOCK IN';
+  document.getElementById('liveTradeReadyBtn').style.background = 'linear-gradient(135deg,#00cc66,#009944)';
+}
+
+async function liveTradeToggleReady() {
+  if (!_liveTradeId) return;
+  _liveTradeReady = !_liveTradeReady;
+  const key = _liveTradeIsHost ? 'hostReady' : 'guestReady';
+  await window._fbUpdate('casino/liveTrades/' + _liveTradeId, { [key]: _liveTradeReady });
+  
+  if (_liveTradeReady) {
+    document.getElementById('liveTradeReadyBtn').textContent = '🔓 UNLOCK';
+    document.getElementById('liveTradeReadyBtn').style.background = 'linear-gradient(135deg,#ff4444,#cc0000)';
+  } else {
+    document.getElementById('liveTradeReadyBtn').textContent = '✅ LOCK IN';
+    document.getElementById('liveTradeReadyBtn').style.background = 'linear-gradient(135deg,#00cc66,#009944)';
+  }
+}
+
+async function liveTradeExecute() {
+  if (!_liveTradeId) return;
+  const statusEl = document.getElementById('tradeStatus');
+  statusEl.textContent = '⏳ Executing trade...';
+  
+  // Remove items from local inventory before executing
+  const myItemsCopy = [..._liveTradeMyItems];
+  for (const itemId of myItemsCopy) {
+    const idx = inventory.findIndex(x => x.itemId === itemId);
+    if (idx >= 0) inventory.splice(idx, 1);
+  }
+  
+  // Deduct cash
+  const cash = Math.max(0, parseInt(document.getElementById('tradeCashAmount').value) || 0);
+  if (cash > 0) { balance -= cash; updateBalance(); }
+  
+  const res = await window._executeLiveTrade(_liveTradeId);
+  if (res.error) {
+    statusEl.textContent = '❌ ' + res.error;
+    statusEl.style.color = 'var(--red)';
+    // Restore items on error
+    return;
+  }
+  
+  statusEl.textContent = '✅ Trade completed!';
+  statusEl.style.color = 'var(--green)';
+  firebaseSave();
+  // Listener will handle cleanup via status=completed
 }
 
 async function loadTradeRequests() {
@@ -5442,15 +5908,32 @@ async function respondTradeRequest(reqId, fromName, fromUid, accepted) {
   if (!window._respondTradeRequest) return;
   await window._respondTradeRequest(reqId, accepted);
   if (accepted) {
-    showToast('✅ Accepted! Waiting for ' + fromName + ' to send their items...', true);
-    // Switch to Inbox tab and start polling for the incoming trade offer
-    switchTradeTab('inbox', document.getElementById('tradeInboxTab'));
-    // Poll inbox for the incoming trade from sender (they compose after acceptance)
+    showToast('✅ Accepted! Starting live trade with ' + fromName, true);
+    _liveTradePartner = fromName;
+    _liveTradeIsHost = false;
+    // The host will create the live trade — guest must poll for it
+    switchTradeTab('send', document.getElementById('tradeSendTab'));
+    document.getElementById('tradePartnerName').textContent = fromName;
+    tradeGoToStep(3);
+    populateTradeSelect();
+    // Poll for the live trade ID that the host creates
     let pollCount = 0;
-    const pollInbox = setInterval(() => {
-      loadIncomingTrades();
+    const pollForLive = setInterval(async () => {
       pollCount++;
-      if (pollCount > 30) clearInterval(pollInbox); // stop after ~30s
+      if (pollCount > 60) { clearInterval(pollForLive); showToast('Trade session timeout', false); tradeGoToStep(1); return; }
+      try {
+        const snap = await window._fbGet('casino/liveTrades');
+        if (!snap.exists()) return;
+        const trades = snap.val();
+        for (const [tid, t] of Object.entries(trades)) {
+          if (t.guest === window._currentPlayerId && t.host !== window._currentPlayerId && t.status === 'active' && Date.now() - t.created < 60000) {
+            clearInterval(pollForLive);
+            _liveTradeId = tid;
+            startLiveTradeListener(tid);
+            return;
+          }
+        }
+      } catch(e) {}
     }, 1000);
   } else {
     showToast('Declined trade request from ' + fromName, false);
@@ -6250,11 +6733,121 @@ window.addEventListener('beforeunload', () => { if (window._setOnlineStatus) win
 
 // ============ SLOTS ============
 const SYMBOLS=['🍒','🍋','🔔','💎','7️⃣','🍀','⭐','👑'];
-const SYMBOL_VALUES={'👑':50,'7️⃣':25,'💎':15,'⭐':10,'🔔':8,'🍀':6,'🍋':4,'🍒':3};
+const SYMBOL_VALUES={'👑':100,'7️⃣':50,'💎':30,'⭐':20,'🔔':15,'🍀':10,'🍋':6,'🍒':4};
 const REEL_COUNT=5;
 const SYM_H=93;
 const VISIBLE=3;
 let slotsSpinning=false;
+
+function slotsJackpotAnimation(winAmount, symbol, bet) {
+  // Create a fullscreen jackpot overlay with epic animation
+  const overlay = document.createElement('div');
+  overlay.id = 'slotsJackpotOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:auto;transition:background 0.5s;';
+  document.body.appendChild(overlay);
+  requestAnimationFrame(() => { overlay.style.background = 'rgba(4,8,20,.95)'; });
+
+  // Sound: epic win chord
+  playSound(523, 'sine', 0.5, 0.2); // C
+  setTimeout(() => playSound(659, 'sine', 0.5, 0.18), 150); // E
+  setTimeout(() => playSound(784, 'sine', 0.5, 0.15), 300); // G
+  setTimeout(() => playSound(1047, 'sine', 0.8, 0.2), 500); // C high
+
+  // Phase 1: Giant symbol (0-1.5s)
+  const symEl = document.createElement('div');
+  symEl.textContent = symbol;
+  symEl.style.cssText = 'font-size:20px;opacity:0;transition:all 0.8s cubic-bezier(.2,1,.3,1);transform:scale(0.1);filter:blur(10px);';
+  overlay.appendChild(symEl);
+  requestAnimationFrame(() => {
+    symEl.style.fontSize = '120px';
+    symEl.style.opacity = '1';
+    symEl.style.transform = 'scale(1)';
+    symEl.style.filter = 'blur(0) drop-shadow(0 0 40px rgba(255,215,0,.8))';
+  });
+
+  // Phase 2: "JACKPOT!" text (1s)
+  setTimeout(() => {
+    const txt = document.createElement('div');
+    txt.textContent = '★ JACKPOT ★';
+    txt.style.cssText = 'font-family:Orbitron;font-size:0px;font-weight:900;background:linear-gradient(135deg,#ffd700,#ff8c00,#ffd700);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;opacity:0;transition:all 0.6s cubic-bezier(.2,1,.3,1);letter-spacing:6px;';
+    overlay.appendChild(txt);
+    requestAnimationFrame(() => {
+      txt.style.fontSize = '48px';
+      txt.style.opacity = '1';
+    });
+  }, 1000);
+
+  // Phase 3: 1000x multiplier counter (1.5s)
+  setTimeout(() => {
+    const multEl = document.createElement('div');
+    multEl.style.cssText = 'font-family:Orbitron;font-size:36px;font-weight:900;color:#ff4444;margin-top:8px;';
+    overlay.appendChild(multEl);
+    // Count up from 1x to 1000x
+    let count = 1;
+    const target = 1000;
+    const startT = Date.now();
+    const dur = 2000;
+    function tick() {
+      const elapsed = Date.now() - startT;
+      const prog = Math.min(elapsed / dur, 1);
+      // Eased progress (ease-out)
+      const eased = 1 - Math.pow(1 - prog, 3);
+      count = Math.max(1, Math.floor(eased * target));
+      multEl.textContent = count + '× YOUR BET';
+      if (prog < 1) requestAnimationFrame(tick);
+      else {
+        multEl.textContent = '1000× YOUR BET';
+        multEl.style.color = '#ffd700';
+        multEl.style.textShadow = '0 0 20px rgba(255,215,0,.6)';
+        // Play final boom sound
+        playSound(200, 'sawtooth', 0.4, 0.25);
+        setTimeout(() => playSound(150, 'square', 0.3, 0.15), 100);
+      }
+    }
+    tick();
+  }, 1500);
+
+  // Phase 4: Win amount (3.5s)
+  setTimeout(() => {
+    const winEl = document.createElement('div');
+    winEl.style.cssText = 'font-family:Orbitron;font-size:42px;font-weight:900;color:var(--green);margin-top:16px;opacity:0;transform:scale(0.5);transition:all 0.5s cubic-bezier(.2,1,.3,1);';
+    winEl.textContent = '+$' + winAmount.toLocaleString();
+    overlay.appendChild(winEl);
+    requestAnimationFrame(() => {
+      winEl.style.opacity = '1';
+      winEl.style.transform = 'scale(1)';
+    });
+    // Particles burst
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        const x = window.innerWidth * (0.2 + Math.random() * 0.6);
+        const y = window.innerHeight * (0.2 + Math.random() * 0.6);
+        spawnParticles(x, y, 30);
+      }, i * 200);
+    }
+  }, 3500);
+
+  // Phase 5: Close button (5s)
+  setTimeout(() => {
+    const btn = document.createElement('button');
+    btn.textContent = 'COLLECT WINNINGS';
+    btn.style.cssText = 'margin-top:24px;padding:16px 40px;font-family:Orbitron;font-size:16px;font-weight:700;background:linear-gradient(135deg,#ffd700,#ff8c00);border:none;border-radius:12px;color:#000;cursor:pointer;letter-spacing:2px;transition:all .2s;opacity:0;transform:translateY(20px);';
+    btn.onmouseenter = () => { btn.style.transform = 'scale(1.05)'; btn.style.boxShadow = '0 0 30px rgba(255,215,0,.5)'; };
+    btn.onmouseleave = () => { btn.style.transform = 'scale(1)'; btn.style.boxShadow = 'none'; };
+    btn.onclick = () => {
+      overlay.style.opacity = '0';
+      overlay.style.transition = 'opacity 0.3s';
+      setTimeout(() => overlay.remove(), 300);
+    };
+    overlay.appendChild(btn);
+    requestAnimationFrame(() => {
+      btn.style.opacity = '1';
+      btn.style.transform = 'translateY(0)';
+    });
+    playWinSound();
+    showBigWin(winAmount);
+  }, 5000);
+}
 
 function initSlots(){
   const container=document.getElementById('reelsContainer');
@@ -6320,11 +6913,12 @@ function spinSlots(){
     for(const[s,c]of Object.entries(counts)){if(c>maxCount){maxCount=c;maxSym=s;}}
 
     let winAmount=0;
+    const isJackpot = maxCount===5;
     if(maxCount>=3){
-      const mult=SYMBOL_VALUES[maxSym]||3;
-      if(maxCount===3)winAmount=bet*mult*0.5;
-      else if(maxCount===4)winAmount=bet*mult*2;
-      else winAmount=bet*mult*10;
+      const mult=SYMBOL_VALUES[maxSym]||4;
+      if(maxCount===3)winAmount=bet*mult;
+      else if(maxCount===4)winAmount=bet*mult*5;
+      else winAmount=bet*1000; // JACKPOT: 1000x bet for all 5 matching!
       // Apply luck potion bonus
       if(typeof getLuckBonus==='function') winAmount*=getLuckBonus();
       winAmount=Math.round(winAmount*100)/100;
@@ -6332,11 +6926,15 @@ function spinSlots(){
 
     if(winAmount>0){
       balance+=winAmount;updateBalDisplay();
-      showBigWin(winAmount);
-      showToast('WIN $'+winAmount.toFixed(2)+'!');
-      playWinSound();
-      const rect=document.querySelector('.slots-machine').getBoundingClientRect();
-      spawnParticles(rect.left+rect.width/2,rect.top+rect.height/2,40+winAmount/10);
+      if(isJackpot){
+        slotsJackpotAnimation(winAmount, maxSym, bet);
+      } else {
+        showBigWin(winAmount);
+        showToast('WIN $'+winAmount.toFixed(2)+'!');
+        playWinSound();
+        const rect=document.querySelector('.slots-machine').getBoundingClientRect();
+        spawnParticles(rect.left+rect.width/2,rect.top+rect.height/2,40+winAmount/10);
+      }
     }else{
       // Shield potion: refund half of bet on loss
       if(slotsShielded){ const refund=Math.floor(bet*0.5); balance+=refund; updateBalDisplay(); showToast('🛡️ Shield! -$'+(bet-refund).toFixed(2),false); }
@@ -6617,19 +7215,28 @@ function spinRoulette(){
       rouletteSpinning=false;
       document.getElementById('roulSpinBtn').disabled=false;
 
-      const colorLabel=isActuallyGreen?'💚 Green':(isActuallyRed?'🔴 Red':'⚫ Black');
-      const colorCSS=isActuallyGreen?'var(--green)':(isActuallyRed?'#ff5555':'#ccc');
+      // Read back which slice the pointer (top, -PI/2) is actually over
+      const pointerAngle=((-Math.PI/2-rouletteAngle)%(Math.PI*2)+Math.PI*4)%(Math.PI*2);
+      const visualIdx=Math.floor(pointerAngle/sliceAngle)%n;
+      const visualNum=ROUL_NUMS[visualIdx];
+      // Use the visual number for display (should match winNum, but this guarantees it)
+      const fNum=visualNum;
+      const fRed=RED_NUMS.has(fNum);
+      const fGreen=fNum===0;
+
+      const colorLabel=fGreen?'💚 Green':(fRed?'🔴 Red':'⚫ Black');
+      const colorCSS=fGreen?'var(--green)':(fRed?'#ff5555':'#ccc');
       document.getElementById('rouletteResult').innerHTML=
-        '<span style="color:'+colorCSS+'">'+winNum+' — '+colorLabel+'</span>';
+        '<span style="color:'+colorCSS+'">'+fNum+' — '+colorLabel+'</span>';
 
       let won=false;
-      if(selectedRoulBet==='red'&&isActuallyRed)won=true;
-      if(selectedRoulBet==='black'&&!isActuallyRed&&!isActuallyGreen)won=true;
-      if(selectedRoulBet==='green'&&isActuallyGreen)won=true;
-      if(selectedRoulBet==='odd'&&winNum>0&&winNum%2===1)won=true;
-      if(selectedRoulBet==='even'&&winNum>0&&winNum%2===0)won=true;
-      if(selectedRoulBet==='1-18'&&winNum>=1&&winNum<=18)won=true;
-      if(selectedRoulBet==='19-36'&&winNum>=19&&winNum<=36)won=true;
+      if(selectedRoulBet==='red'&&fRed)won=true;
+      if(selectedRoulBet==='black'&&!fRed&&!fGreen)won=true;
+      if(selectedRoulBet==='green'&&fGreen)won=true;
+      if(selectedRoulBet==='odd'&&fNum>0&&fNum%2===1)won=true;
+      if(selectedRoulBet==='even'&&fNum>0&&fNum%2===0)won=true;
+      if(selectedRoulBet==='1-18'&&fNum>=1&&fNum<=18)won=true;
+      if(selectedRoulBet==='19-36'&&fNum>=19&&fNum<=36)won=true;
 
       if(won){
         let payout=selectedRoulBet==='green'?bet*36:bet*2;
@@ -8899,11 +9506,16 @@ function wheelSpin(){if(wheelSpinning)return;const bet=parseFloat(document.getEl
     if(Math.abs(cur-lastTickAngle)>tickSize){lastTickAngle=cur;playSound(600+Math.random()*200,'sine',.015,.01);}
     if(prog<1)requestAnimationFrame(anim);
     else{wheelAngle=cur%(Math.PI*2);wheelSpinning=false;document.getElementById('wheelSpinBtn').disabled=false;
-      const payout=bet*seg.mult;
-      if(payout>0){balance+=payout;updateBalDisplay();showBigWin(payout);showToast(seg.label+' +$'+payout.toFixed(2));if(seg.mult>=2)playWinSound();else playClickSound();
-        if(seg.mult>=5)spawnParticles(window.innerWidth/2,window.innerHeight/2,30+seg.mult*5);
-        document.getElementById('wheelResult').innerHTML='<span style="color:var(--green)">'+seg.label+' — +$'+payout.toFixed(2)+'</span>';recordGame('wheel',bet,payout);}
-      else{showToast(seg.label,false);playLoseSound();document.getElementById('wheelResult').innerHTML='<span style="color:var(--red)">'+seg.label+'</span>';recordGame('wheel',bet,0);}
+      /* visual readback — find which segment the top pointer actually sits on */
+      const twTotal=WHEEL_SEGMENTS.reduce((s,sg)=>s+sg.weight,0);
+      const pointerAng=((-Math.PI/2-wheelAngle)%(Math.PI*2)+Math.PI*4)%(Math.PI*2);
+      let acc=0,visSeg=WHEEL_SEGMENTS[0];
+      for(let i=0;i<WHEEL_SEGMENTS.length;i++){acc+=(WHEEL_SEGMENTS[i].weight/twTotal)*Math.PI*2;if(pointerAng<acc){visSeg=WHEEL_SEGMENTS[i];break;}}
+      const payout=bet*visSeg.mult;
+      if(payout>0){balance+=payout;updateBalDisplay();showBigWin(payout);showToast(visSeg.label+' +$'+payout.toFixed(2));if(visSeg.mult>=2)playWinSound();else playClickSound();
+        if(visSeg.mult>=5)spawnParticles(window.innerWidth/2,window.innerHeight/2,30+visSeg.mult*5);
+        document.getElementById('wheelResult').innerHTML='<span style="color:var(--green)">'+visSeg.label+' — +$'+payout.toFixed(2)+'</span>';recordGame('wheel',bet,payout);}
+      else{showToast(visSeg.label,false);playLoseSound();document.getElementById('wheelResult').innerHTML='<span style="color:var(--red)">'+visSeg.label+'</span>';recordGame('wheel',bet,0);}
     }
   }requestAnimationFrame(anim);
 }
@@ -9998,6 +10610,1248 @@ function bsrCloseGameOver() {
   document.getElementById('bsrGame').style.display = 'none';
   document.getElementById('bsrRoundSplash').style.display = 'none';
   bsrUpdateStats();
+}
+
+// ============ RUSSIAN ROULETTE ============
+let rrState = null;
+const RR_DIFF = {
+  easy:   { rounds: 3, mult: 2, label: 'EASY',   icon: '😎' },
+  normal: { rounds: 5, mult: 4, label: 'NORMAL', icon: '💀' },
+  hard:   { rounds: 8, mult: 8, label: 'HARD',   icon: '☠️' }
+};
+let rrDiff = 'easy';
+let rrMode = 'bot';
+
+function rrSwitchMode(mode, tab) {
+  rrMode = mode;
+  document.querySelectorAll('#russianrPanel .inv-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('rrBotLobby').style.display = mode === 'bot' ? 'block' : 'none';
+  document.getElementById('rrPvpLobby').style.display = mode === 'pvp' ? 'block' : 'none';
+  document.getElementById('rrGameArea').style.display = 'none';
+  document.getElementById('rrGameOver').style.display = 'none';
+}
+
+function rrSelectDiff(d, el) {
+  rrDiff = d;
+  document.querySelectorAll('#rrBotLobby .bsr-diff-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function initRussianRoulette() {
+  document.getElementById('rrBotLobby').style.display = rrMode === 'bot' ? 'block' : 'none';
+  document.getElementById('rrPvpLobby').style.display = rrMode === 'pvp' ? 'block' : 'none';
+  document.getElementById('rrGameArea').style.display = 'none';
+  document.getElementById('rrGameOver').style.display = 'none';
+  rrUpdateStats();
+}
+
+function rrUpdateStats() {
+  // stats are tracked via gameStats.russianr
+}
+
+function rrLog(msg, color) {
+  const log = document.getElementById('rrLog');
+  const d = document.createElement('div');
+  d.style.cssText = 'padding:4px 8px;border-bottom:1px solid rgba(255,255,255,0.05);font-size:12px;';
+  if (color) d.style.color = color;
+  d.textContent = msg;
+  log.prepend(d);
+}
+
+// ---- Chamber mechanics ----
+function rrNewCylinder() {
+  // Place 1 bullet randomly in 6 chambers
+  const chambers = [0, 0, 0, 0, 0, 0];
+  chambers[Math.floor(Math.random() * 6)] = 1;
+  return { chambers, pos: 0, remaining: 6 };
+}
+
+function rrPullChamber(cyl) {
+  const hit = cyl.chambers[cyl.pos] === 1;
+  cyl.pos = (cyl.pos + 1) % 6;
+  cyl.remaining--;
+  return hit;
+}
+
+function rrSpinCylinderMech(cyl) {
+  // Re-randomize
+  cyl.chambers = [0, 0, 0, 0, 0, 0];
+  cyl.chambers[Math.floor(Math.random() * 6)] = 1;
+  cyl.pos = 0;
+  cyl.remaining = 6;
+}
+
+// ---- Bot AI ----
+function rrBotDecision(cyl, roundNum, totalRounds) {
+  // Bot weighs risk: if remaining chambers are few and bullet hasn't fired, more likely to spin
+  const hitChance = 1 / Math.max(1, cyl.remaining);
+  // Easy bot: plays dumber (less likely to spin)
+  // Hard bot: smarter (spins when risk > 40%)
+  let spinThreshold;
+  if (rrDiff === 'easy') spinThreshold = 0.65;
+  else if (rrDiff === 'normal') spinThreshold = 0.45;
+  else spinThreshold = 0.35;
+  
+  // Random factor
+  if (hitChance >= spinThreshold && Math.random() < 0.6) return 'spin';
+  return 'pull';
+}
+
+// ---- BOT START ----
+function rrStartBot() {
+  const betEl = document.getElementById('rrBet');
+  const bet = parseInt(betEl.value);
+  if (!bet || bet < 10) return showToast('Min bet is $10', false);
+  if (!checkMaxBet(bet, 'russianr')) return;
+
+  const diff = RR_DIFF[rrDiff];
+  rrState = {
+    mode: 'bot',
+    bet,
+    diff: rrDiff,
+    totalRounds: diff.rounds,
+    currentRound: 1,
+    mult: diff.mult,
+    cylinder: rrNewCylinder(),
+    playerTurn: Math.random() < 0.5,
+    playerAlive: true,
+    dealerAlive: true,
+    roundKills: 0,      // track kills across rounds
+    gameOver: false,
+    paused: false
+  };
+
+  balance -= bet;
+  updateBalance();
+
+  document.getElementById('rrBotLobby').style.display = 'none';
+  document.getElementById('rrPvpLobby').style.display = 'none';
+  document.getElementById('rrGameArea').style.display = 'block';
+  document.getElementById('rrGameOver').style.display = 'none';
+  document.getElementById('rrLog').innerHTML = '';
+  document.getElementById('rrOpponentLabel').textContent = '🤖 DEALER';
+
+  rrUpdateUI();
+  rrLog(`Game started — ${diff.label} difficulty (${diff.rounds} rounds, ${diff.mult}× payout)`, 'var(--gold)');
+  rrLog(`Round 1 — New cylinder loaded!`, 'var(--neon)');
+  rrAnimateNewRound();
+
+  if (!rrState.playerTurn) {
+    rrLog('Dealer goes first...', 'var(--text2)');
+    rrDisableActions();
+    setTimeout(() => rrBotTurn(), 1500);
+  } else {
+    rrLog('You go first!', 'var(--green)');
+    rrEnableActions();
+  }
+}
+
+function rrUpdateUI() {
+  if (!rrState) return;
+  const s = rrState;
+  document.getElementById('rrRoundInfo').textContent = `ROUND ${s.currentRound} / ${s.totalRounds}`;
+  document.getElementById('rrMultInfo').textContent = `🏆 ${s.mult}× ($${Math.floor(s.bet * s.mult).toLocaleString()})`;
+  
+  // Chamber info
+  const chamberDots = [];
+  for (let i = 0; i < 6; i++) {
+    if (i < s.cylinder.pos) chamberDots.push('⚫'); // already fired (empty)
+    else chamberDots.push('🔴'); // unknown
+  }
+  document.getElementById('rrChamberInfo').textContent = chamberDots.join(' ') + ` (${s.cylinder.remaining} left)`;
+  
+  // Player status
+  document.getElementById('rrPlayerStatus').textContent = s.playerAlive ? (s.playerTurn ? '😰' : '😐') : '💀';
+  document.getElementById('rrPlayerAlive').textContent = s.playerAlive ? 'ALIVE' : 'DEAD';
+  document.getElementById('rrPlayerAlive').style.color = s.playerAlive ? 'var(--green)' : 'var(--red)';
+  document.getElementById('rrPlayerCard').style.borderColor = s.playerTurn && !s.gameOver ? 'var(--neon)' : 'var(--border)';
+  document.getElementById('rrPlayerCard').style.boxShadow = s.playerTurn && !s.gameOver ? '0 0 20px rgba(0,240,255,.2)' : 'none';
+  
+  // Dealer status
+  document.getElementById('rrDealerStatus').textContent = s.dealerAlive ? (!s.playerTurn ? '😈' : '😐') : '💀';
+  document.getElementById('rrDealerAlive').textContent = s.dealerAlive ? 'ALIVE' : 'DEAD';
+  document.getElementById('rrDealerAlive').style.color = s.dealerAlive ? 'var(--green)' : 'var(--red)';
+  document.getElementById('rrDealerCard').style.borderColor = !s.playerTurn && !s.gameOver ? 'rgba(255,68,68,.5)' : 'var(--border)';
+  document.getElementById('rrDealerCard').style.boxShadow = !s.playerTurn && !s.gameOver ? '0 0 20px rgba(255,68,68,.2)' : 'none';
+}
+
+function rrEnableActions() {
+  document.getElementById('rrPullBtn').disabled = false;
+  document.getElementById('rrSpinBtn').disabled = false;
+  document.getElementById('rrPullBtn').style.opacity = '1';
+  document.getElementById('rrSpinBtn').style.opacity = '1';
+}
+
+function rrDisableActions() {
+  document.getElementById('rrPullBtn').disabled = true;
+  document.getElementById('rrSpinBtn').disabled = true;
+  document.getElementById('rrPullBtn').style.opacity = '0.4';
+  document.getElementById('rrSpinBtn').style.opacity = '0.4';
+}
+
+function rrAnimateNewRound() {
+  const rev = document.getElementById('rrRevolver');
+  rev.style.transform = 'rotate(0deg)';
+  setTimeout(() => { rev.style.transform = 'rotate(720deg)'; }, 50);
+  setTimeout(() => { rev.style.transform = 'rotate(0deg)'; }, 600);
+}
+
+function rrAnimateShot(hit) {
+  const rev = document.getElementById('rrRevolver');
+  if (hit) {
+    rev.style.transform = 'scale(1.3) rotate(-10deg)';
+    setTimeout(() => { rev.style.transform = 'scale(1) rotate(0deg)'; }, 400);
+  } else {
+    rev.style.transform = 'rotate(15deg)';
+    setTimeout(() => { rev.style.transform = 'rotate(0deg)'; }, 300);
+  }
+}
+
+function rrShakeScreen() {
+  const area = document.getElementById('rrGameArea');
+  area.style.animation = 'none';
+  area.offsetHeight;
+  area.style.animation = 'bsr-shake .5s ease-out';
+}
+
+// ---- Player actions ----
+function rrPullTrigger() {
+  if (!rrState || rrState.gameOver || !rrState.playerTurn || rrState.paused) return;
+  rrDisableActions();
+  rrState.paused = true;
+  
+  playSound(200, 'triangle', 0.1, 0.3);
+  
+  setTimeout(() => {
+    const hit = rrPullChamber(rrState.cylinder);
+    rrAnimateShot(hit);
+    
+    if (hit) {
+      // BANG!
+      playSound(80, 'sawtooth', 0.4, 0.7);
+      rrShakeScreen();
+      rrState.playerAlive = false;
+      rrState.playerTurn = false;
+      rrLog('💥 BANG! The bullet fires — YOU\'RE HIT!', '#ff4444');
+      rrUpdateUI();
+      setTimeout(() => rrEndRound('dealer'), 1200);
+    } else {
+      // Click...
+      playSound(600, 'sine', 0.08, 0.4);
+      rrLog('🔘 *click* — Empty chamber. You survive!', 'var(--green)');
+      rrState.playerTurn = false;
+      rrUpdateUI();
+      rrState.paused = false;
+      // Dealer's turn
+      setTimeout(() => rrBotTurn(), 1200);
+    }
+  }, 800);
+}
+
+function rrSpinCylinder() {
+  if (!rrState || rrState.gameOver || !rrState.playerTurn || rrState.paused) return;
+  rrDisableActions();
+  rrState.paused = true;
+  
+  playSound(400, 'sine', 0.3, 0.3);
+  rrAnimateNewRound();
+  
+  setTimeout(() => {
+    rrSpinCylinderMech(rrState.cylinder);
+    rrLog('🔄 You spin the cylinder — reset to 6 chambers!', 'var(--neon)');
+    rrUpdateUI();
+    rrState.playerTurn = false;
+    rrState.paused = false;
+    // Dealer's turn
+    setTimeout(() => rrBotTurn(), 1200);
+  }, 800);
+}
+
+// ---- Bot turn ----
+function rrBotTurn() {
+  if (!rrState || rrState.gameOver) return;
+  rrDisableActions();
+  rrState.paused = true;
+  
+  const decision = rrBotDecision(rrState.cylinder, rrState.currentRound, rrState.totalRounds);
+  
+  if (decision === 'spin') {
+    rrLog('🤖 Dealer spins the cylinder...', 'var(--text2)');
+    playSound(400, 'sine', 0.3, 0.3);
+    rrAnimateNewRound();
+    setTimeout(() => {
+      rrSpinCylinderMech(rrState.cylinder);
+      rrLog('🔄 Cylinder reset to 6 chambers!', 'var(--text2)');
+      rrUpdateUI();
+      rrState.playerTurn = true;
+      rrState.paused = false;
+      rrUpdateUI();
+      rrEnableActions();
+      rrLog('Your turn — pull the trigger or spin!', 'var(--gold)');
+    }, 1000);
+  } else {
+    rrLog('🤖 Dealer grabs the gun... pulls the trigger...', 'var(--text2)');
+    
+    setTimeout(() => {
+      const hit = rrPullChamber(rrState.cylinder);
+      rrAnimateShot(hit);
+      
+      if (hit) {
+        playSound(80, 'sawtooth', 0.4, 0.7);
+        rrShakeScreen();
+        rrState.dealerAlive = false;
+        rrLog('💥 BANG! The dealer takes the bullet! 💀', '#ff4444');
+        rrUpdateUI();
+        setTimeout(() => rrEndRound('player'), 1200);
+      } else {
+        playSound(600, 'sine', 0.08, 0.4);
+        rrLog('🔘 *click* — Dealer survives...', 'var(--text2)');
+        rrState.playerTurn = true;
+        rrUpdateUI();
+        rrState.paused = false;
+        rrEnableActions();
+        rrLog('Your turn — pull the trigger or spin!', 'var(--gold)');
+      }
+    }, 1200);
+  }
+}
+
+// ---- Round/game end ----
+function rrEndRound(winner) {
+  if (!rrState) return;
+  const s = rrState;
+  
+  rrLog(`— Round ${s.currentRound} winner: ${winner === 'player' ? 'YOU' : 'DEALER'} —`, winner === 'player' ? 'var(--green)' : 'var(--red)');
+  
+  if (s.currentRound >= s.totalRounds) {
+    rrEndGame(winner);
+    return;
+  }
+  
+  // If player died, game over
+  if (!s.playerAlive) {
+    rrEndGame('dealer');
+    return;
+  }
+  
+  // If dealer died, check if more rounds
+  if (!s.dealerAlive) {
+    // Continue to next round
+    s.currentRound++;
+    s.dealerAlive = true;
+    s.playerAlive = true;
+    s.cylinder = rrNewCylinder();
+    s.playerTurn = Math.random() < 0.5;
+    
+    rrLog(`Round ${s.currentRound} — New cylinder loaded!`, 'var(--neon)');
+    rrAnimateNewRound();
+    rrUpdateUI();
+    
+    setTimeout(() => {
+      rrState.paused = false;
+      if (s.playerTurn) {
+        rrLog('You go first!', 'var(--green)');
+        rrEnableActions();
+      } else {
+        rrLog('Dealer goes first...', 'var(--text2)');
+        rrBotTurn();
+      }
+    }, 1000);
+    return;
+  }
+  
+  // Player died
+  rrEndGame('dealer');
+}
+
+function rrEndGame(winner) {
+  if (!rrState) return;
+  rrState.gameOver = true;
+  rrDisableActions();
+  
+  const s = rrState;
+  const diff = RR_DIFF[s.diff];
+  const won = winner === 'player';
+  const winAmount = won ? Math.floor(s.bet * s.mult) : 0;
+  
+  if (won) {
+    balance += winAmount;
+    updateBalance();
+    if (winAmount > gameStats.russianr.biggestWin) gameStats.russianr.biggestWin = winAmount;
+    gameStats.russianr.won++;
+  }
+  gameStats.russianr.played++;
+  recordGame('russianr', s.bet, winAmount);
+  
+  setTimeout(() => {
+    const box = document.getElementById('rrGameOverContent');
+    if (won) {
+      playWinSound();
+      box.innerHTML = `
+        <div style="font-size:60px;margin-bottom:12px;">🏆</div>
+        <div style="font-family:'Orbitron';font-size:22px;color:var(--green);margin-bottom:8px;">YOU SURVIVED!</div>
+        <div style="font-size:14px;color:var(--text2);margin-bottom:8px;">The dealer takes the bullet. You walk away alive.</div>
+        <div style="font-family:'Orbitron';font-size:28px;color:var(--gold);margin-bottom:6px;">+$${winAmount.toLocaleString()}</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:16px;">${diff.label} ${diff.icon} • ${diff.mult}× Multiplier</div>
+        <button onclick="rrCloseGameOver()" class="action-btn primary" style="padding:14px 32px;font-size:15px;font-family:'Orbitron';">PLAY AGAIN</button>`;
+      spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 40);
+      if (winAmount >= s.bet * 4) showBigWin(winAmount);
+    } else {
+      playLoseSound();
+      box.innerHTML = `
+        <div style="font-size:60px;margin-bottom:12px;">💀</div>
+        <div style="font-family:'Orbitron';font-size:22px;color:var(--red);margin-bottom:8px;">YOU'RE DEAD</div>
+        <div style="font-size:14px;color:var(--text2);margin-bottom:8px;">The bullet found you. Better luck next life.</div>
+        <div style="font-family:'Orbitron';font-size:28px;color:var(--red);margin-bottom:6px;">-$${s.bet.toLocaleString()}</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:16px;">${diff.label} ${diff.icon} • Round ${s.currentRound}/${s.totalRounds}</div>
+        <button onclick="rrCloseGameOver()" class="action-btn primary" style="padding:14px 32px;font-size:15px;font-family:'Orbitron';">TRY AGAIN</button>`;
+    }
+    document.getElementById('rrGameOver').style.display = 'flex';
+  }, 800);
+}
+
+function rrCloseGameOver() {
+  document.getElementById('rrGameOver').style.display = 'none';
+  rrState = null;
+  document.getElementById('rrBotLobby').style.display = rrMode === 'bot' ? 'block' : 'none';
+  document.getElementById('rrPvpLobby').style.display = rrMode === 'pvp' ? 'block' : 'none';
+  document.getElementById('rrGameArea').style.display = 'none';
+}
+
+// ============ RUSSIAN ROULETTE PVP ============
+let rrPvpListener = null;
+let rrPvpUnsubscribe = null;
+
+async function rrStartPvP() {
+  const bet = parseInt(document.getElementById('rrPvpBet').value);
+  if (!bet || bet < 10) return showToast('Min bet is $10', false);
+  if (!checkMaxBet(bet, 'russianr')) return;
+  
+  const opName = document.getElementById('rrPvpOpponent').value.trim().toLowerCase();
+  if (!opName) return showToast('Enter opponent username', false);
+  if (opName === (window._currentUsername || '').toLowerCase()) return showToast('Cannot challenge yourself', false);
+  
+  const statusEl = document.getElementById('rrPvpStatus');
+  statusEl.textContent = 'Sending challenge...';
+  
+  try {
+    const nameSnap = await window._fbGet('casino/usernames/' + opName);
+    if (!nameSnap.exists()) { statusEl.textContent = 'Player not found!'; return; }
+    const opUid = nameSnap.val();
+    if (opUid === window._currentPlayerId) { statusEl.textContent = 'Cannot challenge yourself'; return; }
+    
+    const bSnap = await window._fbGet('casino/players/' + opUid + '/balance');
+    const opBal = bSnap.val() || 0;
+    if (opBal < bet) { statusEl.textContent = 'Opponent cannot afford that wager!'; return; }
+    
+    const gameId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const gameData = {
+      host: window._currentPlayerId,
+      hostName: window._currentUsername,
+      guest: opUid,
+      guestName: opName,
+      bet: bet,
+      status: 'pending',
+      cylinder: null,
+      currentTurn: null,
+      round: 1,
+      totalRounds: 5,
+      hostAlive: true,
+      guestAlive: true,
+      created: Date.now()
+    };
+    
+    await window._fbSet('casino/rrGames/' + gameId, gameData);
+    
+    balance -= bet;
+    updateBalance();
+    
+    const notifKey = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
+    await window._fbSet('casino/players/' + opUid + '/notifications/' + notifKey, {
+      type: 'rr_challenge',
+      from: window._currentUsername,
+      fromUid: window._currentPlayerId,
+      gameId: gameId,
+      bet: bet,
+      time: Date.now()
+    });
+    
+    statusEl.innerHTML = `Challenge sent to <b>${opName}</b>! Waiting...<br><button class="action-btn" onclick="rrCancelPvP('${gameId}',${bet})" style="margin-top:8px;padding:6px 16px;font-size:11px;">Cancel</button>`;
+    
+    rrPvpUnsubscribe = window._fbOnValue('casino/rrGames/' + gameId, snap => {
+      const g = snap.val();
+      if (!g) return;
+      if (g.status === 'active') rrJoinPvPGame(gameId);
+      if (g.status === 'declined') {
+        statusEl.textContent = 'Challenge declined.';
+        balance += bet;
+        updateBalance();
+        rrCleanupPvP();
+      }
+    });
+  } catch(e) {
+    statusEl.textContent = 'Error: ' + e.message;
+  }
+}
+
+function rrCancelPvP(gameId, bet) {
+  window._fbRemove('casino/rrGames/' + gameId);
+  balance += bet || (rrState ? rrState.bet : parseInt(document.getElementById('rrPvpBet').value));
+  updateBalance();
+  rrCleanupPvP();
+  document.getElementById('rrPvpStatus').textContent = 'Challenge cancelled.';
+}
+
+async function rrAcceptPvPChallenge(gameId, bet) {
+  if (!checkMaxBet(bet, 'russianr')) return;
+  
+  balance -= bet;
+  updateBalance();
+  
+  const chambers = [0, 0, 0, 0, 0, 0];
+  chambers[Math.floor(Math.random() * 6)] = 1;
+  const hostFirst = Math.random() < 0.5;
+  
+  await window._fbUpdate('casino/rrGames/' + gameId, {
+    status: 'active',
+    cylinder: chambers.join(','),
+    cylinderPos: 0,
+    currentTurn: hostFirst ? 'host' : 'guest',
+    round: 1,
+    hostAlive: true,
+    guestAlive: true
+  });
+  
+  switchGame('russianr');
+  rrJoinPvPGame(gameId);
+}
+
+function rrJoinPvPGame(gameId) {
+  document.getElementById('rrBotLobby').style.display = 'none';
+  document.getElementById('rrPvpLobby').style.display = 'none';
+  document.getElementById('rrGameArea').style.display = 'block';
+  document.getElementById('rrGameOver').style.display = 'none';
+  document.getElementById('rrLog').innerHTML = '';
+  
+  rrCleanupPvP();
+  
+  let endHandled = false;
+  
+  rrPvpUnsubscribe = window._fbOnValue('casino/rrGames/' + gameId, snap => {
+    const g = snap.val();
+    if (!g) return;
+    
+    const myId = window._currentPlayerId;
+    const isHost = g.host === myId;
+    const opName = isHost ? g.guestName : g.hostName;
+    document.getElementById('rrOpponentLabel').textContent = '👤 ' + opName.toUpperCase();
+    
+    const myTurn = (g.currentTurn === 'host' && isHost) || (g.currentTurn === 'guest' && !isHost);
+    const myAlive = isHost ? g.hostAlive : g.guestAlive;
+    const opAlive = isHost ? g.guestAlive : g.hostAlive;
+    
+    rrState = {
+      mode: 'pvp',
+      bet: g.bet,
+      diff: 'normal',
+      totalRounds: g.totalRounds || 5,
+      currentRound: g.round || 1,
+      mult: 2,
+      cylinder: { remaining: 6 - (g.cylinderPos || 0), pos: g.cylinderPos || 0 },
+      playerTurn: myTurn,
+      playerAlive: myAlive,
+      dealerAlive: opAlive,
+      gameOver: g.status === 'finished',
+      pvpGameId: gameId,
+      pvpIsHost: isHost
+    };
+    
+    document.getElementById('rrRoundInfo').textContent = `ROUND ${g.round || 1} / ${g.totalRounds || 5}`;
+    document.getElementById('rrMultInfo').textContent = `🏆 POT: $${(g.bet * 2).toLocaleString()}`;
+    rrUpdateUI();
+    
+    if (myTurn && !rrState.gameOver && myAlive && opAlive) rrEnableActions();
+    else rrDisableActions();
+    
+    if (g.lastAction) {
+      const la = g.lastAction;
+      if (la.type === 'pull') {
+        if (la.hit) { rrAnimateShot(true); rrShakeScreen(); playSound(80, 'sawtooth', 0.4, 0.7); }
+        else { rrAnimateShot(false); playSound(600, 'sine', 0.08, 0.4); }
+      } else if (la.type === 'spin') { rrAnimateNewRound(); playSound(400, 'sine', 0.3, 0.3); }
+    }
+    
+    if (g.log) {
+      const logEl = document.getElementById('rrLog');
+      logEl.innerHTML = '';
+      Object.values(g.log).slice(-20).reverse().forEach(l => {
+        const d = document.createElement('div');
+        d.style.cssText = 'padding:4px 8px;border-bottom:1px solid rgba(255,255,255,0.05);font-size:12px;';
+        if (l.color) d.style.color = l.color;
+        d.textContent = l.msg;
+        logEl.appendChild(d);
+      });
+    }
+    
+    if (g.status === 'finished' && g.winner && !endHandled) {
+      endHandled = true;
+      const iWon = (g.winner === 'host' && isHost) || (g.winner === 'guest' && !isHost);
+      if (iWon) {
+        balance += g.bet * 2;
+        updateBalance();
+        gameStats.russianr.won++;
+        if (g.bet * 2 > gameStats.russianr.biggestWin) gameStats.russianr.biggestWin = g.bet * 2;
+      }
+      gameStats.russianr.played++;
+      recordGame('russianr', g.bet, iWon ? g.bet * 2 : 0);
+      
+      setTimeout(() => {
+        const box = document.getElementById('rrGameOverContent');
+        if (iWon) {
+          playWinSound();
+          box.innerHTML = `<div style="font-size:60px;margin-bottom:12px;">🏆</div>
+            <div style="font-family:'Orbitron';font-size:22px;color:var(--green);margin-bottom:8px;">YOU WIN!</div>
+            <div style="font-size:14px;color:var(--text2);margin-bottom:8px;">${opName} took the bullet!</div>
+            <div style="font-family:'Orbitron';font-size:28px;color:var(--gold);margin-bottom:16px;">+$${g.bet.toLocaleString()}</div>
+            <button onclick="rrCloseGameOver();rrCleanupPvP();" class="action-btn primary" style="padding:14px 32px;">BACK TO LOBBY</button>`;
+          spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 30);
+        } else {
+          playLoseSound();
+          box.innerHTML = `<div style="font-size:60px;margin-bottom:12px;">💀</div>
+            <div style="font-family:'Orbitron';font-size:22px;color:var(--red);margin-bottom:8px;">YOU LOSE</div>
+            <div style="font-size:14px;color:var(--text2);margin-bottom:8px;">The bullet found you...</div>
+            <div style="font-family:'Orbitron';font-size:28px;color:var(--red);margin-bottom:16px;">-$${g.bet.toLocaleString()}</div>
+            <button onclick="rrCloseGameOver();rrCleanupPvP();" class="action-btn primary" style="padding:14px 32px;">BACK TO LOBBY</button>`;
+        }
+        document.getElementById('rrGameOver').style.display = 'flex';
+      }, 1000);
+    }
+  });
+}
+
+async function rrPvPAction(actionType) {
+  if (!rrState || rrState.mode !== 'pvp' || !rrState.pvpGameId) return;
+  const gameId = rrState.pvpGameId;
+  const isHost = rrState.pvpIsHost;
+  
+  const snap = await window._fbGet('casino/rrGames/' + gameId);
+  const g = snap.val();
+  if (!g || g.status !== 'active') return;
+  
+  const myTurn = (g.currentTurn === 'host' && isHost) || (g.currentTurn === 'guest' && !isHost);
+  if (!myTurn) return;
+  
+  const chambers = g.cylinder.split(',').map(Number);
+function rrDeclinePvPChallenge(gameId) {
+  window._fbUpdate('casino/rrGames/' + gameId, { status: 'declined' });
+}
+
+// ============ MULTIPLAYER BUCKSHOT ROULETTE ============
+let mpbsrUnsub = null;
+let mpbsrGameId = null;
+let mpbsrIsHost = false;
+let mpbsrChallengeInterval = null;
+
+const MPBSR_ITEMS = [
+  { id: 'saw', icon: '🪚', name: 'Saw', desc: 'Next LIVE deals 2× damage' },
+  { id: 'mag', icon: '🔍', name: 'Magnifying Glass', desc: 'Peek at current shell' },
+  { id: 'cig', icon: '🚬', name: 'Cigarette', desc: 'Heal +1 HP' },
+  { id: 'cuff', icon: '🔗', name: 'Handcuffs', desc: 'Opponent skips next turn' },
+  { id: 'phone', icon: '📱', name: 'Burner Phone', desc: 'Reveals a random shell' }
+];
+
+function initMPBSR() {
+  document.getElementById('mpbsrLobby').style.display = 'block';
+  document.getElementById('mpbsrGameArea').style.display = 'none';
+  document.getElementById('mpbsrGameOver').style.display = 'none';
+  mpbsrStartChallengeListener();
+}
+
+function mpbsrStartChallengeListener() {
+  if (mpbsrChallengeInterval) clearInterval(mpbsrChallengeInterval);
+  mpbsrChallengeInterval = setInterval(async () => {
+    if (!window._currentPlayerId) return;
+    try {
+      const snap = await window._fbGet('casino/players/' + window._currentPlayerId + '/notifications');
+      if (!snap.exists()) return;
+      const notifs = snap.val();
+      for (const [key, n] of Object.entries(notifs)) {
+        if (n.type === 'mpbsr_challenge' && n.gameId) {
+          window._fbRemove('casino/players/' + window._currentPlayerId + '/notifications/' + key);
+          const toastDiv = document.createElement('div');
+          toastDiv.style.cssText = 'position:fixed;top:20%;left:50%;transform:translateX(-50%);z-index:99999;background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:24px;text-align:center;min-width:280px;box-shadow:0 0 40px rgba(0,0,0,.5);';
+          toastDiv.innerHTML = `
+            <div style="font-size:30px;margin-bottom:8px;">💥</div>
+            <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);margin-bottom:8px;">BUCKSHOT ROULETTE CHALLENGE</div>
+            <div style="font-size:14px;color:var(--text);margin-bottom:4px;"><b>${n.from}</b> challenges you!</div>
+            <div style="font-size:13px;color:var(--text2);margin-bottom:14px;">Wager: <span style="color:var(--gold);">$${n.bet.toLocaleString()}</span></div>
+            <div style="display:flex;gap:10px;justify-content:center;">
+              <button class="action-btn primary" onclick="this.closest('div[style]').remove();mpbsrAccept('${n.gameId}',${n.bet});" style="padding:10px 20px;">✅ ACCEPT</button>
+              <button class="action-btn" onclick="this.closest('div[style]').remove();mpbsrDecline('${n.gameId}');" style="padding:10px 20px;">❌ DECLINE</button>
+            </div>`;
+          document.body.appendChild(toastDiv);
+          setTimeout(() => { if (toastDiv.parentNode) toastDiv.remove(); }, 30000);
+        }
+      }
+    } catch(e) {}
+  }, 5000);
+}
+
+function mpbsrGenerateRound(roundNum) {
+  // Generate shells and items for a round
+  const shellCount = 4 + roundNum;
+  const liveCount = 1 + Math.floor(Math.random() * Math.min(shellCount - 1, roundNum + 2));
+  const blankCount = shellCount - liveCount;
+  const shells = [];
+  for (let i = 0; i < liveCount; i++) shells.push('live');
+  for (let i = 0; i < blankCount; i++) shells.push('blank');
+  // Shuffle
+  for (let i = shells.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shells[i], shells[j]] = [shells[j], shells[i]];
+  }
+  // Items per player: 2-4
+  const itemCount = Math.min(2 + roundNum, 4);
+  function randItems(n) {
+    const items = [];
+    for (let i = 0; i < n; i++) items.push(MPBSR_ITEMS[Math.floor(Math.random() * MPBSR_ITEMS.length)].id);
+    return items;
+  }
+  return { shells, hostItems: randItems(itemCount), guestItems: randItems(itemCount), liveCount, blankCount };
+}
+
+async function mpbsrChallenge() {
+  const bet = parseInt(document.getElementById('mpbsrBet').value);
+  if (!bet || bet < 10) return showToast('Min bet is $10', false);
+  if (!checkMaxBet(bet, 'mpbsr')) return;
+  
+  const opName = document.getElementById('mpbsrOpponent').value.trim().toLowerCase();
+  if (!opName) return showToast('Enter opponent username', false);
+  if (opName === (window._currentUsername || '').toLowerCase()) return showToast('Cannot challenge yourself', false);
+  
+  const statusEl = document.getElementById('mpbsrStatus');
+  statusEl.textContent = 'Sending challenge...';
+  
+  try {
+    const nameSnap = await window._fbGet('casino/usernames/' + opName);
+    if (!nameSnap.exists()) { statusEl.textContent = 'Player not found!'; return; }
+    const opUid = nameSnap.val();
+    if (opUid === window._currentPlayerId) { statusEl.textContent = 'Cannot challenge yourself'; return; }
+    
+    const bSnap = await window._fbGet('casino/players/' + opUid + '/balance');
+    if ((bSnap.val() || 0) < bet) { statusEl.textContent = 'Opponent cannot afford that wager!'; return; }
+    
+    const gameId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const round1 = mpbsrGenerateRound(1);
+    
+    await window._fbSet('casino/bsrGames/' + gameId, {
+      host: window._currentPlayerId,
+      hostName: window._currentUsername,
+      guest: opUid,
+      guestName: opName,
+      bet,
+      status: 'pending',
+      round: 1,
+      shells: round1.shells.join(','),
+      shellIdx: 0,
+      liveCount: round1.liveCount,
+      blankCount: round1.blankCount,
+      hostHP: 4,
+      guestHP: 4,
+      hostItems: round1.hostItems.join(','),
+      guestItems: round1.guestItems.join(','),
+      currentTurn: Math.random() < 0.5 ? 'host' : 'guest',
+      sawActive: false,
+      cuffActive: false,
+      created: Date.now()
+    });
+    
+    balance -= bet;
+    updateBalance();
+    
+    const nk = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
+    await window._fbSet('casino/players/' + opUid + '/notifications/' + nk, {
+      type: 'mpbsr_challenge',
+      from: window._currentUsername,
+      fromUid: window._currentPlayerId,
+      gameId,
+      bet,
+      time: Date.now()
+    });
+    
+    statusEl.innerHTML = `Challenge sent to <b>${opName}</b>! Waiting...<br><button class="action-btn" onclick="mpbsrCancelChallenge('${gameId}',${bet})" style="margin-top:8px;padding:6px 16px;font-size:11px;">Cancel</button>`;
+    
+    mpbsrCleanup();
+    mpbsrUnsub = window._fbOnValue('casino/bsrGames/' + gameId, snap => {
+      const g = snap.val();
+      if (!g) return;
+      if (g.status === 'active') {
+        mpbsrGameId = gameId;
+        mpbsrIsHost = true;
+        mpbsrJoinGame(gameId);
+      }
+      if (g.status === 'declined') {
+        statusEl.textContent = 'Challenge declined.';
+        balance += bet;
+        updateBalance();
+        mpbsrCleanup();
+      }
+    });
+  } catch(e) {
+    statusEl.textContent = 'Error: ' + e.message;
+  }
+}
+
+function mpbsrCancelChallenge(gameId, bet) {
+  window._fbRemove('casino/bsrGames/' + gameId);
+  balance += bet;
+  updateBalance();
+  mpbsrCleanup();
+  document.getElementById('mpbsrStatus').textContent = 'Cancelled.';
+}
+
+async function mpbsrAccept(gameId, bet) {
+  if (!checkMaxBet(bet, 'mpbsr')) return;
+  balance -= bet;
+  updateBalance();
+  
+  await window._fbUpdate('casino/bsrGames/' + gameId, { status: 'active' });
+  
+  mpbsrGameId = gameId;
+  mpbsrIsHost = false;
+  switchGame('mpbsr');
+  mpbsrJoinGame(gameId);
+}
+
+function mpbsrDecline(gameId) {
+  window._fbUpdate('casino/bsrGames/' + gameId, { status: 'declined' });
+}
+
+function mpbsrJoinGame(gameId) {
+  document.getElementById('mpbsrLobby').style.display = 'none';
+  document.getElementById('mpbsrGameArea').style.display = 'block';
+  document.getElementById('mpbsrGameOver').style.display = 'none';
+  document.getElementById('mpbsrLog').innerHTML = '';
+  
+  mpbsrCleanup();
+  let endHandled = false;
+  
+  mpbsrUnsub = window._fbOnValue('casino/bsrGames/' + gameId, snap => {
+    const g = snap.val();
+    if (!g) return;
+    
+    const isHost = g.host === window._currentPlayerId;
+    const opName = isHost ? g.guestName : g.hostName;
+    document.getElementById('mpbsrOpLabel').textContent = opName.toUpperCase();
+    
+    const myHP = isHost ? g.hostHP : g.guestHP;
+    const opHP = isHost ? g.guestHP : g.hostHP;
+    const myItems = (isHost ? g.hostItems : g.guestItems) || '';
+    const opItems = (isHost ? g.guestItems : g.hostItems) || '';
+    const myTurn = (g.currentTurn === 'host' && isHost) || (g.currentTurn === 'guest' && !isHost);
+    const shells = g.shells ? g.shells.split(',') : [];
+    const shellIdx = g.shellIdx || 0;
+    
+    // Update UI
+    document.getElementById('mpbsrRoundInfo').textContent = 'ROUND ' + (g.round || 1);
+    document.getElementById('mpbsrPotInfo').textContent = 'POT: $' + (g.bet * 2).toLocaleString();
+    document.getElementById('mpbsrShellInfo').textContent = (shells.length - shellIdx) + ' shells left';
+    
+    // Shell rack
+    const rack = document.getElementById('mpbsrShellRack');
+    rack.innerHTML = '';
+    const rLive = shells.slice(shellIdx).filter(s => s === 'live').length;
+    const rBlank = shells.slice(shellIdx).filter(s => s === 'blank').length;
+    for (let i = 0; i < rLive; i++) {
+      const d = document.createElement('div');
+      d.className = 'bsr-shell bsr-shell-live';
+      d.textContent = '🔴';
+      rack.appendChild(d);
+    }
+    for (let i = 0; i < rBlank; i++) {
+      const d = document.createElement('div');
+      d.className = 'bsr-shell bsr-shell-blank';
+      d.textContent = '🔵';
+      rack.appendChild(d);
+    }
+    
+    // HP
+    document.getElementById('mpbsrMyHP').innerHTML = '❤️'.repeat(Math.max(0, myHP)) + '🖤'.repeat(Math.max(0, 4 - myHP));
+    document.getElementById('mpbsrOpHP').innerHTML = '❤️'.repeat(Math.max(0, opHP)) + '🖤'.repeat(Math.max(0, 4 - opHP));
+    
+    // Items
+    function renderItems(itemStr, containerId, usable) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = '';
+      if (!itemStr) return;
+      itemStr.split(',').filter(Boolean).forEach((id, i) => {
+        const item = MPBSR_ITEMS.find(it => it.id === id);
+        if (!item) return;
+        const btn = document.createElement('button');
+        btn.className = 'bsr-item';
+        btn.title = item.name + ': ' + item.desc;
+        btn.textContent = item.icon;
+        btn.style.fontSize = '18px';
+        btn.style.padding = '6px 8px';
+        btn.style.margin = '2px';
+        btn.style.cursor = usable ? 'pointer' : 'default';
+        btn.style.opacity = usable ? '1' : '0.5';
+        if (usable) btn.onclick = () => mpbsrUseItem(i);
+        el.appendChild(btn);
+      });
+    }
+    renderItems(myItems, 'mpbsrMyItems', myTurn && g.status === 'active');
+    renderItems(opItems, 'mpbsrOpItems', false);
+    
+    // Status
+    const statusEl = document.getElementById('mpbsrStatusMsg');
+    if (g.status === 'active') {
+      statusEl.textContent = myTurn ? '🎯 YOUR TURN — Shoot or use an item!' : '⏳ Waiting for opponent...';
+      statusEl.style.color = myTurn ? 'var(--gold)' : 'var(--text2)';
+    }
+    
+    // Actions
+    const canAct = myTurn && g.status === 'active' && myHP > 0 && opHP > 0;
+    document.getElementById('mpbsrShootOp').disabled = !canAct;
+    document.getElementById('mpbsrShootSelf').disabled = !canAct;
+    document.getElementById('mpbsrShootOp').style.opacity = canAct ? '1' : '0.4';
+    document.getElementById('mpbsrShootSelf').style.opacity = canAct ? '1' : '0.4';
+    
+    // Log
+    if (g.log) {
+      const logEl = document.getElementById('mpbsrLog');
+      logEl.innerHTML = '';
+      Object.values(g.log).slice(-20).reverse().forEach(l => {
+        const d = document.createElement('div');
+        d.className = 'bsr-log-line';
+        d.style.fontSize = '12px';
+        if (l.color) d.style.color = l.color;
+        d.textContent = l.msg;
+        logEl.appendChild(d);
+      });
+    }
+    
+    // Game over
+    if (g.status === 'finished' && g.winner && !endHandled) {
+      endHandled = true;
+      const iWon = (g.winner === 'host' && isHost) || (g.winner === 'guest' && !isHost);
+      if (iWon) {
+        balance += g.bet * 2;
+        updateBalance();
+        gameStats.mpbsr.won++;
+        if (g.bet * 2 > gameStats.mpbsr.biggestWin) gameStats.mpbsr.biggestWin = g.bet * 2;
+      }
+      gameStats.mpbsr.played++;
+      recordGame('mpbsr', g.bet, iWon ? g.bet * 2 : 0);
+      
+      setTimeout(() => {
+        const box = document.getElementById('mpbsrGameOverContent');
+        if (iWon) {
+          playWinSound();
+          box.innerHTML = `<div style="font-size:60px;margin-bottom:12px;">🏆</div>
+            <div style="font-family:'Orbitron';font-size:22px;color:var(--green);margin-bottom:8px;">YOU WIN!</div>
+            <div style="font-size:14px;color:var(--text2);margin-bottom:8px;">${opName} is eliminated!</div>
+            <div style="font-family:'Orbitron';font-size:28px;color:var(--gold);margin-bottom:16px;">+$${g.bet.toLocaleString()}</div>
+            <button onclick="mpbsrBackToLobby()" class="action-btn primary" style="padding:14px 32px;">BACK TO LOBBY</button>`;
+          spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 30);
+        } else {
+          playLoseSound();
+          box.innerHTML = `<div style="font-size:60px;margin-bottom:12px;">💀</div>
+            <div style="font-family:'Orbitron';font-size:22px;color:var(--red);margin-bottom:8px;">YOU LOSE</div>
+            <div style="font-size:14px;color:var(--text2);margin-bottom:8px;">You've been eliminated...</div>
+            <div style="font-family:'Orbitron';font-size:28px;color:var(--red);margin-bottom:16px;">-$${g.bet.toLocaleString()}</div>
+            <button onclick="mpbsrBackToLobby()" class="action-btn primary" style="padding:14px 32px;">BACK TO LOBBY</button>`;
+        }
+        document.getElementById('mpbsrGameOver').style.display = 'flex';
+      }, 1000);
+    }
+  });
+}
+
+async function mpbsrShoot(target) {
+  if (!mpbsrGameId) return;
+  const gid = mpbsrGameId;
+  const snap = await window._fbGet('casino/bsrGames/' + gid);
+  const g = snap.val();
+  if (!g || g.status !== 'active') return;
+  
+  const isHost = g.host === window._currentPlayerId;
+  const myTurn = (g.currentTurn === 'host' && isHost) || (g.currentTurn === 'guest' && !isHost);
+  if (!myTurn) return;
+  
+  const shells = g.shells.split(',');
+  const idx = g.shellIdx || 0;
+  if (idx >= shells.length) return; // No shells left (shouldn't happen)
+  
+  const shell = shells[idx];
+  const isLive = shell === 'live';
+  const myName = isHost ? g.hostName : g.guestName;
+  const opName = isHost ? g.guestName : g.hostName;
+  const lk = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
+  
+  const updates = { shellIdx: idx + 1 };
+  let dmg = isLive ? (g.sawActive ? 2 : 1) : 0;
+  
+  if (g.sawActive) updates.sawActive = false;
+  
+  if (target === 'opponent') {
+    if (isLive) {
+      const hpKey = isHost ? 'guestHP' : 'hostHP';
+      const newHP = Math.max(0, (isHost ? g.guestHP : g.hostHP) - dmg);
+      updates[hpKey] = newHP;
+      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
+        msg: `🔫 ${myName} shoots ${opName} — 💥 LIVE! -${dmg} HP`, color: '#ff4444'
+      });
+      if (newHP <= 0) {
+        updates.status = 'finished';
+        updates.winner = isHost ? 'host' : 'guest';
+        const lk2 = lk + 'w';
+        await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk2, {
+          msg: `☠️ ${opName} has been eliminated!`, color: '#ff4444'
+        });
+      } else {
+        // Turn passes (or cuff skip)
+        if (g.cuffActive) {
+          updates.cuffActive = false;
+          updates.currentTurn = g.currentTurn; // Same person goes again
+          const lk3 = lk + 'c';
+          await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk3, {
+            msg: `🔗 ${opName} is handcuffed — skips their turn!`, color: 'var(--neon)'
+          });
+        } else {
+          updates.currentTurn = isHost ? 'guest' : 'host';
+        }
+      }
+    } else {
+      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
+        msg: `🔫 ${myName} shoots ${opName} — 🔵 BLANK! Turn passes.`, color: 'var(--text2)'
+      });
+      if (g.cuffActive) {
+        updates.cuffActive = false;
+        updates.currentTurn = g.currentTurn;
+      } else {
+        updates.currentTurn = isHost ? 'guest' : 'host';
+      }
+    }
+  } else {
+    // Shoot self
+    if (isLive) {
+      const hpKey = isHost ? 'hostHP' : 'guestHP';
+      const newHP = Math.max(0, (isHost ? g.hostHP : g.guestHP) - dmg);
+      updates[hpKey] = newHP;
+      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
+        msg: `🤕 ${myName} shoots self — 💥 LIVE! -${dmg} HP`, color: '#ff8800'
+      });
+      if (newHP <= 0) {
+        updates.status = 'finished';
+        updates.winner = isHost ? 'guest' : 'host';
+      } else {
+        if (g.cuffActive) {
+          updates.cuffActive = false;
+          updates.currentTurn = g.currentTurn;
+        } else {
+          updates.currentTurn = isHost ? 'guest' : 'host';
+        }
+      }
+    } else {
+      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
+        msg: `🤕 ${myName} shoots self — 🔵 BLANK! Bonus turn!`, color: 'var(--green)'
+      });
+      // Keep same turn
+      updates.currentTurn = g.currentTurn;
+    }
+  }
+  
+  // Check if shells exhausted → new round
+  if (!updates.status && updates.shellIdx >= shells.length) {
+    const newRound = (g.round || 1) + 1;
+    const rd = mpbsrGenerateRound(newRound);
+    updates.round = newRound;
+    updates.shells = rd.shells.join(',');
+    updates.shellIdx = 0;
+    updates.liveCount = rd.liveCount;
+    updates.blankCount = rd.blankCount;
+    updates.hostItems = rd.hostItems.join(',');
+    updates.guestItems = rd.guestItems.join(',');
+    updates.sawActive = false;
+    updates.cuffActive = false;
+    const lkr = lk + 'r';
+    await window._fbSet('casino/bsrGames/' + gid + '/log/' + lkr, {
+      msg: `📦 Round ${newRound} — New shells loaded!`, color: 'var(--neon)'
+    });
+  }
+  
+  await window._fbUpdate('casino/bsrGames/' + gid, updates);
+}
+
+async function mpbsrUseItem(itemIndex) {
+  if (!mpbsrGameId) return;
+  const gid = mpbsrGameId;
+  const snap = await window._fbGet('casino/bsrGames/' + gid);
+  const g = snap.val();
+  if (!g || g.status !== 'active') return;
+  
+  const isHost = g.host === window._currentPlayerId;
+  const myTurn = (g.currentTurn === 'host' && isHost) || (g.currentTurn === 'guest' && !isHost);
+  if (!myTurn) return;
+  
+  const itemsKey = isHost ? 'hostItems' : 'guestItems';
+  const items = (g[itemsKey] || '').split(',').filter(Boolean);
+  if (itemIndex >= items.length) return;
+  
+  const itemId = items[itemIndex];
+  const itemInfo = MPBSR_ITEMS.find(it => it.id === itemId);
+  if (!itemInfo) return;
+  
+  const myName = isHost ? g.hostName : g.guestName;
+  const opName = isHost ? g.guestName : g.hostName;
+  const lk = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
+  
+  // Remove item
+  items.splice(itemIndex, 1);
+  const updates = { [itemsKey]: items.join(',') };
+  
+  switch (itemId) {
+    case 'saw':
+      updates.sawActive = true;
+      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
+        msg: `🪚 ${myName} uses Saw — next LIVE deals 2× damage!`, color: 'var(--gold)'
+      });
+      break;
+    case 'mag': {
+      const shells = g.shells.split(',');
+      const cur = shells[g.shellIdx || 0] || '?';
+      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
+        msg: `🔍 ${myName} uses Magnifying Glass...`, color: 'var(--neon)'
+      });
+      // Only show the result to the user (via toast)
+      showToast(`Current shell: ${cur === 'live' ? '🔴 LIVE' : '🔵 BLANK'}`, cur === 'live' ? false : true);
+      break;
+    }
+    case 'cig': {
+      const hpKey = isHost ? 'hostHP' : 'guestHP';
+      const curHP = isHost ? g.hostHP : g.guestHP;
+      updates[hpKey] = Math.min(curHP + 1, 4);
+      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
+        msg: `🚬 ${myName} uses Cigarette — +1 HP!`, color: 'var(--green)'
+      });
+      break;
+    }
+    case 'cuff':
+      updates.cuffActive = true;
+      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
+        msg: `🔗 ${myName} uses Handcuffs on ${opName}!`, color: 'var(--neon)'
+      });
+      break;
+    case 'phone': {
+      const shells = g.shells.split(',');
+      const remaining = shells.slice(g.shellIdx || 0);
+      if (remaining.length > 0) {
+        const ri = Math.floor(Math.random() * remaining.length);
+        const revealPos = (g.shellIdx || 0) + ri + 1;
+        showToast(`Shell #${revealPos}: ${remaining[ri] === 'live' ? '🔴 LIVE' : '🔵 BLANK'}`, true);
+      }
+      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
+        msg: `📱 ${myName} uses Burner Phone...`, color: 'var(--neon)'
+      });
+      break;
+    }
+  }
+  
+  await window._fbUpdate('casino/bsrGames/' + gid, updates);
+}
+
+function mpbsrBackToLobby() {
+  document.getElementById('mpbsrGameOver').style.display = 'none';
+  document.getElementById('mpbsrLobby').style.display = 'block';
+  document.getElementById('mpbsrGameArea').style.display = 'none';
+  mpbsrCleanup();
+  mpbsrGameId = null;
+}
+
+function mpbsrCleanup() {
+  if (mpbsrUnsub) { try { mpbsrUnsub(); } catch(e) {} }
+  mpbsrUnsub = null;
+}
+
+  const pos = g.cylinderPos || 0;
+  const myName = isHost ? g.hostName : g.guestName;
+  const logKey = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
+  
+  if (actionType === 'spin') {
+    const nc = [0, 0, 0, 0, 0, 0];
+    nc[Math.floor(Math.random() * 6)] = 1;
+    await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `🔄 ${myName} spins the cylinder!`, color: 'var(--neon)' });
+    await window._fbUpdate('casino/rrGames/' + gameId, {
+      cylinder: nc.join(','), cylinderPos: 0,
+      currentTurn: isHost ? 'guest' : 'host',
+      lastAction: { type: 'spin', by: myName }
+    });
+  } else {
+    const hit = chambers[pos] === 1;
+    const updates = { cylinderPos: pos + 1, currentTurn: isHost ? 'guest' : 'host', lastAction: { type: 'pull', by: myName, hit } };
+    if (hit) {
+      if (isHost) updates.hostAlive = false; else updates.guestAlive = false;
+      await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `💥 BANG! ${myName} takes the bullet! 💀`, color: '#ff4444' });
+      updates.status = 'finished';
+      updates.winner = isHost ? 'guest' : 'host';
+    } else {
+      await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `🔘 *click* — ${myName} survives!`, color: 'var(--green)' });
+    }
+    await window._fbUpdate('casino/rrGames/' + gameId, updates);
+  }
+}
+
+// PvP overrides for buttons
+document.getElementById('rrPullBtn').addEventListener('click', function(e) {
+  if (rrState && rrState.mode === 'pvp') { e.stopImmediatePropagation(); rrPvPAction('pull'); }
+});
+document.getElementById('rrSpinBtn').addEventListener('click', function(e) {
+  if (rrState && rrState.mode === 'pvp') { e.stopImmediatePropagation(); rrPvPAction('spin'); }
+});
+
+function rrCleanupPvP() {
+  if (rrPvpUnsubscribe) {
+    try { rrPvpUnsubscribe(); } catch(e) {}
+  }
+  rrPvpUnsubscribe = null;
+}
+
+// Listen for incoming RR challenges via polling
+let rrChallengeInterval = null;
+function rrListenForChallenges() {
+  if (!window._currentPlayerId) return;
+  if (rrChallengeInterval) clearInterval(rrChallengeInterval);
+  rrChallengeInterval = setInterval(async () => {
+    try {
+      const snap = await window._fbGet('casino/players/' + window._currentPlayerId + '/notifications');
+      if (!snap.exists()) return;
+      const notifs = snap.val();
+      for (const [key, n] of Object.entries(notifs)) {
+        if (n.type === 'rr_challenge' && n.gameId) {
+          window._fbRemove('casino/players/' + window._currentPlayerId + '/notifications/' + key);
+          const toastDiv = document.createElement('div');
+          toastDiv.style.cssText = 'position:fixed;top:20%;left:50%;transform:translateX(-50%);z-index:99999;background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:24px;text-align:center;min-width:280px;box-shadow:0 0 40px rgba(0,0,0,.5);';
+          toastDiv.innerHTML = `
+            <div style="font-size:30px;margin-bottom:8px;">🔫</div>
+            <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);margin-bottom:8px;">RUSSIAN ROULETTE CHALLENGE</div>
+            <div style="font-size:14px;color:var(--text);margin-bottom:4px;"><b>${n.from}</b> challenges you!</div>
+            <div style="font-size:13px;color:var(--text2);margin-bottom:14px;">Wager: <span style="color:var(--gold);">$${n.bet.toLocaleString()}</span></div>
+            <div style="display:flex;gap:10px;justify-content:center;">
+              <button class="action-btn primary" onclick="this.closest('div[style]').remove();rrAcceptPvPChallenge('${n.gameId}',${n.bet});" style="padding:10px 20px;">✅ ACCEPT</button>
+              <button class="action-btn" onclick="this.closest('div[style]').remove();rrDeclinePvPChallenge('${n.gameId}');" style="padding:10px 20px;">❌ DECLINE</button>
+            </div>`;
+          document.body.appendChild(toastDiv);
+          setTimeout(() => { if (toastDiv.parentNode) toastDiv.remove(); }, 30000);
+        }
+      }
+    } catch(e) {}
+  }, 5000);
+}
+
+function rrDeclinePvPChallenge(gameId) {
+  window._fbUpdate('casino/rrGames/' + gameId, { status: 'declined' });
 }
 
 // ============ SETTINGS ============
