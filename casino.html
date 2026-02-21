@@ -4526,8 +4526,8 @@ function switchGame(game,btn){
   if(game==='horses')horseInit();
   if(game==='mines')minesRenderGrid();
   if(game==='dice')diceUpdateSlider();
-  if(game==='rusroulette')initBuckshotRoulett
-  if(game==='mpbsr')initMPBSR();e();
+  if(game==='rusroulette')initBuckshotRoulette();
+  if(game==='mpbsr')initMPBSR();
   if(game==='russianr')initRussianRoulette();
   if(game==='crypto')initCrypto();
   if(game==='luck'){
@@ -5851,7 +5851,7 @@ async function liveTradeExecute() {
   
   // Deduct cash
   const cash = Math.max(0, parseInt(document.getElementById('tradeCashAmount').value) || 0);
-  if (cash > 0) { balance -= cash; updateBalance(); }
+  if (cash > 0) { balance -= cash; updateBalDisplay(); }
   
   const res = await window._executeLiveTrade(_liveTradeId);
   if (res.error) {
@@ -10723,7 +10723,7 @@ function rrStartBot() {
   };
 
   balance -= bet;
-  updateBalance();
+  updateBalDisplay();
 
   document.getElementById('rrBotLobby').style.display = 'none';
   document.getElementById('rrPvpLobby').style.display = 'none';
@@ -10977,7 +10977,7 @@ function rrEndGame(winner) {
   
   if (won) {
     balance += winAmount;
-    updateBalance();
+    updateBalDisplay();
     if (winAmount > gameStats.russianr.biggestWin) gameStats.russianr.biggestWin = winAmount;
     gameStats.russianr.won++;
   }
@@ -11065,7 +11065,7 @@ async function rrStartPvP() {
     await window._fbSet('casino/rrGames/' + gameId, gameData);
     
     balance -= bet;
-    updateBalance();
+    updateBalDisplay();
     
     const notifKey = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
     await window._fbSet('casino/players/' + opUid + '/notifications/' + notifKey, {
@@ -11086,7 +11086,7 @@ async function rrStartPvP() {
       if (g.status === 'declined') {
         statusEl.textContent = 'Challenge declined.';
         balance += bet;
-        updateBalance();
+        updateBalDisplay();
         rrCleanupPvP();
       }
     });
@@ -11098,7 +11098,7 @@ async function rrStartPvP() {
 function rrCancelPvP(gameId, bet) {
   window._fbRemove('casino/rrGames/' + gameId);
   balance += bet || (rrState ? rrState.bet : parseInt(document.getElementById('rrPvpBet').value));
-  updateBalance();
+  updateBalDisplay();
   rrCleanupPvP();
   document.getElementById('rrPvpStatus').textContent = 'Challenge cancelled.';
 }
@@ -11107,7 +11107,7 @@ async function rrAcceptPvPChallenge(gameId, bet) {
   if (!checkMaxBet(bet, 'russianr')) return;
   
   balance -= bet;
-  updateBalance();
+  updateBalDisplay();
   
   const chambers = [0, 0, 0, 0, 0, 0];
   chambers[Math.floor(Math.random() * 6)] = 1;
@@ -11199,7 +11199,7 @@ function rrJoinPvPGame(gameId) {
       const iWon = (g.winner === 'host' && isHost) || (g.winner === 'guest' && !isHost);
       if (iWon) {
         balance += g.bet * 2;
-        updateBalance();
+        updateBalDisplay();
         gameStats.russianr.won++;
         if (g.bet * 2 > gameStats.russianr.biggestWin) gameStats.russianr.biggestWin = g.bet * 2;
       }
@@ -11368,7 +11368,7 @@ async function mpbsrChallenge() {
     });
     
     balance -= bet;
-    updateBalance();
+    updateBalDisplay();
     
     const nk = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
     await window._fbSet('casino/players/' + opUid + '/notifications/' + nk, {
@@ -11394,7 +11394,7 @@ async function mpbsrChallenge() {
       if (g.status === 'declined') {
         statusEl.textContent = 'Challenge declined.';
         balance += bet;
-        updateBalance();
+        updateBalDisplay();
         mpbsrCleanup();
       }
     });
@@ -11406,7 +11406,7 @@ async function mpbsrChallenge() {
 function mpbsrCancelChallenge(gameId, bet) {
   window._fbRemove('casino/bsrGames/' + gameId);
   balance += bet;
-  updateBalance();
+  updateBalDisplay();
   mpbsrCleanup();
   document.getElementById('mpbsrStatus').textContent = 'Cancelled.';
 }
@@ -11414,7 +11414,7 @@ function mpbsrCancelChallenge(gameId, bet) {
 async function mpbsrAccept(gameId, bet) {
   if (!checkMaxBet(bet, 'mpbsr')) return;
   balance -= bet;
-  updateBalance();
+  updateBalDisplay();
   
   await window._fbUpdate('casino/bsrGames/' + gameId, { status: 'active' });
   
@@ -11538,7 +11538,7 @@ function mpbsrJoinGame(gameId) {
       const iWon = (g.winner === 'host' && isHost) || (g.winner === 'guest' && !isHost);
       if (iWon) {
         balance += g.bet * 2;
-        updateBalance();
+        updateBalDisplay();
         gameStats.mpbsr.won++;
         if (g.bet * 2 > gameStats.mpbsr.biggestWin) gameStats.mpbsr.biggestWin = g.bet * 2;
       }
