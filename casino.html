@@ -3083,6 +3083,8 @@ window._recordGameResult = async (game, wagered, won) => {
   _statsTimer = setTimeout(() => { _statsTimer = null; _flushStats(); }, 10000); // flush every 10s
 };
 
+window._flushStatsNow = () => { if(_statsTimer){clearTimeout(_statsTimer);_statsTimer=null;_flushStats();} };
+
 // ============ LEADERBOARD FETCH ============
 window._getLeaderboard = async (category) => {
   try {
@@ -9798,7 +9800,7 @@ window.addEventListener('load',()=>{
 });
 
 // Save on page close/refresh
-window.addEventListener('beforeunload',()=>{ if(_statsTimer){clearTimeout(_statsTimer);_statsTimer=null;_flushStats();} firebaseSaveNow(); });
+window.addEventListener('beforeunload',()=>{ if(window._flushStatsNow) window._flushStatsNow(); firebaseSaveNow(); });
 window.addEventListener('visibilitychange',()=>{ if(document.hidden) firebaseSave(); });
 
 // Handle keyboard shortcuts
@@ -11243,6 +11245,81 @@ async function rrPvPAction(actionType) {
   if (!myTurn) return;
   
   const chambers = g.cylinder.split(',').map(Number);
+  const pos = g.cylinderPos || 0;
+  const myName = isHost ? g.hostName : g.guestName;
+  const logKey = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
+  
+  if (actionType === 'spin') {
+    const nc = [0, 0, 0, 0, 0, 0];
+    nc[Math.floor(Math.random() * 6)] = 1;
+    await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `🔄 ${myName} spins the cylinder!`, color: 'var(--neon)' });
+    await window._fbUpdate('casino/rrGames/' + gameId, {
+      cylinder: nc.join(','), cylinderPos: 0,
+      currentTurn: isHost ? 'guest' : 'host',
+      lastAction: { type: 'spin', by: myName }
+    });
+  } else {
+    const hit = chambers[pos] === 1;
+    const updates = { cylinderPos: pos + 1, currentTurn: isHost ? 'guest' : 'host', lastAction: { type: 'pull', by: myName, hit } };
+    if (hit) {
+      if (isHost) updates.hostAlive = false; else updates.guestAlive = false;
+      await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `💥 BANG! ${myName} takes the bullet! 💀`, color: '#ff4444' });
+      updates.status = 'finished';
+      updates.winner = isHost ? 'guest' : 'host';
+    } else {
+      await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `🔘 *click* — ${myName} survives!`, color: 'var(--green)' });
+    }
+    await window._fbUpdate('casino/rrGames/' + gameId, updates);
+  }
+}
+
+// PvP overrides for buttons
+document.getElementById('rrPullBtn').addEventListener('click', function(e) {
+  if (rrState && rrState.mode === 'pvp') { e.stopImmediatePropagation(); rrPvPAction('pull'); }
+});
+document.getElementById('rrSpinBtn').addEventListener('click', function(e) {
+  if (rrState && rrState.mode === 'pvp') { e.stopImmediatePropagation(); rrPvPAction('spin'); }
+});
+
+function rrCleanupPvP() {
+  if (rrPvpUnsubscribe) {
+    try { rrPvpUnsubscribe(); } catch(e) {}
+  }
+  rrPvpUnsubscribe = null;
+}
+
+// Listen for incoming RR challenges via polling
+let rrChallengeInterval = null;
+function rrListenForChallenges() {
+  if (!window._currentPlayerId) return;
+  if (rrChallengeInterval) clearInterval(rrChallengeInterval);
+  rrChallengeInterval = setInterval(async () => {
+    try {
+      const snap = await window._fbGet('casino/players/' + window._currentPlayerId + '/notifications');
+      if (!snap.exists()) return;
+      const notifs = snap.val();
+      for (const [key, n] of Object.entries(notifs)) {
+        if (n.type === 'rr_challenge' && n.gameId) {
+          window._fbRemove('casino/players/' + window._currentPlayerId + '/notifications/' + key);
+          const toastDiv = document.createElement('div');
+          toastDiv.style.cssText = 'position:fixed;top:20%;left:50%;transform:translateX(-50%);z-index:99999;background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:24px;text-align:center;min-width:280px;box-shadow:0 0 40px rgba(0,0,0,.5);';
+          toastDiv.innerHTML = `
+            <div style="font-size:30px;margin-bottom:8px;">🔫</div>
+            <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);margin-bottom:8px;">RUSSIAN ROULETTE CHALLENGE</div>
+            <div style="font-size:14px;color:var(--text);margin-bottom:4px;"><b>${n.from}</b> challenges you!</div>
+            <div style="font-size:13px;color:var(--text2);margin-bottom:14px;">Wager: <span style="color:var(--gold);">$${n.bet.toLocaleString()}</span></div>
+            <div style="display:flex;gap:10px;justify-content:center;">
+              <button class="action-btn primary" onclick="this.closest('div[style]').remove();rrAcceptPvPChallenge('${n.gameId}',${n.bet});" style="padding:10px 20px;">✅ ACCEPT</button>
+              <button class="action-btn" onclick="this.closest('div[style]').remove();rrDeclinePvPChallenge('${n.gameId}');" style="padding:10px 20px;">❌ DECLINE</button>
+            </div>`;
+          document.body.appendChild(toastDiv);
+          setTimeout(() => { if (toastDiv.parentNode) toastDiv.remove(); }, 30000);
+        }
+      }
+    } catch(e) {}
+  }, 5000);
+}
+
 function rrDeclinePvPChallenge(gameId) {
   window._fbUpdate('casino/rrGames/' + gameId, { status: 'declined' });
 }
@@ -11297,6 +11374,7 @@ function mpbsrStartChallengeListener() {
     } catch(e) {}
   }, 5000);
 }
+
 
 function mpbsrGenerateRound(roundNum) {
   // Generate shells and items for a round
@@ -11752,7 +11830,8 @@ async function mpbsrUseItem(itemIndex) {
         const revealPos = (g.shellIdx || 0) + ri + 1;
         showToast(`Shell #${revealPos}: ${remaining[ri] === 'live' ? '🔴 LIVE' : '🔵 BLANK'}`, true);
       }
-      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
+      const lk2 = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
+      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk2, {
         msg: `📱 ${myName} uses Burner Phone...`, color: 'var(--neon)'
       });
       break;
@@ -11762,97 +11841,6 @@ async function mpbsrUseItem(itemIndex) {
   await window._fbUpdate('casino/bsrGames/' + gid, updates);
 }
 
-function mpbsrBackToLobby() {
-  document.getElementById('mpbsrGameOver').style.display = 'none';
-  document.getElementById('mpbsrLobby').style.display = 'block';
-  document.getElementById('mpbsrGameArea').style.display = 'none';
-  mpbsrCleanup();
-  mpbsrGameId = null;
-}
-
-function mpbsrCleanup() {
-  if (mpbsrUnsub) { try { mpbsrUnsub(); } catch(e) {} }
-  mpbsrUnsub = null;
-}
-
-  const pos = g.cylinderPos || 0;
-  const myName = isHost ? g.hostName : g.guestName;
-  const logKey = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
-  
-  if (actionType === 'spin') {
-    const nc = [0, 0, 0, 0, 0, 0];
-    nc[Math.floor(Math.random() * 6)] = 1;
-    await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `🔄 ${myName} spins the cylinder!`, color: 'var(--neon)' });
-    await window._fbUpdate('casino/rrGames/' + gameId, {
-      cylinder: nc.join(','), cylinderPos: 0,
-      currentTurn: isHost ? 'guest' : 'host',
-      lastAction: { type: 'spin', by: myName }
-    });
-  } else {
-    const hit = chambers[pos] === 1;
-    const updates = { cylinderPos: pos + 1, currentTurn: isHost ? 'guest' : 'host', lastAction: { type: 'pull', by: myName, hit } };
-    if (hit) {
-      if (isHost) updates.hostAlive = false; else updates.guestAlive = false;
-      await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `💥 BANG! ${myName} takes the bullet! 💀`, color: '#ff4444' });
-      updates.status = 'finished';
-      updates.winner = isHost ? 'guest' : 'host';
-    } else {
-      await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `🔘 *click* — ${myName} survives!`, color: 'var(--green)' });
-    }
-    await window._fbUpdate('casino/rrGames/' + gameId, updates);
-  }
-}
-
-// PvP overrides for buttons
-document.getElementById('rrPullBtn').addEventListener('click', function(e) {
-  if (rrState && rrState.mode === 'pvp') { e.stopImmediatePropagation(); rrPvPAction('pull'); }
-});
-document.getElementById('rrSpinBtn').addEventListener('click', function(e) {
-  if (rrState && rrState.mode === 'pvp') { e.stopImmediatePropagation(); rrPvPAction('spin'); }
-});
-
-function rrCleanupPvP() {
-  if (rrPvpUnsubscribe) {
-    try { rrPvpUnsubscribe(); } catch(e) {}
-  }
-  rrPvpUnsubscribe = null;
-}
-
-// Listen for incoming RR challenges via polling
-let rrChallengeInterval = null;
-function rrListenForChallenges() {
-  if (!window._currentPlayerId) return;
-  if (rrChallengeInterval) clearInterval(rrChallengeInterval);
-  rrChallengeInterval = setInterval(async () => {
-    try {
-      const snap = await window._fbGet('casino/players/' + window._currentPlayerId + '/notifications');
-      if (!snap.exists()) return;
-      const notifs = snap.val();
-      for (const [key, n] of Object.entries(notifs)) {
-        if (n.type === 'rr_challenge' && n.gameId) {
-          window._fbRemove('casino/players/' + window._currentPlayerId + '/notifications/' + key);
-          const toastDiv = document.createElement('div');
-          toastDiv.style.cssText = 'position:fixed;top:20%;left:50%;transform:translateX(-50%);z-index:99999;background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:24px;text-align:center;min-width:280px;box-shadow:0 0 40px rgba(0,0,0,.5);';
-          toastDiv.innerHTML = `
-            <div style="font-size:30px;margin-bottom:8px;">🔫</div>
-            <div style="font-family:'Orbitron';font-size:16px;color:var(--gold);margin-bottom:8px;">RUSSIAN ROULETTE CHALLENGE</div>
-            <div style="font-size:14px;color:var(--text);margin-bottom:4px;"><b>${n.from}</b> challenges you!</div>
-            <div style="font-size:13px;color:var(--text2);margin-bottom:14px;">Wager: <span style="color:var(--gold);">$${n.bet.toLocaleString()}</span></div>
-            <div style="display:flex;gap:10px;justify-content:center;">
-              <button class="action-btn primary" onclick="this.closest('div[style]').remove();rrAcceptPvPChallenge('${n.gameId}',${n.bet});" style="padding:10px 20px;">✅ ACCEPT</button>
-              <button class="action-btn" onclick="this.closest('div[style]').remove();rrDeclinePvPChallenge('${n.gameId}');" style="padding:10px 20px;">❌ DECLINE</button>
-            </div>`;
-          document.body.appendChild(toastDiv);
-          setTimeout(() => { if (toastDiv.parentNode) toastDiv.remove(); }, 30000);
-        }
-      }
-    } catch(e) {}
-  }, 5000);
-}
-
-function rrDeclinePvPChallenge(gameId) {
-  window._fbUpdate('casino/rrGames/' + gameId, { status: 'declined' });
-}
 
 // ============ SETTINGS ============
 let casinoSettings = JSON.parse(localStorage.getItem('casino_settings')) || {
