@@ -3,12 +3,6 @@
     "casino": {
       ".read": true,
       ".write": true,
-      "players": {
-        "$uid": {
-          ".read": true,
-          ".write": "auth != null && auth.uid === $uid"
-        }
-      },
       "pylRooms": {
         ".read": true,
         ".write": "auth != null"
@@ -64,6 +58,44 @@
       "duelRooms": {
         ".read": true,
         ".write": true
+      },
+      "rrGames": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "bsrGames": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+      "admins": {
+        ".read": "auth != null",
+        ".write": "auth != null && root.child('casino/admins').child(auth.uid).exists()"
+      },
+      "bans": {
+        ".read": "auth != null",
+        ".write": "auth != null && (root.child('casino/admins').child(auth.uid).exists() || data.exists())"
+      },
+      "mutes": {
+        ".read": "auth != null",
+        ".write": "auth != null && root.child('casino/admins').child(auth.uid).exists()"
+      },
+      "modlog": {
+        ".read": "auth != null && root.child('casino/admins').child(auth.uid).exists()",
+        ".write": "auth != null && root.child('casino/admins').child(auth.uid).exists()"
+      },
+      "players": {
+        "$uid": {
+          ".read": true,
+          ".write": "auth != null && (auth.uid === $uid || root.child('casino/admins').child(auth.uid).exists())",
+          "warnings": {
+            ".read": "auth != null && auth.uid === $uid",
+            ".write": "auth != null && root.child('casino/admins').child(auth.uid).exists()"
+          },
+          "notifications": {
+            ".read": "auth != null && auth.uid === $uid",
+            ".write": "auth != null"
+          }
+        }
       }
     }
   }

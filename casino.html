@@ -2442,8 +2442,35 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
           <button onclick="adminSetSelfBalance()" style="padding:8px 12px;background:linear-gradient(135deg,#ff9900,#ff6600);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:11px;">SET</button>
         </div>
       </div>
+      <!-- Moderation Section -->
+      <div style="background:var(--bg);border:1px solid rgba(255,64,64,.3);border-radius:8px;padding:12px;margin-top:12px;">
+        <div style="font-size:10px;color:#ff6464;letter-spacing:1px;margin-bottom:10px;">🔨 MODERATION</div>
+        <div style="display:grid;gap:6px;">
+          <input type="text" id="modTargetUser" placeholder="Target username" style="padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;">
+          <input type="text" id="modReason" placeholder="Reason" style="padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;">
+          <input type="number" id="modDuration" placeholder="Duration (h=ban / min=mute, 0=perm)" style="padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+            <button onclick="adminWarnPlayer()" style="padding:8px;background:linear-gradient(135deg,#ff9900,#ff6600);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">⚠️ WARN</button>
+            <button onclick="adminMutePlayer()" style="padding:8px;background:linear-gradient(135deg,#6600ff,#3300cc);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🔇 MUTE</button>
+            <button onclick="adminBanPlayer()" style="padding:8px;background:linear-gradient(135deg,#ff0000,#cc0000);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🔨 BAN</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <button onclick="adminUnmutePlayer()" style="padding:8px;background:linear-gradient(135deg,#009944,#00660d);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🔊 UNMUTE</button>
+            <button onclick="adminUnbanPlayer()" style="padding:8px;background:linear-gradient(135deg,#009944,#00660d);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">✅ UNBAN</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
+</div>
+
+<!-- ============ BAN SCREEN ============ -->
+<div id="banScreen" style="display:none;position:fixed;inset:0;z-index:99999;background:#0a0a0f;flex-direction:column;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;">
+  <div style="font-size:64px;margin-bottom:16px;">🔨</div>
+  <div style="font-size:24px;color:#ff4444;font-weight:700;letter-spacing:2px;margin-bottom:16px;">YOU ARE BANNED</div>
+  <div style="font-size:14px;color:rgba(255,255,255,.7);margin-bottom:12px;text-align:center;max-width:400px;line-height:1.6;" id="banReason"></div>
+  <div style="font-size:12px;color:rgba(255,255,255,.4);" id="banExpiry"></div>
+  <div style="margin-top:24px;font-size:11px;color:rgba(255,255,255,.3);">Contact an admin to appeal your ban.</div>
 </div>
 
 <!-- ============ INVENTORY OVERLAY ============ -->
@@ -2961,8 +2988,13 @@ onAuthStateChanged(auth, async (user) => {
     window._currentUsername = currentUsername;
     window._currentPlayerId = playerId;
 
-    // Show casino, hide login
-    if (typeof window._onAuthReady === 'function') window._onAuthReady(currentUsername, playerId);
+    // Show casino, hide login — check for bans first
+    const _loginBan = typeof _checkBan === 'function' ? await _checkBan(playerId).catch(()=>null) : null;
+    if (_loginBan) {
+      _showBanScreen(_loginBan);
+    } else {
+      if (typeof window._onAuthReady === 'function') window._onAuthReady(currentUsername, playerId);
+    }
 
     // Balance sync — poll every 30s + full sync on tab focus for cross-device
     async function _syncBalance() {
@@ -5026,6 +5058,159 @@ async function adminSetSelfBalance() {
     console.error('Admin set balance error:', e);
     showToast('❌ Error: ' + (e.message || 'Unknown'), false);
   }
+}
+
+// ============ MODERATION SYSTEM ============
+async function _checkBan(uid) {
+  try {
+    const snap = await window._fbGet('casino/bans/' + uid);
+    if (!snap.exists()) return null;
+    const ban = snap.val();
+    if (ban.expires && ban.expires > 0 && Date.now() > ban.expires) {
+      window._fbRemove('casino/bans/' + uid);
+      return null;
+    }
+    return ban;
+  } catch(e) { return null; }
+}
+
+async function _checkMute(uid) {
+  try {
+    const snap = await window._fbGet('casino/mutes/' + uid);
+    if (!snap.exists()) return null;
+    const mute = snap.val();
+    if (mute.expires && mute.expires > 0 && Date.now() > mute.expires) {
+      window._fbRemove('casino/mutes/' + uid);
+      return null;
+    }
+    return mute;
+  } catch(e) { return null; }
+}
+
+function _showBanScreen(ban) {
+  const scr = document.getElementById('banScreen');
+  if (!scr) return;
+  document.getElementById('banReason').textContent = 'Reason: ' + (ban.reason || 'No reason given');
+  const expEl = document.getElementById('banExpiry');
+  if (ban.expires && ban.expires > 0) {
+    expEl.textContent = 'Expires: ' + new Date(ban.expires).toLocaleString();
+  } else {
+    expEl.textContent = 'This ban is permanent.';
+  }
+  scr.style.display = 'flex';
+  const ls = document.getElementById('loginScreen');
+  if (ls) ls.style.display = 'none';
+  const tn = document.getElementById('topNav');
+  if (tn) tn.style.display = 'none';
+}
+
+async function _isAdminUser() {
+  const uname = (window._currentUsername || '').toLowerCase();
+  if (uname === 'mojheh' || uname === 'terpez') return true;
+  if (!window._currentPlayerId) return false;
+  try {
+    const snap = await window._fbGet('casino/admins/' + window._currentPlayerId);
+    return snap.exists();
+  } catch(e) { return false; }
+}
+
+async function _modLookupUid(username) {
+  const snap = await window._fbGet('casino/usernames/' + username.toLowerCase());
+  if (!snap.exists()) return null;
+  return snap.val();
+}
+
+async function adminBanPlayer() {
+  if (!await _isAdminUser()) { showToast('Admin only!', false); return; }
+  const u = (document.getElementById('modTargetUser').value || '').trim();
+  const reason = (document.getElementById('modReason').value || '').trim() || 'Admin ban';
+  const hours = parseFloat(document.getElementById('modDuration').value) || 0;
+  if (!u) { showToast('Enter a username!', false); return; }
+  showToast('⏳ Processing...', true);
+  const uid = await _modLookupUid(u);
+  if (!uid) { showToast('User not found: ' + u, false); return; }
+  const expires = hours > 0 ? Date.now() + hours * 3600000 : 0;
+  await window._fbSet('casino/bans/' + uid, {
+    reason, bannedBy: window._currentPlayerId,
+    bannedByName: window._currentUsername, timestamp: Date.now(), expires
+  });
+  await window._fbSet('casino/modlog/' + Date.now(), {
+    action: 'ban', target: u, targetUid: uid, reason, duration: hours + 'h',
+    by: window._currentUsername, timestamp: Date.now()
+  });
+  showToast('🔨 Banned ' + u + (hours > 0 ? ' for ' + hours + 'h' : ' permanently'), true);
+}
+
+async function adminUnbanPlayer() {
+  if (!await _isAdminUser()) { showToast('Admin only!', false); return; }
+  const u = (document.getElementById('modTargetUser').value || '').trim();
+  if (!u) { showToast('Enter a username!', false); return; }
+  const uid = await _modLookupUid(u);
+  if (!uid) { showToast('User not found: ' + u, false); return; }
+  await window._fbRemove('casino/bans/' + uid);
+  await window._fbSet('casino/modlog/' + Date.now(), {
+    action: 'unban', target: u, targetUid: uid,
+    by: window._currentUsername, timestamp: Date.now()
+  });
+  showToast('✅ Unbanned ' + u, true);
+}
+
+async function adminMutePlayer() {
+  if (!await _isAdminUser()) { showToast('Admin only!', false); return; }
+  const u = (document.getElementById('modTargetUser').value || '').trim();
+  const reason = (document.getElementById('modReason').value || '').trim() || 'Admin mute';
+  const minutes = parseFloat(document.getElementById('modDuration').value) || 60;
+  if (!u) { showToast('Enter a username!', false); return; }
+  showToast('⏳ Processing...', true);
+  const uid = await _modLookupUid(u);
+  if (!uid) { showToast('User not found: ' + u, false); return; }
+  const expires = Date.now() + minutes * 60000;
+  await window._fbSet('casino/mutes/' + uid, {
+    reason, mutedBy: window._currentPlayerId,
+    mutedByName: window._currentUsername, timestamp: Date.now(), expires
+  });
+  await window._fbSet('casino/modlog/' + Date.now(), {
+    action: 'mute', target: u, targetUid: uid, reason, duration: minutes + 'min',
+    by: window._currentUsername, timestamp: Date.now()
+  });
+  showToast('🔇 Muted ' + u + ' for ' + minutes + 'min', true);
+}
+
+async function adminUnmutePlayer() {
+  if (!await _isAdminUser()) { showToast('Admin only!', false); return; }
+  const u = (document.getElementById('modTargetUser').value || '').trim();
+  if (!u) { showToast('Enter a username!', false); return; }
+  const uid = await _modLookupUid(u);
+  if (!uid) { showToast('User not found: ' + u, false); return; }
+  await window._fbRemove('casino/mutes/' + uid);
+  await window._fbSet('casino/modlog/' + Date.now(), {
+    action: 'unmute', target: u, targetUid: uid,
+    by: window._currentUsername, timestamp: Date.now()
+  });
+  showToast('🔊 Unmuted ' + u, true);
+}
+
+async function adminWarnPlayer() {
+  if (!await _isAdminUser()) { showToast('Admin only!', false); return; }
+  const u = (document.getElementById('modTargetUser').value || '').trim();
+  const reason = (document.getElementById('modReason').value || '').trim() || 'Warned by admin';
+  if (!u) { showToast('Enter a username!', false); return; }
+  showToast('⏳ Processing...', true);
+  const uid = await _modLookupUid(u);
+  if (!uid) { showToast('User not found: ' + u, false); return; }
+  const warnKey = Date.now().toString();
+  await window._fbSet('casino/players/' + uid + '/warnings/' + warnKey, {
+    reason, warnedBy: window._currentPlayerId,
+    warnedByName: window._currentUsername, timestamp: Date.now()
+  });
+  await window._fbSet('casino/players/' + uid + '/notifications/' + warnKey, {
+    type: 'warning', reason, from: window._currentUsername, timestamp: Date.now()
+  });
+  await window._fbSet('casino/modlog/' + Date.now(), {
+    action: 'warn', target: u, targetUid: uid, reason,
+    by: window._currentUsername, timestamp: Date.now()
+  });
+  showToast('⚠️ Warned ' + u, true);
 }
 
 function getPrestigeBadgeHTML(level) {
@@ -9714,11 +9899,22 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-function sendChatMessage() {
+async function sendChatMessage() {
   const input = document.getElementById('chatInput');
   let text = input.value.trim();
   if (!text) return;
   if (isGuestMode) { showToast('Sign in to chat', false); return; }
+  // Mute check
+  if (window._currentPlayerId && typeof _checkMute === 'function') {
+    try {
+      const mute = await _checkMute(window._currentPlayerId);
+      if (mute) {
+        const timeLeft = mute.expires > 0 ? Math.ceil((mute.expires - Date.now()) / 60000) + 'min' : 'permanent';
+        showToast('🔇 You are muted (' + timeLeft + '): ' + (mute.reason || ''), false);
+        return;
+      }
+    } catch(e) {}
+  }
   if (text.length > 200) text = text.slice(0, 200); // enforce length limit
   const username = window._currentUsername || 'Guest';
   if (window._sendChatMsg) {
@@ -11762,31 +11958,18 @@ async function mpbsrUseItem(itemIndex) {
       const shells = g.shells.split(',');
       const remaining = shells.slice(g.shellIdx || 0);
       if (remaining.length > 0) {
-  const myName = isHost ? g.hostName : g.guestName;
-  const logKey = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
-  
-  if (actionType === 'spin') {
-    const nc = [0, 0, 0, 0, 0, 0];
-    nc[Math.floor(Math.random() * 6)] = 1;
-    await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `🔄 ${myName} spins the cylinder!`, color: 'var(--neon)' });
-    await window._fbUpdate('casino/rrGames/' + gameId, {
-      cylinder: nc.join(','), cylinderPos: 0,
-      currentTurn: isHost ? 'guest' : 'host',
-      lastAction: { type: 'spin', by: myName }
-    });
-  } else {
-    const hit = chambers[pos] === 1;
-    const updates = { cylinderPos: pos + 1, currentTurn: isHost ? 'guest' : 'host', lastAction: { type: 'pull', by: myName, hit } };
-    if (hit) {
-      if (isHost) updates.hostAlive = false; else updates.guestAlive = false;
-      await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `💥 BANG! ${myName} takes the bullet! 💀`, color: '#ff4444' });
-      updates.status = 'finished';
-      updates.winner = isHost ? 'guest' : 'host';
-    } else {
-      await window._fbSet('casino/rrGames/' + gameId + '/log/' + logKey, { msg: `🔘 *click* — ${myName} survives!`, color: 'var(--green)' });
+        const idx = Math.floor(Math.random() * remaining.length);
+        const shellType = remaining[idx];
+        const absIdx = (g.shellIdx || 0) + idx + 1;
+        await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
+          msg: `📱 ${myName} used Burner Phone!`, color: 'var(--gold)'
+        });
+        showToast(`📱 Shell #${absIdx} is ${shellType === 'live' ? '🔴 LIVE' : '⚪ BLANK'}!`, shellType !== 'live');
+      }
+      break;
     }
-    await window._fbUpdate('casino/rrGames/' + gameId, updates);
   }
+  await window._fbUpdate('casino/bsrGames/' + gid, updates);
 }
 
 // PvP overrides for buttons
