@@ -2,10 +2,42 @@
   "rules": {
     "casino": {
       ".read": true,
-      ".write": true,
-      "pylRooms": {
+
+      "players": {
+        "$uid": {
+          ".read": true,
+          ".write": "auth != null && auth.uid === $uid && !root.child('casino/bannedUsers').child(auth.uid).exists()"
+        }
+      },
+
+      "bannedUsers": {
         ".read": true,
         ".write": "auth != null"
+      },
+
+      "mutedUsers": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+
+      "warnings": {
+        ".read": true,
+        ".write": "auth != null"
+      },
+
+      "admins": {
+        ".read": true,
+        ".write": false
+      },
+
+      "chat": {
+        ".read": true,
+        ".write": "auth != null && !root.child('casino/bannedUsers').child(auth.uid).exists() && !root.child('casino/mutedUsers').child(auth.uid).exists()"
+      },
+
+      "pylRooms": {
+        ".read": true,
+        ".write": "auth != null && !root.child('casino/bannedUsers').child(auth.uid).exists()"
       },
       "pylLeaderboard": {
         ".read": true,
@@ -13,15 +45,15 @@
       },
       "store": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null && !root.child('casino/bannedUsers').child(auth.uid).exists()"
       },
       "trades": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null && !root.child('casino/bannedUsers').child(auth.uid).exists()"
       },
       "tradeRequests": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null && !root.child('casino/bannedUsers').child(auth.uid).exists()"
       },
       "social": {
         ".read": true,
@@ -33,11 +65,7 @@
       },
       "dms": {
         ".read": "auth != null",
-        ".write": "auth != null"
-      },
-      "chat": {
-        ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null && !root.child('casino/bannedUsers').child(auth.uid).exists()"
       },
       "leaderboards": {
         ".read": true,
@@ -53,49 +81,19 @@
       },
       "market": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null && !root.child('casino/bannedUsers').child(auth.uid).exists()"
       },
       "duelRooms": {
         ".read": true,
-        ".write": true
+        ".write": "auth != null && !root.child('casino/bannedUsers').child(auth.uid).exists()"
       },
       "rrGames": {
         ".read": true,
-        ".write": "auth != null"
+        ".write": "auth != null && !root.child('casino/bannedUsers').child(auth.uid).exists()"
       },
       "bsrGames": {
         ".read": true,
-        ".write": "auth != null"
-      },
-      "admins": {
-        ".read": "auth != null",
-        ".write": "auth != null && root.child('casino/admins').child(auth.uid).exists()"
-      },
-      "bans": {
-        ".read": "auth != null",
-        ".write": "auth != null && (root.child('casino/admins').child(auth.uid).exists() || data.exists())"
-      },
-      "mutes": {
-        ".read": "auth != null",
-        ".write": "auth != null && root.child('casino/admins').child(auth.uid).exists()"
-      },
-      "modlog": {
-        ".read": "auth != null && root.child('casino/admins').child(auth.uid).exists()",
-        ".write": "auth != null && root.child('casino/admins').child(auth.uid).exists()"
-      },
-      "players": {
-        "$uid": {
-          ".read": true,
-          ".write": "auth != null && (auth.uid === $uid || root.child('casino/admins').child(auth.uid).exists())",
-          "warnings": {
-            ".read": "auth != null && auth.uid === $uid",
-            ".write": "auth != null && root.child('casino/admins').child(auth.uid).exists()"
-          },
-          "notifications": {
-            ".read": "auth != null && auth.uid === $uid",
-            ".write": "auth != null"
-          }
-        }
+        ".write": "auth != null && !root.child('casino/bannedUsers').child(auth.uid).exists()"
       }
     }
   }

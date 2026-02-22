@@ -1033,6 +1033,62 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .bsr-round-splash-text{font-family:'Orbitron';font-size:36px;font-weight:900;color:var(--gold);
   text-shadow:0 0 30px rgba(255,215,0,.5);animation:bsrPulse 1s ease-in-out infinite;}
 
+/* ============ MODERATION SYSTEM ============ */
+#modBanOverlay,#modWarnOverlay{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);}
+#modBanOverlay .mod-popup{background:var(--surface);border:3px solid #ff3333;border-radius:18px;padding:32px 28px;max-width:380px;width:90%;text-align:center;box-shadow:0 0 60px rgba(255,0,0,.4);animation:modShake .5s ease;}
+#modWarnOverlay .mod-popup{background:var(--surface);border:3px solid #ffaa00;border-radius:18px;padding:32px 28px;max-width:380px;width:90%;text-align:center;box-shadow:0 0 60px rgba(255,170,0,.3);animation:modShake .5s ease;}
+@keyframes modShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-8px)}30%{transform:translateX(8px)}45%{transform:translateX(-5px)}60%{transform:translateX(5px)}75%{transform:translateX(-2px)}90%{transform:translateX(2px)}}
+.mod-popup-icon{font-size:52px;margin-bottom:10px;}
+.mod-popup-title{font-family:'Orbitron';font-size:18px;font-weight:900;letter-spacing:2px;margin-bottom:10px;}
+.mod-popup-reason{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.5;}
+.mod-popup-timer{font-family:'Orbitron';font-size:22px;font-weight:700;color:var(--red);margin-bottom:8px;}
+.mod-popup-sub{font-size:11px;color:var(--text2);}
+#modMuteBanner{display:none;background:linear-gradient(90deg,rgba(255,100,0,.12),rgba(255,0,0,.08));border:1px solid rgba(255,100,0,.3);border-radius:8px;padding:6px 12px;margin:0 14px 6px;font-size:11px;color:#ff8844;text-align:center;}
+.mod-warn-check{display:flex;align-items:center;gap:8px;justify-content:center;margin:14px 0 10px;cursor:pointer;font-size:12px;color:var(--text);}
+.mod-warn-check input[type=checkbox]{width:16px;height:16px;accent-color:var(--gold);}
+#modReasonModal{position:fixed;inset:0;z-index:100001;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8);}
+#modReasonModal .mod-reason-box{background:var(--surface);border:2px solid var(--border);border-radius:16px;padding:24px;max-width:360px;width:90%;box-shadow:0 0 40px rgba(0,0,0,.5);}
+#modReasonModal .mod-reason-title{font-family:'Orbitron';font-size:14px;color:var(--gold);margin-bottom:14px;text-align:center;letter-spacing:1px;}
+.mod-reason-btn{display:block;width:100%;padding:10px;margin-bottom:6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;cursor:pointer;transition:all .15s;text-align:left;}
+.mod-reason-btn:hover{border-color:var(--neon);background:rgba(0,240,255,.05);}
+.mod-reason-input{width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;margin-bottom:8px;outline:none;box-sizing:border-box;}
+.mod-reason-input:focus{border-color:var(--neon);}
+.mod-dur-row{display:flex;gap:6px;margin:10px 0;flex-wrap:wrap;}
+.mod-dur-btn{flex:1;min-width:60px;padding:8px 4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:11px;cursor:pointer;text-align:center;transition:all .15s;}
+.mod-dur-btn:hover,.mod-dur-btn.active{border-color:var(--neon);color:var(--neon);background:rgba(0,240,255,.08);}
+.mod-dur-cancel{padding:8px 16px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text2);font-size:11px;cursor:pointer;margin-top:6px;}
+.mod-dur-cancel:hover{border-color:var(--red);color:var(--red);}
+#modPanel{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);}
+#modPanel .mod-panel-box{background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:0;max-width:520px;width:94%;max-height:80vh;overflow:hidden;box-shadow:0 0 50px rgba(0,0,0,.5);}
+.mod-panel-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(255,0,0,.06),rgba(255,136,0,.06));}
+.mod-panel-title{font-family:'Orbitron';font-size:15px;color:var(--gold);letter-spacing:2px;}
+.mod-panel-close{padding:6px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-size:12px;}
+.mod-panel-close:hover{border-color:var(--red);color:var(--red);}
+.mod-panel-tabs{display:flex;border-bottom:1px solid var(--border);background:rgba(0,0,0,.1);}
+.mod-panel-tab{flex:1;padding:10px;text-align:center;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;}
+.mod-panel-tab:hover{color:var(--text);}
+.mod-panel-tab.active{color:var(--neon);border-bottom-color:var(--neon);}
+.mod-panel-content{padding:16px;overflow-y:auto;max-height:calc(80vh - 120px);}
+.mod-panel-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;}
+.mod-panel-item-info{flex:1;min-width:0;}
+.mod-panel-item-name{font-weight:700;font-size:13px;color:var(--text);}
+.mod-panel-item-detail{font-size:10px;color:var(--text2);margin-top:2px;}
+.mod-panel-item-actions{display:flex;gap:6px;}
+.mod-panel-action{padding:5px 10px;border-radius:6px;border:none;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;}
+.mod-panel-action.red{background:rgba(255,50,50,.15);color:#ff4444;border:1px solid rgba(255,50,50,.3);}
+.mod-panel-action.red:hover{background:rgba(255,50,50,.3);}
+.mod-panel-action.green{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2);}
+.mod-panel-action.green:hover{background:rgba(0,255,136,.2);}
+.mod-panel-action.blue{background:rgba(0,150,255,.1);color:#44aaff;border:1px solid rgba(0,150,255,.2);}
+.mod-panel-action.blue:hover{background:rgba(0,150,255,.2);}
+.mod-panel-empty{text-align:center;color:var(--text2);padding:30px;font-size:13px;}
+.mod-panel-search{width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;outline:none;margin-bottom:12px;box-sizing:border-box;}
+.mod-panel-search:focus{border-color:var(--neon);}
+.mod-chat-admin-btn{position:absolute;top:4px;right:4px;width:20px;height:20px;background:rgba(255,50,50,.7);border:none;border-radius:50%;color:#fff;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:2;transition:all .15s;}
+.mod-chat-admin-btn:hover{background:rgba(255,50,50,1);transform:scale(1.1);}
+.chat-msg{position:relative;}
+.chat-msg:hover .mod-chat-admin-btn{display:flex;}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -2442,35 +2498,11 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
           <button onclick="adminSetSelfBalance()" style="padding:8px 12px;background:linear-gradient(135deg,#ff9900,#ff6600);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:11px;">SET</button>
         </div>
       </div>
-      <!-- Moderation Section -->
-      <div style="background:var(--bg);border:1px solid rgba(255,64,64,.3);border-radius:8px;padding:12px;margin-top:12px;">
-        <div style="font-size:10px;color:#ff6464;letter-spacing:1px;margin-bottom:10px;">🔨 MODERATION</div>
-        <div style="display:grid;gap:6px;">
-          <input type="text" id="modTargetUser" placeholder="Target username" style="padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;">
-          <input type="text" id="modReason" placeholder="Reason" style="padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;">
-          <input type="number" id="modDuration" placeholder="Duration (h=ban / min=mute, 0=perm)" style="padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;">
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
-            <button onclick="adminWarnPlayer()" style="padding:8px;background:linear-gradient(135deg,#ff9900,#ff6600);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">⚠️ WARN</button>
-            <button onclick="adminMutePlayer()" style="padding:8px;background:linear-gradient(135deg,#6600ff,#3300cc);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🔇 MUTE</button>
-            <button onclick="adminBanPlayer()" style="padding:8px;background:linear-gradient(135deg,#ff0000,#cc0000);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🔨 BAN</button>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-            <button onclick="adminUnmutePlayer()" style="padding:8px;background:linear-gradient(135deg,#009944,#00660d);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🔊 UNMUTE</button>
-            <button onclick="adminUnbanPlayer()" style="padding:8px;background:linear-gradient(135deg,#009944,#00660d);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">✅ UNBAN</button>
-          </div>
-        </div>
+      <div style="margin-top:12px;">
+        <button onclick="modOpenPanel()" style="width:100%;padding:10px;background:linear-gradient(135deg,#ff0000,#ff6600);border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:900;font-size:12px;font-family:'Orbitron';letter-spacing:1px;">🛡️ MODERATION PANEL</button>
       </div>
     </div>
   </div>
-</div>
-
-<!-- ============ BAN SCREEN ============ -->
-<div id="banScreen" style="display:none;position:fixed;inset:0;z-index:99999;background:#0a0a0f;flex-direction:column;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;">
-  <div style="font-size:64px;margin-bottom:16px;">🔨</div>
-  <div style="font-size:24px;color:#ff4444;font-weight:700;letter-spacing:2px;margin-bottom:16px;">YOU ARE BANNED</div>
-  <div style="font-size:14px;color:rgba(255,255,255,.7);margin-bottom:12px;text-align:center;max-width:400px;line-height:1.6;" id="banReason"></div>
-  <div style="font-size:12px;color:rgba(255,255,255,.4);" id="banExpiry"></div>
-  <div style="margin-top:24px;font-size:11px;color:rgba(255,255,255,.3);">Contact an admin to appeal your ban.</div>
 </div>
 
 <!-- ============ INVENTORY OVERLAY ============ -->
@@ -2864,6 +2896,7 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
     <div class="chat-msg-system">Welcome to Casino Royale chat! Be respectful.</div>
   </div>
   <div class="chat-input-wrap">
+    <div id="modMuteBanner">🔇 You are muted: <span id="modMuteReason"></span> — <span id="modMuteTimer"></span></div>
     <input class="chat-input" id="chatInput" placeholder="Type a message..." maxlength="200" autocomplete="off">
     <button class="chat-send-btn" id="chatSendBtn" onclick="sendChatMessage()">Send</button>
   </div>
@@ -2977,6 +3010,22 @@ onAuthStateChanged(auth, async (user) => {
       currentUsername = emailToUsername(user.email);
     }
 
+
+    // === MODERATION: Check ban status ===
+    const banSnap = await get(ref(db, 'casino/bannedUsers/' + playerId));
+    if (banSnap.exists()) {
+      const banData = banSnap.val();
+      const isPerm = !banData.until || banData.until >= 9999999999999;
+      if (isPerm || banData.until > Date.now()) {
+        // User is banned — sign out
+        window._modShowBan && window._modShowBan(banData);
+        setTimeout(() => signOut(auth), 4000);
+        return;
+      } else {
+        // Ban expired — auto-remove
+        await set(ref(db, 'casino/bannedUsers/' + playerId), null);
+      }
+    }
     // Set up session ID for multiplayer
     let pylSessionId = sessionStorage.getItem('pyl_session_id');
     if (!pylSessionId) {
@@ -2988,13 +3037,8 @@ onAuthStateChanged(auth, async (user) => {
     window._currentUsername = currentUsername;
     window._currentPlayerId = playerId;
 
-    // Show casino, hide login — check for bans first
-    const _loginBan = typeof _checkBan === 'function' ? await _checkBan(playerId).catch(()=>null) : null;
-    if (_loginBan) {
-      _showBanScreen(_loginBan);
-    } else {
-      if (typeof window._onAuthReady === 'function') window._onAuthReady(currentUsername, playerId);
-    }
+    // Show casino, hide login
+    if (typeof window._onAuthReady === 'function') window._onAuthReady(currentUsername, playerId);
 
     // Balance sync — poll every 30s + full sync on tab focus for cross-device
     async function _syncBalance() {
@@ -3923,6 +3967,7 @@ window._sendChatMsg = async (text, username, type) => {
     user: username || 'Guest',
     text: text.slice(0, 200),
     type: type || 'msg', // 'msg', 'win', 'system'
+    uid: playerId || '',
     ts: Date.now(),
     prestige: window._getPrestige ? window._getPrestige() : 0,
     role: role,
@@ -4171,6 +4216,8 @@ window._onAuthReady = function(username, uid) {
   }
   // Listen for RR PvP challenges
   if (typeof rrListenForChallenges === 'function') rrListenForChallenges();
+  // Start moderation watchers
+  if (typeof modStartWatchers === 'function') modStartWatchers();
 };
 
 window._onAuthLoggedOut = function() {
@@ -5058,159 +5105,6 @@ async function adminSetSelfBalance() {
     console.error('Admin set balance error:', e);
     showToast('❌ Error: ' + (e.message || 'Unknown'), false);
   }
-}
-
-// ============ MODERATION SYSTEM ============
-async function _checkBan(uid) {
-  try {
-    const snap = await window._fbGet('casino/bans/' + uid);
-    if (!snap.exists()) return null;
-    const ban = snap.val();
-    if (ban.expires && ban.expires > 0 && Date.now() > ban.expires) {
-      window._fbRemove('casino/bans/' + uid);
-      return null;
-    }
-    return ban;
-  } catch(e) { return null; }
-}
-
-async function _checkMute(uid) {
-  try {
-    const snap = await window._fbGet('casino/mutes/' + uid);
-    if (!snap.exists()) return null;
-    const mute = snap.val();
-    if (mute.expires && mute.expires > 0 && Date.now() > mute.expires) {
-      window._fbRemove('casino/mutes/' + uid);
-      return null;
-    }
-    return mute;
-  } catch(e) { return null; }
-}
-
-function _showBanScreen(ban) {
-  const scr = document.getElementById('banScreen');
-  if (!scr) return;
-  document.getElementById('banReason').textContent = 'Reason: ' + (ban.reason || 'No reason given');
-  const expEl = document.getElementById('banExpiry');
-  if (ban.expires && ban.expires > 0) {
-    expEl.textContent = 'Expires: ' + new Date(ban.expires).toLocaleString();
-  } else {
-    expEl.textContent = 'This ban is permanent.';
-  }
-  scr.style.display = 'flex';
-  const ls = document.getElementById('loginScreen');
-  if (ls) ls.style.display = 'none';
-  const tn = document.getElementById('topNav');
-  if (tn) tn.style.display = 'none';
-}
-
-async function _isAdminUser() {
-  const uname = (window._currentUsername || '').toLowerCase();
-  if (uname === 'mojheh' || uname === 'terpez') return true;
-  if (!window._currentPlayerId) return false;
-  try {
-    const snap = await window._fbGet('casino/admins/' + window._currentPlayerId);
-    return snap.exists();
-  } catch(e) { return false; }
-}
-
-async function _modLookupUid(username) {
-  const snap = await window._fbGet('casino/usernames/' + username.toLowerCase());
-  if (!snap.exists()) return null;
-  return snap.val();
-}
-
-async function adminBanPlayer() {
-  if (!await _isAdminUser()) { showToast('Admin only!', false); return; }
-  const u = (document.getElementById('modTargetUser').value || '').trim();
-  const reason = (document.getElementById('modReason').value || '').trim() || 'Admin ban';
-  const hours = parseFloat(document.getElementById('modDuration').value) || 0;
-  if (!u) { showToast('Enter a username!', false); return; }
-  showToast('⏳ Processing...', true);
-  const uid = await _modLookupUid(u);
-  if (!uid) { showToast('User not found: ' + u, false); return; }
-  const expires = hours > 0 ? Date.now() + hours * 3600000 : 0;
-  await window._fbSet('casino/bans/' + uid, {
-    reason, bannedBy: window._currentPlayerId,
-    bannedByName: window._currentUsername, timestamp: Date.now(), expires
-  });
-  await window._fbSet('casino/modlog/' + Date.now(), {
-    action: 'ban', target: u, targetUid: uid, reason, duration: hours + 'h',
-    by: window._currentUsername, timestamp: Date.now()
-  });
-  showToast('🔨 Banned ' + u + (hours > 0 ? ' for ' + hours + 'h' : ' permanently'), true);
-}
-
-async function adminUnbanPlayer() {
-  if (!await _isAdminUser()) { showToast('Admin only!', false); return; }
-  const u = (document.getElementById('modTargetUser').value || '').trim();
-  if (!u) { showToast('Enter a username!', false); return; }
-  const uid = await _modLookupUid(u);
-  if (!uid) { showToast('User not found: ' + u, false); return; }
-  await window._fbRemove('casino/bans/' + uid);
-  await window._fbSet('casino/modlog/' + Date.now(), {
-    action: 'unban', target: u, targetUid: uid,
-    by: window._currentUsername, timestamp: Date.now()
-  });
-  showToast('✅ Unbanned ' + u, true);
-}
-
-async function adminMutePlayer() {
-  if (!await _isAdminUser()) { showToast('Admin only!', false); return; }
-  const u = (document.getElementById('modTargetUser').value || '').trim();
-  const reason = (document.getElementById('modReason').value || '').trim() || 'Admin mute';
-  const minutes = parseFloat(document.getElementById('modDuration').value) || 60;
-  if (!u) { showToast('Enter a username!', false); return; }
-  showToast('⏳ Processing...', true);
-  const uid = await _modLookupUid(u);
-  if (!uid) { showToast('User not found: ' + u, false); return; }
-  const expires = Date.now() + minutes * 60000;
-  await window._fbSet('casino/mutes/' + uid, {
-    reason, mutedBy: window._currentPlayerId,
-    mutedByName: window._currentUsername, timestamp: Date.now(), expires
-  });
-  await window._fbSet('casino/modlog/' + Date.now(), {
-    action: 'mute', target: u, targetUid: uid, reason, duration: minutes + 'min',
-    by: window._currentUsername, timestamp: Date.now()
-  });
-  showToast('🔇 Muted ' + u + ' for ' + minutes + 'min', true);
-}
-
-async function adminUnmutePlayer() {
-  if (!await _isAdminUser()) { showToast('Admin only!', false); return; }
-  const u = (document.getElementById('modTargetUser').value || '').trim();
-  if (!u) { showToast('Enter a username!', false); return; }
-  const uid = await _modLookupUid(u);
-  if (!uid) { showToast('User not found: ' + u, false); return; }
-  await window._fbRemove('casino/mutes/' + uid);
-  await window._fbSet('casino/modlog/' + Date.now(), {
-    action: 'unmute', target: u, targetUid: uid,
-    by: window._currentUsername, timestamp: Date.now()
-  });
-  showToast('🔊 Unmuted ' + u, true);
-}
-
-async function adminWarnPlayer() {
-  if (!await _isAdminUser()) { showToast('Admin only!', false); return; }
-  const u = (document.getElementById('modTargetUser').value || '').trim();
-  const reason = (document.getElementById('modReason').value || '').trim() || 'Warned by admin';
-  if (!u) { showToast('Enter a username!', false); return; }
-  showToast('⏳ Processing...', true);
-  const uid = await _modLookupUid(u);
-  if (!uid) { showToast('User not found: ' + u, false); return; }
-  const warnKey = Date.now().toString();
-  await window._fbSet('casino/players/' + uid + '/warnings/' + warnKey, {
-    reason, warnedBy: window._currentPlayerId,
-    warnedByName: window._currentUsername, timestamp: Date.now()
-  });
-  await window._fbSet('casino/players/' + uid + '/notifications/' + warnKey, {
-    type: 'warning', reason, from: window._currentUsername, timestamp: Date.now()
-  });
-  await window._fbSet('casino/modlog/' + Date.now(), {
-    action: 'warn', target: u, targetUid: uid, reason,
-    by: window._currentUsername, timestamp: Date.now()
-  });
-  showToast('⚠️ Warned ' + u, true);
 }
 
 function getPrestigeBadgeHTML(level) {
@@ -9872,11 +9766,20 @@ window._onChatMessages = function(msgs) {
       if (m.role === 'owner') roleBadge = '<span class="role-badge-owner">OWNER</span>';
       else if (m.role === 'co-owner') roleBadge = '<span class="role-badge-coowner">CO-OWNER</span>';
       const avatarContent = m.profilePicUrl ? `<img src="${m.profilePicUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : initial;
-      el.innerHTML = `<div class="chat-msg-avatar">${avatarContent}</div>
-        <div class="chat-msg-body">
-          <div class="chat-msg-name${isGuest?' guest-name':''}">${escapeHtml(m.user||'Guest')}${roleBadge}${pBadge} <span class="chat-msg-time">${timeStr}</span></div>
-          <div class="chat-msg-text">${escapeHtml(m.text)}</div>
-        </div>`;
+      let chatAdminHtml = '';
+      if (modIsStaff()) {
+        chatAdminHtml += '<button class="mod-chat-admin-btn" onclick="modDeleteChatMsg(\'' + m.id + '\')" title="Delete message">🗑</button>';
+      }
+      let modBtnHtml = '';
+      if (modIsStaff() && m.uid && m.uid !== window._currentPlayerId) {
+        modBtnHtml = ' <button style="font-size:9px;padding:1px 5px;background:rgba(255,50,50,.15);border:1px solid rgba(255,50,50,.3);border-radius:4px;color:#ff6644;cursor:pointer;margin-left:4px;" onclick="modOpenActionOnUser(\'' + m.uid + '\',\'' + escapeHtml(m.user||'Guest') + '\')">MOD</button>';
+      }
+      el.innerHTML = chatAdminHtml + '<div class="chat-msg-avatar">' + avatarContent + '</div>' +
+        '<div class="chat-msg-body">' +
+          '<div class="chat-msg-name' + (isGuest ? ' guest-name' : '') + '">' + escapeHtml(m.user||'Guest') + roleBadge + pBadge + ' <span class="chat-msg-time">' + timeStr + '</span>' + modBtnHtml + '</div>' +
+          '<div class="chat-msg-text">' + escapeHtml(m.text) + '</div>' +
+        '</div>';
+
       container.appendChild(el);
     }
   });
@@ -9899,22 +9802,12 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-async function sendChatMessage() {
+function sendChatMessage() {
   const input = document.getElementById('chatInput');
   let text = input.value.trim();
   if (!text) return;
   if (isGuestMode) { showToast('Sign in to chat', false); return; }
-  // Mute check
-  if (window._currentPlayerId && typeof _checkMute === 'function') {
-    try {
-      const mute = await _checkMute(window._currentPlayerId);
-      if (mute) {
-        const timeLeft = mute.expires > 0 ? Math.ceil((mute.expires - Date.now()) / 60000) + 'min' : 'permanent';
-        showToast('🔇 You are muted (' + timeLeft + '): ' + (mute.reason || ''), false);
-        return;
-      }
-    } catch(e) {}
-  }
+  if (window._modIsMuted) { showToast('🔇 You are muted!', false); return; }
   if (text.length > 200) text = text.slice(0, 200); // enforce length limit
   const username = window._currentUsername || 'Guest';
   if (window._sendChatMsg) {
@@ -11958,17 +11851,18 @@ async function mpbsrUseItem(itemIndex) {
       const shells = g.shells.split(',');
       const remaining = shells.slice(g.shellIdx || 0);
       if (remaining.length > 0) {
-        const idx = Math.floor(Math.random() * remaining.length);
-        const shellType = remaining[idx];
-        const absIdx = (g.shellIdx || 0) + idx + 1;
-        await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
-          msg: `📱 ${myName} used Burner Phone!`, color: 'var(--gold)'
-        });
-        showToast(`📱 Shell #${absIdx} is ${shellType === 'live' ? '🔴 LIVE' : '⚪ BLANK'}!`, shellType !== 'live');
+        const ri = Math.floor(Math.random() * remaining.length);
+        const revealPos = (g.shellIdx || 0) + ri + 1;
+        showToast(`Shell #${revealPos}: ${remaining[ri] === 'live' ? '🔴 LIVE' : '🔵 BLANK'}`, true);
       }
+      const lk2 = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
+      await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk2, {
+        msg: `📱 ${myName} uses Burner Phone — reveals a shell!`, color: 'var(--neon)'
+      });
       break;
     }
   }
+
   await window._fbUpdate('casino/bsrGames/' + gid, updates);
 }
 
@@ -12021,6 +11915,454 @@ function rrListenForChallenges() {
 
 function rrDeclinePvPChallenge(gameId) {
   window._fbUpdate('casino/rrGames/' + gameId, { status: 'declined' });
+}
+
+
+// ============ MODERATION SYSTEM ============
+const MOD_ADMINS = ['mojheh', 'terpez']; // hardcoded staff
+
+function modIsStaff() {
+  const name = (window._currentUsername || '').toLowerCase();
+  return MOD_ADMINS.includes(name);
+}
+
+function modGetStaffLevel() {
+  const name = (window._currentUsername || '').toLowerCase();
+  if (name === 'mojheh') return 'owner';
+  if (name === 'terpez') return 'co-owner';
+  return null;
+}
+
+// === Show Ban Popup ===
+window._modShowBan = function(banData) {
+  const overlay = document.getElementById('modBanOverlay');
+  const reasonEl = document.getElementById('modBanReason');
+  const timerEl = document.getElementById('modBanTimer');
+  reasonEl.textContent = banData.reason || 'Violation of community rules.';
+  const isPerm = !banData.until || banData.until >= 9999999999999;
+  if (isPerm) {
+    timerEl.textContent = 'PERMANENT';
+    timerEl.style.color = '#ff3333';
+  } else {
+    const remaining = banData.until - Date.now();
+    function updateBanTimer() {
+      const left = banData.until - Date.now();
+      if (left <= 0) { timerEl.textContent = 'Expired'; return; }
+      const h = Math.floor(left / 3600000);
+      const m = Math.floor((left % 3600000) / 60000);
+      const s = Math.floor((left % 60000) / 1000);
+      timerEl.textContent = `${h}h ${m}m ${s}s remaining`;
+    }
+    updateBanTimer();
+    setInterval(updateBanTimer, 1000);
+  }
+  overlay.style.display = 'flex';
+};
+
+// === Mute State ===
+window._modIsMuted = false;
+let _modMuteUnsub = null;
+let _modBanUnsub = null;
+let _modWarnUnsub = null;
+
+function modStartWatchers() {
+  const uid = window._currentPlayerId;
+  if (!uid) return;
+  
+  // Watch ban status
+  if (_modBanUnsub) { try { _modBanUnsub(); } catch(e){} }
+  _modBanUnsub = window._fbOnValue('casino/bannedUsers/' + uid, (snap) => {
+    if (!snap.exists()) return;
+    const d = snap.val();
+    const isPerm = !d.until || d.until >= 9999999999999;
+    if (isPerm || d.until > Date.now()) {
+      window._modShowBan(d);
+      setTimeout(() => { if (window._authLogout) window._authLogout(); }, 4000);
+    }
+  });
+  
+  // Watch mute status
+  if (_modMuteUnsub) { try { _modMuteUnsub(); } catch(e){} }
+  _modMuteUnsub = window._fbOnValue('casino/mutedUsers/' + uid, (snap) => {
+    if (!snap.exists()) {
+      window._modIsMuted = false;
+      document.getElementById('modMuteBanner').style.display = 'none';
+      const ci = document.getElementById('chatInput');
+      const cb = document.getElementById('chatSendBtn');
+      if (ci) ci.disabled = false;
+      if (cb) cb.disabled = false;
+      return;
+    }
+    const d = snap.val();
+    if (d.until && d.until <= Date.now()) {
+      // Expired — remove it
+      window._fbRemove('casino/mutedUsers/' + uid);
+      window._modIsMuted = false;
+      return;
+    }
+    window._modIsMuted = true;
+    const banner = document.getElementById('modMuteBanner');
+    document.getElementById('modMuteReason').textContent = d.reason || 'No reason given';
+    banner.style.display = 'block';
+    const ci = document.getElementById('chatInput');
+    const cb = document.getElementById('chatSendBtn');
+    if (ci) { ci.disabled = true; ci.placeholder = 'You are muted...'; }
+    if (cb) cb.disabled = true;
+    // Timer
+    if (d.until) {
+      const updateMuteTimer = () => {
+        const left = d.until - Date.now();
+        if (left <= 0) {
+          window._fbRemove('casino/mutedUsers/' + uid);
+          return;
+        }
+        const m = Math.floor(left / 60000);
+        const s = Math.floor((left % 60000) / 1000);
+        document.getElementById('modMuteTimer').textContent = `${m}m ${s}s left`;
+      };
+      updateMuteTimer();
+      const iv = setInterval(() => {
+        if (!window._modIsMuted) { clearInterval(iv); return; }
+        updateMuteTimer();
+      }, 1000);
+    } else {
+      document.getElementById('modMuteTimer').textContent = 'Permanent';
+    }
+  });
+  
+  // Watch warnings
+  if (_modWarnUnsub) { try { _modWarnUnsub(); } catch(e){} }
+  _modWarnUnsub = window._fbOnValue('casino/warnings/' + uid, (snap) => {
+    if (!snap.exists()) return;
+    const d = snap.val();
+    if (!d.active) return;
+    const overlay = document.getElementById('modWarnOverlay');
+    document.getElementById('modWarnReason').textContent = d.reason || 'Please follow the rules.';
+    document.getElementById('modWarnAgree').checked = false;
+    document.getElementById('modWarnCloseBtn').disabled = true;
+    overlay.style.display = 'flex';
+  });
+}
+
+function modDismissWarning() {
+  document.getElementById('modWarnOverlay').style.display = 'none';
+  const uid = window._currentPlayerId;
+  if (uid) window._fbRemove('casino/warnings/' + uid);
+}
+
+// === Admin Actions ===
+let _modActionType = null; // 'ban', 'mute', 'warn'
+let _modActionTargetUid = null;
+let _modActionTargetName = null;
+let _modSelectedDuration = 10080; // default 1 week (in minutes)
+
+function modOpenActionOnUser(uid, username) {
+  if (!modIsStaff()) { showToast('Staff only!', false); return; }
+  // Show a quick action menu
+  const menu = document.createElement('div');
+  menu.style.cssText = 'position:fixed;top:20%;left:50%;transform:translateX(-50%);z-index:100002;background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:20px;text-align:center;min-width:260px;box-shadow:0 0 40px rgba(0,0,0,.5);';
+  menu.innerHTML = `
+    <div style="font-family:'Orbitron';font-size:13px;color:var(--gold);margin-bottom:4px;">🛡️ MOD ACTIONS</div>
+    <div style="font-size:12px;color:var(--text);margin-bottom:14px;">Target: <b>${username}</b></div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button class="action-btn" style="padding:10px;font-size:12px;background:linear-gradient(135deg,#ff3333,#cc0000);" onclick="this.closest('div[style]').remove();modStartAction('ban','${uid}','${username}');">🚫 BAN</button>
+      <button class="action-btn" style="padding:10px;font-size:12px;background:linear-gradient(135deg,#ff8800,#cc6600);" onclick="this.closest('div[style]').remove();modStartAction('mute','${uid}','${username}');">🔇 MUTE</button>
+      <button class="action-btn" style="padding:10px;font-size:12px;background:linear-gradient(135deg,#ffaa00,#cc8800);" onclick="this.closest('div[style]').remove();modStartAction('warn','${uid}','${username}');">⚠️ WARN</button>
+      <button style="padding:8px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text2);cursor:pointer;font-size:11px;" onclick="this.closest('div[style]').remove();">Cancel</button>
+    </div>`;
+  document.body.appendChild(menu);
+  setTimeout(() => { if (menu.parentNode) menu.remove(); }, 30000);
+}
+
+function modStartAction(type, uid, username) {
+  if (!modIsStaff()) return;
+  _modActionType = type;
+  _modActionTargetUid = uid;
+  _modActionTargetName = username;
+  _modSelectedDuration = 10080;
+  
+  const modal = document.getElementById('modReasonModal');
+  const titleEl = document.getElementById('modReasonTitle');
+  const durRow = document.getElementById('modDurationRow');
+  document.getElementById('modReasonCustom').value = '';
+  
+  if (type === 'ban') {
+    titleEl.textContent = '🚫 BAN — ' + username;
+    durRow.style.display = 'flex';
+  } else if (type === 'mute') {
+    titleEl.textContent = '🔇 MUTE — ' + username;
+    durRow.style.display = 'flex';
+  } else {
+    titleEl.textContent = '⚠️ WARN — ' + username;
+    durRow.style.display = 'none';
+  }
+  
+  // Reset duration buttons
+  durRow.querySelectorAll('.mod-dur-btn').forEach(b => b.classList.remove('active'));
+  durRow.querySelector('.mod-dur-btn:nth-child(3)').classList.add('active'); // 1w default
+  
+  modal.style.display = 'flex';
+}
+
+function modPickReason(reason) {
+  document.getElementById('modReasonCustom').value = reason;
+}
+
+function modPickDuration(mins) {
+  _modSelectedDuration = mins;
+  const durRow = document.getElementById('modDurationRow');
+  durRow.querySelectorAll('.mod-dur-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function modCancelReason() {
+  document.getElementById('modReasonModal').style.display = 'none';
+  _modActionType = null;
+  _modActionTargetUid = null;
+  _modActionTargetName = null;
+}
+
+async function modConfirmReason() {
+  if (!modIsStaff()) return;
+  const reason = document.getElementById('modReasonCustom').value.trim() || 'No reason specified';
+  const uid = _modActionTargetUid;
+  const username = _modActionTargetName;
+  const type = _modActionType;
+  
+  if (!uid || !type) { modCancelReason(); return; }
+  
+  document.getElementById('modReasonModal').style.display = 'none';
+  
+  try {
+    if (type === 'ban') {
+      const until = _modSelectedDuration === 0 ? 9999999999999 : Date.now() + _modSelectedDuration * 60000;
+      await window._fbSet('casino/bannedUsers/' + uid, {
+        until: until,
+        reason: reason,
+        bannedBy: window._currentUsername || 'Admin',
+        bannedAt: Date.now(),
+        username: username
+      });
+      const durText = _modSelectedDuration === 0 ? 'PERMANENTLY' : `for ${formatDuration(_modSelectedDuration * 60000)}`;
+      showToast(`🚫 Banned ${username} ${durText}`, true);
+    } else if (type === 'mute') {
+      const until = _modSelectedDuration === 0 ? 9999999999999 : Date.now() + _modSelectedDuration * 60000;
+      await window._fbSet('casino/mutedUsers/' + uid, {
+        until: until,
+        reason: reason,
+        mutedBy: window._currentUsername || 'Admin',
+        mutedAt: Date.now(),
+        username: username
+      });
+      const durText = _modSelectedDuration === 0 ? 'PERMANENTLY' : `for ${formatDuration(_modSelectedDuration * 60000)}`;
+      showToast(`🔇 Muted ${username} ${durText}`, true);
+    } else if (type === 'warn') {
+      await window._fbSet('casino/warnings/' + uid, {
+        active: true,
+        reason: reason,
+        warnedBy: window._currentUsername || 'Admin',
+        warnedAt: Date.now(),
+        username: username
+      });
+      showToast(`⚠️ Warning sent to ${username}`, true);
+    }
+  } catch(e) {
+    console.error('Mod action error:', e);
+    showToast('❌ Failed: ' + (e.message || 'Unknown error'), false);
+  }
+  
+  _modActionType = null;
+  _modActionTargetUid = null;
+  _modActionTargetName = null;
+}
+
+function formatDuration(ms) {
+  if (ms >= 86400000) return Math.floor(ms / 86400000) + 'd';
+  if (ms >= 3600000) return Math.floor(ms / 3600000) + 'h';
+  if (ms >= 60000) return Math.floor(ms / 60000) + 'm';
+  return Math.floor(ms / 1000) + 's';
+}
+
+// === Delete Chat Message ===
+async function modDeleteChatMsg(key) {
+  if (!modIsStaff()) return;
+  try {
+    await window._fbRemove('casino/chat/' + key);
+    showToast('🗑 Message deleted', true);
+  } catch(e) {
+    showToast('❌ Failed to delete', false);
+  }
+}
+
+// === Moderation Panel ===
+let _modPanelTab = 'banned';
+
+function modOpenPanel() {
+  if (!modIsStaff()) { showToast('Staff only!', false); return; }
+  document.getElementById('modPanel').style.display = 'flex';
+  modSwitchTab('banned');
+}
+
+function modClosePanel() {
+  document.getElementById('modPanel').style.display = 'none';
+}
+
+function modSwitchTab(tab) {
+  _modPanelTab = tab;
+  document.querySelectorAll('.mod-panel-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.mod-panel-tab').forEach(t => {
+    if (t.textContent.trim().toLowerCase() === tab || 
+        (tab === 'banned' && t.textContent.includes('BANNED')) ||
+        (tab === 'muted' && t.textContent.includes('MUTED')) ||
+        (tab === 'actions' && t.textContent.includes('ACTIONS'))) {
+      t.classList.add('active');
+    }
+  });
+  modRenderPanel();
+}
+
+async function modRenderPanel() {
+  const container = document.getElementById('modPanelContent');
+  container.innerHTML = '<div class="mod-panel-empty">Loading...</div>';
+  
+  try {
+    if (_modPanelTab === 'banned') {
+      const snap = await window._fbGet('casino/bannedUsers');
+      if (!snap.exists()) { container.innerHTML = '<div class="mod-panel-empty">No banned users</div>'; return; }
+      let html = '';
+      const data = snap.val();
+      for (const [uid, d] of Object.entries(data)) {
+        const isPerm = !d.until || d.until >= 9999999999999;
+        const expired = !isPerm && d.until <= Date.now();
+        if (expired) { window._fbRemove('casino/bannedUsers/' + uid); continue; }
+        const timeLeft = isPerm ? '<span style="color:#ff3333;">PERMANENT</span>' : formatDuration(d.until - Date.now()) + ' left';
+        html += `<div class="mod-panel-item">
+          <div class="mod-panel-item-info">
+            <div class="mod-panel-item-name">${d.username || uid.slice(0,8)}</div>
+            <div class="mod-panel-item-detail">Reason: ${d.reason || '—'} · ${timeLeft} · By: ${d.bannedBy || '?'}</div>
+          </div>
+          <div class="mod-panel-item-actions">
+            <button class="mod-panel-action green" onclick="modUnbanUser('${uid}')">UNBAN</button>
+          </div>
+        </div>`;
+      }
+      container.innerHTML = html || '<div class="mod-panel-empty">No banned users</div>';
+    } else if (_modPanelTab === 'muted') {
+      const snap = await window._fbGet('casino/mutedUsers');
+      if (!snap.exists()) { container.innerHTML = '<div class="mod-panel-empty">No muted users</div>'; return; }
+      let html = '';
+      const data = snap.val();
+      for (const [uid, d] of Object.entries(data)) {
+        const isPerm = !d.until || d.until >= 9999999999999;
+        const expired = !isPerm && d.until <= Date.now();
+        if (expired) { window._fbRemove('casino/mutedUsers/' + uid); continue; }
+        const timeLeft = isPerm ? '<span style="color:#ff8800;">PERMANENT</span>' : formatDuration(d.until - Date.now()) + ' left';
+        html += `<div class="mod-panel-item">
+          <div class="mod-panel-item-info">
+            <div class="mod-panel-item-name">${d.username || uid.slice(0,8)}</div>
+            <div class="mod-panel-item-detail">Reason: ${d.reason || '—'} · ${timeLeft} · By: ${d.mutedBy || '?'}</div>
+          </div>
+          <div class="mod-panel-item-actions">
+            <button class="mod-panel-action green" onclick="modUnmuteUser('${uid}')">UNMUTE</button>
+          </div>
+        </div>`;
+      }
+      container.innerHTML = html || '<div class="mod-panel-empty">No muted users</div>';
+    } else if (_modPanelTab === 'actions') {
+      container.innerHTML = `
+        <div style="margin-bottom:16px;">
+          <div style="font-size:11px;color:var(--text2);letter-spacing:1px;margin-bottom:8px;">QUICK ACTION BY USERNAME</div>
+          <div style="display:flex;gap:6px;">
+            <input type="text" id="modActionUsername" placeholder="Enter username..." class="mod-panel-search" style="margin-bottom:0;">
+            <button class="mod-panel-action blue" style="white-space:nowrap;padding:8px 14px;" onclick="modLookupUser()">LOOKUP</button>
+          </div>
+        </div>
+        <div id="modLookupResult"></div>
+        <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
+          <div style="font-size:11px;color:var(--text2);letter-spacing:1px;margin-bottom:8px;">BULK ACTIONS</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="mod-panel-action red" onclick="modUnbanAll()">UNBAN ALL</button>
+            <button class="mod-panel-action red" onclick="modUnmuteAll()">UNMUTE ALL</button>
+          </div>
+        </div>`;
+    }
+  } catch(e) {
+    container.innerHTML = '<div class="mod-panel-empty">Error: ' + (e.message || 'Unknown') + '</div>';
+  }
+}
+
+async function modLookupUser() {
+  const username = document.getElementById('modActionUsername').value.trim();
+  if (!username) { showToast('Enter a username', false); return; }
+  const resultDiv = document.getElementById('modLookupResult');
+  resultDiv.innerHTML = '<div style="color:var(--text2);font-size:12px;">Looking up...</div>';
+  try {
+    const snap = await window._fbGet('casino/usernames/' + username.toLowerCase());
+    if (!snap.exists()) { resultDiv.innerHTML = '<div style="color:var(--red);font-size:12px;">User not found</div>'; return; }
+    const uid = snap.val();
+    // Check current status
+    const [banSnap, muteSnap] = await Promise.all([
+      window._fbGet('casino/bannedUsers/' + uid),
+      window._fbGet('casino/mutedUsers/' + uid)
+    ]);
+    const isBanned = banSnap.exists();
+    const isMuted = muteSnap.exists();
+    resultDiv.innerHTML = `
+      <div class="mod-panel-item" style="margin:0;">
+        <div class="mod-panel-item-info">
+          <div class="mod-panel-item-name">${username} <span style="font-size:10px;color:var(--text2);">${uid.slice(0,12)}...</span></div>
+          <div class="mod-panel-item-detail">
+            Status: ${isBanned ? '<span style="color:#ff3333;">BANNED</span>' : '<span style="color:var(--green);">Not banned</span>'} · 
+            ${isMuted ? '<span style="color:#ff8800;">MUTED</span>' : '<span style="color:var(--green);">Not muted</span>'}
+          </div>
+        </div>
+        <div class="mod-panel-item-actions" style="flex-wrap:wrap;">
+          ${isBanned ? `<button class="mod-panel-action green" onclick="modUnbanUser('${uid}');modLookupUser();">UNBAN</button>` : `<button class="mod-panel-action red" onclick="modStartAction('ban','${uid}','${username}')">BAN</button>`}
+          ${isMuted ? `<button class="mod-panel-action green" onclick="modUnmuteUser('${uid}');modLookupUser();">UNMUTE</button>` : `<button class="mod-panel-action red" onclick="modStartAction('mute','${uid}','${username}')">MUTE</button>`}
+          <button class="mod-panel-action blue" onclick="modStartAction('warn','${uid}','${username}')">WARN</button>
+        </div>
+      </div>`;
+  } catch(e) {
+    resultDiv.innerHTML = '<div style="color:var(--red);font-size:12px;">Error: ' + (e.message || 'Unknown') + '</div>';
+  }
+}
+
+async function modUnbanUser(uid) {
+  if (!modIsStaff()) return;
+  try {
+    await window._fbRemove('casino/bannedUsers/' + uid);
+    showToast('✅ User unbanned', true);
+    if (_modPanelTab === 'banned') modRenderPanel();
+  } catch(e) { showToast('❌ Failed', false); }
+}
+
+async function modUnmuteUser(uid) {
+  if (!modIsStaff()) return;
+  try {
+    await window._fbRemove('casino/mutedUsers/' + uid);
+    showToast('✅ User unmuted', true);
+    if (_modPanelTab === 'muted') modRenderPanel();
+  } catch(e) { showToast('❌ Failed', false); }
+}
+
+async function modUnbanAll() {
+  if (!modIsStaff()) return;
+  if (!confirm('Unban ALL users?')) return;
+  try {
+    await window._fbRemove('casino/bannedUsers');
+    showToast('✅ All users unbanned', true);
+    modRenderPanel();
+  } catch(e) { showToast('❌ Failed', false); }
+}
+
+async function modUnmuteAll() {
+  if (!modIsStaff()) return;
+  if (!confirm('Unmute ALL users?')) return;
+  try {
+    await window._fbRemove('casino/mutedUsers');
+    showToast('✅ All users unmuted', true);
+    modRenderPanel();
+  } catch(e) { showToast('❌ Failed', false); }
 }
 
 // ============ SETTINGS ============
@@ -12553,6 +12895,74 @@ function cryptoSellAll(coinId) {
 // Init limited cases on load
 setTimeout(initLimitedCases, 1000);
 </script>
+
+<!-- ============ MODERATION OVERLAYS ============ -->
+<!-- Ban Popup -->
+<div id="modBanOverlay">
+  <div class="mod-popup">
+    <div class="mod-popup-icon">🚫</div>
+    <div class="mod-popup-title" style="color:#ff3333;">YOU ARE BANNED</div>
+    <div class="mod-popup-reason" id="modBanReason">Violation of community rules.</div>
+    <div class="mod-popup-timer" id="modBanTimer"></div>
+    <div class="mod-popup-sub">You will be signed out automatically.</div>
+  </div>
+</div>
+
+<!-- Warning Popup -->
+<div id="modWarnOverlay">
+  <div class="mod-popup">
+    <div class="mod-popup-icon">⚠️</div>
+    <div class="mod-popup-title" style="color:#ffaa00;">YOU HAVE BEEN WARNED</div>
+    <div class="mod-popup-reason" id="modWarnReason">Please follow the rules.</div>
+    <label class="mod-warn-check">
+      <input type="checkbox" id="modWarnAgree" onchange="document.getElementById('modWarnCloseBtn').disabled=!this.checked;">
+      I understand and will follow the rules
+    </label>
+    <button id="modWarnCloseBtn" disabled onclick="modDismissWarning()" class="action-btn primary" style="padding:10px 24px;font-size:12px;">CLOSE</button>
+  </div>
+</div>
+
+<!-- Reason Modal (shared for ban/mute/warn) -->
+<div id="modReasonModal">
+  <div class="mod-reason-box">
+    <div class="mod-reason-title" id="modReasonTitle">SELECT REASON</div>
+    <button class="mod-reason-btn" onclick="modPickReason('Spamming')">💬 Spamming</button>
+    <button class="mod-reason-btn" onclick="modPickReason('Abusive Language')">🤬 Abusive Language</button>
+    <button class="mod-reason-btn" onclick="modPickReason('Disruption')">💥 Disruption</button>
+    <button class="mod-reason-btn" onclick="modPickReason('Harassment')">😡 Harassment</button>
+    <button class="mod-reason-btn" onclick="modPickReason('Exploiting / Cheating')">🎮 Exploiting / Cheating</button>
+    <input type="text" class="mod-reason-input" id="modReasonCustom" placeholder="Or type a custom reason..." maxlength="100">
+    <div id="modDurationRow" class="mod-dur-row" style="display:none;">
+      <button class="mod-dur-btn" onclick="modPickDuration(60)">1h</button>
+      <button class="mod-dur-btn" onclick="modPickDuration(1440)">1d</button>
+      <button class="mod-dur-btn active" onclick="modPickDuration(10080)">1w</button>
+      <button class="mod-dur-btn" onclick="modPickDuration(43200)">30d</button>
+      <button class="mod-dur-btn" onclick="modPickDuration(0)" style="color:var(--red);">PERM</button>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;">
+      <button class="action-btn primary" onclick="modConfirmReason()" style="padding:8px 20px;font-size:12px;">CONFIRM</button>
+      <button class="mod-dur-cancel" onclick="modCancelReason()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Moderation Panel -->
+<div id="modPanel">
+  <div class="mod-panel-box">
+    <div class="mod-panel-header">
+      <div class="mod-panel-title">🛡️ MODERATION</div>
+      <button class="mod-panel-close" onclick="modClosePanel()">✕ CLOSE</button>
+    </div>
+    <div class="mod-panel-tabs">
+      <div class="mod-panel-tab active" onclick="modSwitchTab('banned')">BANNED</div>
+      <div class="mod-panel-tab" onclick="modSwitchTab('muted')">MUTED</div>
+      <div class="mod-panel-tab" onclick="modSwitchTab('actions')">ACTIONS</div>
+    </div>
+    <div class="mod-panel-content" id="modPanelContent">
+      <div class="mod-panel-empty">Loading...</div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
