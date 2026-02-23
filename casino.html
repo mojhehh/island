@@ -722,33 +722,72 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 #pokerResult{font-family:'Orbitron';font-size:15px;font-weight:700;min-height:22px;text-align:center;}
 
 /* ============ HORSE RACING ============ */
-#horsesPanel{flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(ellipse at bottom,#1a0a0a 0%,#0a0a1a 70%);}
+#horsesPanel{flex-direction:column;align-items:center;justify-content:flex-start;gap:10px;background:radial-gradient(ellipse at bottom,#1a0a0a 0%,#0a0a1a 70%);overflow-y:auto;padding-bottom:30px;}
+#hrContent{width:100%;max-width:720px;display:flex;flex-direction:column;gap:10px;align-items:center;}
 .horse-track{width:min(680px,95vw);background:var(--surface);border-radius:10px;border:1px solid var(--border);padding:10px;}
-.horse-lane{display:flex;align-items:center;gap:6px;padding:3px 0 0 0;}
-.horse-stats-row{display:flex;gap:4px;padding:3px 0 5px 71px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.05);}
-.horse-stats-row:last-of-type{border-bottom:none;}
-.horse-name{width:65px;font-size:11px;font-weight:700;flex-shrink:0;}
-.horse-bar{flex:1;height:24px;background:var(--bg);border-radius:5px;position:relative;overflow:hidden;}
-.horse-progress{height:100%;border-radius:5px;transition:width .3s;position:absolute;left:0;top:0;}
-.horse-emoji{position:absolute;right:-2px;top:-3px;font-size:24px;}
-.horse-stat-col{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:58px;}
-.horse-odds{font-family:'Orbitron';font-size:10px;color:var(--gold);text-align:right;}
-.horse-trend{font-size:9px;white-space:nowrap;}
-.trend-hot{color:#ff6644;font-weight:700;}
-.trend-mid{color:var(--text2);}
-.trend-cold{color:#6688cc;}
-.hstat{font-size:10px;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--text2);}
-.hstat-good{background:rgba(0,255,100,.12);color:#44ff88;}
-.hstat-bad{background:rgba(255,60,60,.12);color:#ff6666;}
-.horse-track-info{width:min(680px,95vw);}
-.horse-track-badge{font-family:'Orbitron';font-size:13px;font-weight:700;color:var(--gold);text-align:center;margin-bottom:4px;}
-.horse-track-meta{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
-.horse-meta-tag{font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--text2);}
-.horse-bets{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;}
-.horse-bet{padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);cursor:pointer;font-weight:700;font-size:11px;transition:all .2s;}
-.horse-bet:hover{border-color:var(--neon);}
-.horse-bet.selected{border-color:var(--gold);background:rgba(255,215,0,.1);color:var(--gold);}
-#horseResult{font-family:'Orbitron';font-size:14px;font-weight:700;min-height:22px;text-align:center;}
+.horse-lane{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.horse-lane:last-child{border-bottom:none;}
+.horse-name{width:80px;font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;}
+.horse-bar{flex:1;height:22px;background:var(--bg);border-radius:5px;position:relative;overflow:hidden;}
+.horse-progress{height:100%;border-radius:5px;transition:width .05s linear;position:absolute;left:0;top:0;}
+.horse-emoji{position:absolute;right:-2px;top:-3px;font-size:20px;transition:left .05s linear;}
+/* Conditions bar */
+.hr-conditions{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;width:100%;max-width:680px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;padding:10px 14px;}
+.hr-cond-item{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:70px;}
+.hr-cond-label{font-size:8px;letter-spacing:2px;color:var(--text2);font-weight:700;}
+.hr-cond-val{font-family:'Orbitron';font-size:11px;font-weight:700;color:var(--text);}
+.hr-track-desc{font-size:10px;color:var(--text2);text-align:center;max-width:600px;line-height:1.4;}
+/* Race card table */
+.hr-card{width:100%;max-width:680px;background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.hr-card-header{display:grid;grid-template-columns:28px 1fr 1fr 70px 40px 75px 50px;gap:4px;padding:8px 10px;background:rgba(255,215,0,.05);border-bottom:1px solid var(--border);font-size:9px;font-weight:700;letter-spacing:1px;color:var(--text2);}
+.hr-card-row{display:grid;grid-template-columns:28px 1fr 1fr 70px 40px 75px 50px;gap:4px;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.03);cursor:pointer;transition:all .15s;align-items:center;font-size:11px;}
+.hr-card-row:hover{background:rgba(255,255,255,.03);}
+.hr-card-row.hr-row-sel{background:rgba(255,215,0,.08);border-left:3px solid var(--gold);}
+.hr-col-gate{font-family:'Orbitron';font-size:10px;color:var(--text2);text-align:center;}
+.hr-col-name{font-weight:700;font-size:11px;display:flex;align-items:center;gap:4px;}
+.hr-temperament{font-size:8px;padding:1px 4px;background:rgba(255,255,255,.08);border-radius:3px;color:var(--text2);}
+.hr-col-jockey{display:flex;flex-direction:column;gap:1px;}
+.hr-jockey-name{font-size:10px;color:var(--text);}
+.hr-jockey-style{font-size:8px;color:var(--text2);}
+.hr-col-stats{font-family:'Orbitron';font-size:9px;color:var(--text2);}
+.hr-col-surface{font-family:'Orbitron';font-size:11px;font-weight:700;text-align:center;}
+.hr-surf-great{color:#44ff44;}
+.hr-surf-good{color:#88cc44;}
+.hr-surf-ok{color:#ffaa00;}
+.hr-surf-bad{color:#ff4444;}
+.hr-col-form{display:flex;gap:2px;align-items:center;}
+.hr-form-dot{display:inline-block;width:14px;height:14px;border-radius:3px;font-size:9px;font-weight:700;text-align:center;line-height:14px;}
+.hr-form-dot.win{background:rgba(0,255,136,.2);color:var(--green);}
+.hr-form-dot.mid{background:rgba(255,170,0,.15);color:#ffaa00;}
+.hr-form-dot.lose{background:rgba(255,50,50,.15);color:#ff4444;}
+.hr-col-odds{font-family:'Orbitron';font-size:12px;font-weight:900;color:var(--gold);text-align:right;}
+/* Detail panel */
+.hr-detail{width:100%;max-width:680px;min-height:0;transition:all .2s;}
+.hr-detail-inner{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.hr-det-title{font-family:'Orbitron';font-size:14px;font-weight:700;margin-bottom:10px;}
+.hr-det-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:10px;}
+.hr-det-stat{display:flex;align-items:center;gap:6px;}
+.hr-det-label{font-size:10px;color:var(--text2);width:75px;flex-shrink:0;}
+.hr-stat-bar{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;}
+.hr-stat-fill{height:100%;border-radius:4px;transition:width .3s;}
+.hr-det-val{font-family:'Orbitron';font-size:10px;width:55px;text-align:right;flex-shrink:0;}
+.hr-det-jockey{font-size:10px;color:var(--text2);margin-bottom:4px;}
+.hr-det-form{font-size:10px;color:var(--text2);}
+/* Finish order */
+.hr-finish-order{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;justify-content:center;}
+.hr-finish-item{font-size:11px;font-weight:700;}
+/* Legend */
+.hr-legend{width:100%;max-width:680px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;}
+.hr-leg-item{font-size:9px;color:var(--text2);line-height:1.5;}
+/* Mobile */
+@media(max-width:600px){
+  .hr-card-header,.hr-card-row{grid-template-columns:22px 1fr 60px 38px 50px;font-size:9px;}
+  .hr-col-jockey,.hr-col-stats{display:none;}
+  .hr-det-grid{grid-template-columns:1fr;}
+  .hr-conditions{gap:4px;padding:8px;}
+  .hr-cond-item{min-width:55px;}
+}
+#horseResult{font-family:'Orbitron';font-size:13px;font-weight:700;min-height:22px;text-align:center;}
 
 /* ============ SCRATCH CARDS ============ */
 #scratchPanel{flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(ellipse at center,#1a1a0a 0%,#0a0a1a 70%);}
@@ -1902,22 +1941,8 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 
 <!-- ============ HORSE RACING ============ -->
 <div class="game-panel" id="horsesPanel">
-  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Each horse has <strong>Speed, Stamina, Acceleration</strong> and <strong>Consistency</strong> stats.</li><li>The current track has a <strong>surface</strong> (Turf/Dirt/Mud/Sand), <strong>distance</strong> (Sprint/Classic/Long), and <strong>condition</strong> (Fast/Good/Soft/Heavy).</li><li>Horses with matching surface ✅ and distance ✅ bonuses will perform significantly better.</li><li>🔥 Fav = high win chance for this track. 🧊 Long = underdog, but pays way more.</li><li>Payouts are based on calculated odds — favorites pay less, longshots pay more but rarely win.</li><li>A new track is generated after every race. Study the stats before betting!</li></ul></div></div>
+  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Each race has a <strong>track</strong> (surface + distance), <strong>weather</strong>, and <strong>going</strong> condition.</li><li>Study each horse's <strong>stats</strong>: Speed, Stamina, Acceleration, Consistency.</li><li>Check their <strong>surface affinity</strong> — a horse with 90 Mud on a Storm day at Stormwood Bog is a monster.</li><li><strong>Jockey style</strong> matters: Closers save energy for the finish, Aggressives burn out early.</li><li><strong>Form</strong> tracks last 5 finishes — hot horses get a power boost, cold horses get penalized.</li><li><strong>Gate position</strong> affects short vs long races differently.</li><li><strong>Temperament</strong>: Hot horses hate storms, Cool horses love rain, Wild horses are chaos.</li><li>The <strong>odds</strong> aren't perfect — they have noise. If you spot a mismatch between the odds and a horse's TRUE power, that's your edge.</li><li>Smart bettors who study everything can massively outperform the house. Casual random picks will lose.</li></ul></div></div>
   <div style="font-family:'Orbitron';font-size:16px;font-weight:700;color:var(--gold);">🏇 HORSE RACING</div>
-  <div class="horse-track-info" id="horseTrackInfo"></div>
-  <div class="horse-track" id="horseTrack"></div>
-  <div id="horseResult"></div>
-  <div class="horse-bets" id="horseBets"></div>
-  <div style="display:flex;align-items:center;gap:12px;">
-    <div class="bet-controls">
-      <span style="color:var(--text2);font-size:12px;font-weight:600;">BET</span>
-      <button class="bet-btn bet-half" onclick="adjustBet('horseBet',0.5)">½</button>
-      <input class="bet-input" type="number" id="horseBet" value="10" min="1">
-      <button class="bet-btn bet-double" onclick="adjustBet('horseBet',2)">2×</button>
-      <button class="bet-btn" onclick="betAll('horseBet')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>
-    </div>
-    <button class="action-btn primary" id="horseRaceBtn" onclick="horseRace()">RACE!</button>
-  </div>
 </div>
 
 <!-- ============ SCRATCH CARDS ============ -->
@@ -4399,8 +4424,8 @@ async function loadLeaderboard(category) {
   }
 
   try {
-    const rawEntries = await window._getLeaderboard(category);
-    const entries = rawEntries.filter(e => (e.name||'').toLowerCase() !== 'progambler');
+    let entries = await window._getLeaderboard(category);
+    entries = entries.filter(e => e.name && e.name.toLowerCase() !== 'progambler');
     if (entries.length === 0) {
       container.innerHTML = '<div class="lb-empty">No entries yet. Start playing to get on the board!</div>';
       return;
@@ -9505,137 +9530,478 @@ function pokerEvaluate(){const h=pokerHandArr;const ranks=h.map(c=>cardRankIdx(c
 }
 function scratchRevealAll(){if(!scratchActive)return;const cells=document.querySelectorAll('.scratch-cell');let delay=0;cells.forEach((c,i)=>{if(!c.classList.contains('revealed')){setTimeout(()=>scratchReveal(i),delay);delay+=80;}});}
 
-// ============ HORSE RACING (STATS + TRACKS) ============
-const HORSES=[
-  {name:'Thunder', emoji:'🐎',color:'#ff4444',speed:9, stamina:6, accel:8, cons:0.85,surface:{turf:1.10,dirt:1.00,mud:0.78,sand:0.88},distBonus:{sprint:1.15,classic:0.95,endurance:0.80}},
-  {name:'Lightning',emoji:'⚡',color:'#ffaa00',speed:10,stamina:4, accel:10,cons:0.68,surface:{turf:1.00,dirt:1.00,mud:0.70,sand:0.82},distBonus:{sprint:1.25,classic:0.88,endurance:0.70}},
-  {name:'Shadow',  emoji:'🌑',color:'#aa66ff',speed:7, stamina:9, accel:5, cons:0.95,surface:{turf:0.88,dirt:1.05,mud:1.00,sand:1.08},distBonus:{sprint:0.80,classic:1.00,endurance:1.22}},
-  {name:'Spirit',  emoji:'🦄',color:'#44aaff',speed:8, stamina:7, accel:7, cons:0.90,surface:{turf:1.18,dirt:0.82,mud:0.78,sand:0.88},distBonus:{sprint:0.90,classic:1.12,endurance:1.00}},
-  {name:'Blaze',   emoji:'🔥',color:'#44ff88',speed:7, stamina:8, accel:9, cons:0.80,surface:{turf:0.95,dirt:1.12,mud:1.08,sand:0.93},distBonus:{sprint:1.10,classic:1.02,endurance:0.88}},
-  {name:'Phantom', emoji:'👻',color:'#cc88ff',speed:6, stamina:10,accel:4, cons:0.98,surface:{turf:0.98,dirt:0.88,mud:1.12,sand:1.00},distBonus:{sprint:0.70,classic:0.92,endurance:1.38}},
-  {name:'Comet',   emoji:'☄️',color:'#ffee44',speed:9, stamina:5, accel:6, cons:0.75,surface:{turf:1.05,dirt:1.05,mud:0.88,sand:1.02},distBonus:{sprint:1.05,classic:1.05,endurance:0.82}},
-  {name:'Storm',   emoji:'⛈️',color:'#ff88cc',speed:8, stamina:7, accel:7, cons:0.92,surface:{turf:0.83,dirt:1.00,mud:1.22,sand:1.05},distBonus:{sprint:0.88,classic:1.00,endurance:1.10}},
+// ============ HORSE RACING (DEEP SIM) ============
+
+/* ── ROSTER: 8 horses with permanent base stats ── */
+const HR_HORSES = [
+  { name:'Thunder',    emoji:'🐎', color:'#ff4444', spd:82, stam:70, accel:88, consistency:65, mud:40, dirt:85, turf:60, sand:55, temperament:'Hot' },
+  { name:'Lightning',  emoji:'🏇', color:'#ffaa00', spd:90, stam:55, accel:92, consistency:50, mud:30, dirt:70, turf:80, sand:45, temperament:'Hot' },
+  { name:'Shadow',     emoji:'🐴', color:'#8844ff', spd:72, stam:90, accel:60, consistency:85, mud:75, dirt:65, turf:70, sand:80, temperament:'Cool' },
+  { name:'Spirit',     emoji:'🦄', color:'#44aaff', spd:78, stam:82, accel:74, consistency:78, mud:60, dirt:72, turf:88, sand:50, temperament:'Steady' },
+  { name:'Blaze',      emoji:'🐎', color:'#44ff44', spd:85, stam:60, accel:80, consistency:55, mud:45, dirt:90, turf:50, sand:70, temperament:'Hot' },
+  { name:'Phantom',    emoji:'🏇', color:'#ff44ff', spd:70, stam:88, accel:65, consistency:90, mud:85, dirt:55, turf:75, sand:85, temperament:'Cool' },
+  { name:'Cyclone',    emoji:'🐴', color:'#ff8844', spd:88, stam:50, accel:95, consistency:40, mud:50, dirt:80, turf:45, sand:60, temperament:'Wild' },
+  { name:'Ironclad',   emoji:'🦄', color:'#aaaaaa', spd:68, stam:95, accel:55, consistency:92, mud:90, dirt:60, turf:65, sand:90, temperament:'Cool' }
 ];
-const TRACK_SURFACES={
-  turf:{label:'🌿 Turf', condMods:{fast:1.00,good:0.97,soft:0.90,heavy:0.82}},
-  dirt:{label:'🟫 Dirt', condMods:{fast:1.02,good:1.00,soft:0.94,heavy:0.88}},
-  mud: {label:'💧 Mud',  condMods:{fast:0.90,good:0.95,soft:1.02,heavy:1.08}},
-  sand:{label:'🏜️ Sand', condMods:{fast:0.98,good:1.00,soft:0.93,heavy:0.88}},
-};
-const TRACK_DISTANCES={
-  sprint:   {label:'⚡ Sprint (6f)',    stamF:0.40,accelF:1.50},
-  classic:  {label:'🏇 Classic (1mi)', stamF:1.00,accelF:1.00},
-  endurance:{label:'💪 Long (1.5mi)',  stamF:1.60,accelF:0.70},
-};
-const TRACK_CONDITIONS=['fast','good','soft','heavy'];
-const TRACK_NAMES={turf:['Royal Meadows','Churchill Greens','Emerald Downs'],dirt:['Oaklawn Mile','Belmont Park','Keeneland Dirt'],mud:['Mudflat Dash','Bayou Run','Iron Creek'],sand:['Desert Dunes','Sahara Sprint','Sandstorm Mile']};
-let horseSelected=-1,horseRacing=false,_currentTrack=null,_horseWeights=[];
-function horseCalcStrength(h,surf,dist,cond){
-  const dInfo=TRACK_DISTANCES[dist];
-  const raw=(h.speed*2.2 + h.stamina*dInfo.stamF + h.accel*dInfo.accelF);
-  return raw * h.surface[surf] * TRACK_SURFACES[surf].condMods[cond] * h.distBonus[dist];
+
+/* ── TRACKS ── */
+const HR_TRACKS = [
+  { name:'Dusty Speedway',  surface:'dirt',  distance:1200, icon:'🏜️',  gates:8, desc:'Short & fast — speed + accel dominate' },
+  { name:'Emerald Meadow',  surface:'turf',  distance:1800, icon:'🌿',  gates:8, desc:'Medium turf — balanced, consistency matters' },
+  { name:'Stormwood Bog',   surface:'mud',   distance:1600, icon:'🌧️',  gates:8, desc:'Heavy mud — stamina + mud affinity key' },
+  { name:'Sunburn Dunes',   surface:'sand',  distance:2000, icon:'🏖️',  gates:8, desc:'Long sandy grind — stamina + sand affinity' },
+  { name:'Iron Mile',       surface:'dirt',  distance:2200, icon:'⚙️',  gates:8, desc:'Long dirt — stamina crucial, speed less so' },
+  { name:'Royal Garden',    surface:'turf',  distance:1400, icon:'👑',  gates:8, desc:'Short turf sprint — speed + turf affinity' }
+];
+
+/* ── WEATHER ── */
+const HR_WEATHER = [
+  { name:'Sunny',      icon:'☀️',  surfaceBonus:{ turf:8, dirt:3, mud:-10, sand:5 }, staminaDrain:1.15, desc:'Dry & fast — turf shines, mud dries up' },
+  { name:'Overcast',   icon:'☁️',  surfaceBonus:{ turf:2, dirt:2, mud:2, sand:2 },   staminaDrain:1.0,  desc:'Neutral conditions' },
+  { name:'Rain',       icon:'🌧️', surfaceBonus:{ turf:-5, dirt:-3, mud:15, sand:-8 },staminaDrain:1.1,  desc:'Wet track — mud horses thrive, sand suffers' },
+  { name:'Heatwave',   icon:'🔥', surfaceBonus:{ turf:-3, dirt:5, mud:-15, sand:10 },staminaDrain:1.25, desc:'Scorching — high stamina drain, sand boost' },
+  { name:'Fog',        icon:'🌫️', surfaceBonus:{ turf:0, dirt:0, mud:5, sand:0 },    staminaDrain:1.05, desc:'Low visibility — consistency is king' },
+  { name:'Storm',      icon:'⛈️',  surfaceBonus:{ turf:-8, dirt:-5, mud:20, sand:-12},staminaDrain:1.2,  desc:'Extreme — only mud + stamina horses survive' }
+];
+
+/* ── JOCKEYS (assigned per race) ── */
+const HR_JOCKEYS = [
+  { name:'D. Martinez', rating:95, style:'Aggressive',  accelBoost:8,  stamCost:1.15, desc:'Pushes early, burns stamina' },
+  { name:'A. Kimura',   rating:90, style:'Closer',      accelBoost:-5, stamCost:0.85, desc:'Conserves energy, finishes strong' },
+  { name:'R. Thompson', rating:82, style:'Steady',      accelBoost:2,  stamCost:1.0,  desc:'Balanced — no extremes' },
+  { name:'L. Chen',     rating:88, style:'Tactical',    accelBoost:4,  stamCost:0.95, desc:'Adapts mid-race, good consistency' },
+  { name:'J. O\'Brien', rating:75, style:'Whip-Happy',  accelBoost:10, stamCost:1.25, desc:'Massive accel but destroys stamina' },
+  { name:'M. Santos',   rating:70, style:'Rookie',      accelBoost:0,  stamCost:1.1,  desc:'Unpredictable — high variance' },
+  { name:'K. Patel',    rating:85, style:'Rail Rider',  accelBoost:3,  stamCost:0.9,  desc:'Hugs inside rail, saves ground' },
+  { name:'S. Williams', rating:78, style:'Front Runner', accelBoost:6, stamCost:1.05, desc:'Fast start, average finish' }
+];
+
+/* ── TRACK CONDITIONS ── */
+const HR_CONDITIONS = ['Fast','Good','Yielding','Soft','Heavy'];
+
+/* ── RACE STATE ── */
+let hrSelected = -1, hrRacing = false;
+let hrCurrentTrack = null, hrCurrentWeather = null, hrCurrentCondition = '';
+let hrRaceHorses = []; // assembled race card
+let hrRaceNum = 0; // race counter for form tracking
+let hrForm = {}; // { horseName: [last 5 finishes] }
+
+/* ── INIT ── */
+function horseInit() {
+  // Initialize form history if empty
+  HR_HORSES.forEach(h => { if (!hrForm[h.name]) hrForm[h.name] = []; });
+  hrSelected = -1;
+  hrRacing = false;
+  hrGenerateRace();
 }
-function horseGenTrack(){
-  const surfaces=Object.keys(TRACK_SURFACES);
-  const dists=Object.keys(TRACK_DISTANCES);
-  const surf=surfaces[Math.floor(Math.random()*surfaces.length)];
-  const dist=dists[Math.floor(Math.random()*dists.length)];
-  const cond=TRACK_CONDITIONS[Math.floor(Math.random()*TRACK_CONDITIONS.length)];
-  const names=TRACK_NAMES[surf];
-  const name=names[Math.floor(Math.random()*names.length)];
-  _currentTrack={surf,dist,cond,name};
-}
-function horseInit(){
-  if(!_currentTrack)horseGenTrack();
-  const t=document.getElementById('horseTrack');
-  const b=document.getElementById('horseBets');
-  const info=document.getElementById('horseTrackInfo');
-  if(!t||!b)return;
-  const {surf,dist,cond,name}=_currentTrack;
-  const sInfo=TRACK_SURFACES[surf];
-  const dInfo=TRACK_DISTANCES[dist];
-  if(info)info.innerHTML=`<div class="horse-track-badge">${name}</div><div class="horse-track-meta"><span class="horse-meta-tag">${sInfo.label}</span><span class="horse-meta-tag">${dInfo.label}</span><span class="horse-meta-tag">🌤️ ${cond.charAt(0).toUpperCase()+cond.slice(1)}</span></div>`;
-  const strengths=HORSES.map(h=>horseCalcStrength(h,surf,dist,cond));
-  const totalStr=strengths.reduce((a,v)=>a+v,0);
-  _horseWeights=strengths.slice();
-  t.innerHTML='';b.innerHTML='';
-  HORSES.forEach((h,i)=>{
-    const winProb=strengths[i]/totalStr;
-    const paidOdds=(1/winProb*0.78).toFixed(2); // ~22% house edge — pays like crap as intended
-    const relStr=winProb*HORSES.length;
-    const trendLabel=relStr>1.2?'🔥 Fav':relStr>0.85?'➡️ Mid':'🧊 Long';
-    const trendClass=relStr>1.2?'trend-hot':relStr>0.85?'trend-mid':'trend-cold';
-    const surfGood=h.surface[surf]>=1.05,surfBad=h.surface[surf]<=0.88;
-    const distGood=h.distBonus[dist]>=1.10,distBad=h.distBonus[dist]<=0.85;
-    t.innerHTML+=`<div class="horse-lane">`+
-      `<div class="horse-name" style="color:${h.color}">${h.emoji} ${h.name}</div>`+
-      `<div class="horse-bar"><div class="horse-progress" id="hp${i}" style="width:0%;background:${h.color};opacity:.7"></div><div class="horse-emoji" id="he${i}" style="left:0%">${h.emoji}</div></div>`+
-      `<div class="horse-stat-col"><div class="horse-odds" id="ho${i}" data-odds="${paidOdds}">${paidOdds}×</div><div class="horse-trend ${trendClass}">${trendLabel}</div></div>`+
-      `</div>`+
-      `<div class="horse-stats-row">`+
-      `<span class="hstat" title="Speed">⚡${h.speed}</span>`+
-      `<span class="hstat" title="Stamina">💪${h.stamina}</span>`+
-      `<span class="hstat" title="Acceleration">🚀${h.accel}</span>`+
-      `<span class="hstat" title="Consistency">🎯${Math.round(h.cons*100)}%</span>`+
-      `<span class="hstat ${surfGood?'hstat-good':surfBad?'hstat-bad':''}" title="Surface affinity">${sInfo.label.split(' ')[0]}${surfGood?'✅':surfBad?'❌':'➡️'}</span>`+
-      `<span class="hstat ${distGood?'hstat-good':distBad?'hstat-bad':''}" title="Distance preference">${dInfo.label.split(' ')[0]}${distGood?'✅':distBad?'❌':'➡️'}</span>`+
-      `</div>`;
-    b.innerHTML+=`<button class="horse-bet" onclick="horseSelect(${i},this)">${h.emoji} ${h.name}</button>`;
+
+/* ── GENERATE A NEW RACE CARD ── */
+function hrGenerateRace() {
+  hrRaceNum++;
+  // Pick random track, weather, condition
+  hrCurrentTrack = HR_TRACKS[Math.floor(Math.random() * HR_TRACKS.length)];
+  hrCurrentWeather = HR_WEATHER[Math.floor(Math.random() * HR_WEATHER.length)];
+  // Condition affected by weather
+  const condIdx = hrCurrentWeather.name === 'Rain' || hrCurrentWeather.name === 'Storm'
+    ? 2 + Math.floor(Math.random() * 3) // Yielding/Soft/Heavy
+    : hrCurrentWeather.name === 'Heatwave'
+      ? Math.floor(Math.random() * 2) // Fast/Good
+      : Math.floor(Math.random() * HR_CONDITIONS.length);
+  hrCurrentCondition = HR_CONDITIONS[condIdx];
+
+  // Assign jockeys (shuffle and assign)
+  const jockeyPool = HR_JOCKEYS.slice().sort(() => Math.random() - 0.5);
+
+  // Build race card with composite power ratings
+  hrRaceHorses = HR_HORSES.map((h, i) => {
+    const jockey = jockeyPool[i % jockeyPool.length];
+    const gate = i + 1; // gate position = roster order (shuffled display)
+
+    // Compute composite power for this specific race
+    const power = hrCalcPower(h, hrCurrentTrack, hrCurrentWeather, hrCurrentCondition, jockey, gate);
+    const formBonus = hrCalcFormBonus(h.name);
+
+    return {
+      ...h, idx: i, jockey, gate, power, formBonus,
+      totalPower: power + formBonus,
+      // Add small random factor for odds display (represents "insider" knowledge players don't have)
+      displayNoise: (Math.random() - 0.5) * 8
+    };
   });
+
+  // Shuffle gate positions
+  const gates = hrRaceHorses.map((_, i) => i + 1).sort(() => Math.random() - 0.5);
+  hrRaceHorses.forEach((h, i) => { h.gate = gates[i]; });
+
+  // Recalc with final gates
+  hrRaceHorses.forEach(h => {
+    h.power = hrCalcPower(HR_HORSES[h.idx], hrCurrentTrack, hrCurrentWeather, hrCurrentCondition, h.jockey, h.gate);
+    h.totalPower = h.power + h.formBonus;
+  });
+
+  // Calculate TRUE win probabilities (softmax on totalPower)
+  const powers = hrRaceHorses.map(h => h.totalPower);
+  const maxP = Math.max(...powers);
+  const exps = powers.map(p => Math.exp((p - maxP) / 12)); // temperature=12 for spread
+  const sumExp = exps.reduce((s, e) => s + e, 0);
+  hrRaceHorses.forEach((h, i) => {
+    h.trueWinProb = exps[i] / sumExp;
+  });
+
+  // Calculate DISPLAYED odds (slightly noisy — the "edge" for smart bettors)
+  hrRaceHorses.forEach(h => {
+    const noisyPower = h.totalPower + h.displayNoise;
+    const noisyExps = hrRaceHorses.map(hh => Math.exp(((hh === h ? noisyPower : hh.totalPower + hh.displayNoise) - maxP) / 12));
+    const noisySum = noisyExps.reduce((s, e) => s + e, 0);
+    const noisyProb = noisyExps[hrRaceHorses.indexOf(h)] / noisySum;
+    // Odds = 0.88 / prob (88% RTP for the book)
+    h.displayOdds = Math.max(1.3, parseFloat((0.88 / noisyProb).toFixed(1)));
+  });
+
+  hrSelected = -1;
+  hrRenderRaceCard();
 }
-function horseSelect(i,btn){horseSelected=i;document.querySelectorAll('.horse-bet').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');playClickSound();}
-function horseRace(){
-  if(horseRacing||horseSelected<0){if(horseSelected<0)showToast('Pick a horse first!',false);return;}
-  const bet=parseFloat(document.getElementById('horseBet').value)||10;
-  if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
-  if(!checkMaxBet(bet,'Horses'))return;
-  horseRacing=true;balance-=bet;updateBalDisplay();
-  document.getElementById('horseRaceBtn').disabled=true;
-  document.getElementById('horseResult').textContent='';
-  const {surf,dist,cond}=_currentTrack;
-  const dInfo=TRACK_DISTANCES[dist];
-  const progress=HORSES.map(()=>0);
-  const maxW=Math.max(..._horseWeights);
-  const normSpds=_horseWeights.map(s=>s/maxW);
+
+/* ── POWER CALCULATION (the deep math) ── */
+function hrCalcPower(horse, track, weather, condition, jockey, gate) {
+  let power = 0;
+
+  // Base speed — more important for short distances
+  const distFactor = Math.max(0.3, 1.0 - (track.distance - 1200) / 2000); // 1.0 at 1200m, ~0.5 at 2200m
+  power += horse.spd * distFactor * 0.35;
+
+  // Stamina — more important for long distances
+  const stamFactor = Math.max(0.3, (track.distance - 1000) / 1500); // ~0.13 at 1200m, ~0.8 at 2200m
+  power += horse.stam * stamFactor * 0.3;
+
+  // Acceleration — matters most for short races and aggressive jockeys
+  power += horse.accel * distFactor * 0.15;
+
+  // Surface affinity — BIG factor
+  const surfaceAff = horse[track.surface] || 50;
+  const weatherSurfBonus = weather.surfaceBonus[track.surface] || 0;
+  power += (surfaceAff + weatherSurfBonus) * 0.25;
+
+  // Consistency — reduces variance in power (handled in race sim), but adds baseline
+  power += horse.consistency * 0.08;
+
+  // Track condition modifiers
+  const condMult = condition === 'Fast' ? 1.04
+    : condition === 'Good' ? 1.0
+    : condition === 'Yielding' ? 0.97
+    : condition === 'Soft' ? 0.93
+    : 0.88; // Heavy
+  // Stamina-heavy horses less affected by bad conditions
+  const condResistance = 1.0 - (1.0 - condMult) * (1.0 - horse.stam / 200);
+  power *= condResistance;
+
+  // Jockey contribution
+  power += jockey.rating * 0.1;
+  power += jockey.accelBoost * distFactor * 0.08;
+
+  // Weather stamina drain penalty
+  const drainPenalty = (weather.staminaDrain - 1.0) * (100 - horse.stam) * 0.02;
+  power -= drainPenalty;
+
+  // Gate position — inside gates (1-3) slightly better on short tracks, outside (6-8) better on long tracks with turns
+  const gateBonus = track.distance < 1500
+    ? (4 - gate) * 0.5  // inside = better
+    : (gate - 4) * 0.3;  // outside = slightly better
+  power += gateBonus;
+
+  // Temperament × weather interaction
+  if (horse.temperament === 'Hot') {
+    power += weather.name === 'Heatwave' ? -3 : weather.name === 'Storm' ? -5 : 1;
+  } else if (horse.temperament === 'Cool') {
+    power += weather.name === 'Rain' || weather.name === 'Storm' ? 3 : weather.name === 'Heatwave' ? -2 : 0;
+  } else if (horse.temperament === 'Wild') {
+    power += (Math.random() - 0.3) * 8; // high variance
+  }
+  // Steady = no modifier
+
+  return power;
+}
+
+/* ── FORM BONUS (last 5 races) ── */
+function hrCalcFormBonus(name) {
+  const form = hrForm[name] || [];
+  if (form.length === 0) return 0;
+  let bonus = 0;
+  const recent = form.slice(-5);
+  recent.forEach((finish, i) => {
+    const weight = 0.5 + (i / recent.length) * 0.5; // more recent = more weight
+    if (finish === 1) bonus += 3 * weight;
+    else if (finish === 2) bonus += 1.5 * weight;
+    else if (finish === 3) bonus += 0.5 * weight;
+    else if (finish >= 7) bonus -= 1.5 * weight;
+    else if (finish >= 5) bonus -= 0.5 * weight;
+  });
+  return bonus;
+}
+
+/* ── RENDER RACE CARD ── */
+function hrRenderRaceCard() {
+  const panel = document.getElementById('horsesPanel');
+  if (!panel) return;
+
+  // Sort by gate for display
+  const sorted = hrRaceHorses.slice().sort((a, b) => a.gate - b.gate);
+
+  let html = '';
+
+  // TRACK + CONDITIONS BAR
+  html += '<div class="hr-conditions">';
+  html += '<div class="hr-cond-item"><span class="hr-cond-label">TRACK</span><span class="hr-cond-val">' + hrCurrentTrack.icon + ' ' + hrCurrentTrack.name + '</span></div>';
+  html += '<div class="hr-cond-item"><span class="hr-cond-label">SURFACE</span><span class="hr-cond-val" style="text-transform:uppercase;">' + hrCurrentTrack.surface + '</span></div>';
+  html += '<div class="hr-cond-item"><span class="hr-cond-label">DISTANCE</span><span class="hr-cond-val">' + hrCurrentTrack.distance + 'm</span></div>';
+  html += '<div class="hr-cond-item"><span class="hr-cond-label">WEATHER</span><span class="hr-cond-val">' + hrCurrentWeather.icon + ' ' + hrCurrentWeather.name + '</span></div>';
+  html += '<div class="hr-cond-item"><span class="hr-cond-label">GOING</span><span class="hr-cond-val">' + hrCurrentCondition + '</span></div>';
+  html += '<div class="hr-cond-item"><span class="hr-cond-label">RACE #</span><span class="hr-cond-val">' + hrRaceNum + '</span></div>';
+  html += '</div>';
+
+  // Track description
+  html += '<div class="hr-track-desc">' + hrCurrentTrack.desc + ' · ' + hrCurrentWeather.desc + '</div>';
+
+  // RACE CARD TABLE
+  html += '<div class="hr-card">';
+  html += '<div class="hr-card-header"><span class="hr-col-gate">#</span><span class="hr-col-name">HORSE</span><span class="hr-col-jockey">JOCKEY</span><span class="hr-col-stats">SPD/STA/ACC</span><span class="hr-col-surface">SURF</span><span class="hr-col-form">FORM</span><span class="hr-col-odds">ODDS</span></div>';
+
+  sorted.forEach(h => {
+    const form = (hrForm[h.name] || []).slice(-5);
+    const formStr = form.length > 0
+      ? form.map(f => '<span class="hr-form-dot ' + (f <= 2 ? 'win' : f <= 4 ? 'mid' : 'lose') + '">' + f + '</span>').join('')
+      : '<span style="color:var(--text2);font-size:9px;">NEW</span>';
+
+    const surfAff = h[hrCurrentTrack.surface] || 50;
+    const surfClass = surfAff >= 80 ? 'hr-surf-great' : surfAff >= 65 ? 'hr-surf-good' : surfAff >= 50 ? 'hr-surf-ok' : 'hr-surf-bad';
+
+    const sel = h.idx === hrSelected ? ' hr-row-sel' : '';
+
+    html += '<div class="hr-card-row' + sel + '" onclick="hrSelectHorse(' + h.idx + ')" data-idx="' + h.idx + '">';
+    html += '<span class="hr-col-gate">' + h.gate + '</span>';
+    html += '<span class="hr-col-name" style="color:' + h.color + ';">' + h.emoji + ' ' + h.name + ' <span class="hr-temperament">' + h.temperament[0] + '</span></span>';
+    html += '<span class="hr-col-jockey"><span class="hr-jockey-name">' + h.jockey.name + '</span><span class="hr-jockey-style">' + h.jockey.style + ' (' + h.jockey.rating + ')</span></span>';
+    html += '<span class="hr-col-stats">' + h.spd + '/' + h.stam + '/' + h.accel + '</span>';
+    html += '<span class="hr-col-surface ' + surfClass + '">' + surfAff + '</span>';
+    html += '<span class="hr-col-form">' + formStr + '</span>';
+    html += '<span class="hr-col-odds">' + h.displayOdds + '×</span>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // HORSE DETAIL (expanded on click)
+  html += '<div class="hr-detail" id="hrDetail"></div>';
+
+  // RACE TRACK VISUAL
+  html += '<div class="horse-track" id="horseTrack"></div>';
+  html += '<div id="horseResult"></div>';
+
+  // BET CONTROLS
+  html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;">';
+  html += '<div class="bet-controls"><span style="color:var(--text2);font-size:12px;font-weight:600;">BET</span>';
+  html += '<button class="bet-btn bet-half" onclick="adjustBet(\'horseBet\',0.5)">½</button>';
+  html += '<input class="bet-input" type="number" id="horseBet" value="10" min="1">';
+  html += '<button class="bet-btn bet-double" onclick="adjustBet(\'horseBet\',2)">2×</button>';
+  html += '<button class="bet-btn" onclick="betAll(\'horseBet\')" style="background:var(--gold);color:#000;font-weight:900;font-size:10px;">MAX</button>';
+  html += '</div>';
+  html += '<button class="action-btn primary" id="horseRaceBtn" onclick="horseRace()">🏇 RACE!</button>';
+  html += '<button class="action-btn" onclick="hrGenerateRace()" style="font-size:10px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);">🔄 NEW RACE</button>';
+  html += '</div>';
+
+  // STAT LEGEND
+  html += '<div class="hr-legend">';
+  html += '<div class="hr-leg-item">SPD = Speed · STA = Stamina · ACC = Acceleration</div>';
+  html += '<div class="hr-leg-item">SURF = Surface affinity (higher = better on this track)</div>';
+  html += '<div class="hr-leg-item">FORM = Last 5 finishes (<span class="hr-form-dot win">1</span>=1st <span class="hr-form-dot mid">3</span>=3rd <span class="hr-form-dot lose">7</span>=7th)</div>';
+  html += '<div class="hr-leg-item">Temperament: <b>H</b>ot (nervous in bad weather) · <b>C</b>ool (rain lover) · <b>W</b>ild (unpredictable) · <b>S</b>teady</div>';
+  html += '<div class="hr-leg-item">Jockey style + rating affects acceleration and stamina drain</div>';
+  html += '<div class="hr-leg-item">Going: Fast > Good > Yielding > Soft > Heavy — stamina horses love heavy going</div>';
+  html += '<div class="hr-leg-item" style="color:var(--gold);">💡 Study everything: a rain-loving Cool horse with high mud affinity on a Storm day at Stormwood Bog with jockey A. Kimura? That\'s a monster pick.</div>';
+  html += '</div>';
+
+  // Inject into main area (keep the HTP box and title, replace everything below)
+  const htpBox = panel.querySelector('.htp-box');
+  const titleDiv = panel.querySelector(':scope > div:nth-child(2)');
+
+  // Remove all children except first two (htp + title)
+  const children = Array.from(panel.children);
+  children.forEach((c, i) => { if (i > 1) c.remove(); });
+
+  // Append new content
+  const wrapper = document.createElement('div');
+  wrapper.id = 'hrContent';
+  wrapper.innerHTML = html;
+  panel.appendChild(wrapper);
+}
+
+/* ── SELECT HORSE ── */
+function hrSelectHorse(idx) {
+  hrSelected = idx;
   playClickSound();
-  const raceInterval=setInterval(()=>{
-    let winner=-1;
-    const racePct=Math.max(...progress)/100;
-    HORSES.forEach((h,i)=>{
-      const earlyStagePct=Math.max(0,0.2-racePct)/0.2;
-      const lateStagePct=Math.max(0,(racePct-0.60)/0.40);
-      const accelBoost=earlyStagePct*(h.accel/10)*dInfo.accelF*0.4;
-      const staminaDrain=lateStagePct*(1-h.stamina/10)*dInfo.stamF*0.55;
-      const variance=(Math.random()-0.5)*2*(1-h.cons)*0.7;
-      const spd=normSpds[i]*(1+accelBoost-staminaDrain+variance)*2.4+0.12;
-      progress[i]+=Math.max(0.04,spd);
-      if(progress[i]>=100){progress[i]=100;if(winner<0)winner=i;}
-      document.getElementById('hp'+i).style.width=Math.min(progress[i],100)+'%';
-      document.getElementById('he'+i).style.left=Math.min(progress[i],95)+'%';
-    });
-    if(winner>=0){
-      clearInterval(raceInterval);horseRacing=false;
-      document.getElementById('horseRaceBtn').disabled=false;
-      const odds=parseFloat(document.getElementById('ho'+horseSelected).dataset.odds);
-      if(winner===horseSelected){
-        const w=bet*odds;balance+=w;updateBalDisplay();showBigWin(w);
-        showToast(HORSES[winner].emoji+' '+HORSES[winner].name+' wins! +$'+w.toFixed(2));
-        playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,40);
-        document.getElementById('horseResult').innerHTML='<span style="color:var(--green)">'+HORSES[winner].name+' WINS! +$'+w.toFixed(2)+'</span>';
-        recordGame('horses',bet,w);
-      } else {
-        showToast(HORSES[winner].name+' wins',false);playLoseSound();
-        document.getElementById('horseResult').innerHTML='<span style="color:var(--red)">'+HORSES[winner].name+' wins — better luck next race</span>';
-        recordGame('horses',bet,0);
-      }
-      setTimeout(()=>{
-        HORSES.forEach((_,i)=>{document.getElementById('hp'+i).style.width='0%';document.getElementById('he'+i).style.left='0%';});
-        horseSelected=-1;document.querySelectorAll('.horse-bet').forEach(b=>b.classList.remove('selected'));
-        horseGenTrack();horseInit();
-      },2800);
-    }
-  },55);
+
+  // Update row highlights
+  document.querySelectorAll('.hr-card-row').forEach(r => {
+    r.classList.toggle('hr-row-sel', parseInt(r.dataset.idx) === idx);
+  });
+
+  // Show detail panel
+  const h = hrRaceHorses.find(hh => hh.idx === idx);
+  if (!h) return;
+  const det = document.getElementById('hrDetail');
+  if (!det) return;
+
+  const surfAff = h[hrCurrentTrack.surface] || 50;
+  const weatherBonus = hrCurrentWeather.surfaceBonus[hrCurrentTrack.surface] || 0;
+  const form = (hrForm[h.name] || []).slice(-5);
+
+  det.innerHTML = `<div class="hr-detail-inner">
+    <div class="hr-det-title" style="color:${h.color};">${h.emoji} ${h.name} <span style="font-size:10px;color:var(--text2);">Gate ${h.gate} · ${h.temperament}</span></div>
+    <div class="hr-det-grid">
+      <div class="hr-det-stat"><span class="hr-det-label">Speed</span><div class="hr-stat-bar"><div class="hr-stat-fill" style="width:${h.spd}%;background:#ff4444;"></div></div><span class="hr-det-val">${h.spd}</span></div>
+      <div class="hr-det-stat"><span class="hr-det-label">Stamina</span><div class="hr-stat-bar"><div class="hr-stat-fill" style="width:${h.stam}%;background:#44aaff;"></div></div><span class="hr-det-val">${h.stam}</span></div>
+      <div class="hr-det-stat"><span class="hr-det-label">Accel</span><div class="hr-stat-bar"><div class="hr-stat-fill" style="width:${h.accel}%;background:#44ff44;"></div></div><span class="hr-det-val">${h.accel}</span></div>
+      <div class="hr-det-stat"><span class="hr-det-label">Consistency</span><div class="hr-stat-bar"><div class="hr-stat-fill" style="width:${h.consistency}%;background:#ff8844;"></div></div><span class="hr-det-val">${h.consistency}</span></div>
+      <div class="hr-det-stat"><span class="hr-det-label">${hrCurrentTrack.surface.toUpperCase()} Affinity</span><div class="hr-stat-bar"><div class="hr-stat-fill" style="width:${surfAff}%;background:var(--gold);"></div></div><span class="hr-det-val">${surfAff}${weatherBonus !== 0 ? ' (' + (weatherBonus > 0 ? '+' : '') + weatherBonus + ' weather)' : ''}</span></div>
+    </div>
+    <div class="hr-det-jockey">Jockey: <b>${h.jockey.name}</b> (${h.jockey.rating}) — ${h.jockey.style} — ${h.jockey.desc}</div>
+    <div class="hr-det-form">Form: ${form.length > 0 ? form.join('-') : 'No history'} ${h.formBonus !== 0 ? '(' + (h.formBonus > 0 ? '+' : '') + h.formBonus.toFixed(1) + ' power)' : ''}</div>
+  </div>`;
 }
+
+/* ── HORSE SELECT (compat alias) ── */
+function horseSelect(i) { hrSelectHorse(i); }
+
+/* ── RACE SIMULATION ── */
+function horseRace() {
+  if (hrRacing || hrSelected < 0) { if (hrSelected < 0) showToast('Pick a horse first!', false); return; }
+  const bet = parseFloat(document.getElementById('horseBet').value) || 10;
+  if (bet <= 0) return;
+  if (bet > balance) { showToast('Not enough!', false); return; }
+  if (typeof checkMaxBet === 'function' && !checkMaxBet(bet, 'Horses')) return;
+
+  hrRacing = true;
+  balance -= bet;
+  updateBalDisplay();
+  document.getElementById('horseRaceBtn').disabled = true;
+  document.getElementById('horseResult').textContent = '';
+  playClickSound();
+
+  // Build race track visual
+  const trackDiv = document.getElementById('horseTrack');
+  trackDiv.innerHTML = '';
+  const sortedByGate = hrRaceHorses.slice().sort((a, b) => a.gate - b.gate);
+  sortedByGate.forEach(h => {
+    trackDiv.innerHTML += '<div class="horse-lane"><div class="horse-name" style="color:' + h.color + '">' + h.emoji + ' ' + h.name + '</div><div class="horse-bar"><div class="horse-progress" id="hp' + h.idx + '" style="width:0%;background:' + h.color + ';opacity:.6;"></div><div class="horse-emoji" id="he' + h.idx + '" style="left:0%;">' + h.emoji + '</div></div></div>';
+  });
+
+  // Simulate race using REAL power values (not displayed odds)
+  const progress = hrRaceHorses.map(() => 0);
+  const energy = hrRaceHorses.map(h => h.stam); // stamina pool
+  const dist = hrCurrentTrack.distance;
+  const staminaDrain = hrCurrentWeather.staminaDrain;
+
+  const raceInterval = setInterval(() => {
+    let winner = -1;
+
+    hrRaceHorses.forEach((h, i) => {
+      if (progress[i] >= 100) return;
+
+      // Base tick speed from power
+      let tick = h.totalPower * 0.018;
+
+      // Acceleration phase (first 20%)
+      if (progress[i] < 20) {
+        tick *= 0.6 + (h.accel / 100) * 0.6 + (h.jockey.accelBoost / 100) * 0.3;
+      }
+
+      // Mid-race — consistency matters
+      if (progress[i] >= 20 && progress[i] < 70) {
+        const consistencyVar = (100 - h.consistency) / 100;
+        tick *= 1.0 + (Math.random() - 0.5) * consistencyVar * 0.5;
+      }
+
+      // Final stretch (last 30%) — stamina kicks in hard
+      if (progress[i] >= 70) {
+        const energyRatio = Math.max(0.2, energy[i] / h.stam);
+        tick *= 0.7 + energyRatio * 0.5;
+        // Cool jockeys shine here
+        if (h.jockey.style === 'Closer') tick *= 1.12;
+        if (h.jockey.style === 'Front Runner') tick *= 0.92;
+      }
+
+      // Drain energy
+      energy[i] -= staminaDrain * h.jockey.stamCost * 0.3;
+      if (energy[i] < 0) energy[i] = 0;
+
+      // Random noise (Wild temperament = more noise)
+      const noise = h.temperament === 'Wild' ? (Math.random() - 0.4) * 1.2 : (Math.random() - 0.45) * 0.5;
+      tick += noise;
+
+      tick = Math.max(0.1, tick);
+      progress[i] += tick;
+      if (progress[i] >= 100) { progress[i] = 100; if (winner < 0) winner = i; }
+
+      const el = document.getElementById('hp' + h.idx);
+      const em = document.getElementById('he' + h.idx);
+      if (el) el.style.width = progress[i] + '%';
+      if (em) em.style.left = Math.min(progress[i], 95) + '%';
+    });
+
+    if (winner >= 0) {
+      clearInterval(raceInterval);
+      hrRacing = false;
+      document.getElementById('horseRaceBtn').disabled = false;
+
+      const winHorse = hrRaceHorses[winner];
+
+      // Determine all finish positions
+      const finishOrder = hrRaceHorses.map((h, i) => ({ idx: i, progress: progress[i], name: h.name }))
+        .sort((a, b) => b.progress - a.progress);
+      finishOrder.forEach((f, pos) => {
+        if (!hrForm[f.name]) hrForm[f.name] = [];
+        hrForm[f.name].push(pos + 1);
+        if (hrForm[f.name].length > 10) hrForm[f.name].shift(); // keep last 10
+      });
+
+      const myHorse = hrRaceHorses.find(h => h.idx === hrSelected);
+      const myFinish = finishOrder.findIndex(f => f.idx === hrSelected) + 1;
+      const odds = myHorse.displayOdds;
+
+      if (winner === hrSelected) {
+        const w = bet * odds;
+        balance += w;
+        updateBalDisplay();
+        if (typeof showBigWin === 'function') showBigWin(w);
+        showToast(winHorse.emoji + ' ' + winHorse.name + ' WINS! +$' + w.toFixed(2));
+        playWinSound();
+        if (typeof spawnParticles === 'function') spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 40);
+        document.getElementById('horseResult').innerHTML = '<span style="color:var(--green)">' + winHorse.emoji + ' ' + winHorse.name + ' WINS! +$' + w.toFixed(2) + ' (' + odds + '×)</span>';
+        recordGame('horses', bet, w);
+      } else {
+        showToast(winHorse.name + ' wins — you finished #' + myFinish, false);
+        playLoseSound();
+        document.getElementById('horseResult').innerHTML = '<span style="color:var(--red)">' + winHorse.emoji + ' ' + winHorse.name + ' wins — ' + myHorse.emoji + ' ' + myHorse.name + ' finished #' + myFinish + '</span>';
+        recordGame('horses', bet, 0);
+      }
+
+      // Show finish order
+      let orderHtml = '<div class="hr-finish-order">';
+      finishOrder.forEach((f, pos) => {
+        const h = hrRaceHorses[f.idx];
+        const medal = pos === 0 ? '🥇' : pos === 1 ? '🥈' : pos === 2 ? '🥉' : (pos + 1) + '.';
+        orderHtml += '<span class="hr-finish-item" style="color:' + h.color + ';">' + medal + h.emoji + h.name + '</span>';
+      });
+      orderHtml += '</div>';
+      document.getElementById('horseResult').innerHTML += orderHtml;
+
+      // Auto-generate new race after delay
+      setTimeout(() => { hrGenerateRace(); }, 4000);
+    }
+  }, 50);
+}
+
+/* ── COMPAT ── */
+function horseSetOdds() { /* no-op, handled by hrGenerateRace */ }
 
 // ============ SCRATCH CARDS ============
 const SCRATCH_TIERS=[{name:'Basic',price:5,symbols:['🍒','🍋','🔔','💎','7️⃣','⭐'],maxWin:50},{name:'Silver',price:25,symbols:['💎','7️⃣','⭐','👑','💰','🏆'],maxWin:500},{name:'Gold',price:100,symbols:['👑','💰','🏆','💎','🔥','🌟'],maxWin:5000},{name:'Diamond',price:500,symbols:['💎','👑','🔥','🌟','💀','🌀'],maxWin:50000}];
@@ -12432,7 +12798,7 @@ async function modLookupUser() {
           ${isBanned ? `<button class="mod-panel-action green" onclick="modUnbanUser('${uid}');modLookupUser();">UNBAN</button>` : `<button class="mod-panel-action red" onclick="modStartAction('ban','${uid}','${username}')">BAN</button>`}
           ${isMuted ? `<button class="mod-panel-action green" onclick="modUnmuteUser('${uid}');modLookupUser();">UNMUTE</button>` : `<button class="mod-panel-action red" onclick="modStartAction('mute','${uid}','${username}')">MUTE</button>`}
           <button class="mod-panel-action blue" onclick="modStartAction('warn','${uid}','${username}')">WARN</button>
-          <button class="mod-panel-action" style="background:#1a3a1a;border-color:#44aa44;color:#44ff88;" onclick="modSetBalance('${uid}','${username}')">SET BAL</button>
+          <button class="mod-panel-action red" style="background:rgba(255,136,0,.15);color:#ff8800;border:1px solid rgba(255,136,0,.3);" onclick="modSetBalance('${uid}','${username}')">SET BAL</button>
         </div>
       </div>`;
   } catch(e) {
@@ -12442,21 +12808,21 @@ async function modLookupUser() {
 
 async function modSetBalance(uid, username) {
   if (!modIsStaff()) return;
-  const input = prompt(`Set balance for ${username}:\nExamples: 1000000000 or 1b or 500m`, '1000000000');
+  const input = prompt('Set balance for ' + username + ' to (e.g. 1000000000 for 1B):');
   if (input === null) return;
-  const clean = input.trim().toLowerCase();
-  let amount;
-  if (/^\d+(\.\d+)?b$/.test(clean)) amount = parseFloat(clean) * 1e9;
-  else if (/^\d+(\.\d+)?m$/.test(clean)) amount = parseFloat(clean) * 1e6;
-  else if (/^\d+(\.\d+)?k$/.test(clean)) amount = parseFloat(clean) * 1e3;
-  else if (/^\d+(\.\d+)?t$/.test(clean)) amount = parseFloat(clean) * 1e12;
-  else amount = parseFloat(clean);
-  if (isNaN(amount) || amount < 0) { showToast('❌ Invalid amount', false); return; }
+  const val = parseFloat(input);
+  if (isNaN(val) || val < 0) { showToast('Invalid amount', false); return; }
   try {
-    await window._fbSet('casino/players/' + uid + '/balance', amount);
-    showToast('✅ Balance set to $' + amount.toLocaleString() + ' for ' + username, true);
-  } catch(e) { showToast('❌ Failed: ' + (e.message||'Unknown'), false); }
+    await window._fbSet('casino/players/' + uid + '/balance', val);
+    // Also nuke their leaderboard entries if setting low
+    if (val <= 1e9) {
+      await window._fbRemove('casino/leaderboards/richest/' + uid).catch(()=>{});
+      await window._fbRemove('casino/leaderboards/profit/' + uid).catch(()=>{});
+    }
+    showToast('✅ Set ' + username + ' balance to $' + val.toLocaleString(), true);
+  } catch(e) { showToast('❌ Failed: ' + (e.message || 'Unknown'), false); }
 }
+
 async function modUnbanUser(uid) {
   if (!modIsStaff()) return;
   try {
