@@ -9669,7 +9669,7 @@ const HILO_MAX_MULT=500; // cap multiplier at 500×
 const HILO_SKIP_PENALTY=0.10; // each skip reduces payout by 10%
 function hiloMultiplier(){
   if(hiloStreakCount===0)return 1;
-  let m=1;for(let i=0;i<hiloStreakCount;i++)m*=1.35;
+  let m=1;for(let i=0;i<hiloStreakCount;i++)m*=1.55;
   // Apply skip penalties (each skip ×0.90)
   for(let i=0;i<hiloSkipCount;i++)m*=(1-HILO_SKIP_PENALTY);
   m=Math.round(m*100)/100;
