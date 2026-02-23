@@ -6815,6 +6815,10 @@ window.addEventListener('beforeunload', () => { if (window._setOnlineStatus) win
 // ============ SLOTS ============
 const SYMBOLS=['🍒','🍋','🔔','💎','7️⃣','🍀','⭐','👑'];
 const SYMBOL_VALUES={'👑':100,'7️⃣':50,'💎':30,'⭐':20,'🔔':15,'🍀':10,'🍋':6,'🍒':4};
+// Weighted reel: common symbols appear much more often than rare ones
+const REEL_WEIGHTS=[{sym:'🍒',w:25},{sym:'🍋',w:20},{sym:'🍀',w:16},{sym:'🔔',w:12},{sym:'⭐',w:8},{sym:'💎',w:5},{sym:'7️⃣',w:3},{sym:'👑',w:1}];
+const REEL_TOTAL_W=REEL_WEIGHTS.reduce((s,r)=>s+r.w,0);
+function weightedSymbol(){let rr=Math.random()*REEL_TOTAL_W;for(const{sym,w}of REEL_WEIGHTS){rr-=w;if(rr<=0)return sym;}return '🍒';}
 const REEL_COUNT=5;
 const SYM_H=93;
 const VISIBLE=3;
@@ -6937,7 +6941,7 @@ function initSlots(){
     const strip=document.createElement('div');strip.className='reel-strip';strip.id='reel'+r;
     for(let i=0;i<60;i++){
       const sym=document.createElement('div');sym.className='reel-symbol';
-      sym.textContent=SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
+      sym.textContent=weightedSymbol();
       strip.appendChild(sym);
     }
     win.appendChild(strip);container.appendChild(win);
@@ -6960,14 +6964,14 @@ function spinSlots(){
 
   // Determine results
   const results=[];
-  for(let r=0;r<REEL_COUNT;r++) results.push(SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)]);
+  for(let r=0;r<REEL_COUNT;r++) results.push(weightedSymbol());
 
   for(let r=0;r<REEL_COUNT;r++){
     const strip=document.getElementById('reel'+r);
     const children=strip.children;
     // Randomize all symbols
     for(let i=0;i<children.length;i++){
-      children[i].textContent=SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
+      children[i].textContent=weightedSymbol();
     }
     // Place result at target position (center of view = index 1 of visible 3)
     const targetIdx=42+r*2;
@@ -7033,7 +7037,7 @@ function spinSlots(){
       for(let r=0;r<REEL_COUNT;r++){
         const strip=document.getElementById('reel'+r);
         for(let i=0;i<strip.children.length;i++){
-          strip.children[i].textContent=SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
+          strip.children[i].textContent=weightedSymbol();
         }
         strip.style.transition='none';
         strip.style.transform='translateY(-'+(28*SYM_H)+'px)';
@@ -9416,7 +9420,7 @@ function coinFlip(){if(coinFlipping)return;const bet=parseFloat(document.getElem
 
 // ============ KENO ============
 let kenoSelected=new Set(),kenoPlaying=false;
-const KENO_PAYOUTS={1:[0,2.5],2:[0,1,5],3:[0,0,2,25],4:[0,0,1,5,50],5:[0,0,.5,3,15,100],6:[0,0,0,2,5,30,200],7:[0,0,0,1,3,10,50,400],8:[0,0,0,.5,2,8,25,100,500],9:[0,0,0,0,1,5,15,50,200,1000],10:[0,0,0,0,.5,3,10,25,100,500,2000]};
+const KENO_PAYOUTS={1:[0,3.5],2:[0,1.5,8],3:[0,0.5,3,35],4:[0,0,1.5,8,70],5:[0,0,1,4,20,150],6:[0,0,0.5,3,8,50,300],7:[0,0,0,1.5,5,15,80,500],8:[0,0,0,1,3,12,40,150,750],9:[0,0,0,0.5,2,8,25,80,350,1500],10:[0,0,0,0,1,5,15,50,200,750,3000]};
 function kenoInit(){const g=document.getElementById('kenoGrid');if(!g)return;g.innerHTML='';for(let i=1;i<=40;i++){const c=document.createElement('div');c.className='keno-num';c.textContent=i;c.onclick=(()=>{const n=i;return()=>kenoToggle(n);})();g.appendChild(c);}}
 function kenoToggle(n){if(kenoPlaying)return;const cells=document.querySelectorAll('.keno-num');if(kenoSelected.has(n)){kenoSelected.delete(n);cells[n-1].classList.remove('selected');}else{if(kenoSelected.size>=10){showToast('Max 10!',false);return;}kenoSelected.add(n);cells[n-1].classList.add('selected');}document.getElementById('kenoInfo').textContent=kenoSelected.size+'/10 selected';playClickSound();}
 function kenoClear(){if(kenoPlaying)return;kenoSelected.clear();document.querySelectorAll('.keno-num').forEach(c=>{c.className='keno-num';});document.getElementById('kenoInfo').textContent='Pick up to 10 numbers';document.getElementById('kenoResult').textContent='';}
@@ -9493,12 +9497,13 @@ let horseSelected=-1,horseRacing=false;
 function horseInit(){const t=document.getElementById('horseTrack');const b=document.getElementById('horseBets');if(!t||!b)return;t.innerHTML='';b.innerHTML='';
   HORSES.forEach((h,i)=>{t.innerHTML+='<div class="horse-lane"><div class="horse-name" style="color:'+h.color+'">'+h.emoji+' '+h.name+'</div><div class="horse-bar"><div class="horse-progress" id="hp'+i+'" style="width:0%;background:'+h.color+';opacity:.6;"></div><div class="horse-emoji" id="he'+i+'" style="left:0%;">'+h.emoji+'</div></div><div class="horse-odds" id="ho'+i+'"></div></div>';
     b.innerHTML+='<button class="horse-bet" onclick="horseSelect('+i+',this)">'+h.emoji+' '+h.name+'</button>';});horseSetOdds();}
+let _horseWeights=[];
 function horseSetOdds(){
-  // Generate odds display only (speeds are regenerated fresh each race)
-  const demoWeights=HORSES.map(()=>1+Math.random()*3);
-  const totalW=demoWeights.reduce((s,w)=>s+w,0);
+  // Generate weights used for BOTH odds display AND race speeds
+  _horseWeights=HORSES.map(()=>1+Math.random()*3);
+  const totalW=_horseWeights.reduce((s,w)=>s+w,0);
   HORSES.forEach((_,i)=>{
-    const winProb=demoWeights[i]/totalW;
+    const winProb=_horseWeights[i]/totalW;
     const odds=Math.max(1.2,(0.95/winProb)).toFixed(1); // ~95% RTP
     document.getElementById('ho'+i).textContent=odds+'×';
     document.getElementById('ho'+i).dataset.odds=odds;
@@ -9510,7 +9515,7 @@ function horseRace(){if(horseRacing||horseSelected<0){if(horseSelected<0)showToa
   if(!checkMaxBet(bet,'Horses'))return;
   horseRacing=true;balance-=bet;updateBalDisplay();document.getElementById('horseRaceBtn').disabled=true;document.getElementById('horseResult').textContent='';
   const progress=HORSES.map(()=>0);
-  const raceSpds=HORSES.map(()=>1+Math.random()*3);
+  const raceSpds=_horseWeights.length===HORSES.length?_horseWeights.slice():HORSES.map(()=>1+Math.random()*3);
   playClickSound();
   const raceInterval=setInterval(()=>{let winner=-1;HORSES.forEach((_,i)=>{
     progress[i]+=Math.random()*raceSpds[i]*1.8+0.3;
@@ -9532,7 +9537,7 @@ function scratchSelectTier(t,btn){scratchTier=t;document.querySelectorAll('.scra
 function scratchBuy(){if(scratchActive)return;const tier=SCRATCH_TIERS[scratchTier];
   if(tier.price>balance){showToast('Not enough balance!',false);return;}
   balance-=tier.price;updateBalDisplay();scratchActive=true;scratchRevealed=0;scratchCells=[];
-  const r=Math.random();let winCount=0;if(r<0.03)winCount=4;else if(r<0.15)winCount=3;
+  const r=Math.random();let winCount=0;if(r<0.05)winCount=4;else if(r<0.22)winCount=3;
   if(winCount>0){
     const winSym=tier.symbols[Math.floor(Math.random()*tier.symbols.length)];
     const others=tier.symbols.filter(s=>s!==winSym);
@@ -9564,7 +9569,7 @@ function scratchReveal(i){if(!scratchActive)return;const cells=document.querySel
 }
 
 // ============ WHEEL OF FORTUNE ============
-const WHEEL_SEGMENTS=[{label:'0×',mult:0,color:'#333',weight:5},{label:'0.5×',mult:0.5,color:'#444',weight:7},{label:'1×',mult:1,color:'#555',weight:6},{label:'1.5×',mult:1.5,color:'#1a5a1a',weight:4},{label:'2×',mult:2,color:'#2a7a2a',weight:3},{label:'3×',mult:3,color:'#1a1a8e',weight:1.5},{label:'5×',mult:5,color:'#6b2fd9',weight:0.8},{label:'10×',mult:10,color:'#cc2233',weight:0.25},{label:'50×',mult:50,color:'#ffd700',weight:0.04}];
+const WHEEL_SEGMENTS=[{label:'0×',mult:0,color:'#333',weight:8},{label:'0.5×',mult:0.5,color:'#444',weight:9},{label:'1×',mult:1,color:'#555',weight:7},{label:'1.5×',mult:1.5,color:'#1a5a1a',weight:4},{label:'2×',mult:2,color:'#2a7a2a',weight:2.5},{label:'3×',mult:3,color:'#1a1a8e',weight:1.2},{label:'5×',mult:5,color:'#6b2fd9',weight:0.5},{label:'10×',mult:10,color:'#cc2233',weight:0.15},{label:'50×',mult:50,color:'#ffd700',weight:0.02}];
 let wheelAngle=0,wheelSpinning=false,wheelDrawn=false;
 function drawWheel(angle){wheelDrawn=true;const c=document.getElementById('wheelCanvas');if(!c)return;const ctx=c.getContext('2d');const cx=c.width/2,cy=c.height/2,r=c.width/2-8;ctx.clearRect(0,0,c.width,c.height);
   const totalW=WHEEL_SEGMENTS.reduce((s,seg)=>s+seg.weight,0);let curAngle=angle;
@@ -9664,7 +9669,7 @@ const HILO_MAX_MULT=500; // cap multiplier at 500×
 const HILO_SKIP_PENALTY=0.10; // each skip reduces payout by 10%
 function hiloMultiplier(){
   if(hiloStreakCount===0)return 1;
-  let m=1;for(let i=0;i<hiloStreakCount;i++)m*=1.55;
+  let m=1;for(let i=0;i<hiloStreakCount;i++)m*=1.35;
   // Apply skip penalties (each skip ×0.90)
   for(let i=0;i<hiloSkipCount;i++)m*=(1-HILO_SKIP_PENALTY);
   m=Math.round(m*100)/100;
