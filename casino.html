@@ -722,15 +722,28 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 #pokerResult{font-family:'Orbitron';font-size:15px;font-weight:700;min-height:22px;text-align:center;}
 
 /* ============ HORSE RACING ============ */
-#horsesPanel{flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(ellipse at bottom,#1a0a0a 0%,#0a0a1a 70%);}
-.horse-track{width:min(620px,90vw);background:var(--surface);border-radius:10px;border:1px solid var(--border);padding:10px;}
-.horse-lane{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);}
-.horse-lane:last-child{border-bottom:none;}
-.horse-name{width:65px;font-size:11px;font-weight:700;}
+#horsesPanel{flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(ellipse at bottom,#1a0a0a 0%,#0a0a1a 70%);}
+.horse-track{width:min(680px,95vw);background:var(--surface);border-radius:10px;border:1px solid var(--border);padding:10px;}
+.horse-lane{display:flex;align-items:center;gap:6px;padding:3px 0 0 0;}
+.horse-stats-row{display:flex;gap:4px;padding:3px 0 5px 71px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.05);}
+.horse-stats-row:last-of-type{border-bottom:none;}
+.horse-name{width:65px;font-size:11px;font-weight:700;flex-shrink:0;}
 .horse-bar{flex:1;height:24px;background:var(--bg);border-radius:5px;position:relative;overflow:hidden;}
 .horse-progress{height:100%;border-radius:5px;transition:width .3s;position:absolute;left:0;top:0;}
 .horse-emoji{position:absolute;right:-2px;top:-3px;font-size:24px;}
-.horse-odds{width:44px;text-align:right;font-family:'Orbitron';font-size:10px;color:var(--gold);}
+.horse-stat-col{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:58px;}
+.horse-odds{font-family:'Orbitron';font-size:10px;color:var(--gold);text-align:right;}
+.horse-trend{font-size:9px;white-space:nowrap;}
+.trend-hot{color:#ff6644;font-weight:700;}
+.trend-mid{color:var(--text2);}
+.trend-cold{color:#6688cc;}
+.hstat{font-size:10px;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--text2);}
+.hstat-good{background:rgba(0,255,100,.12);color:#44ff88;}
+.hstat-bad{background:rgba(255,60,60,.12);color:#ff6666;}
+.horse-track-info{width:min(680px,95vw);}
+.horse-track-badge{font-family:'Orbitron';font-size:13px;font-weight:700;color:var(--gold);text-align:center;margin-bottom:4px;}
+.horse-track-meta{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+.horse-meta-tag{font-size:10px;padding:3px 8px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--text2);}
 .horse-bets{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;}
 .horse-bet{padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);cursor:pointer;font-weight:700;font-size:11px;transition:all .2s;}
 .horse-bet:hover{border-color:var(--neon);}
@@ -1889,9 +1902,9 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 
 <!-- ============ HORSE RACING ============ -->
 <div class="game-panel" id="horsesPanel">
-  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Review the <strong>odds</strong> for each horse — lower odds = more likely to win.</li><li>Set your <strong>bet</strong> and click a horse to place your wager.</li><li>Watch the race — horses run at speeds influenced by their odds.</li><li>If your horse wins, you earn <strong>bet × horse odds</strong>.</li><li>Underdogs pay big but win less often!</li></ul></div></div>
+  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Each horse has <strong>Speed, Stamina, Acceleration</strong> and <strong>Consistency</strong> stats.</li><li>The current track has a <strong>surface</strong> (Turf/Dirt/Mud/Sand), <strong>distance</strong> (Sprint/Classic/Long), and <strong>condition</strong> (Fast/Good/Soft/Heavy).</li><li>Horses with matching surface ✅ and distance ✅ bonuses will perform significantly better.</li><li>🔥 Fav = high win chance for this track. 🧊 Long = underdog, but pays way more.</li><li>Payouts are based on calculated odds — favorites pay less, longshots pay more but rarely win.</li><li>A new track is generated after every race. Study the stats before betting!</li></ul></div></div>
   <div style="font-family:'Orbitron';font-size:16px;font-weight:700;color:var(--gold);">🏇 HORSE RACING</div>
-  
+  <div class="horse-track-info" id="horseTrackInfo"></div>
   <div class="horse-track" id="horseTrack"></div>
   <div id="horseResult"></div>
   <div class="horse-bets" id="horseBets"></div>
@@ -4386,7 +4399,8 @@ async function loadLeaderboard(category) {
   }
 
   try {
-    const entries = await window._getLeaderboard(category);
+    const rawEntries = await window._getLeaderboard(category);
+    const entries = rawEntries.filter(e => (e.name||'').toLowerCase() !== 'progambler');
     if (entries.length === 0) {
       container.innerHTML = '<div class="lb-empty">No entries yet. Start playing to get on the board!</div>';
       return;
@@ -9491,43 +9505,136 @@ function pokerEvaluate(){const h=pokerHandArr;const ranks=h.map(c=>cardRankIdx(c
 }
 function scratchRevealAll(){if(!scratchActive)return;const cells=document.querySelectorAll('.scratch-cell');let delay=0;cells.forEach((c,i)=>{if(!c.classList.contains('revealed')){setTimeout(()=>scratchReveal(i),delay);delay+=80;}});}
 
-// ============ HORSE RACING ============
-const HORSES=[{name:'Thunder',emoji:'🐎',color:'#ff4444'},{name:'Lightning',emoji:'🏇',color:'#ffaa00'},{name:'Shadow',emoji:'🐴',color:'#8844ff'},{name:'Spirit',emoji:'🦄',color:'#44aaff'},{name:'Blaze',emoji:'🐎',color:'#44ff44'}];
-let horseSelected=-1,horseRacing=false;
-function horseInit(){const t=document.getElementById('horseTrack');const b=document.getElementById('horseBets');if(!t||!b)return;t.innerHTML='';b.innerHTML='';
-  HORSES.forEach((h,i)=>{t.innerHTML+='<div class="horse-lane"><div class="horse-name" style="color:'+h.color+'">'+h.emoji+' '+h.name+'</div><div class="horse-bar"><div class="horse-progress" id="hp'+i+'" style="width:0%;background:'+h.color+';opacity:.6;"></div><div class="horse-emoji" id="he'+i+'" style="left:0%;">'+h.emoji+'</div></div><div class="horse-odds" id="ho'+i+'"></div></div>';
-    b.innerHTML+='<button class="horse-bet" onclick="horseSelect('+i+',this)">'+h.emoji+' '+h.name+'</button>';});horseSetOdds();}
-let _horseWeights=[];
-function horseSetOdds(){
-  // Generate weights used for BOTH odds display AND race speeds
-  _horseWeights=HORSES.map(()=>1+Math.random()*3);
-  const totalW=_horseWeights.reduce((s,w)=>s+w,0);
-  HORSES.forEach((_,i)=>{
-    const winProb=_horseWeights[i]/totalW;
-    const odds=Math.max(1.2,(0.95/winProb)).toFixed(1); // ~95% RTP
-    document.getElementById('ho'+i).textContent=odds+'×';
-    document.getElementById('ho'+i).dataset.odds=odds;
+// ============ HORSE RACING (STATS + TRACKS) ============
+const HORSES=[
+  {name:'Thunder', emoji:'🐎',color:'#ff4444',speed:9, stamina:6, accel:8, cons:0.85,surface:{turf:1.10,dirt:1.00,mud:0.78,sand:0.88},distBonus:{sprint:1.15,classic:0.95,endurance:0.80}},
+  {name:'Lightning',emoji:'⚡',color:'#ffaa00',speed:10,stamina:4, accel:10,cons:0.68,surface:{turf:1.00,dirt:1.00,mud:0.70,sand:0.82},distBonus:{sprint:1.25,classic:0.88,endurance:0.70}},
+  {name:'Shadow',  emoji:'🌑',color:'#aa66ff',speed:7, stamina:9, accel:5, cons:0.95,surface:{turf:0.88,dirt:1.05,mud:1.00,sand:1.08},distBonus:{sprint:0.80,classic:1.00,endurance:1.22}},
+  {name:'Spirit',  emoji:'🦄',color:'#44aaff',speed:8, stamina:7, accel:7, cons:0.90,surface:{turf:1.18,dirt:0.82,mud:0.78,sand:0.88},distBonus:{sprint:0.90,classic:1.12,endurance:1.00}},
+  {name:'Blaze',   emoji:'🔥',color:'#44ff88',speed:7, stamina:8, accel:9, cons:0.80,surface:{turf:0.95,dirt:1.12,mud:1.08,sand:0.93},distBonus:{sprint:1.10,classic:1.02,endurance:0.88}},
+  {name:'Phantom', emoji:'👻',color:'#cc88ff',speed:6, stamina:10,accel:4, cons:0.98,surface:{turf:0.98,dirt:0.88,mud:1.12,sand:1.00},distBonus:{sprint:0.70,classic:0.92,endurance:1.38}},
+  {name:'Comet',   emoji:'☄️',color:'#ffee44',speed:9, stamina:5, accel:6, cons:0.75,surface:{turf:1.05,dirt:1.05,mud:0.88,sand:1.02},distBonus:{sprint:1.05,classic:1.05,endurance:0.82}},
+  {name:'Storm',   emoji:'⛈️',color:'#ff88cc',speed:8, stamina:7, accel:7, cons:0.92,surface:{turf:0.83,dirt:1.00,mud:1.22,sand:1.05},distBonus:{sprint:0.88,classic:1.00,endurance:1.10}},
+];
+const TRACK_SURFACES={
+  turf:{label:'🌿 Turf', condMods:{fast:1.00,good:0.97,soft:0.90,heavy:0.82}},
+  dirt:{label:'🟫 Dirt', condMods:{fast:1.02,good:1.00,soft:0.94,heavy:0.88}},
+  mud: {label:'💧 Mud',  condMods:{fast:0.90,good:0.95,soft:1.02,heavy:1.08}},
+  sand:{label:'🏜️ Sand', condMods:{fast:0.98,good:1.00,soft:0.93,heavy:0.88}},
+};
+const TRACK_DISTANCES={
+  sprint:   {label:'⚡ Sprint (6f)',    stamF:0.40,accelF:1.50},
+  classic:  {label:'🏇 Classic (1mi)', stamF:1.00,accelF:1.00},
+  endurance:{label:'💪 Long (1.5mi)',  stamF:1.60,accelF:0.70},
+};
+const TRACK_CONDITIONS=['fast','good','soft','heavy'];
+const TRACK_NAMES={turf:['Royal Meadows','Churchill Greens','Emerald Downs'],dirt:['Oaklawn Mile','Belmont Park','Keeneland Dirt'],mud:['Mudflat Dash','Bayou Run','Iron Creek'],sand:['Desert Dunes','Sahara Sprint','Sandstorm Mile']};
+let horseSelected=-1,horseRacing=false,_currentTrack=null,_horseWeights=[];
+function horseCalcStrength(h,surf,dist,cond){
+  const dInfo=TRACK_DISTANCES[dist];
+  const raw=(h.speed*2.2 + h.stamina*dInfo.stamF + h.accel*dInfo.accelF);
+  return raw * h.surface[surf] * TRACK_SURFACES[surf].condMods[cond] * h.distBonus[dist];
+}
+function horseGenTrack(){
+  const surfaces=Object.keys(TRACK_SURFACES);
+  const dists=Object.keys(TRACK_DISTANCES);
+  const surf=surfaces[Math.floor(Math.random()*surfaces.length)];
+  const dist=dists[Math.floor(Math.random()*dists.length)];
+  const cond=TRACK_CONDITIONS[Math.floor(Math.random()*TRACK_CONDITIONS.length)];
+  const names=TRACK_NAMES[surf];
+  const name=names[Math.floor(Math.random()*names.length)];
+  _currentTrack={surf,dist,cond,name};
+}
+function horseInit(){
+  if(!_currentTrack)horseGenTrack();
+  const t=document.getElementById('horseTrack');
+  const b=document.getElementById('horseBets');
+  const info=document.getElementById('horseTrackInfo');
+  if(!t||!b)return;
+  const {surf,dist,cond,name}=_currentTrack;
+  const sInfo=TRACK_SURFACES[surf];
+  const dInfo=TRACK_DISTANCES[dist];
+  if(info)info.innerHTML=`<div class="horse-track-badge">${name}</div><div class="horse-track-meta"><span class="horse-meta-tag">${sInfo.label}</span><span class="horse-meta-tag">${dInfo.label}</span><span class="horse-meta-tag">🌤️ ${cond.charAt(0).toUpperCase()+cond.slice(1)}</span></div>`;
+  const strengths=HORSES.map(h=>horseCalcStrength(h,surf,dist,cond));
+  const totalStr=strengths.reduce((a,v)=>a+v,0);
+  _horseWeights=strengths.slice();
+  t.innerHTML='';b.innerHTML='';
+  HORSES.forEach((h,i)=>{
+    const winProb=strengths[i]/totalStr;
+    const paidOdds=(1/winProb*0.78).toFixed(2); // ~22% house edge — pays like crap as intended
+    const relStr=winProb*HORSES.length;
+    const trendLabel=relStr>1.2?'🔥 Fav':relStr>0.85?'➡️ Mid':'🧊 Long';
+    const trendClass=relStr>1.2?'trend-hot':relStr>0.85?'trend-mid':'trend-cold';
+    const surfGood=h.surface[surf]>=1.05,surfBad=h.surface[surf]<=0.88;
+    const distGood=h.distBonus[dist]>=1.10,distBad=h.distBonus[dist]<=0.85;
+    t.innerHTML+=`<div class="horse-lane">`+
+      `<div class="horse-name" style="color:${h.color}">${h.emoji} ${h.name}</div>`+
+      `<div class="horse-bar"><div class="horse-progress" id="hp${i}" style="width:0%;background:${h.color};opacity:.7"></div><div class="horse-emoji" id="he${i}" style="left:0%">${h.emoji}</div></div>`+
+      `<div class="horse-stat-col"><div class="horse-odds" id="ho${i}" data-odds="${paidOdds}">${paidOdds}×</div><div class="horse-trend ${trendClass}">${trendLabel}</div></div>`+
+      `</div>`+
+      `<div class="horse-stats-row">`+
+      `<span class="hstat" title="Speed">⚡${h.speed}</span>`+
+      `<span class="hstat" title="Stamina">💪${h.stamina}</span>`+
+      `<span class="hstat" title="Acceleration">🚀${h.accel}</span>`+
+      `<span class="hstat" title="Consistency">🎯${Math.round(h.cons*100)}%</span>`+
+      `<span class="hstat ${surfGood?'hstat-good':surfBad?'hstat-bad':''}" title="Surface affinity">${sInfo.label.split(' ')[0]}${surfGood?'✅':surfBad?'❌':'➡️'}</span>`+
+      `<span class="hstat ${distGood?'hstat-good':distBad?'hstat-bad':''}" title="Distance preference">${dInfo.label.split(' ')[0]}${distGood?'✅':distBad?'❌':'➡️'}</span>`+
+      `</div>`;
+    b.innerHTML+=`<button class="horse-bet" onclick="horseSelect(${i},this)">${h.emoji} ${h.name}</button>`;
   });
 }
 function horseSelect(i,btn){horseSelected=i;document.querySelectorAll('.horse-bet').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');playClickSound();}
-function horseRace(){if(horseRacing||horseSelected<0){if(horseSelected<0)showToast('Pick a horse!',false);return;}
-  const bet=parseFloat(document.getElementById('horseBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
+function horseRace(){
+  if(horseRacing||horseSelected<0){if(horseSelected<0)showToast('Pick a horse first!',false);return;}
+  const bet=parseFloat(document.getElementById('horseBet').value)||10;
+  if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Horses'))return;
-  horseRacing=true;balance-=bet;updateBalDisplay();document.getElementById('horseRaceBtn').disabled=true;document.getElementById('horseResult').textContent='';
+  horseRacing=true;balance-=bet;updateBalDisplay();
+  document.getElementById('horseRaceBtn').disabled=true;
+  document.getElementById('horseResult').textContent='';
+  const {surf,dist,cond}=_currentTrack;
+  const dInfo=TRACK_DISTANCES[dist];
   const progress=HORSES.map(()=>0);
-  const raceSpds=_horseWeights.length===HORSES.length?_horseWeights.slice():HORSES.map(()=>1+Math.random()*3);
+  const maxW=Math.max(..._horseWeights);
+  const normSpds=_horseWeights.map(s=>s/maxW);
   playClickSound();
-  const raceInterval=setInterval(()=>{let winner=-1;HORSES.forEach((_,i)=>{
-    progress[i]+=Math.random()*raceSpds[i]*1.8+0.3;
-    if(progress[i]>=100){progress[i]=100;if(winner<0)winner=i;}
-    document.getElementById('hp'+i).style.width=progress[i]+'%';document.getElementById('he'+i).style.left=Math.min(progress[i],95)+'%';});
-    if(winner>=0){clearInterval(raceInterval);horseRacing=false;document.getElementById('horseRaceBtn').disabled=false;
+  const raceInterval=setInterval(()=>{
+    let winner=-1;
+    const racePct=Math.max(...progress)/100;
+    HORSES.forEach((h,i)=>{
+      const earlyStagePct=Math.max(0,0.2-racePct)/0.2;
+      const lateStagePct=Math.max(0,(racePct-0.60)/0.40);
+      const accelBoost=earlyStagePct*(h.accel/10)*dInfo.accelF*0.4;
+      const staminaDrain=lateStagePct*(1-h.stamina/10)*dInfo.stamF*0.55;
+      const variance=(Math.random()-0.5)*2*(1-h.cons)*0.7;
+      const spd=normSpds[i]*(1+accelBoost-staminaDrain+variance)*2.4+0.12;
+      progress[i]+=Math.max(0.04,spd);
+      if(progress[i]>=100){progress[i]=100;if(winner<0)winner=i;}
+      document.getElementById('hp'+i).style.width=Math.min(progress[i],100)+'%';
+      document.getElementById('he'+i).style.left=Math.min(progress[i],95)+'%';
+    });
+    if(winner>=0){
+      clearInterval(raceInterval);horseRacing=false;
+      document.getElementById('horseRaceBtn').disabled=false;
       const odds=parseFloat(document.getElementById('ho'+horseSelected).dataset.odds);
-      if(winner===horseSelected){const w=bet*odds;balance+=w;updateBalDisplay();showBigWin(w);showToast(HORSES[winner].emoji+' '+HORSES[winner].name+' wins! +$'+w.toFixed(2));playWinSound();
-        spawnParticles(window.innerWidth/2,window.innerHeight/2,40);document.getElementById('horseResult').innerHTML='<span style="color:var(--green)">'+HORSES[winner].name+' WINS! +$'+w.toFixed(2)+'</span>';recordGame('horses',bet,w);}
-      else{showToast(HORSES[winner].name+' wins',false);playLoseSound();document.getElementById('horseResult').innerHTML='<span style="color:var(--red)">'+HORSES[winner].name+' wins</span>';recordGame('horses',bet,0);}
-      setTimeout(()=>{HORSES.forEach((_,i)=>{document.getElementById('hp'+i).style.width='0%';document.getElementById('he'+i).style.left='0%';});horseSetOdds();},2000);}
-  },60);
+      if(winner===horseSelected){
+        const w=bet*odds;balance+=w;updateBalDisplay();showBigWin(w);
+        showToast(HORSES[winner].emoji+' '+HORSES[winner].name+' wins! +$'+w.toFixed(2));
+        playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,40);
+        document.getElementById('horseResult').innerHTML='<span style="color:var(--green)">'+HORSES[winner].name+' WINS! +$'+w.toFixed(2)+'</span>';
+        recordGame('horses',bet,w);
+      } else {
+        showToast(HORSES[winner].name+' wins',false);playLoseSound();
+        document.getElementById('horseResult').innerHTML='<span style="color:var(--red)">'+HORSES[winner].name+' wins — better luck next race</span>';
+        recordGame('horses',bet,0);
+      }
+      setTimeout(()=>{
+        HORSES.forEach((_,i)=>{document.getElementById('hp'+i).style.width='0%';document.getElementById('he'+i).style.left='0%';});
+        horseSelected=-1;document.querySelectorAll('.horse-bet').forEach(b=>b.classList.remove('selected'));
+        horseGenTrack();horseInit();
+      },2800);
+    }
+  },55);
 }
 
 // ============ SCRATCH CARDS ============
@@ -12325,6 +12432,7 @@ async function modLookupUser() {
           ${isBanned ? `<button class="mod-panel-action green" onclick="modUnbanUser('${uid}');modLookupUser();">UNBAN</button>` : `<button class="mod-panel-action red" onclick="modStartAction('ban','${uid}','${username}')">BAN</button>`}
           ${isMuted ? `<button class="mod-panel-action green" onclick="modUnmuteUser('${uid}');modLookupUser();">UNMUTE</button>` : `<button class="mod-panel-action red" onclick="modStartAction('mute','${uid}','${username}')">MUTE</button>`}
           <button class="mod-panel-action blue" onclick="modStartAction('warn','${uid}','${username}')">WARN</button>
+          <button class="mod-panel-action" style="background:#1a3a1a;border-color:#44aa44;color:#44ff88;" onclick="modSetBalance('${uid}','${username}')">SET BAL</button>
         </div>
       </div>`;
   } catch(e) {
@@ -12332,6 +12440,23 @@ async function modLookupUser() {
   }
 }
 
+async function modSetBalance(uid, username) {
+  if (!modIsStaff()) return;
+  const input = prompt(`Set balance for ${username}:\nExamples: 1000000000 or 1b or 500m`, '1000000000');
+  if (input === null) return;
+  const clean = input.trim().toLowerCase();
+  let amount;
+  if (/^\d+(\.\d+)?b$/.test(clean)) amount = parseFloat(clean) * 1e9;
+  else if (/^\d+(\.\d+)?m$/.test(clean)) amount = parseFloat(clean) * 1e6;
+  else if (/^\d+(\.\d+)?k$/.test(clean)) amount = parseFloat(clean) * 1e3;
+  else if (/^\d+(\.\d+)?t$/.test(clean)) amount = parseFloat(clean) * 1e12;
+  else amount = parseFloat(clean);
+  if (isNaN(amount) || amount < 0) { showToast('❌ Invalid amount', false); return; }
+  try {
+    await window._fbSet('casino/players/' + uid + '/balance', amount);
+    showToast('✅ Balance set to $' + amount.toLocaleString() + ' for ' + username, true);
+  } catch(e) { showToast('❌ Failed: ' + (e.message||'Unknown'), false); }
+}
 async function modUnbanUser(uid) {
   if (!modIsStaff()) return;
   try {
