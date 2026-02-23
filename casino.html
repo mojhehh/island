@@ -761,6 +761,15 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .hr-form-dot.mid{background:rgba(255,170,0,.15);color:#ffaa00;}
 .hr-form-dot.lose{background:rgba(255,50,50,.15);color:#ff4444;}
 .hr-col-odds{font-family:'Orbitron';font-size:12px;font-weight:900;color:var(--gold);text-align:right;}
+/* Mode toggle */
+.hr-mode-toggle{display:flex;gap:4px;justify-content:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:4px;width:fit-content;margin:0 auto;}
+.hr-mode-btn{padding:8px 18px;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;background:transparent;color:var(--text2);transition:all .15s;font-family:'Orbitron';letter-spacing:1px;}
+.hr-mode-btn.active{background:var(--gold);color:#000;box-shadow:0 0 12px rgba(255,215,0,.3);}
+.hr-mode-btn:not(.active):hover{background:rgba(255,255,255,.05);color:var(--text);}
+/* Normal mode grid */
+.hr-normal-header{grid-template-columns:28px 1fr 120px 50px !important;}
+.hr-normal-row{grid-template-columns:28px 1fr 120px 50px !important;padding:10px !important;}
+.hr-col-rating{font-size:12px;display:flex;gap:1px;align-items:center;}
 /* Detail panel */
 .hr-detail{width:100%;max-width:680px;min-height:0;transition:all .2s;}
 .hr-detail-inner{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;}
@@ -9585,6 +9594,7 @@ let hrCurrentTrack = null, hrCurrentWeather = null, hrCurrentCondition = '';
 let hrRaceHorses = []; // assembled race card
 let hrRaceNum = 0; // race counter for form tracking
 let hrForm = {}; // { horseName: [last 5 finishes] }
+let hrMode = 'normal'; // 'normal' or 'advanced'
 
 /* ── INIT ── */
 function horseInit() {
@@ -9654,8 +9664,11 @@ function hrGenerateRace() {
     const noisyExps = hrRaceHorses.map(hh => Math.exp(((hh === h ? noisyPower : hh.totalPower + hh.displayNoise) - maxP) / 12));
     const noisySum = noisyExps.reduce((s, e) => s + e, 0);
     const noisyProb = noisyExps[hrRaceHorses.indexOf(h)] / noisySum;
-    // Odds = 0.88 / prob (88% RTP for the book)
-    h.displayOdds = Math.max(1.3, parseFloat((0.88 / noisyProb).toFixed(1)));
+    // Advanced: 0.88 RTP, Normal: 0.78 RTP (lower payout but easier to pick)
+    const rtp = hrMode === 'advanced' ? 0.88 : 0.78;
+    h.displayOdds = Math.max(1.3, parseFloat((rtp / noisyProb).toFixed(1)));
+    // Normal mode: also compute a simpler "star rating" (1-5) from true win prob
+    h.starRating = Math.max(1, Math.min(5, Math.round(h.trueWinProb * 20 + 1.5)));
   });
 
   hrSelected = -1;
@@ -9739,60 +9752,98 @@ function hrCalcFormBonus(name) {
   return bonus;
 }
 
+/* ── MODE TOGGLE ── */
+function hrSetMode(mode) {
+  hrMode = mode;
+  // Re-gen with new RTP
+  hrGenerateRace();
+}
+
 /* ── RENDER RACE CARD ── */
 function hrRenderRaceCard() {
   const panel = document.getElementById('horsesPanel');
   if (!panel) return;
+  const isAdv = hrMode === 'advanced';
 
   // Sort by gate for display
   const sorted = hrRaceHorses.slice().sort((a, b) => a.gate - b.gate);
 
   let html = '';
 
-  // TRACK + CONDITIONS BAR
-  html += '<div class="hr-conditions">';
-  html += '<div class="hr-cond-item"><span class="hr-cond-label">TRACK</span><span class="hr-cond-val">' + hrCurrentTrack.icon + ' ' + hrCurrentTrack.name + '</span></div>';
-  html += '<div class="hr-cond-item"><span class="hr-cond-label">SURFACE</span><span class="hr-cond-val" style="text-transform:uppercase;">' + hrCurrentTrack.surface + '</span></div>';
-  html += '<div class="hr-cond-item"><span class="hr-cond-label">DISTANCE</span><span class="hr-cond-val">' + hrCurrentTrack.distance + 'm</span></div>';
-  html += '<div class="hr-cond-item"><span class="hr-cond-label">WEATHER</span><span class="hr-cond-val">' + hrCurrentWeather.icon + ' ' + hrCurrentWeather.name + '</span></div>';
-  html += '<div class="hr-cond-item"><span class="hr-cond-label">GOING</span><span class="hr-cond-val">' + hrCurrentCondition + '</span></div>';
-  html += '<div class="hr-cond-item"><span class="hr-cond-label">RACE #</span><span class="hr-cond-val">' + hrRaceNum + '</span></div>';
+  // MODE TOGGLE
+  html += '<div class="hr-mode-toggle">';
+  html += '<button class="hr-mode-btn' + (!isAdv ? ' active' : '') + '" onclick="hrSetMode(\'normal\')">🐴 NORMAL</button>';
+  html += '<button class="hr-mode-btn' + (isAdv ? ' active' : '') + '" onclick="hrSetMode(\'advanced\')">🧠 ADVANCED</button>';
   html += '</div>';
 
-  // Track description
-  html += '<div class="hr-track-desc">' + hrCurrentTrack.desc + ' · ' + hrCurrentWeather.desc + '</div>';
-
-  // RACE CARD TABLE
-  html += '<div class="hr-card">';
-  html += '<div class="hr-card-header"><span class="hr-col-gate">#</span><span class="hr-col-name">HORSE</span><span class="hr-col-jockey">JOCKEY</span><span class="hr-col-stats">SPD/STA/ACC</span><span class="hr-col-surface">SURF</span><span class="hr-col-form">FORM</span><span class="hr-col-odds">ODDS</span></div>';
-
-  sorted.forEach(h => {
-    const form = (hrForm[h.name] || []).slice(-5);
-    const formStr = form.length > 0
-      ? form.map(f => '<span class="hr-form-dot ' + (f <= 2 ? 'win' : f <= 4 ? 'mid' : 'lose') + '">' + f + '</span>').join('')
-      : '<span style="color:var(--text2);font-size:9px;">NEW</span>';
-
-    const surfAff = h[hrCurrentTrack.surface] || 50;
-    const surfClass = surfAff >= 80 ? 'hr-surf-great' : surfAff >= 65 ? 'hr-surf-good' : surfAff >= 50 ? 'hr-surf-ok' : 'hr-surf-bad';
-
-    const sel = h.idx === hrSelected ? ' hr-row-sel' : '';
-
-    html += '<div class="hr-card-row' + sel + '" onclick="hrSelectHorse(' + h.idx + ')" data-idx="' + h.idx + '">';
-    html += '<span class="hr-col-gate">' + h.gate + '</span>';
-    html += '<span class="hr-col-name" style="color:' + h.color + ';">' + h.emoji + ' ' + h.name + ' <span class="hr-temperament">' + h.temperament[0] + '</span></span>';
-    html += '<span class="hr-col-jockey"><span class="hr-jockey-name">' + h.jockey.name + '</span><span class="hr-jockey-style">' + h.jockey.style + ' (' + h.jockey.rating + ')</span></span>';
-    html += '<span class="hr-col-stats">' + h.spd + '/' + h.stam + '/' + h.accel + '</span>';
-    html += '<span class="hr-col-surface ' + surfClass + '">' + surfAff + '</span>';
-    html += '<span class="hr-col-form">' + formStr + '</span>';
-    html += '<span class="hr-col-odds">' + h.displayOdds + '×</span>';
+  if (isAdv) {
+    // ─── ADVANCED MODE (full stats) ───
+    html += '<div class="hr-conditions">';
+    html += '<div class="hr-cond-item"><span class="hr-cond-label">TRACK</span><span class="hr-cond-val">' + hrCurrentTrack.icon + ' ' + hrCurrentTrack.name + '</span></div>';
+    html += '<div class="hr-cond-item"><span class="hr-cond-label">SURFACE</span><span class="hr-cond-val" style="text-transform:uppercase;">' + hrCurrentTrack.surface + '</span></div>';
+    html += '<div class="hr-cond-item"><span class="hr-cond-label">DISTANCE</span><span class="hr-cond-val">' + hrCurrentTrack.distance + 'm</span></div>';
+    html += '<div class="hr-cond-item"><span class="hr-cond-label">WEATHER</span><span class="hr-cond-val">' + hrCurrentWeather.icon + ' ' + hrCurrentWeather.name + '</span></div>';
+    html += '<div class="hr-cond-item"><span class="hr-cond-label">GOING</span><span class="hr-cond-val">' + hrCurrentCondition + '</span></div>';
+    html += '<div class="hr-cond-item"><span class="hr-cond-label">RACE #</span><span class="hr-cond-val">' + hrRaceNum + '</span></div>';
     html += '</div>';
-  });
-  html += '</div>';
+    html += '<div class="hr-track-desc">' + hrCurrentTrack.desc + ' · ' + hrCurrentWeather.desc + '</div>';
 
-  // HORSE DETAIL (expanded on click)
-  html += '<div class="hr-detail" id="hrDetail"></div>';
+    html += '<div class="hr-card">';
+    html += '<div class="hr-card-header"><span class="hr-col-gate">#</span><span class="hr-col-name">HORSE</span><span class="hr-col-jockey">JOCKEY</span><span class="hr-col-stats">SPD/STA/ACC</span><span class="hr-col-surface">SURF</span><span class="hr-col-form">FORM</span><span class="hr-col-odds">ODDS</span></div>';
 
-  // RACE TRACK VISUAL
+    sorted.forEach(h => {
+      const form = (hrForm[h.name] || []).slice(-5);
+      const formStr = form.length > 0
+        ? form.map(f => '<span class="hr-form-dot ' + (f <= 2 ? 'win' : f <= 4 ? 'mid' : 'lose') + '">' + f + '</span>').join('')
+        : '<span style="color:var(--text2);font-size:9px;">NEW</span>';
+      const surfAff = h[hrCurrentTrack.surface] || 50;
+      const surfClass = surfAff >= 80 ? 'hr-surf-great' : surfAff >= 65 ? 'hr-surf-good' : surfAff >= 50 ? 'hr-surf-ok' : 'hr-surf-bad';
+      const sel = h.idx === hrSelected ? ' hr-row-sel' : '';
+
+      html += '<div class="hr-card-row' + sel + '" onclick="hrSelectHorse(' + h.idx + ')" data-idx="' + h.idx + '">';
+      html += '<span class="hr-col-gate">' + h.gate + '</span>';
+      html += '<span class="hr-col-name" style="color:' + h.color + ';">' + h.emoji + ' ' + h.name + ' <span class="hr-temperament">' + h.temperament[0] + '</span></span>';
+      html += '<span class="hr-col-jockey"><span class="hr-jockey-name">' + h.jockey.name + '</span><span class="hr-jockey-style">' + h.jockey.style + ' (' + h.jockey.rating + ')</span></span>';
+      html += '<span class="hr-col-stats">' + h.spd + '/' + h.stam + '/' + h.accel + '</span>';
+      html += '<span class="hr-col-surface ' + surfClass + '">' + surfAff + '</span>';
+      html += '<span class="hr-col-form">' + formStr + '</span>';
+      html += '<span class="hr-col-odds">' + h.displayOdds + '×</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+    // Detail panel
+    html += '<div class="hr-detail" id="hrDetail"></div>';
+
+  } else {
+    // ─── NORMAL MODE (simplified) ───
+    html += '<div class="hr-conditions" style="gap:10px;">';
+    html += '<div class="hr-cond-item"><span class="hr-cond-label">TRACK</span><span class="hr-cond-val">' + hrCurrentTrack.icon + ' ' + hrCurrentTrack.name + '</span></div>';
+    html += '<div class="hr-cond-item"><span class="hr-cond-label">WEATHER</span><span class="hr-cond-val">' + hrCurrentWeather.icon + ' ' + hrCurrentWeather.name + '</span></div>';
+    html += '<div class="hr-cond-item"><span class="hr-cond-label">RACE #</span><span class="hr-cond-val">' + hrRaceNum + '</span></div>';
+    html += '</div>';
+
+    html += '<div class="hr-card">';
+    html += '<div class="hr-card-header hr-normal-header"><span class="hr-col-gate">#</span><span class="hr-col-name">HORSE</span><span class="hr-col-rating">RATING</span><span class="hr-col-odds">ODDS</span></div>';
+
+    sorted.forEach(h => {
+      const sel = h.idx === hrSelected ? ' hr-row-sel' : '';
+      const stars = '⭐'.repeat(h.starRating) + '<span style="opacity:.2;">⭐</span>'.repeat(5 - h.starRating);
+
+      html += '<div class="hr-card-row hr-normal-row' + sel + '" onclick="hrSelectHorse(' + h.idx + ')" data-idx="' + h.idx + '">';
+      html += '<span class="hr-col-gate">' + h.gate + '</span>';
+      html += '<span class="hr-col-name" style="color:' + h.color + ';">' + h.emoji + ' ' + h.name + '</span>';
+      html += '<span class="hr-col-rating">' + stars + '</span>';
+      html += '<span class="hr-col-odds">' + h.displayOdds + '×</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+    // No detail panel in normal mode
+    html += '<div id="hrDetail"></div>';
+  }
+
+  // RACE TRACK VISUAL (both modes)
   html += '<div class="horse-track" id="horseTrack"></div>';
   html += '<div id="horseResult"></div>';
 
@@ -9808,15 +9859,22 @@ function hrRenderRaceCard() {
   html += '<button class="action-btn" onclick="hrGenerateRace()" style="font-size:10px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);">🔄 NEW RACE</button>';
   html += '</div>';
 
-  // STAT LEGEND
+  // LEGEND (mode-specific)
   html += '<div class="hr-legend">';
-  html += '<div class="hr-leg-item">SPD = Speed · STA = Stamina · ACC = Acceleration</div>';
-  html += '<div class="hr-leg-item">SURF = Surface affinity (higher = better on this track)</div>';
-  html += '<div class="hr-leg-item">FORM = Last 5 finishes (<span class="hr-form-dot win">1</span>=1st <span class="hr-form-dot mid">3</span>=3rd <span class="hr-form-dot lose">7</span>=7th)</div>';
-  html += '<div class="hr-leg-item">Temperament: <b>H</b>ot (nervous in bad weather) · <b>C</b>ool (rain lover) · <b>W</b>ild (unpredictable) · <b>S</b>teady</div>';
-  html += '<div class="hr-leg-item">Jockey style + rating affects acceleration and stamina drain</div>';
-  html += '<div class="hr-leg-item">Going: Fast > Good > Yielding > Soft > Heavy — stamina horses love heavy going</div>';
-  html += '<div class="hr-leg-item" style="color:var(--gold);">💡 Study everything: a rain-loving Cool horse with high mud affinity on a Storm day at Stormwood Bog with jockey A. Kimura? That\'s a monster pick.</div>';
+  if (isAdv) {
+    html += '<div class="hr-leg-item">SPD = Speed · STA = Stamina · ACC = Acceleration</div>';
+    html += '<div class="hr-leg-item">SURF = Surface affinity (higher = better on this track)</div>';
+    html += '<div class="hr-leg-item">FORM = Last 5 finishes (<span class="hr-form-dot win">1</span>=1st <span class="hr-form-dot mid">3</span>=3rd <span class="hr-form-dot lose">7</span>=7th)</div>';
+    html += '<div class="hr-leg-item">Temperament: <b>H</b>ot (nervous in bad weather) · <b>C</b>ool (rain lover) · <b>W</b>ild (unpredictable) · <b>S</b>teady</div>';
+    html += '<div class="hr-leg-item">Jockey style + rating affects acceleration and stamina drain</div>';
+    html += '<div class="hr-leg-item">Going: Fast > Good > Yielding > Soft > Heavy — stamina horses love heavy going</div>';
+    html += '<div class="hr-leg-item" style="color:var(--gold);">💡 The odds have noise — if you can read every stat and find a mispriced horse, that\'s free money. Study the matchup.</div>';
+  } else {
+    html += '<div class="hr-leg-item">⭐ Stars show how likely a horse is to win this race</div>';
+    html += '<div class="hr-leg-item">More stars = more likely to win, but lower payout</div>';
+    html += '<div class="hr-leg-item">Fewer stars = longshot, but pays way more if it wins</div>';
+    html += '<div class="hr-leg-item" style="color:var(--neon);">💡 Want bigger payouts and deeper strategy? Switch to <b>ADVANCED</b> mode!</div>';
+  }
   html += '</div>';
 
   // Inject into main area (keep the HTP box and title, replace everything below)
@@ -9844,11 +9902,13 @@ function hrSelectHorse(idx) {
     r.classList.toggle('hr-row-sel', parseInt(r.dataset.idx) === idx);
   });
 
-  // Show detail panel
+  // Show detail panel (advanced mode only)
   const h = hrRaceHorses.find(hh => hh.idx === idx);
   if (!h) return;
   const det = document.getElementById('hrDetail');
   if (!det) return;
+
+  if (hrMode !== 'advanced') { det.innerHTML = ''; return; }
 
   const surfAff = h[hrCurrentTrack.surface] || 50;
   const weatherBonus = hrCurrentWeather.surfaceBonus[hrCurrentTrack.surface] || 0;
