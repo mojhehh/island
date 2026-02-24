@@ -4101,11 +4101,16 @@ function firebaseSave(){
   _fbSaveTimer=setTimeout(()=>{
     _fbSaveTimer=null;
     if(_fbSaveDirty && window._firebaseSave){ _fbSaveDirty=false; window._firebaseSave(); }
-  },5000);
+  },1500);
 }
-function firebaseSaveNow(){ // immediate save for critical actions (logout, prestige, trade)
+function firebaseSaveNow(){ // immediate save for critical actions (logout, prestige, trade, BETS)
   if(_fbSaveTimer){clearTimeout(_fbSaveTimer);_fbSaveTimer=null;}
   _fbSaveDirty=false;
+  if(window._firebaseSave) window._firebaseSave();
+}
+// Save after every bet deduction to prevent refresh exploit
+function firebaseSaveBet(){
+  // Immediate async save — prevents undo-by-refresh
   if(window._firebaseSave) window._firebaseSave();
 }
 
@@ -7006,7 +7011,7 @@ function spinSlots(){
   slotsSpinning=true;
   // Shield potion: refund half on loss (applied at bet time, settled after result)
   const slotsShielded = typeof isShieldActive==='function' && isShieldActive();
-  balance-=bet;updateBalDisplay();
+  balance-=bet;updateBalDisplay();firebaseSaveBet();
   document.getElementById('spinBtn').disabled=true;
   playClickSound();
 
@@ -7166,7 +7171,7 @@ function startCrash(){
   if(bet<=0)return;
   if(!checkMaxBet(bet,'Crash'))return;
   if(bet>balance){showToast('Not enough balance!',false);return;}
-  crashBetAmount=bet;balance-=bet;updateBalDisplay();
+  crashBetAmount=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();
   crashCashedOut=false;crashRunning=true;
   window._crashCashoutReady=false;
   setTimeout(()=>{window._crashCashoutReady=true;},200);
@@ -7252,6 +7257,7 @@ const RED_NUMS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 let rouletteSpinning=false,rouletteAngle=0,selectedRoulBet=null,rouletteDrawn=false;
 
 function selectRoulBet(type,btn){
+  if(rouletteSpinning)return; // Block bet changes during spin
   selectedRoulBet=type;playClickSound();
   document.querySelectorAll('.roul-bet-btn').forEach(b=>b.classList.remove('selected'));
   if(btn)btn.classList.add('selected');
@@ -7305,7 +7311,7 @@ function spinRoulette(){
   if(!checkMaxBet(bet,'Roulette'))return;
   if(bet>balance){showToast('Not enough balance!',false);return;}
 
-  rouletteSpinning=true;balance-=bet;updateBalDisplay();
+  rouletteSpinning=true;balance-=bet;updateBalDisplay();firebaseSaveBet();
   document.getElementById('roulSpinBtn').disabled=true;
   document.getElementById('rouletteResult').textContent='';
   playClickSound();
@@ -7346,14 +7352,10 @@ function spinRoulette(){
       rouletteAngle=cur%(Math.PI*2);
       rouletteSpinning=false;
       document.getElementById('roulSpinBtn').disabled=false;
-
-      // Read back which slice the pointer (top, -PI/2) is actually over
-      const pointerAngle=((-Math.PI/2-rouletteAngle)%(Math.PI*2)+Math.PI*4)%(Math.PI*2);
-      const visualIdx=Math.floor(pointerAngle/sliceAngle)%n;
-      const visualNum=ROUL_NUMS[visualIdx];
-      // Use the visual number for display (should match winNum, but this guarantees it)
-      const fNum=visualNum;
-      const fRed=RED_NUMS.has(fNum);
+Use the PREDETERMINED winner — not visual readback — to avoid mismatch bugs
+      const fNum=winNum;
+      const fRed=isActuallyRed;
+      const fGreen=isActuallyGreenas(fNum);
       const fGreen=fNum===0;
 
       const colorLabel=fGreen?'💚 Green':(fRed?'🔴 Red':'⚫ Black');
@@ -8286,7 +8288,7 @@ function dropPlinkoBall(){
   if(bet>balance){showToast('Not enough balance!',false);if(autoDropping)toggleAutoDrop();plinkoDropLock=false;return;}
   if(bet<=0){plinkoDropLock=false;return;}
 
-  balance-=bet;updateBalDisplay();
+  balance-=bet;updateBalDisplay();firebaseSaveBet();
   plinkoDropLock=false;
   playSound(500,'sine',.04,.05);
 
@@ -9352,13 +9354,13 @@ function bjDeal(){
   if(bjActive)return;const bet=parseFloat(document.getElementById('bjBet').value)||10;if(bet<=0)return;
   if(!checkMaxBet(bet,'Blackjack'))return;
   if(bet>balance){showToast('Not enough balance!',false);return;}
-  bjBetAmt=bet;balance-=bet;updateBalDisplay();bjDeck=newDeck();bjPlayer=[bjDrawCard(),bjDrawCard()];bjDealer=[bjDrawCard(),bjDrawCard()];bjActive=true;bjRender();
+  bjBetAmt=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();bjDeck=newDeck();bjPlayer=[bjDrawCard(),bjDrawCard()];bjDealer=[bjDrawCard(),bjDrawCard()];bjActive=true;bjRender();
   document.getElementById('bjResult').textContent='';
   if(bjHandVal(bjPlayer)===21)bjStand();playClickSound();
 }
 function bjHit(){if(!bjActive)return;bjPlayer.push(bjDrawCard());if(bjHandVal(bjPlayer)>21){bjActive=false;bjRender();bjFinish();}else if(bjHandVal(bjPlayer)===21)bjStand();else bjRender();}
 function bjStand(){if(!bjActive)return;while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
-function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;if(!checkMaxBet(bjBetAmt*2,'Blackjack'))return;if(bjBetAmt>balance){showToast('Not enough balance to double!',false);return;}balance-=bjBetAmt;bjBetAmt*=2;updateBalDisplay();bjPlayer.push(bjDrawCard());while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
+function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;if(!checkMaxBet(bjBetAmt*2,'Blackjack'))return;if(bjBetAmt>balance){showToast('Not enough balance to double!',false);return;}balance-=bjBetAmt;bjBetAmt*=2;updateBalDisplay();firebaseSaveBet();bjPlayer.push(bjDrawCard());while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
 function bjFinish(){
   const pv=bjHandVal(bjPlayer),dv=bjHandVal(bjDealer);let w=0,msg='';
   const isNatural=bjPlayer.length===2&&pv===21;
@@ -9381,7 +9383,7 @@ function minesStart(){
   if(!minesCount||minesCount<1)minesCount=1;if(minesCount>24)minesCount=24;
   if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Mines'))return;
-  minesBetAmt=bet;balance-=bet;updateBalDisplay();minesActive=true;minesRevealed=0;
+  minesBetAmt=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();minesActive=true;minesRevealed=0;
   minesBoard=Array(25).fill(false);const pos=[];while(pos.length<minesCount){const p=Math.floor(Math.random()*25);if(!pos.includes(p))pos.push(p);}
   pos.forEach(p=>minesBoard[p]=true);minesRenderGrid();
   document.getElementById('minesStartBtn').style.display='none';document.getElementById('minesCashoutBtn').style.display='';
@@ -9405,17 +9407,22 @@ function minesRevealAll(){const cells=document.querySelectorAll('.mine-cell');mi
 function minesRenderGrid(){const g=document.getElementById('minesGrid');g.innerHTML='';for(let i=0;i<25;i++){const c=document.createElement('div');c.className='mine-cell';c.onclick=(()=>{const idx=i;return()=>minesClick(idx);})();g.appendChild(c);}}
 
 // ============ DICE ============
-let diceMode='over';
-function diceSetMode(m){diceMode=m;document.getElementById('diceOverBtn').className='dice-mode-btn'+(m==='over'?' active':'');document.getElementById('diceUnderBtn').className='dice-mode-btn'+(m==='under'?' active':'');diceUpdateSlider();}
-function diceUpdateSlider(){const v=Math.max(2,Math.min(98,parseFloat(document.getElementById('diceSlider').value)));const chance=diceMode==='over'?(100-v):v;const payout=chance>0?Math.min(Math.floor(99/chance*100)/100,9900):0;document.getElementById('diceTarget').textContent=v.toFixed(2);document.getElementById('diceChance').textContent=chance.toFixed(2)+'%';document.getElementById('dicePayout').textContent=payout.toFixed(2)+'×';
+let diceMode='over', diceRolling=false;
+function diceSetMode(m){if(diceRolling)return;diceMode=m;document.getElementById('diceOverBtn').className='dice-mode-btn'+(m==='over'?' active':'');document.getElementById('diceUnderBtn').className='dice-mode-btn'+(m==='under'?' active':'');diceUpdateSlider();}
+function diceUpdateSlider(){const v=Math.max(5,Math.min(95,parseFloat(document.getElementById('diceSlider').value)));document.getElementById('diceSlider').value=v;const chance=diceMode==='over'?(100-v):v;const payout=chance>0?Math.min(Math.floor(99/chance*100)/100,9900):0;document.getElementById('diceTarget').textContent=v.toFixed(2);document.getElementById('diceChance').textContent=chance.toFixed(2)+'%';document.getElementById('dicePayout').textContent=payout.toFixed(2)+'×';
   const sl=document.getElementById('diceSlider');sl.style.background='linear-gradient(90deg,'+(diceMode==='over'?'var(--red)':'var(--green)')+' 0%,'+(diceMode==='over'?'var(--red)':'var(--green)')+' '+v+'%,'+(diceMode==='over'?'var(--green)':'var(--red)')+' '+v+'%,'+(diceMode==='over'?'var(--green)':'var(--red)')+' 100%)';}
-function diceRoll(){const bet=parseFloat(document.getElementById('diceBet').value)||10;if(bet>balance){showToast('Not enough!',false);return;}if(bet<=0)return;
+function diceRoll(){if(diceRolling)return;const bet=parseFloat(document.getElementById('diceBet').value)||10;if(bet>balance){showToast('Not enough!',false);return;}if(bet<=0)return;
   if(!checkMaxBet(bet,'Dice'))return;
-  balance-=bet;updateBalDisplay();let target=parseFloat(document.getElementById('diceSlider').value);target=Math.max(2,Math.min(98,target));const chance=diceMode==='over'?(100-target):target;const payout=chance>0?Math.min(Math.floor(99/chance*100)/100,9900):0;
+  diceRolling=true;
+  // Lock slider and mode during roll
+  document.getElementById('diceSlider').disabled=true;
+  balance-=bet;updateBalDisplay();firebaseSaveBet();let target=parseFloat(document.getElementById('diceSlider').value);target=Math.max(5,Math.min(95,target));const chance=diceMode==='over'?(100-target):target;const payout=chance>0?Math.min(Math.floor(99/chance*100)/100,9900):0;
   const roll=Math.random()*100;const won=diceMode==='over'?roll>target:roll<target;const display=document.getElementById('diceDisplay');
   display.textContent=roll.toFixed(2);display.style.color=won?'var(--green)':'var(--red)';
   if(won){const w=bet*payout;balance+=w;updateBalDisplay();showBigWin(w);showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,25);recordGame('dice',bet,w);}
   else{showToast('-$'+bet.toFixed(2),false);playLoseSound();recordGame('dice',bet,0);}playClickSound();
+  // Cooldown to prevent spam
+  setTimeout(()=>{diceRolling=false;document.getElementById('diceSlider').disabled=false;},400);
 }
 
 // ============ TOWER ============
@@ -9426,7 +9433,7 @@ function towerStart(){
   if(!checkMaxBet(bet,'Tower'))return;
   const diff=document.getElementById('towerDiff').value;
   if(diff==='easy'){towerCols=4;towerSafePerRow=3;}else if(diff==='medium'){towerCols=3;towerSafePerRow=2;}else if(diff==='hard'){towerCols=4;towerSafePerRow=2;}else{towerCols=4;towerSafePerRow=1;}
-  towerBetAmt=bet;balance-=bet;updateBalDisplay();towerActive=true;towerRow=0;towerRows=8;
+  towerBetAmt=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();towerActive=true;towerRow=0;towerRows=8;
   towerBoard=[];for(let r=0;r<towerRows;r++){const row=Array(towerCols).fill(true);const traps=towerCols-towerSafePerRow;const trapPos=[];while(trapPos.length<traps){const p=Math.floor(Math.random()*towerCols);if(!trapPos.includes(p))trapPos.push(p);}trapPos.forEach(p=>row[p]=false);towerBoard.push(row);}
   towerRender();document.getElementById('towerStartBtn').style.display='none';document.getElementById('towerCashoutBtn').style.display='';
   document.getElementById('towerInfo').innerHTML='Floor <span style="color:var(--neon)">1</span> — Pick a tile!';playClickSound();
@@ -9456,7 +9463,7 @@ let coinChoice='heads',coinFlipping=false;
 function coinSelect(c){coinChoice=c;document.getElementById('coinHeads').className='coin-choice'+(c==='heads'?' selected':'');document.getElementById('coinTails').className='coin-choice'+(c==='tails'?' selected':'');playClickSound();}
 function coinFlip(){if(coinFlipping)return;const bet=parseFloat(document.getElementById('coinBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Coinflip'))return;
-  coinFlipping=true;balance-=bet;updateBalDisplay();document.getElementById('coinFlipBtn').disabled=true;document.getElementById('coinResult').textContent='';
+  coinFlipping=true;balance-=bet;updateBalDisplay();firebaseSaveBet();document.getElementById('coinFlipBtn').disabled=true;document.getElementById('coinResult').textContent='';
   const coin=document.getElementById('coinDisplay');coin.classList.remove('flip');void coin.offsetWidth;coin.classList.add('flip');playClickSound();
   const result=Math.random()<0.5?'heads':'tails';
   setTimeout(()=>{coin.textContent=result==='heads'?'👑':'🦅';const won=result===coinChoice;
@@ -9474,7 +9481,7 @@ function kenoToggle(n){if(kenoPlaying)return;const cells=document.querySelectorA
 function kenoClear(){if(kenoPlaying)return;kenoSelected.clear();document.querySelectorAll('.keno-num').forEach(c=>{c.className='keno-num';});document.getElementById('kenoInfo').textContent='Pick up to 10 numbers';document.getElementById('kenoResult').textContent='';}
 function kenoDraw(){if(kenoPlaying||kenoSelected.size===0)return;const bet=parseFloat(document.getElementById('kenoBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Keno'))return;
-  kenoPlaying=true;balance-=bet;updateBalDisplay();document.getElementById('kenoDrawBtn').disabled=true;
+  kenoPlaying=true;balance-=bet;updateBalDisplay();firebaseSaveBet();document.getElementById('kenoDrawBtn').disabled=true;
   const drawn=new Set();while(drawn.size<10){drawn.add(Math.floor(Math.random()*40)+1);}
   const cells=document.querySelectorAll('.keno-num');let hits=0;const drawnArr=[...drawn];let idx=0;
   const revealInterval=setInterval(()=>{if(idx>=drawnArr.length){clearInterval(revealInterval);
@@ -9494,7 +9501,7 @@ function limboUpdateInfo(){const t=parseFloat(document.getElementById('limboTarg
 function limboGo(){if(limboRolling)return;const bet=parseFloat(document.getElementById('limboBet').value)||10;if(bet<=0)return;let target=parseFloat(document.getElementById('limboTarget').value)||2;target=Math.max(1.01,Math.min(1000,target));
   if(bet>balance){showToast('Not enough!',false);return;}if(target<1.01){showToast('Min target 1.01×',false);return;}
   if(!checkMaxBet(bet,'Limbo'))return;
-  limboRolling=true;balance-=bet;updateBalDisplay();document.getElementById('limboGoBtn').disabled=true;
+  limboRolling=true;balance-=bet;updateBalDisplay();firebaseSaveBet();document.getElementById('limboGoBtn').disabled=true;
   const result=Math.min(10000,0.99/(1-Math.random()));const display=document.getElementById('limboResult');const limboBar=document.getElementById('limboBar');
   let cur=1;const step=Math.max(0.01,(result-1)/20);
   const anim=setInterval(()=>{cur+=step;if(cur>=result){cur=result;clearInterval(anim);
@@ -9513,7 +9520,7 @@ function pokerDeal(){
   if(pokerPhase==='hold'){pokerDrawCards();return;}
   const bet=parseFloat(document.getElementById('pokerBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Poker'))return;
-  pokerBetAmt=bet;balance-=bet;updateBalDisplay();pokerDeckArr=newDeck();pokerHandArr=[];pokerHeld=Array(5).fill(false);
+  pokerBetAmt=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();pokerDeckArr=newDeck();pokerHandArr=[];pokerHeld=Array(5).fill(false);
   for(let i=0;i<5;i++)pokerHandArr.push(pokerDeckArr.pop());pokerPhase='hold';pokerRender();
   document.getElementById('pokerDealBtn').textContent='DRAW';document.getElementById('pokerResult').textContent='Click cards to hold, then DRAW';playClickSound();
 }
@@ -9941,7 +9948,7 @@ function horseRace() {
 
   hrRacing = true;
   balance -= bet;
-  updateBalDisplay();
+  updateBalDisplay();firebaseSaveBet();
   document.getElementById('horseRaceBtn').disabled = true;
   document.getElementById('horseResult').textContent = '';
   playClickSound();
@@ -10113,7 +10120,7 @@ function drawWheel(angle){wheelDrawn=true;const c=document.getElementById('wheel
 }
 function wheelSpin(){if(wheelSpinning)return;const bet=parseFloat(document.getElementById('wheelBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Wheel'))return;
-  wheelSpinning=true;balance-=bet;updateBalDisplay();document.getElementById('wheelSpinBtn').disabled=true;document.getElementById('wheelResult').textContent='';playClickSound();
+  wheelSpinning=true;balance-=bet;updateBalDisplay();firebaseSaveBet();document.getElementById('wheelSpinBtn').disabled=true;document.getElementById('wheelResult').textContent='';playClickSound();
   const totalW=WHEEL_SEGMENTS.reduce((s,seg)=>s+seg.weight,0);let rnd=Math.random()*totalW,winIdx=0;
   for(let i=0;i<WHEEL_SEGMENTS.length;i++){rnd-=WHEEL_SEGMENTS[i].weight;if(rnd<=0){winIdx=i;break;}}const seg=WHEEL_SEGMENTS[winIdx];
   let cumAngle=0;for(let i=0;i<winIdx;i++){cumAngle+=(WHEEL_SEGMENTS[i].weight/totalW)*Math.PI*2;}cumAngle+=(seg.weight/totalW)*Math.PI;
@@ -10145,7 +10152,7 @@ function baccCardVal(c){const v=cardNumVal(c);return v===11?1:v>=10?0:v;}
 function baccHandTotal(hand){return hand.reduce((s,c)=>s+baccCardVal(c),0)%10;}
 function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}const bet=parseFloat(document.getElementById('baccBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Baccarat'))return;
-  balance-=bet;updateBalDisplay();const deck=newDeck();const player=[deck.pop(),deck.pop()],banker=[deck.pop(),deck.pop()];
+  balance-=bet;updateBalDisplay();firebaseSaveBet();const deck=newDeck();const player=[deck.pop(),deck.pop()],banker=[deck.pop(),deck.pop()];
   let pScore=baccHandTotal(player),bScore=baccHandTotal(banker);
   if(pScore<8&&bScore<8){let pThird=null;
     if(pScore<=5){pThird=deck.pop();player.push(pThird);pScore=baccHandTotal(player);}
@@ -10211,7 +10218,7 @@ function hiloMultiplier(){
 function hiloStart(){if(hiloActive)return;const bet=parseFloat(document.getElementById('hiloBet').value)||10;if(bet<=0)return;
   if(!checkMaxBet(bet,'Hi-Lo'))return;
   if(bet>balance){showToast('Not enough balance!',false);return;}
-  hiloBetAmt=bet;balance-=bet;updateBalDisplay();hiloActive=true;hiloStreakCount=0;hiloSkipCount=0;hiloDeck=newDeck();hiloCard=hiloDeck.pop();hiloRender();
+  hiloBetAmt=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();hiloActive=true;hiloStreakCount=0;hiloSkipCount=0;hiloDeck=newDeck();hiloCard=hiloDeck.pop();hiloRender();
   document.getElementById('hiloStartBtn').style.display='none';document.getElementById('hiloCashoutBtn').style.display='';playClickSound();
 }
 function hiloCashout(){if(!hiloActive||hiloStreakCount===0)return;const p=hiloBetAmt*hiloMultiplier();balance+=p;updateBalDisplay();
@@ -10509,7 +10516,7 @@ function bsrStartGame() {
   const bet = parseFloat(document.getElementById('bsrBet').value) || 100;
   if (bet <= 0) { showToast('Bet must be positive!', false); return; }
   if (bet > balance) { showToast('Not enough balance!', false); return; }
-  balance -= bet; updateBalDisplay();
+  balance -= bet; updateBalDisplay();firebaseSaveBet();
   playClickSound();
 
   const diff = BSR_DIFF[bsrDifficulty];
@@ -11351,7 +11358,7 @@ function rrStartBot() {
   };
 
   balance -= bet;
-  updateBalDisplay();
+  updateBalDisplay();firebaseSaveBet();
 
   document.getElementById('rrBotLobby').style.display = 'none';
   document.getElementById('rrPvpLobby').style.display = 'none';
@@ -11689,7 +11696,7 @@ async function rrStartPvP() {
     await window._fbSet('casino/rrGames/' + gameId, gameData);
     
     balance -= bet;
-    updateBalDisplay();
+    updateBalDisplay();firebaseSaveBet();
     
     const notifKey = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
     await window._fbSet('casino/players/' + opUid + '/notifications/' + notifKey, {
@@ -11731,7 +11738,7 @@ async function rrAcceptPvPChallenge(gameId, bet) {
   if (!checkMaxBet(bet, 'russianr')) return;
   
   balance -= bet;
-  updateBalDisplay();
+  updateBalDisplay();firebaseSaveBet();
   
   const chambers = [0, 0, 0, 0, 0, 0];
   chambers[Math.floor(Math.random() * 6)] = 1;
@@ -12009,7 +12016,7 @@ async function mpbsrChallenge() {
     });
     
     balance -= bet;
-    updateBalDisplay();
+    updateBalDisplay();firebaseSaveBet();
     
     const nk = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
     await window._fbSet('casino/players/' + opUid + '/notifications/' + nk, {
@@ -12055,7 +12062,7 @@ function mpbsrCancelChallenge(gameId, bet) {
 async function mpbsrAccept(gameId, bet) {
   if (!checkMaxBet(bet, 'mpbsr')) return;
   balance -= bet;
-  updateBalDisplay();
+  updateBalDisplay();firebaseSaveBet();
   
   await window._fbUpdate('casino/bsrGames/' + gameId, { status: 'active' });
   
