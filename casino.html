@@ -1263,7 +1263,9 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .event-chat-send:hover{transform:scale(1.05);box-shadow:0 0 15px rgba(0,255,136,.3);}
 .event-chat-msg{display:flex;gap:8px;align-items:flex-start;animation:chatMsgIn .3s ease-out;}
 @keyframes chatMsgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.event-chat-msg.admin-msg{background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,0,68,.05));border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:10px 14px;}
+.event-chat-msg.admin-msg{background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,0,68,.06));border:1px solid rgba(255,215,0,.3);border-radius:12px;padding:12px 16px;box-shadow:0 0 15px rgba(255,215,0,.08);}
+.event-chat-msg.admin-msg .ecm-user{font-size:14px;}
+.event-chat-msg.admin-msg .ecm-text{font-size:16px;font-weight:600;}
 .event-chat-msg.system-msg{background:linear-gradient(135deg,rgba(0,255,136,.05),rgba(0,200,255,.05));border:1px solid rgba(0,255,136,.2);border-radius:10px;padding:10px 14px;}
 .event-chat-msg .ecm-user{font-weight:700;font-size:12px;color:var(--gold);}
 .event-chat-msg .ecm-text{font-size:13px;color:var(--text);line-height:1.4;}
@@ -13860,9 +13862,21 @@ setTimeout(initLimitedCases, 1000);
         <div class="ea-icon">💀</div>
         <div><div class="ea-label" style="color:#ff6666;">Admin Tax 50%</div><div class="ea-desc">Take half of everyone's money</div></div>
       </div>
-      <div class="event-action-btn" onclick="eventAction('fakereset')">
+      <div class="event-action-btn" onclick="eventAction('fakereset1')">
         <div class="ea-icon">☢️</div>
-        <div><div class="ea-label" style="color:#ff0000;font-weight:900;">FAKE RESET PRANK</div><div class="ea-desc">Countdown "resetting all money" then says JK</div></div>
+        <div><div class="ea-label" style="color:#ff0000;font-weight:900;">Fake Reset #1</div><div class="ea-desc">Countdown then JK</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('fakereset2')">
+        <div class="ea-icon">⚠️</div>
+        <div><div class="ea-label" style="color:#ff4400;font-weight:900;">Fake Reset #2</div><div class="ea-desc">"OK actually resetting..." then JK</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('fakereset3')">
+        <div class="ea-icon">🔌</div>
+        <div><div class="ea-label" style="color:#ff6600;font-weight:900;">Fake Reset #3</div><div class="ea-desc">"Server maintenance" shutdown prank</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('giveprestige')">
+        <div class="ea-icon">👑</div>
+        <div><div class="ea-label" style="color:#ffd700;font-weight:900;">Give Prestige +1</div><div class="ea-desc">Give everyone +1 prestige level</div></div>
       </div>
       <div class="event-action-btn" onclick="eventAction('announce')">
         <div class="ea-icon">📢</div>
@@ -14288,31 +14302,68 @@ function showResetAnimation() {
   setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 3000);
 }
 
-function showFakeResetAnimation() {
+function showFakeResetAnimation(variant) {
   const overlay = document.createElement('div');
   overlay.className = 'fakereset-overlay';
-  overlay.innerHTML = '<div class="fakereset-title">☢️ RESETTING ALL BALANCES ☢️</div><div class="fakereset-countdown" id="fakeResetNum">3</div>';
-  document.body.appendChild(overlay);
-  try { playSound(200, 'sawtooth', 0.06, 0.3); } catch(e) {}
-  const numEl = overlay.querySelector('.fakereset-countdown');
-  // Shake the whole screen
-  document.body.style.animation = 'abuseViolentShake 0.3s ease-in-out infinite';
-  setTimeout(() => {
-    if (numEl) numEl.textContent = '2';
-    try { playSound(250, 'sawtooth', 0.06, 0.3); } catch(e) {}
-  }, 1200);
-  setTimeout(() => {
-    if (numEl) numEl.textContent = '1';
-    try { playSound(300, 'sawtooth', 0.06, 0.3); } catch(e) {}
-  }, 2400);
-  setTimeout(() => {
-    // JK reveal
-    document.body.style.animation = '';
-    overlay.innerHTML = '<div class="fakereset-jk">JK 😂</div><div class="fakereset-sub">Your money is safe... for now</div>';
-    overlay.style.background = 'rgba(0,0,0,.92)';
-    try { playSound(600, 'sine', 0.05, 0.2); setTimeout(() => playSound(800, 'sine', 0.06, 0.3), 200); } catch(e) {}
-  }, 3600);
-  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 6500);
+
+  if (variant === 2) {
+    // Variant 2: "OK actually resetting" - double fake-out
+    overlay.innerHTML = '<div class="fakereset-title">OK ACTUALLY RESETTING YOUR MONEY</div><div class="fakereset-countdown" id="fakeResetNum">5</div>';
+    document.body.appendChild(overlay);
+    document.body.style.animation = 'abuseViolentShake 0.3s ease-in-out infinite';
+    try { playSound(150, 'sawtooth', 0.06, 0.4); } catch(e) {}
+    const numEl = overlay.querySelector('.fakereset-countdown');
+    setTimeout(() => { if (numEl) numEl.textContent = '4'; try { playSound(180, 'sawtooth', 0.06, 0.3); } catch(e) {} }, 1000);
+    setTimeout(() => { if (numEl) numEl.textContent = '3'; try { playSound(210, 'sawtooth', 0.06, 0.3); } catch(e) {} }, 2000);
+    setTimeout(() => { if (numEl) numEl.textContent = '2'; try { playSound(250, 'sawtooth', 0.06, 0.3); } catch(e) {} }, 3000);
+    setTimeout(() => { if (numEl) numEl.textContent = '1'; try { playSound(300, 'sawtooth', 0.08, 0.3); } catch(e) {} }, 4000);
+    setTimeout(() => {
+      overlay.innerHTML = '<div class="fakereset-title" style="color:#ff4444;">DELETING ALL DATA...</div><div class="fakereset-countdown" style="font-size:clamp(20px,5vw,40px);color:#ff6666;">please wait</div>';
+      try { playSound(100, 'square', 0.06, 0.5); } catch(e) {}
+    }, 5000);
+    setTimeout(() => {
+      document.body.style.animation = '';
+      overlay.innerHTML = '<div class="fakereset-jk">JK</div><div class="fakereset-sub">relax your money is fine</div>';
+      overlay.style.background = 'rgba(0,0,0,.92)';
+      try { playSound(600, 'sine', 0.05, 0.2); setTimeout(() => playSound(800, 'sine', 0.06, 0.3), 200); } catch(e) {}
+    }, 6500);
+    setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 9500);
+  } else if (variant === 3) {
+    // Variant 3: "Server maintenance" shutdown
+    overlay.innerHTML = '<div class="fakereset-title" style="color:#ff8800;">SERVER MAINTENANCE</div><div class="fakereset-countdown" style="font-size:clamp(14px,3.5vw,24px);color:#ffaa44;">Shutting down in...</div>';
+    document.body.appendChild(overlay);
+    try { playSound(300, 'sine', 0.04, 0.3); } catch(e) {}
+    const numEl = overlay.querySelector('.fakereset-countdown');
+    setTimeout(() => { if (numEl) numEl.textContent = 'Saving player data...'; try { playSound(250, 'sine', 0.03, 0.2); } catch(e) {} }, 1500);
+    setTimeout(() => { if (numEl) numEl.textContent = 'Clearing sessions...'; }, 3000);
+    setTimeout(() => {
+      overlay.style.background = '#000';
+      overlay.innerHTML = '<div class="fakereset-countdown" style="font-size:clamp(16px,4vw,28px);color:#666;">Connection lost.</div>';
+      try { playSound(80, 'sine', 0.05, 0.6); } catch(e) {}
+    }, 4500);
+    setTimeout(() => {
+      overlay.innerHTML = '<div class="fakereset-jk">JK</div><div class="fakereset-sub">server is fine, you got pranked</div>';
+      overlay.style.background = 'rgba(0,0,0,.92)';
+      try { playSound(600, 'sine', 0.05, 0.2); setTimeout(() => playSound(800, 'sine', 0.06, 0.3), 200); } catch(e) {}
+    }, 6000);
+    setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 9000);
+  } else {
+    // Variant 1: Original countdown
+    overlay.innerHTML = '<div class="fakereset-title">RESETTING ALL BALANCES</div><div class="fakereset-countdown" id="fakeResetNum">3</div>';
+    document.body.appendChild(overlay);
+    try { playSound(200, 'sawtooth', 0.06, 0.3); } catch(e) {}
+    const numEl = overlay.querySelector('.fakereset-countdown');
+    document.body.style.animation = 'abuseViolentShake 0.3s ease-in-out infinite';
+    setTimeout(() => { if (numEl) numEl.textContent = '2'; try { playSound(250, 'sawtooth', 0.06, 0.3); } catch(e) {} }, 1200);
+    setTimeout(() => { if (numEl) numEl.textContent = '1'; try { playSound(300, 'sawtooth', 0.06, 0.3); } catch(e) {} }, 2400);
+    setTimeout(() => {
+      document.body.style.animation = '';
+      overlay.innerHTML = '<div class="fakereset-jk">JK</div><div class="fakereset-sub">your money is safe</div>';
+      overlay.style.background = 'rgba(0,0,0,.92)';
+      try { playSound(600, 'sine', 0.05, 0.2); setTimeout(() => playSound(800, 'sine', 0.06, 0.3), 200); } catch(e) {}
+    }, 3600);
+    setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 6500);
+  }
 }
 
 // ─── ANIMATION FUNCTIONS (Jackpot, CoinFlip, Tax) ───
@@ -14555,12 +14606,42 @@ async function eventAction(type) {
       time: now, isAdmin: true, isSystem: true
     });
   }
-  else if (type === 'fakereset') {
-    await window._fbSet('casino/admin/action', { type: 'fakereset', time: now, by: window._currentUsername });
-    showFakeResetAnimation();
+  else if (type === 'fakereset1') {
+    await window._fbSet('casino/admin/action', { type: 'fakereset', variant: 1, time: now, by: window._currentUsername });
+    showFakeResetAnimation(1);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
-      user: 'SYSTEM', text: '☢️ ' + (window._currentUsername || 'Admin') + ' is resetting everyone\'s money...',
+      user: 'SYSTEM', text: '☢️ Resetting all balances...',
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type === 'fakereset2') {
+    await window._fbSet('casino/admin/action', { type: 'fakereset', variant: 2, time: now, by: window._currentUsername });
+    showFakeResetAnimation(2);
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '⚠️ OK actually resetting everyone\'s money this time...',
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type === 'fakereset3') {
+    await window._fbSet('casino/admin/action', { type: 'fakereset', variant: 3, time: now, by: window._currentUsername });
+    showFakeResetAnimation(3);
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '🔌 Server going down for maintenance...',
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type === 'giveprestige') {
+    await window._fbSet('casino/admin/action', { type: 'giveprestige', time: now, by: window._currentUsername });
+    prestigeLevel += 1;
+    if (window._loadPrestige) window._loadPrestige(prestigeLevel);
+    firebaseSaveNow();
+    showToast('Prestige +1! Now P' + prestigeLevel, true);
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '👑 ' + (window._currentUsername || 'Admin') + ' gave everyone +1 prestige!',
       time: now, isAdmin: true, isSystem: true
     });
   }
@@ -14699,7 +14780,12 @@ function startAdminListeners() {
       showResetAnimation();
       showToast('☢️ All balances have been reset to $1,000', false);
     } else if (d.type === 'fakereset') {
-      showFakeResetAnimation();
+      showFakeResetAnimation(d.variant || 1);
+    } else if (d.type === 'giveprestige') {
+      prestigeLevel += 1;
+      if (window._loadPrestige) window._loadPrestige(prestigeLevel);
+      firebaseSaveNow();
+      showToast('👑 Prestige +1! Now P' + prestigeLevel, true);
     }
   }));
 
