@@ -1330,6 +1330,14 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .coinflip-coin{width:clamp(80px,20vw,160px);height:clamp(80px,20vw,160px);border-radius:50%;background:linear-gradient(135deg,#ffd700,#ffaa00);border:4px solid #cc8800;display:flex;align-items:center;justify-content:center;font-size:clamp(40px,10vw,80px);animation:coinFlipSpin 3s cubic-bezier(.2,.8,.3,1) forwards;box-shadow:0 0 40px rgba(255,215,0,.4);}
 .coinflip-result{font-family:'Orbitron';font-size:clamp(24px,6vw,56px);font-weight:900;margin-top:20px;letter-spacing:3px;animation:doubleExplode 3s ease-out 3s forwards;opacity:0;}
 
+/* Prestige Animation */
+@keyframes prestigeReveal{0%{opacity:0;transform:scale(0) rotate(-15deg);filter:blur(15px)}40%{opacity:1;transform:scale(1.2) rotate(3deg);filter:blur(0)}60%{transform:scale(.9) rotate(-1deg)}80%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes prestigeShine{0%{background-position:-200% center}100%{background-position:200% center}}
+.prestige-anim-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none;background:radial-gradient(circle,rgba(255,215,0,.1) 0%,transparent 60%);}
+.prestige-anim-crown{font-size:clamp(60px,15vw,120px);animation:prestigeReveal .8s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 0 30px rgba(255,215,0,.6));}
+.prestige-anim-text{font-family:'Orbitron';font-size:clamp(28px,7vw,64px);font-weight:900;color:#ffd700;text-shadow:0 0 40px rgba(255,215,0,.6),0 0 80px rgba(255,215,0,.3);margin-top:16px;animation:prestigeReveal .8s cubic-bezier(.2,.8,.2,1) .3s both;letter-spacing:4px;}
+.prestige-anim-level{font-family:'Orbitron';font-size:clamp(14px,3vw,24px);font-weight:700;margin-top:10px;letter-spacing:6px;background:linear-gradient(90deg,#ffd700,#fff,#ffd700);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:prestigeReveal .8s cubic-bezier(.2,.8,.2,1) .5s both,prestigeShine 2s linear infinite .8s;}
+
 
 
 @media(max-width:600px){
@@ -14398,6 +14406,24 @@ function showTaxAnimation(taxed) {
   setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 3500);
 }
 
+function showPrestigeAnimation(level) {
+  const overlay = document.createElement('div');
+  overlay.className = 'prestige-anim-overlay';
+  const names = ['Bronze','Silver','Gold','Diamond','Legendary'];
+  const name = level <= names.length ? names[level - 1] : 'P' + level;
+  overlay.innerHTML = '<div class="prestige-anim-crown">\u{1F451}</div>' +
+    '<div class="prestige-anim-text">PRESTIGE UP</div>' +
+    '<div class="prestige-anim-level">' + name.toUpperCase() + ' (P' + level + ')</div>';
+  document.body.appendChild(overlay);
+  try {
+    playSound(500, 'sine', 0.05, 0.15);
+    setTimeout(() => playSound(700, 'sine', 0.05, 0.15), 150);
+    setTimeout(() => playSound(900, 'sine', 0.06, 0.2), 300);
+    setTimeout(() => playSound(1200, 'sine', 0.06, 0.3), 500);
+  } catch(e) {}
+  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 4500);
+}
+
 // ─── QUICK ACTIONS (from admin panel) ───
 async function adminDoubleAll() {
   if (!adminIsStaff()) return;
@@ -14638,6 +14664,7 @@ async function eventAction(type) {
     prestigeLevel += 1;
     if (window._loadPrestige) window._loadPrestige(prestigeLevel);
     firebaseSaveNow();
+    showPrestigeAnimation(prestigeLevel);
     showToast('Prestige +1! Now P' + prestigeLevel, true);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
@@ -14676,8 +14703,10 @@ async function eventAction(type) {
       time: now, isAdmin: true, isSystem: true
     });
     setTimeout(async () => {
-      await window._fbUpdate('casino/admin/event', { status: 'ended' });
-      await window._fbRemove('casino/admin/eventPresence');
+      // Fully remove event data so new browsers never see it
+      await window._fbRemove('casino/admin/event').catch(()=>{});
+      await window._fbRemove('casino/admin/eventPresence').catch(()=>{});
+      await window._fbRemove('casino/admin/eventChat').catch(()=>{});
       // Clean up stale admin data so new browsers don't see old polls/announcements
       await window._fbRemove('casino/admin/poll').catch(()=>{});
       await window._fbRemove('casino/admin/announcement').catch(()=>{});
@@ -14785,17 +14814,18 @@ function startAdminListeners() {
       prestigeLevel += 1;
       if (window._loadPrestige) window._loadPrestige(prestigeLevel);
       firebaseSaveNow();
-      showToast('👑 Prestige +1! Now P' + prestigeLevel, true);
+      showPrestigeAnimation(prestigeLevel);
+      showToast('Prestige +1! Now P' + prestigeLevel, true);
     }
   }));
 
   // Event listener
   _adminUnsubs.push(window._fbOnValue('casino/admin/event', snap => {
     const d = snap.val();
-    if (!d) return;
+    if (!d || !d.status || !d.time) { hideEventOverlay(); return; }
     if (d.status === 'active' && Date.now() - d.time < 3600000) {
       showEventOverlay(d);
-    } else if (d.status === 'ended') {
+    } else {
       hideEventOverlay();
     }
   }));
