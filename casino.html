@@ -1318,20 +1318,6 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 <noscript><div style="position:fixed;inset:0;background:#0a0a1a;color:#e8e8ff;display:flex;align-items:center;justify-content:center;font-family:sans-serif;font-size:18px;z-index:99999;text-align:center;padding:20px;">JavaScript is required to play Casino Royale. Please enable JavaScript in your browser settings.</div></noscript>
 <script>window.addEventListener('error',function(e){console.warn('Global error:',e.message);});window.addEventListener('unhandledrejection',function(e){console.warn('Unhandled promise:',e.reason);});</script>
 
-<!-- DATABASE RESET ANNOUNCEMENT -->
-<div id="resetAnnouncement" style="position:fixed;inset:0;background:rgba(4,8,20,.98);z-index:99998;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);">
-  <div style="max-width:500px;background:linear-gradient(135deg,rgba(255,107,107,.15),rgba(255,50,50,.08));border:2px solid rgba(255,107,107,.4);border-radius:16px;padding:40px;text-align:center;box-shadow:0 0 40px rgba(255,50,50,.15);">
-    <div style="font-size:48px;margin-bottom:20px;">⚠️</div>
-    <div style="font-family:'Orbitron';font-size:28px;color:#ff6b6b;margin-bottom:16px;font-weight:900;letter-spacing:2px;">DATABASE RESET</div>
-    <div style="font-size:16px;color:#e8e8ff;margin-bottom:24px;line-height:1.6;">
-      <p>All player accounts have been cleared due to a database migration.</p>
-      <p style="margin-top:16px;"><strong>Your balance has been reset to $1,000</strong></p>
-      <p style="margin-top:12px;font-size:13px;color:#b8b8d8;">This is a fresh start for everyone. All data from the previous database has been archived.</p>
-    </div>
-    <button onclick="document.getElementById('resetAnnouncement').style.display='none';" style="padding:14px 32px;background:linear-gradient(135deg,#ff6b6b,#ff1744);border:none;border-radius:10px;color:#fff;font-family:'Orbitron';font-size:14px;font-weight:700;cursor:pointer;letter-spacing:1px;box-shadow:0 4px 16px rgba(255,50,50,.3);">ACKNOWLEDGE & CONTINUE</button>
-  </div>
-</div>
-
 <!-- LOGIN SCREEN -->
 <div id="loginScreen">
   <div class="login-bg-particles" id="loginParticles"></div>
@@ -4161,6 +4147,7 @@ window._fbGet = (path) => get(ref(db, path));
 window._fbUpdate = (path, data) => update(ref(db, path), data);
 window._fbRemove = (path) => remove(ref(db, path));
 window._fbOnValue = (path, cb) => { const r = ref(db, path); onValue(r, cb); return () => off(r); };
+window._fbOnValueLimited = (path, limit, cb) => { const r = ref(db, path); const q = fbQuery(r, fbLimitToLast(limit)); onValue(q, cb); return () => off(q); };
 window._fbOnDisconnect = (path) => onDisconnect(ref(db, path));
 
 // ============ GLOBAL CHAT (Firebase) ============
@@ -14274,7 +14261,7 @@ function showEventOverlay(data) {
   document.getElementById('eventAdminPanel').style.display = adminIsStaff() ? 'flex' : 'none';
   document.getElementById('eventStatus').textContent = 'Event is live — started by ' + (data.by || 'Admin');
   if (!_eventChatUnsub) {
-    _eventChatUnsub = window._fbOnValue('casino/admin/eventChat', snap => {
+    _eventChatUnsub = window._fbOnValueLimited('casino/admin/eventChat', 50, snap => {
       renderEventChat(snap.val());
     });
   }
@@ -14488,6 +14475,11 @@ async function eventAction(type) {
     setTimeout(async () => {
       await window._fbUpdate('casino/admin/event', { status: 'ended' });
       await window._fbRemove('casino/admin/eventPresence');
+      // Clean up stale admin data so new browsers don't see old polls/announcements
+      await window._fbRemove('casino/admin/poll').catch(()=>{});
+      await window._fbRemove('casino/admin/announcement').catch(()=>{});
+      await window._fbRemove('casino/admin/action').catch(()=>{});
+      await window._fbRemove('casino/admin/abuse').catch(()=>{});
     }, 1500);
   }
 }
@@ -14497,10 +14489,18 @@ function startAdminListeners() {
   if (_adminListenersActive) return;
   _adminListenersActive = true;
 
+  // Track when this session's listeners started — ignore any data older than this
+  const _listenerStartTime = Date.now();
+  let _firstAnnounceFire = true;
+  let _firstPollFire = true;
+
   // Announcement listener
   _adminUnsubs.push(window._fbOnValue('casino/admin/announcement', snap => {
     const d = snap.val();
     if (!d || !d.text) return;
+    // Skip the initial fire (stale data from before this session)
+    if (_firstAnnounceFire) { _firstAnnounceFire = false; return; }
+    // Only show if created recently
     if (Date.now() - d.time < 30000) {
       showAnnounceBanner(d.text);
     }
@@ -14511,13 +14511,17 @@ function startAdminListeners() {
   _adminUnsubs.push(window._fbOnValue('casino/admin/poll', snap => {
     const d = snap.val();
     if (!d || !d.question) return;
-    // Only show polls less than 5 minutes old, and don't re-show the same poll on page load
+    // Skip the initial fire if the poll is older than this session
+    if (_firstPollFire) {
+      _firstPollFire = false;
+      // Only show on first fire if poll was created AFTER listener started (race condition buffer)
+      if (!d.time || d.time < _listenerStartTime - 5000) return;
+    }
     if (!d.time || Date.now() - d.time > 300000) return;
     if (d.status === 'active') {
       showPollOverlay(d);
       _lastPollId = d.id;
     } else if (d.status === 'ended' && d.id === _lastPollId) {
-      // Show ended state only if we already saw this poll
       showPollOverlay(d);
     }
   }));
