@@ -1150,6 +1150,86 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .chat-msg{position:relative;}
 .chat-msg:hover .mod-chat-admin-btn{display:flex;}
 
+/* ============ ADMIN ABUSE / ANNOUNCEMENTS / POLLS / EVENTS ============ */
+/* Announcement Banner */
+#adminAnnounceBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:99998;background:linear-gradient(135deg,#ff0044,#ff6600,#ffd700);padding:0;overflow:hidden;box-shadow:0 4px 30px rgba(255,0,68,.5);animation:announceBannerSlide .5s ease-out;}
+@keyframes announceBannerSlide{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+.announce-inner{display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 20px;position:relative;}
+.announce-icon{font-size:28px;animation:announcePulse 1s infinite;}
+@keyframes announcePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.announce-text{font-family:'Orbitron',sans-serif;font-size:14px;color:#fff;font-weight:900;letter-spacing:2px;text-shadow:0 2px 8px rgba(0,0,0,.4);text-align:center;flex:1;}
+.announce-close{background:rgba(0,0,0,.3);border:none;color:#fff;font-size:16px;width:30px;height:30px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.announce-close:hover{background:rgba(0,0,0,.5);}
+
+/* Poll Overlay */
+#adminPollOverlay{display:none;position:fixed;inset:0;z-index:99997;background:rgba(0,0,0,.7);align-items:center;justify-content:center;}
+.poll-box{background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:24px;max-width:420px;width:92vw;text-align:center;animation:pollPop .4s cubic-bezier(.17,.67,.35,1.5);}
+@keyframes pollPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.poll-title{font-family:'Orbitron';font-size:16px;color:var(--gold);letter-spacing:2px;margin-bottom:4px;}
+.poll-question{font-size:14px;color:var(--text);margin:12px 0;line-height:1.5;}
+.poll-option{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg);border:2px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;}
+.poll-option:hover{border-color:var(--neon);background:rgba(0,255,136,.05);}
+.poll-option.voted{border-color:var(--green);background:rgba(0,255,136,.1);pointer-events:none;}
+.poll-option-text{flex:1;font-size:13px;font-weight:600;color:var(--text);text-align:left;}
+.poll-option-bar{height:6px;background:var(--border);border-radius:3px;flex:1;overflow:hidden;display:none;}
+.poll-option-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--neon));border-radius:3px;transition:width .5s;}
+.poll-option-pct{font-family:'Orbitron';font-size:11px;color:var(--text2);min-width:40px;text-align:right;display:none;}
+.poll-option.show-results .poll-option-bar{display:block;}
+.poll-option.show-results .poll-option-pct{display:block;}
+.poll-total{font-size:11px;color:var(--text2);margin-top:8px;}
+.poll-close-btn{margin-top:12px;padding:8px 20px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-size:11px;}
+
+/* Admin Abuse Fullscreen */
+#adminAbuseOverlay{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.95);align-items:center;justify-content:center;flex-direction:column;}
+@keyframes abuseShake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-10px)}20%,40%,60%,80%{transform:translateX(10px)}}
+@keyframes abuseGlow{0%,100%{text-shadow:0 0 20px #ff0000,0 0 40px #ff0000}50%{text-shadow:0 0 40px #ff6600,0 0 80px #ff6600,0 0 120px #ff0000}}
+.abuse-title{font-family:'Orbitron';font-size:clamp(28px,8vw,72px);color:#ff0000;font-weight:900;letter-spacing:8px;animation:abuseGlow 1s infinite,abuseShake .3s 3;text-align:center;line-height:1.2;}
+.abuse-subtitle{font-family:'Orbitron';font-size:clamp(12px,3vw,20px);color:#ff6600;letter-spacing:4px;margin-top:16px;animation:abuseGlow 1.5s infinite;}
+.abuse-emoji{font-size:clamp(40px,10vw,80px);animation:announcePulse 0.5s infinite;margin:20px 0;}
+
+/* Event Overlay */
+#adminEventOverlay{display:none;position:fixed;inset:0;z-index:99998;background:rgba(4,8,20,.97);flex-direction:column;}
+.event-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,0,68,.1));border-bottom:2px solid var(--gold);flex-shrink:0;}
+.event-title{font-family:'Orbitron';font-size:18px;color:var(--gold);letter-spacing:3px;}
+.event-close-btn{padding:8px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:'Orbitron';font-size:11px;}
+.event-body{flex:1;display:flex;overflow:hidden;}
+.event-chat-area{flex:1;display:flex;flex-direction:column;border-right:2px solid var(--border);}
+.event-chat-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px;}
+.event-chat-input-wrap{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border);background:var(--surface);}
+.event-chat-input{flex:1;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;}
+.event-chat-input:focus{border-color:var(--neon);}
+.event-chat-send{padding:10px 20px;background:linear-gradient(135deg,var(--green),#00cc88);border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer;font-size:12px;}
+.event-chat-msg{display:flex;gap:8px;align-items:flex-start;}
+.event-chat-msg.admin-msg{background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,0,68,.05));border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:10px 14px;}
+.event-chat-msg .ecm-user{font-weight:700;font-size:12px;color:var(--gold);}
+.event-chat-msg .ecm-text{font-size:13px;color:var(--text);line-height:1.4;}
+.event-chat-msg .ecm-time{font-size:9px;color:var(--text2);}
+.event-admin-panel{width:320px;display:flex;flex-direction:column;background:var(--surface);overflow-y:auto;flex-shrink:0;}
+.event-admin-title{font-family:'Orbitron';font-size:12px;color:var(--red);letter-spacing:2px;padding:14px 16px;border-bottom:1px solid var(--border);text-align:center;}
+.event-action-btn{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin:6px 10px;cursor:pointer;transition:all .2s;color:var(--text);font-size:12px;font-weight:600;}
+.event-action-btn:hover{border-color:var(--gold);background:rgba(255,215,0,.05);}
+.event-action-btn .ea-icon{font-size:22px;}
+.event-action-btn .ea-label{flex:1;}
+.event-action-btn .ea-desc{font-size:9px;color:var(--text2);font-weight:400;}
+.event-status{padding:10px 16px;font-size:11px;color:var(--text2);text-align:center;border-top:1px solid var(--border);margin-top:auto;}
+
+/* Money Rain Animation */
+@keyframes moneyFall{0%{transform:translateY(-100vh) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+.money-rain{position:fixed;inset:0;pointer-events:none;z-index:99996;overflow:hidden;}
+.money-bill{position:absolute;font-size:28px;animation:moneyFall linear forwards;}
+
+/* 2x multiplier fullscreen flash */
+@keyframes doubleFlash{0%{opacity:0;transform:scale(.3)}30%{opacity:1;transform:scale(1.1)}50%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1.5)}}
+.double-money-overlay{position:fixed;inset:0;z-index:99996;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none;}
+.double-money-text{font-family:'Orbitron';font-size:clamp(32px,10vw,80px);font-weight:900;color:#ffd700;text-shadow:0 0 40px rgba(255,215,0,.6),0 0 80px rgba(255,215,0,.3);animation:doubleFlash 2.5s ease-out forwards;}
+.double-money-sub{font-family:'Orbitron';font-size:clamp(14px,4vw,24px);color:#fff;letter-spacing:4px;margin-top:8px;animation:doubleFlash 2.5s ease-out .3s forwards;opacity:0;}
+
+@media(max-width:600px){
+  .event-body{flex-direction:column;}
+  .event-admin-panel{width:100%;max-height:200px;border-right:none;border-top:2px solid var(--border);}
+  .event-chat-area{border-right:none;}
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -2530,7 +2610,8 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
     <!-- Admin Panel (mojheh only) -->
     <div id="adminPanel" style="display:none;margin-top:16px;padding:16px;background:linear-gradient(135deg,rgba(255,0,0,.05),rgba(255,136,0,.05));border:2px solid rgba(255,0,0,.3);border-radius:12px;text-align:center;">
       <div style="font-family:'Orbitron';font-size:13px;color:var(--red);letter-spacing:2px;margin-bottom:12px;">⚙️ ADMIN PANEL</div>
-      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;">
+      <!-- Give Money -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;">
         <div style="font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:8px;">GIVE MONEY TO PLAYER</div>
         <div style="display:flex;gap:6px;">
           <input type="text" id="adminUsername" placeholder="Username" style="flex:1;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;">
@@ -2538,14 +2619,55 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
           <button onclick="adminGiveMoney()" style="padding:8px 12px;background:linear-gradient(135deg,#ff6600,#ff3300);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:11px;">GIVE</button>
         </div>
       </div>
-      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;">
+      <!-- Set Balance -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;">
         <div style="font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:8px;">SET OWN BALANCE</div>
         <div style="display:flex;gap:6px;">
           <input type="number" id="adminSelfBalance" placeholder="New balance" style="flex:1;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;">
           <button onclick="adminSetSelfBalance()" style="padding:8px 12px;background:linear-gradient(135deg,#ff9900,#ff6600);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:11px;">SET</button>
         </div>
       </div>
-      <div style="margin-top:12px;">
+      <!-- Announcement -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;">
+        <div style="font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:8px;">📢 ANNOUNCEMENT</div>
+        <div style="display:flex;gap:6px;">
+          <input type="text" id="adminAnnounceInput" placeholder="Announcement message..." style="flex:1;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;" maxlength="200">
+          <button onclick="adminSendAnnouncement()" style="padding:8px 12px;background:linear-gradient(135deg,#ff0044,#ff6600);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:11px;">SEND</button>
+        </div>
+      </div>
+      <!-- Poll -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;">
+        <div style="font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:8px;">📊 CREATE POLL</div>
+        <input type="text" id="adminPollQuestion" placeholder="Poll question..." style="width:100%;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;margin-bottom:6px;box-sizing:border-box;">
+        <div id="adminPollOptions">
+          <input type="text" class="admin-poll-opt" placeholder="Option 1" style="width:100%;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;margin-bottom:4px;box-sizing:border-box;">
+          <input type="text" class="admin-poll-opt" placeholder="Option 2" style="width:100%;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;margin-bottom:4px;box-sizing:border-box;">
+        </div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button onclick="adminAddPollOption()" style="flex:1;padding:6px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text2);cursor:pointer;font-size:10px;">+ ADD OPTION</button>
+          <button onclick="adminSendPoll()" style="flex:1;padding:6px;background:linear-gradient(135deg,#4444ff,#6644ff);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">SEND POLL</button>
+          <button onclick="adminEndPoll()" style="flex:1;padding:6px;background:linear-gradient(135deg,#ff4444,#ff0000);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">END POLL</button>
+        </div>
+      </div>
+      <!-- Admin Abuse + Events -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <button onclick="adminTriggerAbuse()" style="padding:12px;background:linear-gradient(135deg,#ff0000,#ff0066);border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:900;font-size:12px;font-family:'Orbitron';letter-spacing:1px;">⚡ ADMIN ABUSE</button>
+        <button onclick="adminStartEvent()" style="padding:12px;background:linear-gradient(135deg,#ffd700,#ff8800);border:none;border-radius:8px;color:#000;cursor:pointer;font-weight:900;font-size:12px;font-family:'Orbitron';letter-spacing:1px;">🎉 START EVENT</button>
+      </div>
+      <!-- Quick Actions -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;">
+        <div style="font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:8px;">⚡ QUICK ACTIONS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <button onclick="adminDoubleAll()" style="padding:8px;background:linear-gradient(135deg,#00cc88,#00ff88);border:none;border-radius:6px;color:#000;cursor:pointer;font-weight:700;font-size:10px;">💰 2X ALL MONEY</button>
+          <button onclick="adminRainMoney(50)" style="padding:8px;background:linear-gradient(135deg,#44aaff,#0066ff);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🌧️ MONEY RAIN $50</button>
+          <button onclick="adminRainMoney(500)" style="padding:8px;background:linear-gradient(135deg,#6644ff,#4400ff);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🌧️ MONEY RAIN $500</button>
+          <button onclick="adminRainMoney(5000)" style="padding:8px;background:linear-gradient(135deg,#ff4444,#ff0000);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🌧️ MONEY RAIN $5K</button>
+          <button onclick="adminResetAll()" style="padding:8px;background:linear-gradient(135deg,#ff0000,#880000);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">☢️ RESET ALL BAL</button>
+          <button onclick="adminClearChat()" style="padding:8px;background:linear-gradient(135deg,#ff6600,#ff3300);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🧹 CLEAR CHAT</button>
+        </div>
+      </div>
+      <!-- Mod Panel Button -->
+      <div>
         <button onclick="modOpenPanel()" style="width:100%;padding:10px;background:linear-gradient(135deg,#ff0000,#ff6600);border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:900;font-size:12px;font-family:'Orbitron';letter-spacing:1px;">🛡️ MODERATION PANEL</button>
       </div>
     </div>
@@ -4431,6 +4553,7 @@ function switchLB(category, btn) {
   document.querySelectorAll('.lb-tab').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   loadLeaderboard(category);
+  // Restart auto-refresh for new category
   startLBAutoRefresh();
 }
 
@@ -7380,6 +7503,15 @@ function spinRoulette(){
       rouletteAngle=cur%(Math.PI*2);
       rouletteSpinning=false;
       document.getElementById('roulSpinBtn').disabled=false;
+
+      // Read back which slice the pointer (top, -PI/2) is actually over
+      const pointerAngle=((-Math.PI/2-rouletteAngle)%(Math.PI*2)+Math.PI*4)%(Math.PI*2);
+      const visualIdx=Math.floor(pointerAngle/sliceAngle)%n;
+      const visualNum=ROUL_NUMS[visualIdx];
+      // Use the visual number for display (should match winNum, but this guarantees it)
+      const fNum=visualNum;
+      const fRed=RED_NUMS.has(fNum);
+      const fGreen=fNum===0;
 
       // Use predetermined result (winNum) for payout, not visual readback
       const colorLabel=isActuallyGreen?'💚 Green':(isActuallyRed?'🔴 Red':'⚫ Black');
@@ -13496,6 +13628,596 @@ function cryptoSellAll(coinId) {
 
 // Init limited cases on load
 setTimeout(initLimitedCases, 1000);
+</script>
+
+<!-- ============ ADMIN ABUSE OVERLAYS ============ -->
+<!-- Announcement Banner (shown to all) -->
+<div id="adminAnnounceBanner">
+  <div class="announce-inner">
+    <div class="announce-icon">📢</div>
+    <div class="announce-text" id="announceText">Announcement here</div>
+    <button class="announce-close" onclick="dismissAnnouncement()">✕</button>
+  </div>
+</div>
+
+<!-- Poll Overlay (shown to all) -->
+<div id="adminPollOverlay">
+  <div class="poll-box">
+    <div class="poll-title">📊 POLL</div>
+    <div class="poll-question" id="pollQuestion">Question?</div>
+    <div id="pollOptionsContainer"></div>
+    <div class="poll-total" id="pollTotalVotes">0 votes</div>
+    <button class="poll-close-btn" onclick="closePollOverlay()">CLOSE</button>
+  </div>
+</div>
+
+<!-- Admin Abuse Fullscreen -->
+<div id="adminAbuseOverlay" onclick="closeAdminAbuse()">
+  <div class="abuse-emoji">⚡</div>
+  <div class="abuse-title">ADMIN ABUSE!!!</div>
+  <div class="abuse-subtitle">THE ADMIN IS ABUSING THEIR POWER</div>
+  <div class="abuse-emoji">🔥💀🔥</div>
+</div>
+
+<!-- Event Overlay (fullscreen with chat) -->
+<div id="adminEventOverlay">
+  <div class="event-header">
+    <div class="event-title" id="eventTitle">🎉 CASINO EVENT</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:11px;color:var(--text2);" id="eventOnlineCount"></span>
+      <button class="event-close-btn" onclick="leaveEvent()">LEAVE</button>
+    </div>
+  </div>
+  <div class="event-body">
+    <div class="event-chat-area">
+      <div class="event-chat-msgs" id="eventChatMsgs"></div>
+      <div class="event-chat-input-wrap">
+        <input class="event-chat-input" id="eventChatInput" placeholder="Type in event chat..." maxlength="200" autocomplete="off">
+        <button class="event-chat-send" onclick="sendEventChat()">SEND</button>
+      </div>
+    </div>
+    <div class="event-admin-panel" id="eventAdminPanel" style="display:none;">
+      <div class="event-admin-title">🔧 ADMIN CONTROLS</div>
+      <div class="event-action-btn" onclick="eventAction('double')">
+        <div class="ea-icon">💰</div>
+        <div><div class="ea-label">2X Everyone's Money</div><div class="ea-desc">Double all connected players' balance</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('rain50')">
+        <div class="ea-icon">🌧️</div>
+        <div><div class="ea-label">Money Rain $50</div><div class="ea-desc">Give everyone $50</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('rain500')">
+        <div class="ea-icon">💸</div>
+        <div><div class="ea-label">Money Rain $500</div><div class="ea-desc">Give everyone $500</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('rain5000')">
+        <div class="ea-icon">🤑</div>
+        <div><div class="ea-label">Money Rain $5,000</div><div class="ea-desc">Give everyone $5,000</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('abuse')">
+        <div class="ea-icon">⚡</div>
+        <div><div class="ea-label">Admin Abuse!!!</div><div class="ea-desc">Show abuse screen to everyone</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('announce')">
+        <div class="ea-icon">📢</div>
+        <div><div class="ea-label">Quick Announce</div><div class="ea-desc">Flash an announcement to everyone</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('poll')">
+        <div class="ea-icon">📊</div>
+        <div><div class="ea-label">Quick Poll</div><div class="ea-desc">Yes/No poll for everyone</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('endEvent')" style="border-color:rgba(255,50,50,.3);">
+        <div class="ea-icon">🚪</div>
+        <div><div class="ea-label" style="color:var(--red);">End Event</div><div class="ea-desc">Close event for everyone</div></div>
+      </div>
+      <div class="event-status" id="eventStatus">Event is live</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ ADMIN ABUSE SYSTEM ============
+// Firebase paths:
+//   casino/admin/announcement  -> { text, time, by }
+//   casino/admin/poll          -> { question, options: [...], votes: { optIdx: { uid: true } }, status: 'active'|'ended', time, by }
+//   casino/admin/abuse         -> { time, by }
+//   casino/admin/event         -> { title, status: 'active'|'ended', time, by }
+//   casino/admin/eventChat     -> { msgId: { user, text, time, isAdmin } }
+//   casino/admin/action        -> { type, amount, time, by }
+
+let _adminListenersActive = false;
+let _adminUnsubs = [];
+let _eventChatUnsub = null;
+let _currentPollId = null;
+let _myPollVote = null;
+
+function adminIsStaff() {
+  const n = (window._currentUsername || '').toLowerCase();
+  return ['mojheh','terpez'].includes(n);
+}
+
+// ─── ANNOUNCEMENT ───
+async function adminSendAnnouncement() {
+  if (!adminIsStaff()) return;
+  const msg = document.getElementById('adminAnnounceInput').value.trim();
+  if (!msg) { showToast('Type a message!', false); return; }
+  await window._fbSet('casino/admin/announcement', {
+    text: msg, time: Date.now(), by: window._currentUsername || 'Admin'
+  });
+  document.getElementById('adminAnnounceInput').value = '';
+  showToast('Announcement sent!', true);
+}
+
+function showAnnounceBanner(text) {
+  const el = document.getElementById('adminAnnounceBanner');
+  document.getElementById('announceText').textContent = text;
+  el.style.display = 'block';
+  el.style.animation = 'none'; el.offsetHeight; el.style.animation = 'announceBannerSlide .5s ease-out';
+  // Auto-dismiss after 15s
+  clearTimeout(window._announceDismissTimer);
+  window._announceDismissTimer = setTimeout(() => dismissAnnouncement(), 15000);
+}
+
+function dismissAnnouncement() {
+  document.getElementById('adminAnnounceBanner').style.display = 'none';
+  clearTimeout(window._announceDismissTimer);
+}
+
+// ─── POLL ───
+function adminAddPollOption() {
+  const container = document.getElementById('adminPollOptions');
+  if (container.querySelectorAll('.admin-poll-opt').length >= 6) { showToast('Max 6 options!', false); return; }
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.className = 'admin-poll-opt';
+  inp.placeholder = 'Option ' + (container.querySelectorAll('.admin-poll-opt').length + 1);
+  inp.style.cssText = 'width:100%;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;margin-bottom:4px;box-sizing:border-box;';
+  container.appendChild(inp);
+}
+
+async function adminSendPoll() {
+  if (!adminIsStaff()) return;
+  const q = document.getElementById('adminPollQuestion').value.trim();
+  if (!q) { showToast('Enter a question!', false); return; }
+  const opts = [];
+  document.querySelectorAll('.admin-poll-opt').forEach(inp => {
+    const v = inp.value.trim();
+    if (v) opts.push(v);
+  });
+  if (opts.length < 2) { showToast('Need at least 2 options!', false); return; }
+  const pollId = Date.now().toString(36);
+  await window._fbSet('casino/admin/poll', {
+    id: pollId, question: q, options: opts, votes: {}, status: 'active',
+    time: Date.now(), by: window._currentUsername || 'Admin'
+  });
+  showToast('Poll sent!', true);
+}
+
+async function adminEndPoll() {
+  if (!adminIsStaff()) return;
+  await window._fbUpdate('casino/admin/poll', { status: 'ended' });
+  showToast('Poll ended!', true);
+}
+
+function showPollOverlay(data) {
+  if (!data || !data.question || !data.options) return;
+  _currentPollId = data.id || null;
+  document.getElementById('pollQuestion').textContent = data.question;
+  const container = document.getElementById('pollOptionsContainer');
+  container.innerHTML = '';
+
+  const votes = data.votes || {};
+  // Count total votes and per-option
+  const optCounts = data.options.map(() => 0);
+  let totalVotes = 0;
+  const myUid = window._currentPlayerId || '';
+  _myPollVote = null;
+  Object.entries(votes).forEach(([uid, optIdx]) => {
+    if (typeof optIdx === 'number' && optIdx >= 0 && optIdx < data.options.length) {
+      optCounts[optIdx]++;
+      totalVotes++;
+      if (uid === myUid) _myPollVote = optIdx;
+    }
+  });
+
+  const isEnded = data.status === 'ended';
+  const showResults = isEnded || _myPollVote !== null;
+
+  data.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'poll-option' + (showResults ? ' show-results' : '') + (_myPollVote === i ? ' voted' : '');
+    const pct = totalVotes > 0 ? Math.round(optCounts[i] / totalVotes * 100) : 0;
+    div.innerHTML =
+      '<span class="poll-option-text">' + opt + (_myPollVote === i ? ' ✓' : '') + '</span>' +
+      '<div class="poll-option-bar"><div class="poll-option-bar-fill" style="width:' + pct + '%"></div></div>' +
+      '<span class="poll-option-pct">' + pct + '% (' + optCounts[i] + ')</span>';
+    if (!isEnded && _myPollVote === null) {
+      div.onclick = () => voteInPoll(i);
+      div.style.cursor = 'pointer';
+    }
+    container.appendChild(div);
+  });
+
+  document.getElementById('pollTotalVotes').textContent = totalVotes + ' vote' + (totalVotes !== 1 ? 's' : '') + (isEnded ? ' — POLL ENDED' : '');
+  const overlay = document.getElementById('adminPollOverlay');
+  overlay.style.display = 'flex';
+}
+
+async function voteInPoll(optIdx) {
+  if (_myPollVote !== null) return;
+  const uid = window._currentPlayerId;
+  if (!uid) return;
+  _myPollVote = optIdx;
+  await window._fbUpdate('casino/admin/poll/votes', { [uid]: optIdx });
+}
+
+function closePollOverlay() {
+  document.getElementById('adminPollOverlay').style.display = 'none';
+}
+
+// ─── ADMIN ABUSE ───
+async function adminTriggerAbuse() {
+  if (!adminIsStaff()) return;
+  await window._fbSet('casino/admin/abuse', {
+    time: Date.now(), by: window._currentUsername || 'Admin'
+  });
+  showToast('ADMIN ABUSE sent!', true);
+}
+
+function showAdminAbuse() {
+  const el = document.getElementById('adminAbuseOverlay');
+  el.style.display = 'flex';
+  // Shake + flash
+  document.body.style.animation = 'abuseShake .3s 3';
+  // Sound effect
+  try {
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => playSound(100 + Math.random() * 500, 'sawtooth', 0.08, 0.15), i * 100);
+    }
+  } catch(e) {}
+  setTimeout(() => { document.body.style.animation = ''; }, 1000);
+  // Auto-dismiss after 5s
+  clearTimeout(window._abuseDismissTimer);
+  window._abuseDismissTimer = setTimeout(() => closeAdminAbuse(), 5000);
+}
+
+function closeAdminAbuse() {
+  document.getElementById('adminAbuseOverlay').style.display = 'none';
+  clearTimeout(window._abuseDismissTimer);
+}
+
+// ─── MONEY RAIN ANIMATION ───
+function showMoneyRain(amount) {
+  const rain = document.createElement('div');
+  rain.className = 'money-rain';
+  const emojis = ['💵','💰','🤑','💸','💲','🪙'];
+  for (let i = 0; i < 40; i++) {
+    const bill = document.createElement('div');
+    bill.className = 'money-bill';
+    bill.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    bill.style.left = Math.random() * 100 + 'vw';
+    bill.style.animationDuration = (2 + Math.random() * 3) + 's';
+    bill.style.animationDelay = Math.random() * 2 + 's';
+    bill.style.fontSize = (20 + Math.random() * 20) + 'px';
+    rain.appendChild(bill);
+  }
+  document.body.appendChild(rain);
+  // Show toast
+  if (amount > 0) showToast('💸 Money Rain! +$' + amount.toLocaleString(), true);
+  setTimeout(() => { if (rain.parentNode) rain.parentNode.removeChild(rain); }, 6000);
+}
+
+// ─── QUICK ACTIONS (from admin panel) ───
+async function adminDoubleAll() {
+  if (!adminIsStaff()) return;
+  if (!confirm('Double EVERYONE\'s money?')) return;
+  await window._fbSet('casino/admin/action', {
+    type: 'double', time: Date.now(), by: window._currentUsername || 'Admin'
+  });
+  // Also double own money immediately
+  balance *= 2; updateBalDisplay(); firebaseSave();
+  showToast('Doubled everyone\'s money!', true);
+}
+
+async function adminRainMoney(amt) {
+  if (!adminIsStaff()) return;
+  await window._fbSet('casino/admin/action', {
+    type: 'rain', amount: amt, time: Date.now(), by: window._currentUsername || 'Admin'
+  });
+  // Give self
+  balance += amt; updateBalDisplay(); firebaseSave();
+  showMoneyRain(amt);
+}
+
+async function adminResetAll() {
+  if (!adminIsStaff()) return;
+  if (!confirm('RESET everyone\'s balance to $1000? This cannot be undone!')) return;
+  if (!confirm('Are you REALLY sure?')) return;
+  await window._fbSet('casino/admin/action', {
+    type: 'reset', time: Date.now(), by: window._currentUsername || 'Admin'
+  });
+  balance = 1000; updateBalDisplay(); firebaseSave();
+  showToast('All balances reset to $1000', true);
+}
+
+async function adminClearChat() {
+  if (!adminIsStaff()) return;
+  await window._fbRemove('casino/chat');
+  showToast('Chat cleared!', true);
+}
+
+// ─── EVENTS ───
+let _eventActive = false;
+let _lastActionTime = 0;
+
+async function adminStartEvent() {
+  if (!adminIsStaff()) return;
+  const title = prompt('Event name:', 'CASINO EVENT') || 'CASINO EVENT';
+  // Clean up old event data
+  await window._fbRemove('casino/admin/eventChat');
+  await window._fbSet('casino/admin/event', {
+    title: title, status: 'active', time: Date.now(),
+    by: window._currentUsername || 'Admin'
+  });
+  showToast('Event started!', true);
+}
+
+function showEventOverlay(data) {
+  if (!data || data.status !== 'active') {
+    hideEventOverlay();
+    return;
+  }
+  _eventActive = true;
+  document.getElementById('eventTitle').textContent = '🎉 ' + (data.title || 'CASINO EVENT');
+  document.getElementById('adminEventOverlay').style.display = 'flex';
+  // Show admin panel if staff
+  document.getElementById('eventAdminPanel').style.display = adminIsStaff() ? 'flex' : 'none';
+  document.getElementById('eventStatus').textContent = 'Event is live — started by ' + (data.by || 'Admin');
+  // Start listening to event chat
+  if (!_eventChatUnsub) {
+    _eventChatUnsub = window._fbOnValue('casino/admin/eventChat', snap => {
+      renderEventChat(snap.val());
+    });
+  }
+  // Register presence
+  if (window._currentPlayerId) {
+    window._fbSet('casino/admin/eventPresence/' + window._currentPlayerId, {
+      name: window._currentUsername || 'anon', time: Date.now()
+    });
+  }
+  // Chat enter key
+  const chatInput = document.getElementById('eventChatInput');
+  chatInput.onkeydown = (e) => { if (e.key === 'Enter') sendEventChat(); };
+}
+
+function hideEventOverlay() {
+  _eventActive = false;
+  document.getElementById('adminEventOverlay').style.display = 'none';
+  if (_eventChatUnsub) { _eventChatUnsub(); _eventChatUnsub = null; }
+  // Remove presence
+  if (window._currentPlayerId) {
+    window._fbRemove('casino/admin/eventPresence/' + window._currentPlayerId).catch(()=>{});
+  }
+}
+
+function leaveEvent() {
+  hideEventOverlay();
+}
+
+function renderEventChat(msgs) {
+  const container = document.getElementById('eventChatMsgs');
+  if (!msgs) { container.innerHTML = '<div style="color:var(--text2);text-align:center;padding:40px;font-size:13px;">No messages yet. Say something!</div>'; return; }
+  const entries = Object.values(msgs).sort((a, b) => a.time - b.time);
+  const wasAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
+  container.innerHTML = '';
+  entries.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'event-chat-msg' + (m.isAdmin ? ' admin-msg' : '');
+    const t = new Date(m.time);
+    const timeStr = t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0');
+    div.innerHTML =
+      '<div style="flex:1;"><span class="ecm-user" style="color:' + (m.isAdmin ? 'var(--gold)' : 'var(--neon)') + ';">' +
+      (m.isAdmin ? '👑 ' : '') + (m.user || 'anon') +
+      '</span> <span class="ecm-time">' + timeStr + '</span>' +
+      (m.isSystem ? '<div class="ecm-text" style="color:var(--gold);font-weight:700;">' : '<div class="ecm-text">') +
+      escapeHtml(m.text || '') + '</div></div>';
+    container.appendChild(div);
+  });
+  if (wasAtBottom) container.scrollTop = container.scrollHeight;
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function sendEventChat() {
+  const input = document.getElementById('eventChatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const isAdmin = adminIsStaff();
+  const msgKey = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  await window._fbSet('casino/admin/eventChat/' + msgKey, {
+    user: window._currentUsername || 'anon',
+    text: text,
+    time: Date.now(),
+    isAdmin: isAdmin,
+    isSystem: false
+  });
+}
+
+async function eventAction(type) {
+  if (!adminIsStaff()) return;
+  const now = Date.now();
+  if (now - _lastActionTime < 2000) { showToast('Cooldown!', false); return; }
+  _lastActionTime = now;
+
+  if (type === 'double') {
+    await window._fbSet('casino/admin/action', { type: 'double', time: now, by: window._currentUsername });
+    balance *= 2; updateBalDisplay(); firebaseSave();
+    // System message in event chat
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '💰 ' + (window._currentUsername || 'Admin') + ' DOUBLED everyone\'s money!',
+      time: now, isAdmin: true, isSystem: true
+    });
+    showToast('Doubled everyone\'s money!', true);
+  }
+  else if (type === 'rain50' || type === 'rain500' || type === 'rain5000') {
+    const amt = type === 'rain50' ? 50 : type === 'rain500' ? 500 : 5000;
+    await window._fbSet('casino/admin/action', { type: 'rain', amount: amt, time: now, by: window._currentUsername });
+    balance += amt; updateBalDisplay(); firebaseSave();
+    showMoneyRain(amt);
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '🌧️ ' + (window._currentUsername || 'Admin') + ' made it rain $' + amt.toLocaleString() + '!',
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type === 'abuse') {
+    await window._fbSet('casino/admin/abuse', { time: now, by: window._currentUsername });
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '⚡ ADMIN ABUSE!!!',
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type === 'announce') {
+    const msg = prompt('Announcement:');
+    if (!msg) return;
+    await window._fbSet('casino/admin/announcement', { text: msg, time: now, by: window._currentUsername });
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '📢 ' + msg,
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type === 'poll') {
+    const q = prompt('Quick poll question:', 'Who wants free money?');
+    if (!q) return;
+    const pollId = now.toString(36);
+    await window._fbSet('casino/admin/poll', {
+      id: pollId, question: q, options: ['Yes','No'], votes: {}, status: 'active', time: now, by: window._currentUsername
+    });
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '📊 Poll started: ' + q,
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type === 'endEvent') {
+    if (!confirm('End the event for everyone?')) return;
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '🚪 Event ended by ' + (window._currentUsername || 'Admin'),
+      time: now, isAdmin: true, isSystem: true
+    });
+    setTimeout(async () => {
+      await window._fbUpdate('casino/admin/event', { status: 'ended' });
+      await window._fbRemove('casino/admin/eventPresence');
+    }, 1500);
+  }
+}
+
+// ─── FIREBASE LISTENERS (for all users) ───
+function startAdminListeners() {
+  if (_adminListenersActive) return;
+  _adminListenersActive = true;
+
+  // Announcement listener
+  _adminUnsubs.push(window._fbOnValue('casino/admin/announcement', snap => {
+    const d = snap.val();
+    if (!d || !d.text) return;
+    // Only show if recent (within 30 seconds)
+    if (Date.now() - d.time < 30000) {
+      showAnnounceBanner(d.text);
+    }
+  }));
+
+  // Poll listener
+  _adminUnsubs.push(window._fbOnValue('casino/admin/poll', snap => {
+    const d = snap.val();
+    if (!d || !d.question) return;
+    if (d.status === 'active') {
+      showPollOverlay(d);
+    } else if (d.status === 'ended') {
+      // Show final results
+      showPollOverlay(d);
+    }
+  }));
+
+  // Admin abuse listener
+  let _lastAbuseTime = 0;
+  _adminUnsubs.push(window._fbOnValue('casino/admin/abuse', snap => {
+    const d = snap.val();
+    if (!d || !d.time) return;
+    if (d.time > _lastAbuseTime && Date.now() - d.time < 15000) {
+      _lastAbuseTime = d.time;
+      showAdminAbuse();
+    }
+  }));
+
+  // Action listener (money rain, double, reset)
+  let _lastActionProcessed = 0;
+  _adminUnsubs.push(window._fbOnValue('casino/admin/action', snap => {
+    const d = snap.val();
+    if (!d || !d.time) return;
+    if (d.time <= _lastActionProcessed) return;
+    if (Date.now() - d.time > 15000) { _lastActionProcessed = d.time; return; } // too old
+    _lastActionProcessed = d.time;
+    // Don't process own actions (admin already handled them)
+    if (d.by && d.by.toLowerCase() === (window._currentUsername || '').toLowerCase()) return;
+
+    if (d.type === 'double') {
+      balance *= 2; updateBalDisplay(); firebaseSave();
+      showMoneyRain(balance);
+      showToast('💰 ' + (d.by || 'Admin') + ' DOUBLED everyone\'s money!', true);
+    } else if (d.type === 'rain' && d.amount) {
+      balance += d.amount; updateBalDisplay(); firebaseSave();
+      showMoneyRain(d.amount);
+    } else if (d.type === 'reset') {
+      balance = 1000; updateBalDisplay(); firebaseSave();
+      showToast('☢️ All balances have been reset to $1,000', false);
+    }
+  }));
+
+  // Event listener
+  _adminUnsubs.push(window._fbOnValue('casino/admin/event', snap => {
+    const d = snap.val();
+    if (!d) return;
+    if (d.status === 'active' && Date.now() - d.time < 3600000) {
+      showEventOverlay(d);
+    } else if (d.status === 'ended') {
+      hideEventOverlay();
+    }
+  }));
+
+  // Event presence counter
+  _adminUnsubs.push(window._fbOnValue('casino/admin/eventPresence', snap => {
+    const d = snap.val();
+    const count = d ? Object.keys(d).length : 0;
+    const el = document.getElementById('eventOnlineCount');
+    if (el) el.textContent = count + ' online';
+  }));
+}
+
+// ─── ADMIN SET SELF BALANCE (already had onclick, just add function) ───
+function adminSetSelfBalance() {
+  if (!adminIsStaff()) return;
+  const val = parseFloat(document.getElementById('adminSelfBalance').value);
+  if (isNaN(val) || val < 0) { showToast('Invalid amount!', false); return; }
+  balance = val; updateBalDisplay(); firebaseSave();
+  showToast('Balance set to $' + formatBalance(val), true);
+}
+
+// Start listeners once Firebase is ready
+(function initAdminListeners() {
+  const check = setInterval(() => {
+    if (window._fbOnValue && window._currentPlayerId) {
+      clearInterval(check);
+      startAdminListeners();
+    }
+  }, 1000);
+})();
 </script>
 
 <!-- ============ MODERATION OVERLAYS ============ -->
