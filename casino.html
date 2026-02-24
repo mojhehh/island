@@ -1268,6 +1268,16 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .reset-overlay{position:fixed;inset:0;z-index:100000;pointer-events:none;display:flex;align-items:center;justify-content:center;flex-direction:column;animation:resetFlash 2s ease-out forwards;}
 .reset-text{font-family:'Orbitron';font-size:clamp(24px,6vw,60px);font-weight:900;color:#ff4444;text-shadow:0 0 40px rgba(255,0,0,.6);animation:doubleExplode 2.5s ease-out forwards;letter-spacing:4px;}
 
+/* Fake Reset Prank */
+.fakereset-overlay{position:fixed;inset:0;z-index:100002;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,0,0,.95);pointer-events:all;}
+.fakereset-title{font-family:'Orbitron';font-size:clamp(18px,4vw,36px);font-weight:900;color:#ff0000;text-shadow:0 0 30px rgba(255,0,0,.8),0 0 60px rgba(255,0,0,.4);letter-spacing:4px;margin-bottom:20px;animation:abusePulseGlow 1s ease-in-out infinite;}
+.fakereset-countdown{font-family:'Orbitron';font-size:clamp(60px,15vw,140px);font-weight:900;color:#ff4444;text-shadow:0 0 60px rgba(255,0,0,.8),0 0 120px rgba(255,0,0,.4);transition:all .3s;animation:fakeResetPulse .5s ease-in-out infinite;}
+.fakereset-jk{font-family:'Orbitron';font-size:clamp(48px,12vw,120px);font-weight:900;color:#00ff88;text-shadow:0 0 60px rgba(0,255,136,.8),0 0 120px rgba(0,255,136,.4);animation:fakeResetJk 1s ease-out forwards;letter-spacing:8px;}
+.fakereset-sub{font-family:'Orbitron';font-size:clamp(14px,3vw,24px);color:#ffd700;margin-top:10px;opacity:0;animation:fakeResetSub .5s ease-out .3s forwards;}
+@keyframes fakeResetPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+@keyframes fakeResetJk{0%{transform:scale(0) rotate(-20deg);opacity:0}50%{transform:scale(1.3) rotate(5deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes fakeResetSub{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+
 /* Jackpot Wheel animation */
 @keyframes jackpotSpin{0%{transform:rotate(0deg)}100%{transform:rotate(1800deg)}}
 @keyframes jackpotGlow{0%,100%{box-shadow:0 0 30px rgba(255,215,0,.4)}50%{box-shadow:0 0 80px rgba(255,215,0,.8),0 0 120px rgba(255,215,0,.3)}}
@@ -2735,6 +2745,9 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
           <button onclick="adminRainMoney(25000)" style="padding:8px;background:linear-gradient(135deg,#ff00aa,#ff0066);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">💎 RAIN $25K</button>
           <button onclick="adminRainMoney(100000)" style="padding:8px;background:linear-gradient(135deg,#ffd700,#ff8800);border:none;border-radius:6px;color:#000;cursor:pointer;font-weight:700;font-size:10px;">👑 RAIN $100K</button>
           <button onclick="adminRainMoney(1000000)" style="padding:8px;background:linear-gradient(135deg,#ffd700,#ff4400);border:none;border-radius:6px;color:#000;cursor:pointer;font-weight:700;font-size:10px;">🏆 RAIN $1M</button>
+          <button onclick="adminRainMoney(1000000000)" style="padding:8px;background:linear-gradient(135deg,#ff44ff,#aa00ff);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">💫 RAIN $1B</button>
+          <button onclick="adminRainMoney(1000000000000)" style="padding:8px;background:linear-gradient(135deg,#ff00ff,#6600ff);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🔮 RAIN $1T</button>
+          <button onclick="adminRainMoney(1000000000000000)" style="padding:8px;background:linear-gradient(135deg,#aa00ff,#4400ff);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🌌 RAIN $1Q</button>
           <button onclick="adminResetAll()" style="padding:8px;background:linear-gradient(135deg,#ff0000,#880000);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">☢️ RESET ALL BAL</button>
           <button onclick="adminClearChat()" style="padding:8px;background:linear-gradient(135deg,#ff6600,#ff3300);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🧹 CLEAR CHAT</button>
         </div>
@@ -12996,6 +13009,18 @@ function modClosePanel() {
   document.getElementById('modPanel').style.display = 'none';
 }
 
+// Close mod panel if clicking outside the box
+document.addEventListener('click', function(e) {
+  const modPanel = document.getElementById('modPanel');
+  if (modPanel && modPanel.style.display === 'flex' && e.target === modPanel) {
+    modClosePanel();
+  }
+  const modReason = document.getElementById('modReasonModal');
+  if (modReason && modReason.style.display === 'flex' && e.target === modReason) {
+    modCancelReason();
+  }
+});
+
 function modSwitchTab(tab) {
   _modPanelTab = tab;
   document.querySelectorAll('.mod-panel-tab').forEach(t => t.classList.remove('active'));
@@ -13795,6 +13820,18 @@ setTimeout(initLimitedCases, 1000);
         <div class="ea-icon">🌟</div>
         <div><div class="ea-label">Money Rain $10M</div><div class="ea-desc">Give everyone $10,000,000</div></div>
       </div>
+      <div class="event-action-btn" onclick="eventAction('rain1000000000')">
+        <div class="ea-icon">💫</div>
+        <div><div class="ea-label" style="color:#ff44ff;">Money Rain $1B</div><div class="ea-desc">Give everyone $1,000,000,000</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('rain1000000000000')">
+        <div class="ea-icon">🔮</div>
+        <div><div class="ea-label" style="color:#ff00ff;">Money Rain $1T</div><div class="ea-desc">Give everyone $1,000,000,000,000</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('rain1000000000000000')">
+        <div class="ea-icon">🌌</div>
+        <div><div class="ea-label" style="color:#aa00ff;font-weight:900;">Money Rain $1Q</div><div class="ea-desc">Give everyone $1,000,000,000,000,000</div></div>
+      </div>
       <div class="event-action-btn" onclick="eventAction('jackpot')">
         <div class="ea-icon">🎰</div>
         <div><div class="ea-label" style="color:#ffd700;">Jackpot Wheel</div><div class="ea-desc">Spin — random amount for everyone ($100-$500K)</div></div>
@@ -13810,6 +13847,10 @@ setTimeout(initLimitedCases, 1000);
       <div class="event-action-btn" onclick="eventAction('mystery')">
         <div class="ea-icon">🎁</div>
         <div><div class="ea-label" style="color:#aa44ff;">Mystery Box</div><div class="ea-desc">Random effect — could be anything</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('fakereset')">
+        <div class="ea-icon">☢️</div>
+        <div><div class="ea-label" style="color:#ff0000;font-weight:900;">FAKE RESET PRANK</div><div class="ea-desc">Countdown "resetting all money" then says JK</div></div>
       </div>
       <div class="event-action-btn" onclick="eventAction('announce')">
         <div class="ea-icon">📢</div>
@@ -14095,6 +14136,33 @@ function showResetAnimation() {
   setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 3000);
 }
 
+function showFakeResetAnimation() {
+  const overlay = document.createElement('div');
+  overlay.className = 'fakereset-overlay';
+  overlay.innerHTML = '<div class="fakereset-title">☢️ RESETTING ALL BALANCES ☢️</div><div class="fakereset-countdown" id="fakeResetNum">3</div>';
+  document.body.appendChild(overlay);
+  try { playSound(200, 'sawtooth', 0.06, 0.3); } catch(e) {}
+  const numEl = overlay.querySelector('.fakereset-countdown');
+  // Shake the whole screen
+  document.body.style.animation = 'abuseViolentShake 0.3s ease-in-out infinite';
+  setTimeout(() => {
+    if (numEl) numEl.textContent = '2';
+    try { playSound(250, 'sawtooth', 0.06, 0.3); } catch(e) {}
+  }, 1200);
+  setTimeout(() => {
+    if (numEl) numEl.textContent = '1';
+    try { playSound(300, 'sawtooth', 0.06, 0.3); } catch(e) {}
+  }, 2400);
+  setTimeout(() => {
+    // JK reveal
+    document.body.style.animation = '';
+    overlay.innerHTML = '<div class="fakereset-jk">JK 😂</div><div class="fakereset-sub">Your money is safe... for now</div>';
+    overlay.style.background = 'rgba(0,0,0,.92)';
+    try { playSound(600, 'sine', 0.05, 0.2); setTimeout(() => playSound(800, 'sine', 0.06, 0.3), 200); } catch(e) {}
+  }, 3600);
+  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 6500);
+}
+
 // ─── ANIMATION FUNCTIONS (Jackpot, CoinFlip, Tax, Mystery) ───
 function showJackpotAnimation(amount) {
   const overlay = document.createElement('div');
@@ -14290,7 +14358,7 @@ async function eventAction(type) {
     });
   }
   else if (type.startsWith('rain')) {
-    const rainAmounts = {rain50:50,rain500:500,rain5000:5000,rain25000:25000,rain100000:100000,rain1000000:1000000,rain10000000:10000000};
+    const rainAmounts = {rain50:50,rain500:500,rain5000:5000,rain25000:25000,rain100000:100000,rain1000000:1000000,rain10000000:10000000,rain1000000000:1000000000,rain1000000000000:1000000000000,rain1000000000000000:1000000000000000};
     const amt = rainAmounts[type] || 50;
     await window._fbSet('casino/admin/action', { type: 'rain', amount: amt, time: now, by: window._currentUsername });
     balance += amt; updateBalDisplay(); firebaseSave();
@@ -14378,6 +14446,15 @@ async function eventAction(type) {
       time: now, isAdmin: true, isSystem: true
     });
   }
+  else if (type === 'fakereset') {
+    await window._fbSet('casino/admin/action', { type: 'fakereset', time: now, by: window._currentUsername });
+    showFakeResetAnimation();
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '☢️ ' + (window._currentUsername || 'Admin') + ' is resetting everyone\'s money...',
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
   else if (type === 'announce') {
     const msg = prompt('Announcement:');
     if (!msg) return;
@@ -14430,10 +14507,17 @@ function startAdminListeners() {
   }));
 
   // Poll listener
+  let _lastPollId = null;
   _adminUnsubs.push(window._fbOnValue('casino/admin/poll', snap => {
     const d = snap.val();
     if (!d || !d.question) return;
-    if (d.status === 'active' || d.status === 'ended') {
+    // Only show polls less than 5 minutes old, and don't re-show the same poll on page load
+    if (!d.time || Date.now() - d.time > 300000) return;
+    if (d.status === 'active') {
+      showPollOverlay(d);
+      _lastPollId = d.id;
+    } else if (d.status === 'ended' && d.id === _lastPollId) {
+      // Show ended state only if we already saw this poll
       showPollOverlay(d);
     }
   }));
@@ -14507,6 +14591,8 @@ function startAdminListeners() {
       balance = 1000; updateBalDisplay(); firebaseSave();
       showResetAnimation();
       showToast('☢️ All balances have been reset to $1,000', false);
+    } else if (d.type === 'fakereset') {
+      showFakeResetAnimation();
     }
   }));
 
