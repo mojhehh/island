@@ -4042,7 +4042,7 @@ window._broadcastWin = (username, game, amount) => {
 
 <script>
 // ============ GLOBAL STATE ============
-const MAX_BALANCE = 1e18; // $1 Quintillion hard cap
+const MAX_BALANCE = 1e30; // $1 Nonillion hard cap
 const MIN_BALANCE = 0; // No debt allowed
 function safeNum(v) {
   if (typeof v !== 'number' || !isFinite(v)) return 0;
@@ -4057,6 +4057,10 @@ function formatBalance(v){
   v=safeNum(v);
   const sign=v<0?'-':'';
   const abs=Math.abs(v);
+  if(abs>=1e30)return sign+(abs/1e30).toFixed(2)+'No';
+  if(abs>=1e27)return sign+(abs/1e27).toFixed(2)+'Oc';
+  if(abs>=1e24)return sign+(abs/1e24).toFixed(2)+'Sp';
+  if(abs>=1e21)return sign+(abs/1e21).toFixed(2)+'Sx';
   if(abs>=1e18)return sign+(abs/1e18).toFixed(2)+'Qi';
   if(abs>=1e15)return sign+(abs/1e15).toFixed(2)+'Q';
   if(abs>=1e12)return sign+(abs/1e12).toFixed(2)+'T';
@@ -4420,12 +4424,27 @@ async function claimDailyBonus() {
 
 // ============ GLOBAL LEADERBOARD ============
 let currentLBCategory = 'richest';
+let lbAutoInterval = null;
 
 function switchLB(category, btn) {
   currentLBCategory = category;
   document.querySelectorAll('.lb-tab').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   loadLeaderboard(category);
+  startLBAutoRefresh();
+}
+
+function startLBAutoRefresh() {
+  if (lbAutoInterval) clearInterval(lbAutoInterval);
+  lbAutoInterval = setInterval(() => {
+    const lbPanel = document.getElementById('leaderboardPanel');
+    if (lbPanel && lbPanel.classList.contains('active')) {
+      loadLeaderboard(currentLBCategory);
+    } else {
+      clearInterval(lbAutoInterval);
+      lbAutoInterval = null;
+    }
+  }, 15000);
 }
 
 async function loadLeaderboard(category) {
@@ -4447,6 +4466,10 @@ async function loadLeaderboard(category) {
 const myId = window._currentPlayerId || '';
 const fmtBig = (v) => {
       const abs = Math.abs(v);
+      if (abs >= 1e30) return '$' + (v/1e30).toFixed(2) + 'No';
+      if (abs >= 1e27) return '$' + (v/1e27).toFixed(2) + 'Oc';
+      if (abs >= 1e24) return '$' + (v/1e24).toFixed(2) + 'Sp';
+      if (abs >= 1e21) return '$' + (v/1e21).toFixed(2) + 'Sx';
       if (abs >= 1e18) return '$' + (v/1e18).toFixed(2) + 'Qi';
       if (abs >= 1e15) return '$' + (v/1e15).toFixed(2) + 'Q';
       if (abs >= 1e12) return '$' + (v/1e12).toFixed(2) + 'T';
@@ -4458,6 +4481,10 @@ const fmtBig = (v) => {
     const fmtProfit = (v) => {
       const sign = v >= 0 ? '+' : '-';
       const abs = Math.abs(v);
+      if (abs >= 1e30) return sign + '$' + (abs/1e30).toFixed(2) + 'No';
+      if (abs >= 1e27) return sign + '$' + (abs/1e27).toFixed(2) + 'Oc';
+      if (abs >= 1e24) return sign + '$' + (abs/1e24).toFixed(2) + 'Sp';
+      if (abs >= 1e21) return sign + '$' + (abs/1e21).toFixed(2) + 'Sx';
       if (abs >= 1e18) return sign + '$' + (abs/1e18).toFixed(2) + 'Qi';
       if (abs >= 1e15) return sign + '$' + (abs/1e15).toFixed(2) + 'Q';
       if (abs >= 1e12) return sign + '$' + (abs/1e12).toFixed(2) + 'T';
@@ -4653,7 +4680,8 @@ function switchGame(game,btn){
   if(game==='crash')resizeCrashCanvas();
   if(game==='profile')renderProfile();
   if(game==='stocks')renderStocks();
-  if(game==='leaderboard')loadLeaderboard(currentLBCategory);
+  if(game==='leaderboard'){loadLeaderboard(currentLBCategory);startLBAutoRefresh();}
+  else if(lbAutoInterval){clearInterval(lbAutoInterval);lbAutoInterval=null;}
   if(game==='duels')duelLoadLobby();
   if(game==='wheel'&&!wheelDrawn)drawWheel(0);
   if(game==='keno')kenoInit();
@@ -7352,25 +7380,21 @@ function spinRoulette(){
       rouletteAngle=cur%(Math.PI*2);
       rouletteSpinning=false;
       document.getElementById('roulSpinBtn').disabled=false;
-Use the PREDETERMINED winner — not visual readback — to avoid mismatch bugs
-      const fNum=winNum;
-      const fRed=isActuallyRed;
-      const fGreen=isActuallyGreenas(fNum);
-      const fGreen=fNum===0;
 
-      const colorLabel=fGreen?'💚 Green':(fRed?'🔴 Red':'⚫ Black');
-      const colorCSS=fGreen?'var(--green)':(fRed?'#ff5555':'#ccc');
+      // Use predetermined result (winNum) for payout, not visual readback
+      const colorLabel=isActuallyGreen?'💚 Green':(isActuallyRed?'🔴 Red':'⚫ Black');
+      const colorCSS=isActuallyGreen?'var(--green)':(isActuallyRed?'#ff5555':'#ccc');
       document.getElementById('rouletteResult').innerHTML=
-        '<span style="color:'+colorCSS+'">'+fNum+' — '+colorLabel+'</span>';
+        '<span style="color:'+colorCSS+'">'+winNum+' — '+colorLabel+'</span>';
 
       let won=false;
-      if(selectedRoulBet==='red'&&fRed)won=true;
-      if(selectedRoulBet==='black'&&!fRed&&!fGreen)won=true;
-      if(selectedRoulBet==='green'&&fGreen)won=true;
-      if(selectedRoulBet==='odd'&&fNum>0&&fNum%2===1)won=true;
-      if(selectedRoulBet==='even'&&fNum>0&&fNum%2===0)won=true;
-      if(selectedRoulBet==='1-18'&&fNum>=1&&fNum<=18)won=true;
-      if(selectedRoulBet==='19-36'&&fNum>=19&&fNum<=36)won=true;
+      if(selectedRoulBet==='red'&&isActuallyRed)won=true;
+      if(selectedRoulBet==='black'&&!isActuallyRed&&!isActuallyGreen)won=true;
+      if(selectedRoulBet==='green'&&isActuallyGreen)won=true;
+      if(selectedRoulBet==='odd'&&winNum>0&&winNum%2===1)won=true;
+      if(selectedRoulBet==='even'&&winNum>0&&winNum%2===0)won=true;
+      if(selectedRoulBet==='1-18'&&winNum>=1&&winNum<=18)won=true;
+      if(selectedRoulBet==='19-36'&&winNum>=19&&winNum<=36)won=true;
 
       if(won){
         let payout=selectedRoulBet==='green'?bet*36:bet*2;
@@ -9901,6 +9925,7 @@ function hrRenderRaceCard() {
 
 /* ── SELECT HORSE ── */
 function hrSelectHorse(idx) {
+  if (hrRacing) return; // Cannot change horse mid-race
   hrSelected = idx;
   playClickSound();
 
@@ -9947,6 +9972,7 @@ function horseRace() {
   if (typeof checkMaxBet === 'function' && !checkMaxBet(bet, 'Horses')) return;
 
   hrRacing = true;
+  const hrLockedSelection = hrSelected; // Lock selection at race start
   balance -= bet;
   updateBalDisplay();firebaseSaveBet();
   document.getElementById('horseRaceBtn').disabled = true;
@@ -10030,11 +10056,11 @@ function horseRace() {
         if (hrForm[f.name].length > 10) hrForm[f.name].shift(); // keep last 10
       });
 
-      const myHorse = hrRaceHorses.find(h => h.idx === hrSelected);
-      const myFinish = finishOrder.findIndex(f => f.idx === hrSelected) + 1;
+      const myHorse = hrRaceHorses.find(h => h.idx === hrLockedSelection);
+      const myFinish = finishOrder.findIndex(f => f.idx === hrLockedSelection) + 1;
       const odds = myHorse.displayOdds;
 
-      if (winner === hrSelected) {
+      if (winner === hrLockedSelection) {
         const w = bet * odds;
         balance += w;
         updateBalDisplay();
@@ -10131,16 +10157,12 @@ function wheelSpin(){if(wheelSpinning)return;const bet=parseFloat(document.getEl
     if(Math.abs(cur-lastTickAngle)>tickSize){lastTickAngle=cur;playSound(600+Math.random()*200,'sine',.015,.01);}
     if(prog<1)requestAnimationFrame(anim);
     else{wheelAngle=cur%(Math.PI*2);wheelSpinning=false;document.getElementById('wheelSpinBtn').disabled=false;
-      /* visual readback — find which segment the top pointer actually sits on */
-      const twTotal=WHEEL_SEGMENTS.reduce((s,sg)=>s+sg.weight,0);
-      const pointerAng=((-Math.PI/2-wheelAngle)%(Math.PI*2)+Math.PI*4)%(Math.PI*2);
-      let acc=0,visSeg=WHEEL_SEGMENTS[0];
-      for(let i=0;i<WHEEL_SEGMENTS.length;i++){acc+=(WHEEL_SEGMENTS[i].weight/twTotal)*Math.PI*2;if(pointerAng<acc){visSeg=WHEEL_SEGMENTS[i];break;}}
-      const payout=bet*visSeg.mult;
-      if(payout>0){balance+=payout;updateBalDisplay();showBigWin(payout);showToast(visSeg.label+' +$'+payout.toFixed(2));if(visSeg.mult>=2)playWinSound();else playClickSound();
-        if(visSeg.mult>=5)spawnParticles(window.innerWidth/2,window.innerHeight/2,30+visSeg.mult*5);
-        document.getElementById('wheelResult').innerHTML='<span style="color:var(--green)">'+visSeg.label+' — +$'+payout.toFixed(2)+'</span>';recordGame('wheel',bet,payout);}
-      else{showToast(visSeg.label,false);playLoseSound();document.getElementById('wheelResult').innerHTML='<span style="color:var(--red)">'+visSeg.label+'</span>';recordGame('wheel',bet,0);}
+      /* Use predetermined segment (seg) for payout, not visual readback */
+      const payout=bet*seg.mult;
+      if(payout>0){balance+=payout;updateBalDisplay();showBigWin(payout);showToast(seg.label+' +$'+payout.toFixed(2));if(seg.mult>=2)playWinSound();else playClickSound();
+        if(seg.mult>=5)spawnParticles(window.innerWidth/2,window.innerHeight/2,30+seg.mult*5);
+        document.getElementById('wheelResult').innerHTML='<span style="color:var(--green)">'+seg.label+' — +$'+payout.toFixed(2)+'</span>';recordGame('wheel',bet,payout);}
+      else{showToast(seg.label,false);playLoseSound();document.getElementById('wheelResult').innerHTML='<span style="color:var(--red)">'+seg.label+'</span>';recordGame('wheel',bet,0);}
     }
   }requestAnimationFrame(anim);
 }
@@ -11903,6 +11925,23 @@ async function rrPvPAction(actionType) {
 let mpbsrGameId = null;
 let mpbsrIsHost = false;
 let mpbsrChallengeInterval = null;
+let mpbsrUnsub = null;
+
+function mpbsrCleanup() {
+  if (mpbsrUnsub && typeof mpbsrUnsub === 'function') {
+    mpbsrUnsub();
+    mpbsrUnsub = null;
+  }
+}
+
+function mpbsrBackToLobby() {
+  mpbsrCleanup();
+  mpbsrGameId = null;
+  mpbsrIsHost = false;
+  document.getElementById('mpbsrLobby').style.display = 'block';
+  document.getElementById('mpbsrGameArea').style.display = 'none';
+  document.getElementById('mpbsrGameOver').style.display = 'none';
+}
 
 const MPBSR_ITEMS = [
   { id: 'saw', icon: '🪚', name: 'Saw', desc: 'Next LIVE deals 2× damage' },
