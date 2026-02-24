@@ -1268,6 +1268,33 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .reset-overlay{position:fixed;inset:0;z-index:100000;pointer-events:none;display:flex;align-items:center;justify-content:center;flex-direction:column;animation:resetFlash 2s ease-out forwards;}
 .reset-text{font-family:'Orbitron';font-size:clamp(24px,6vw,60px);font-weight:900;color:#ff4444;text-shadow:0 0 40px rgba(255,0,0,.6);animation:doubleExplode 2.5s ease-out forwards;letter-spacing:4px;}
 
+/* Jackpot Wheel animation */
+@keyframes jackpotSpin{0%{transform:rotate(0deg)}100%{transform:rotate(1800deg)}}
+@keyframes jackpotGlow{0%,100%{box-shadow:0 0 30px rgba(255,215,0,.4)}50%{box-shadow:0 0 80px rgba(255,215,0,.8),0 0 120px rgba(255,215,0,.3)}}
+.jackpot-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none;background:radial-gradient(circle,rgba(255,215,0,.08) 0%,transparent 60%);}
+.jackpot-wheel{width:clamp(120px,30vw,200px);height:clamp(120px,30vw,200px);border-radius:50%;border:6px solid var(--gold);background:conic-gradient(#ff0044,#ff6600,#ffd700,#00ff88,#4488ff,#aa44ff,#ff0044);animation:jackpotSpin 3s cubic-bezier(.2,.8,.3,1) forwards,jackpotGlow .3s ease-in-out infinite;}
+.jackpot-result{font-family:'Orbitron';font-size:clamp(28px,8vw,72px);font-weight:900;color:#ffd700;text-shadow:0 0 40px rgba(255,215,0,.6),0 0 80px rgba(255,215,0,.3);margin-top:20px;animation:doubleExplode 3s ease-out 3s forwards;opacity:0;}
+.jackpot-label{font-family:'Orbitron';font-size:clamp(12px,3vw,20px);color:#fff;letter-spacing:4px;margin-top:8px;animation:doubleExplode 3s ease-out 3.2s forwards;opacity:0;}
+
+/* Tax animation */
+@keyframes taxDrain{0%{opacity:0;transform:scale(.5)}20%{opacity:1;transform:scale(1.1)}40%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1) translateY(-20px)}}
+.tax-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none;background:radial-gradient(circle,rgba(255,0,0,.08) 0%,transparent 60%);}
+.tax-text{font-family:'Orbitron';font-size:clamp(32px,8vw,80px);font-weight:900;color:#ff4444;text-shadow:0 0 40px rgba(255,0,0,.5);animation:taxDrain 3s ease-out forwards;}
+.tax-sub{font-family:'Orbitron';font-size:clamp(12px,3vw,22px);color:#ff8888;letter-spacing:4px;margin-top:8px;animation:taxDrain 3s ease-out .2s forwards;opacity:0;}
+
+/* Coin Flip animation */
+@keyframes coinFlipSpin{0%{transform:rotateY(0deg) scale(1)}50%{transform:rotateY(1800deg) scale(1.3)}100%{transform:rotateY(3600deg) scale(1)}}
+.coinflip-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none;perspective:600px;}
+.coinflip-coin{width:clamp(80px,20vw,160px);height:clamp(80px,20vw,160px);border-radius:50%;background:linear-gradient(135deg,#ffd700,#ffaa00);border:4px solid #cc8800;display:flex;align-items:center;justify-content:center;font-size:clamp(40px,10vw,80px);animation:coinFlipSpin 3s cubic-bezier(.2,.8,.3,1) forwards;box-shadow:0 0 40px rgba(255,215,0,.4);}
+.coinflip-result{font-family:'Orbitron';font-size:clamp(24px,6vw,56px);font-weight:900;margin-top:20px;letter-spacing:3px;animation:doubleExplode 3s ease-out 3s forwards;opacity:0;}
+
+/* Mystery Box animation */
+@keyframes mysteryShake{0%,100%{transform:rotate(0)}10%{transform:rotate(-8deg)}20%{transform:rotate(8deg)}30%{transform:rotate(-6deg)}40%{transform:rotate(6deg)}50%{transform:rotate(-4deg)}60%{transform:rotate(4deg)}70%{transform:rotate(-2deg)}80%{transform:rotate(2deg)}}
+@keyframes mysteryOpen{0%{transform:scale(1)}50%{transform:scale(1.2)}51%{opacity:0;transform:scale(2)}100%{opacity:0}}
+.mystery-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none;background:radial-gradient(circle,rgba(170,68,255,.08) 0%,transparent 60%);}
+.mystery-box{font-size:clamp(60px,15vw,140px);animation:mysteryShake .5s ease-in-out 4,mysteryOpen .6s ease-out 2.5s forwards;filter:drop-shadow(0 0 30px rgba(170,68,255,.5));}
+.mystery-result{font-family:'Orbitron';font-size:clamp(18px,5vw,40px);font-weight:900;color:#aa44ff;text-shadow:0 0 30px rgba(170,68,255,.5);margin-top:16px;animation:doubleExplode 3s ease-out 3s forwards;opacity:0;}
+
 @media(max-width:600px){
   .event-body{flex-direction:column;}
   .event-admin-panel{width:100%;max-height:220px;border-right:none;border-top:2px solid var(--border);}
@@ -2704,7 +2731,10 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
           <button onclick="adminDoubleAll()" style="padding:8px;background:linear-gradient(135deg,#00cc88,#00ff88);border:none;border-radius:6px;color:#000;cursor:pointer;font-weight:700;font-size:10px;">💰 2X ALL MONEY</button>
           <button onclick="adminRainMoney(50)" style="padding:8px;background:linear-gradient(135deg,#44aaff,#0066ff);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🌧️ MONEY RAIN $50</button>
           <button onclick="adminRainMoney(500)" style="padding:8px;background:linear-gradient(135deg,#6644ff,#4400ff);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🌧️ MONEY RAIN $500</button>
-          <button onclick="adminRainMoney(5000)" style="padding:8px;background:linear-gradient(135deg,#ff4444,#ff0000);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🌧️ MONEY RAIN $5K</button>
+          <button onclick="adminRainMoney(5000)" style="padding:8px;background:linear-gradient(135deg,#ff4444,#ff0000);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🌧️ RAIN $5K</button>
+          <button onclick="adminRainMoney(25000)" style="padding:8px;background:linear-gradient(135deg,#ff00aa,#ff0066);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">💎 RAIN $25K</button>
+          <button onclick="adminRainMoney(100000)" style="padding:8px;background:linear-gradient(135deg,#ffd700,#ff8800);border:none;border-radius:6px;color:#000;cursor:pointer;font-weight:700;font-size:10px;">👑 RAIN $100K</button>
+          <button onclick="adminRainMoney(1000000)" style="padding:8px;background:linear-gradient(135deg,#ffd700,#ff4400);border:none;border-radius:6px;color:#000;cursor:pointer;font-weight:700;font-size:10px;">🏆 RAIN $1M</button>
           <button onclick="adminResetAll()" style="padding:8px;background:linear-gradient(135deg,#ff0000,#880000);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">☢️ RESET ALL BAL</button>
           <button onclick="adminClearChat()" style="padding:8px;background:linear-gradient(135deg,#ff6600,#ff3300);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🧹 CLEAR CHAT</button>
         </div>
@@ -13749,6 +13779,38 @@ setTimeout(initLimitedCases, 1000);
         <div class="ea-icon">🤑</div>
         <div><div class="ea-label">Money Rain $5,000</div><div class="ea-desc">Give everyone $5,000</div></div>
       </div>
+      <div class="event-action-btn" onclick="eventAction('rain25000')">
+        <div class="ea-icon">💎</div>
+        <div><div class="ea-label">Money Rain $25K</div><div class="ea-desc">Give everyone $25,000</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('rain100000')">
+        <div class="ea-icon">👑</div>
+        <div><div class="ea-label">Money Rain $100K</div><div class="ea-desc">Give everyone $100,000</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('rain1000000')">
+        <div class="ea-icon">🏆</div>
+        <div><div class="ea-label">Money Rain $1M</div><div class="ea-desc">Give everyone $1,000,000</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('rain10000000')">
+        <div class="ea-icon">🌟</div>
+        <div><div class="ea-label">Money Rain $10M</div><div class="ea-desc">Give everyone $10,000,000</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('jackpot')">
+        <div class="ea-icon">🎰</div>
+        <div><div class="ea-label" style="color:#ffd700;">Jackpot Wheel</div><div class="ea-desc">Spin — random amount for everyone ($100-$500K)</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('coinflip')">
+        <div class="ea-icon">🪙</div>
+        <div><div class="ea-label" style="color:#ffaa00;">Coin Flip</div><div class="ea-desc">50/50 — everyone doubles or loses half</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('tax')">
+        <div class="ea-icon">💀</div>
+        <div><div class="ea-label" style="color:#ff6666;">Admin Tax 50%</div><div class="ea-desc">Take half of everyone's money</div></div>
+      </div>
+      <div class="event-action-btn" onclick="eventAction('mystery')">
+        <div class="ea-icon">🎁</div>
+        <div><div class="ea-label" style="color:#aa44ff;">Mystery Box</div><div class="ea-desc">Random effect — could be anything</div></div>
+      </div>
       <div class="event-action-btn" onclick="eventAction('announce')">
         <div class="ea-icon">📢</div>
         <div><div class="ea-label">Quick Announce</div><div class="ea-desc">Flash an announcement to everyone</div></div>
@@ -14033,6 +14095,47 @@ function showResetAnimation() {
   setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 3000);
 }
 
+// ─── ANIMATION FUNCTIONS (Jackpot, CoinFlip, Tax, Mystery) ───
+function showJackpotAnimation(amount) {
+  const overlay = document.createElement('div');
+  overlay.className = 'jackpot-overlay';
+  overlay.innerHTML = '<div class="jackpot-wheel"></div><div class="jackpot-result">+$' + amount.toLocaleString() + '</div><div class="jackpot-label">JACKPOT!</div>';
+  document.body.appendChild(overlay);
+  try { playSound(400, 'sine', 0.05, 0.2); setTimeout(() => playSound(600, 'sine', 0.05, 0.2), 200); setTimeout(() => playSound(800, 'sine', 0.06, 0.3), 2800); } catch(e) {}
+  setTimeout(() => showMoneyRain(amount), 3000);
+  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 6500);
+}
+
+function showCoinFlipAnimation(win) {
+  const overlay = document.createElement('div');
+  overlay.className = 'coinflip-overlay';
+  overlay.innerHTML = '<div class="coinflip-coin">' + (win ? '👑' : '💀') + '</div>' +
+    '<div class="coinflip-result" style="color:' + (win ? '#00ff88' : '#ff4444') + ';">' +
+    (win ? '2X DOUBLED!' : '-50% HALVED!') + '</div>';
+  document.body.appendChild(overlay);
+  try { if (win) { setTimeout(() => playSound(800, 'sine', 0.06, 0.3), 3000); } else { setTimeout(() => playSound(150, 'sawtooth', 0.06, 0.4), 3000); } } catch(e) {}
+  if (win) setTimeout(() => showMoneyRain(balance), 3200);
+  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 6500);
+}
+
+function showTaxAnimation(taxed) {
+  const overlay = document.createElement('div');
+  overlay.className = 'tax-overlay';
+  overlay.innerHTML = '<div class="tax-text">\u{1F480} TAXED</div><div class="tax-sub">-$' + taxed.toLocaleString() + '</div>';
+  document.body.appendChild(overlay);
+  try { playSound(100, 'sawtooth', 0.05, 0.4); } catch(e) {}
+  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 3500);
+}
+
+function showMysteryBoxAnimation(resultText) {
+  const overlay = document.createElement('div');
+  overlay.className = 'mystery-overlay';
+  overlay.innerHTML = '<div class="mystery-box">\u{1F381}</div><div class="mystery-result">' + resultText + '</div>';
+  document.body.appendChild(overlay);
+  try { for (let i = 0; i < 4; i++) setTimeout(() => playSound(300 + i * 100, 'square', 0.04, 0.1), i * 500); setTimeout(() => playSound(700, 'sine', 0.06, 0.3), 2500); } catch(e) {}
+  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 6500);
+}
+
 // ─── QUICK ACTIONS (from admin panel) ───
 async function adminDoubleAll() {
   if (!adminIsStaff()) return;
@@ -14186,14 +14289,84 @@ async function eventAction(type) {
       time: now, isAdmin: true, isSystem: true
     });
   }
-  else if (type === 'rain50' || type === 'rain500' || type === 'rain5000') {
-    const amt = type === 'rain50' ? 50 : type === 'rain500' ? 500 : 5000;
+  else if (type.startsWith('rain')) {
+    const rainAmounts = {rain50:50,rain500:500,rain5000:5000,rain25000:25000,rain100000:100000,rain1000000:1000000,rain10000000:10000000};
+    const amt = rainAmounts[type] || 50;
     await window._fbSet('casino/admin/action', { type: 'rain', amount: amt, time: now, by: window._currentUsername });
     balance += amt; updateBalDisplay(); firebaseSave();
     showMoneyRain(amt);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
-      user: 'SYSTEM', text: '🌧️ ' + (window._currentUsername || 'Admin') + ' made it rain $' + amt.toLocaleString() + '!',
+      user: 'SYSTEM', text: '\u{1F327}\uFE0F ' + (window._currentUsername || 'Admin') + ' made it rain $' + amt.toLocaleString() + '!',
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type === 'jackpot') {
+    const amounts = [100,500,1000,5000,10000,25000,50000,100000,250000,500000];
+    const jackpotAmt = amounts[Math.floor(Math.random() * amounts.length)];
+    await window._fbSet('casino/admin/action', { type: 'jackpot', amount: jackpotAmt, time: now, by: window._currentUsername });
+    balance += jackpotAmt; updateBalDisplay(); firebaseSave();
+    showJackpotAnimation(jackpotAmt);
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '\u{1F3B0} JACKPOT! ' + (window._currentUsername || 'Admin') + ' spun the wheel \u2014 everyone gets $' + jackpotAmt.toLocaleString() + '!',
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type === 'coinflip') {
+    const win = Math.random() < 0.5;
+    await window._fbSet('casino/admin/action', { type: 'coinflip', win: win, time: now, by: window._currentUsername });
+    if (win) { balance *= 2; } else { balance = Math.floor(balance / 2); }
+    updateBalDisplay(); firebaseSave();
+    showCoinFlipAnimation(win);
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '\u{1FA99} COIN FLIP: ' + (win ? '\u2705 HEADS! Everyone DOUBLED!' : '\u274C TAILS! Everyone lost half!'),
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type === 'tax') {
+    await window._fbSet('casino/admin/action', { type: 'tax', time: now, by: window._currentUsername });
+    const taxed = Math.floor(balance / 2);
+    balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSave();
+    showTaxAnimation(taxed);
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '\u{1F480} ADMIN TAX! ' + (window._currentUsername || 'Admin') + ' took 50% of everyone\'s money!',
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type === 'mystery') {
+    const effects = ['double','rain','tax','jackpot','abuse'];
+    const pick = effects[Math.floor(Math.random() * effects.length)];
+    let mysteryText = '';
+    if (pick === 'double') {
+      await window._fbSet('casino/admin/action', { type: 'mystery', effect: 'double', time: now, by: window._currentUsername });
+      balance *= 2; updateBalDisplay(); firebaseSave();
+      mysteryText = '\u{1F4B0} DOUBLE! Everyone\'s money doubled!';
+    } else if (pick === 'rain') {
+      const amt = [1000,5000,25000,100000][Math.floor(Math.random()*4)];
+      await window._fbSet('casino/admin/action', { type: 'mystery', effect: 'rain', amount: amt, time: now, by: window._currentUsername });
+      balance += amt; updateBalDisplay(); firebaseSave();
+      mysteryText = '\u{1F327}\uFE0F RAIN! Everyone gets $' + amt.toLocaleString() + '!';
+    } else if (pick === 'tax') {
+      await window._fbSet('casino/admin/action', { type: 'mystery', effect: 'tax', time: now, by: window._currentUsername });
+      balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSave();
+      mysteryText = '\u{1F480} TAX! Lost half your money!';
+    } else if (pick === 'jackpot') {
+      const amt = [50000,100000,500000][Math.floor(Math.random()*3)];
+      await window._fbSet('casino/admin/action', { type: 'mystery', effect: 'jackpot', amount: amt, time: now, by: window._currentUsername });
+      balance += amt; updateBalDisplay(); firebaseSave();
+      mysteryText = '\u{1F3B0} MEGA JACKPOT! Everyone gets $' + amt.toLocaleString() + '!';
+    } else {
+      await window._fbSet('casino/admin/abuse', { time: now, by: window._currentUsername });
+      await window._fbSet('casino/admin/action', { type: 'mystery', effect: 'abuse', time: now, by: window._currentUsername });
+      mysteryText = '\u26A1 ADMIN ABUSE!!!';
+    }
+    showMysteryBoxAnimation(mysteryText);
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '\u{1F381} MYSTERY BOX: ' + mysteryText,
       time: now, isAdmin: true, isSystem: true
     });
   }
@@ -14296,7 +14469,40 @@ function startAdminListeners() {
     } else if (d.type === 'rain' && d.amount) {
       balance += d.amount; updateBalDisplay(); firebaseSave();
       showMoneyRain(d.amount);
-      showToast('🌧️ Money Rain! +$' + d.amount.toLocaleString(), true);
+      showToast('\u{1F327}\uFE0F Money Rain! +$' + d.amount.toLocaleString(), true);
+    } else if (d.type === 'jackpot' && d.amount) {
+      balance += d.amount; updateBalDisplay(); firebaseSave();
+      showJackpotAnimation(d.amount);
+      showToast('\u{1F3B0} JACKPOT! +$' + d.amount.toLocaleString(), true);
+    } else if (d.type === 'coinflip') {
+      if (d.win) { balance *= 2; } else { balance = Math.floor(balance / 2); }
+      updateBalDisplay(); firebaseSave();
+      showCoinFlipAnimation(d.win);
+      showToast(d.win ? '\u{1FA99} Coin Flip: DOUBLED!' : '\u{1FA99} Coin Flip: Lost half!', d.win);
+    } else if (d.type === 'tax') {
+      const taxed = Math.floor(balance / 2);
+      balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSave();
+      showTaxAnimation(taxed);
+      showToast('\u{1F480} Admin Tax! Lost $' + taxed.toLocaleString(), false);
+    } else if (d.type === 'mystery') {
+      if (d.effect === 'double') {
+        balance *= 2; updateBalDisplay(); firebaseSave();
+        showMysteryBoxAnimation('\u{1F4B0} DOUBLE! Everyone\'s money doubled!');
+        setTimeout(() => showDoubleMoneyAnimation(), 3000);
+      } else if (d.effect === 'rain' && d.amount) {
+        balance += d.amount; updateBalDisplay(); firebaseSave();
+        showMysteryBoxAnimation('\u{1F327}\uFE0F RAIN! Everyone gets $' + d.amount.toLocaleString() + '!');
+        setTimeout(() => showMoneyRain(d.amount), 3000);
+      } else if (d.effect === 'tax') {
+        balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSave();
+        showMysteryBoxAnimation('\u{1F480} TAX! Lost half your money!');
+      } else if (d.effect === 'jackpot' && d.amount) {
+        balance += d.amount; updateBalDisplay(); firebaseSave();
+        showMysteryBoxAnimation('\u{1F3B0} MEGA JACKPOT! $' + d.amount.toLocaleString() + '!');
+        setTimeout(() => showMoneyRain(d.amount), 3000);
+      } else if (d.effect === 'abuse') {
+        showMysteryBoxAnimation('\u26A1 ADMIN ABUSE!!!');
+      }
     } else if (d.type === 'reset') {
       balance = 1000; updateBalDisplay(); firebaseSave();
       showResetAnimation();
