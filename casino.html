@@ -13776,12 +13776,8 @@ setTimeout(initLimitedCases, 1000);
   <div class="abuse-danger-stripe abuse-danger-bottom"></div>
   <div class="abuse-particles" id="abuseParticles"></div>
   <div class="abuse-rings" id="abuseRings"></div>
-  <div class="abuse-emoji-rain" id="abuseEmojiRain"></div>
   <div class="abuse-content" id="abuseContent">
-    <div class="abuse-warning-text" id="abuseWarning">⚠ SYSTEM COMPROMISED ⚠</div>
     <div class="abuse-glitch-text" id="abuseGlitchText" data-text="ADMIN ABUSE!!!">ADMIN ABUSE!!!</div>
-    <div class="abuse-subtitle" id="abuseSubtitle">THE ADMIN HAS SPOKEN</div>
-    <div class="abuse-emoji-row" id="abuseEmojiRow">💀🔥⚡💣🔥⚡💀</div>
   </div>
 </div>
 
@@ -14035,11 +14031,7 @@ function showAdminAbuse() {
   const content = document.getElementById('abuseContent');
   const particleContainer = document.getElementById('abuseParticles');
   const ringsContainer = document.getElementById('abuseRings');
-  const emojiRainContainer = document.getElementById('abuseEmojiRain');
   const glitchText = document.getElementById('abuseGlitchText');
-  const warningText = document.getElementById('abuseWarning');
-  const subtitle = document.getElementById('abuseSubtitle');
-  const emojiRow = document.getElementById('abuseEmojiRow');
   const dangerTop = el.querySelector('.abuse-danger-top');
   const dangerBottom = el.querySelector('.abuse-danger-bottom');
 
@@ -14049,18 +14041,12 @@ function showAdminAbuse() {
   el.style.opacity = '1';
   particleContainer.innerHTML = '';
   ringsContainer.innerHTML = '';
-  emojiRainContainer.innerHTML = '';
   glitchText.style.fontSize = '';
   glitchText.style.letterSpacing = '';
   glitchText.textContent = 'ADMIN ABUSE!!!';
   glitchText.setAttribute('data-text', 'ADMIN ABUSE!!!');
-  if (warningText) { warningText.style.opacity = '0'; warningText.textContent = '⚠ SYSTEM COMPROMISED ⚠'; }
-  if (subtitle) { subtitle.style.opacity = '0'; subtitle.textContent = 'THE ADMIN HAS SPOKEN'; }
-  if (emojiRow) emojiRow.style.opacity = '0';
   if (dangerTop) dangerTop.style.opacity = '0';
   if (dangerBottom) dangerBottom.style.opacity = '0';
-  clearInterval(window._abuseTextCycle);
-  clearInterval(window._abuseSubCycle);
 
   // ─── HELPERS ───
   function spawnParticles(count) {
@@ -14087,21 +14073,6 @@ function showAdminAbuse() {
     ring.style.borderColor = ring.style.color;
     ringsContainer.appendChild(ring);
     setTimeout(() => ring.remove(), 1500);
-  }
-
-  function spawnEmojiRain(count) {
-    const emojis = ['💀','🔥','⚡','💣','☠️','🚨','💥','👹','🔴','⛔'];
-    for (let i = 0; i < count; i++) {
-      const em = document.createElement('div');
-      em.className = 'abuse-emoji-drop';
-      em.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      em.style.left = (Math.random() * 100) + '%';
-      em.style.setProperty('--erot', (360 + Math.random() * 720) + 'deg');
-      em.style.animationDuration = (2 + Math.random() * 3) + 's';
-      em.style.animationDelay = (Math.random() * 1.5) + 's';
-      emojiRainContainer.appendChild(em);
-      setTimeout(() => em.remove(), 6000);
-    }
   }
 
   function spawnInvertFlash() {
@@ -14156,11 +14127,6 @@ function showAdminAbuse() {
   setTimeout(() => {
     el.classList.add('abuse-phase-2');
 
-    // Show warning text + subtitle + emoji row
-    if (warningText) warningText.style.opacity = '1';
-    if (subtitle) subtitle.style.opacity = '1';
-    if (emojiRow) emojiRow.style.opacity = '1';
-
     // Danger stripes appear
     if (dangerTop) dangerTop.style.opacity = '1';
     if (dangerBottom) dangerBottom.style.opacity = '1';
@@ -14169,26 +14135,6 @@ function showAdminAbuse() {
     spawnParticles(40);
     spawnRing('#0ff');
     setTimeout(() => spawnRing('#f0f'), 500);
-
-    // Start emoji rain
-    spawnEmojiRain(25);
-
-    // Text cycling - rapid messages
-    const msgs = ['ADMIN ABUSE!!!', 'GET REKT 💀', 'NO MERCY ⚡', '⚠ HACKED ⚠', 'GAME OVER', '💀 OWNED 💀'];
-    let mi = 0;
-    window._abuseTextCycle = setInterval(() => {
-      mi = (mi + 1) % msgs.length;
-      glitchText.textContent = msgs[mi];
-      glitchText.setAttribute('data-text', msgs[mi]);
-    }, 350);
-
-    // Subtitle cycling
-    const subs = ['THE ADMIN HAS SPOKEN', 'RESISTANCE IS FUTILE', 'FEAR THE ADMIN', 'ALL YOUR COINS ARE MINE', 'YOU HAVE BEEN CHOSEN'];
-    let si = 0;
-    window._abuseSubCycle = setInterval(() => {
-      si = (si + 1) % subs.length;
-      if (subtitle) subtitle.textContent = subs[si];
-    }, 600);
 
     // Extra shake
     document.body.style.animation = 'abuseViolentShake .3s ease-in-out 3';
@@ -14211,14 +14157,9 @@ function showAdminAbuse() {
   setTimeout(() => {
     el.classList.add('abuse-phase-3');
 
-    // Stop text cycling - lock on BIG message
-    clearInterval(window._abuseTextCycle);
-    clearInterval(window._abuseSubCycle);
-    glitchText.textContent = '💀 ADMIN ABUSE 💀';
-    glitchText.setAttribute('data-text', '💀 ADMIN ABUSE 💀');
+    // Text grows BIG for climax
     glitchText.style.fontSize = 'clamp(44px, 13vw, 130px)';
     glitchText.style.letterSpacing = 'clamp(6px, 1.5vw, 16px)';
-    if (subtitle) subtitle.textContent = '☠️ TOTAL DOMINATION ☠️';
 
     // Screen invert flash
     spawnInvertFlash();
@@ -14230,9 +14171,6 @@ function showAdminAbuse() {
     setTimeout(() => spawnRing('#ff0000'), 200);
     setTimeout(() => spawnRing('#ff4400'), 400);
     setTimeout(() => spawnRing('#ff6600'), 600);
-
-    // More emoji rain
-    spawnEmojiRain(30);
 
     // Violent shake
     document.body.style.animation = 'abuseViolentShake .3s ease-in-out 5';
@@ -14271,9 +14209,6 @@ function showAdminAbuse() {
     el.classList.add('abuse-fade');
     glitchText.style.fontSize = '';
     glitchText.style.letterSpacing = '';
-    glitchText.textContent = 'ADMIN ABUSE!!!';
-    glitchText.setAttribute('data-text', 'ADMIN ABUSE!!!');
-    if (subtitle) subtitle.textContent = '...fear the admin...';
     // Final gentle particles
     spawnParticles(20);
   }, 5500);
@@ -14291,11 +14226,8 @@ function closeAdminAbuse() {
   document.body.style.animation = '';
   document.getElementById('abuseParticles').innerHTML = '';
   document.getElementById('abuseRings').innerHTML = '';
-  document.getElementById('abuseEmojiRain').innerHTML = '';
   var gt = document.getElementById('abuseGlitchText');
   if (gt) { gt.style.fontSize = ''; gt.style.letterSpacing = ''; }
-  clearInterval(window._abuseTextCycle);
-  clearInterval(window._abuseSubCycle);
   clearTimeout(window._abuseDismissTimer);
 }
 
