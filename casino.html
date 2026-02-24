@@ -1298,12 +1298,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .coinflip-coin{width:clamp(80px,20vw,160px);height:clamp(80px,20vw,160px);border-radius:50%;background:linear-gradient(135deg,#ffd700,#ffaa00);border:4px solid #cc8800;display:flex;align-items:center;justify-content:center;font-size:clamp(40px,10vw,80px);animation:coinFlipSpin 3s cubic-bezier(.2,.8,.3,1) forwards;box-shadow:0 0 40px rgba(255,215,0,.4);}
 .coinflip-result{font-family:'Orbitron';font-size:clamp(24px,6vw,56px);font-weight:900;margin-top:20px;letter-spacing:3px;animation:doubleExplode 3s ease-out 3s forwards;opacity:0;}
 
-/* Mystery Box animation */
-@keyframes mysteryShake{0%,100%{transform:rotate(0)}10%{transform:rotate(-8deg)}20%{transform:rotate(8deg)}30%{transform:rotate(-6deg)}40%{transform:rotate(6deg)}50%{transform:rotate(-4deg)}60%{transform:rotate(4deg)}70%{transform:rotate(-2deg)}80%{transform:rotate(2deg)}}
-@keyframes mysteryOpen{0%{transform:scale(1)}50%{transform:scale(1.2)}51%{opacity:0;transform:scale(2)}100%{opacity:0}}
-.mystery-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none;background:radial-gradient(circle,rgba(170,68,255,.08) 0%,transparent 60%);}
-.mystery-box{font-size:clamp(60px,15vw,140px);animation:mysteryShake .5s ease-in-out 4,mysteryOpen .6s ease-out 2.5s forwards;filter:drop-shadow(0 0 30px rgba(170,68,255,.5));}
-.mystery-result{font-family:'Orbitron';font-size:clamp(18px,5vw,40px);font-weight:900;color:#aa44ff;text-shadow:0 0 30px rgba(170,68,255,.5);margin-top:16px;animation:doubleExplode 3s ease-out 3s forwards;opacity:0;}
+
 
 @media(max-width:600px){
   .event-body{flex-direction:column;}
@@ -13831,10 +13826,6 @@ setTimeout(initLimitedCases, 1000);
         <div class="ea-icon">💀</div>
         <div><div class="ea-label" style="color:#ff6666;">Admin Tax 50%</div><div class="ea-desc">Take half of everyone's money</div></div>
       </div>
-      <div class="event-action-btn" onclick="eventAction('mystery')">
-        <div class="ea-icon">🎁</div>
-        <div><div class="ea-label" style="color:#aa44ff;">Mystery Box</div><div class="ea-desc">Random effect — could be anything</div></div>
-      </div>
       <div class="event-action-btn" onclick="eventAction('fakereset')">
         <div class="ea-icon">☢️</div>
         <div><div class="ea-label" style="color:#ff0000;font-weight:900;">FAKE RESET PRANK</div><div class="ea-desc">Countdown "resetting all money" then says JK</div></div>
@@ -14150,7 +14141,7 @@ function showFakeResetAnimation() {
   setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 6500);
 }
 
-// ─── ANIMATION FUNCTIONS (Jackpot, CoinFlip, Tax, Mystery) ───
+// ─── ANIMATION FUNCTIONS (Jackpot, CoinFlip, Tax) ───
 function showJackpotAnimation(amount) {
   const overlay = document.createElement('div');
   overlay.className = 'jackpot-overlay';
@@ -14180,15 +14171,6 @@ function showTaxAnimation(taxed) {
   document.body.appendChild(overlay);
   try { playSound(100, 'sawtooth', 0.05, 0.4); } catch(e) {}
   setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 3500);
-}
-
-function showMysteryBoxAnimation(resultText) {
-  const overlay = document.createElement('div');
-  overlay.className = 'mystery-overlay';
-  overlay.innerHTML = '<div class="mystery-box">\u{1F381}</div><div class="mystery-result">' + resultText + '</div>';
-  document.body.appendChild(overlay);
-  try { for (let i = 0; i < 4; i++) setTimeout(() => playSound(300 + i * 100, 'square', 0.04, 0.1), i * 500); setTimeout(() => playSound(700, 'sine', 0.06, 0.3), 2500); } catch(e) {}
-  setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 6500);
 }
 
 // ─── QUICK ACTIONS (from admin panel) ───
@@ -14391,40 +14373,6 @@ async function eventAction(type) {
       time: now, isAdmin: true, isSystem: true
     });
   }
-  else if (type === 'mystery') {
-    const effects = ['double','rain','tax','jackpot','abuse'];
-    const pick = effects[Math.floor(Math.random() * effects.length)];
-    let mysteryText = '';
-    if (pick === 'double') {
-      await window._fbSet('casino/admin/action', { type: 'mystery', effect: 'double', time: now, by: window._currentUsername });
-      balance *= 2; updateBalDisplay(); firebaseSave();
-      mysteryText = '\u{1F4B0} DOUBLE! Everyone\'s money doubled!';
-    } else if (pick === 'rain') {
-      const amt = [1000,5000,25000,100000][Math.floor(Math.random()*4)];
-      await window._fbSet('casino/admin/action', { type: 'mystery', effect: 'rain', amount: amt, time: now, by: window._currentUsername });
-      balance += amt; updateBalDisplay(); firebaseSave();
-      mysteryText = '\u{1F327}\uFE0F RAIN! Everyone gets $' + amt.toLocaleString() + '!';
-    } else if (pick === 'tax') {
-      await window._fbSet('casino/admin/action', { type: 'mystery', effect: 'tax', time: now, by: window._currentUsername });
-      balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSave();
-      mysteryText = '\u{1F480} TAX! Lost half your money!';
-    } else if (pick === 'jackpot') {
-      const amt = [50000,100000,500000][Math.floor(Math.random()*3)];
-      await window._fbSet('casino/admin/action', { type: 'mystery', effect: 'jackpot', amount: amt, time: now, by: window._currentUsername });
-      balance += amt; updateBalDisplay(); firebaseSave();
-      mysteryText = '\u{1F3B0} MEGA JACKPOT! Everyone gets $' + amt.toLocaleString() + '!';
-    } else {
-      await window._fbSet('casino/admin/abuse', { time: now, by: window._currentUsername });
-      await window._fbSet('casino/admin/action', { type: 'mystery', effect: 'abuse', time: now, by: window._currentUsername });
-      mysteryText = '\u26A1 ADMIN ABUSE!!!';
-    }
-    showMysteryBoxAnimation(mysteryText);
-    const mk = now.toString(36) + 'sys';
-    await window._fbSet('casino/admin/eventChat/' + mk, {
-      user: 'SYSTEM', text: '\u{1F381} MYSTERY BOX: ' + mysteryText,
-      time: now, isAdmin: true, isSystem: true
-    });
-  }
   else if (type === 'abuse') {
     await window._fbSet('casino/admin/abuse', { time: now, by: window._currentUsername });
     const mk = now.toString(36) + 'sys';
@@ -14572,25 +14520,6 @@ function startAdminListeners() {
       balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSave();
       showTaxAnimation(taxed);
       showToast('\u{1F480} Admin Tax! Lost $' + taxed.toLocaleString(), false);
-    } else if (d.type === 'mystery') {
-      if (d.effect === 'double') {
-        balance *= 2; updateBalDisplay(); firebaseSave();
-        showMysteryBoxAnimation('\u{1F4B0} DOUBLE! Everyone\'s money doubled!');
-        setTimeout(() => showDoubleMoneyAnimation(), 3000);
-      } else if (d.effect === 'rain' && d.amount) {
-        balance += d.amount; updateBalDisplay(); firebaseSave();
-        showMysteryBoxAnimation('\u{1F327}\uFE0F RAIN! Everyone gets $' + d.amount.toLocaleString() + '!');
-        setTimeout(() => showMoneyRain(d.amount), 3000);
-      } else if (d.effect === 'tax') {
-        balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSave();
-        showMysteryBoxAnimation('\u{1F480} TAX! Lost half your money!');
-      } else if (d.effect === 'jackpot' && d.amount) {
-        balance += d.amount; updateBalDisplay(); firebaseSave();
-        showMysteryBoxAnimation('\u{1F3B0} MEGA JACKPOT! $' + d.amount.toLocaleString() + '!');
-        setTimeout(() => showMoneyRain(d.amount), 3000);
-      } else if (d.effect === 'abuse') {
-        showMysteryBoxAnimation('\u26A1 ADMIN ABUSE!!!');
-      }
     } else if (d.type === 'reset') {
       balance = 1000; updateBalDisplay(); firebaseSave();
       showResetAnimation();
