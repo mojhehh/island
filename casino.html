@@ -214,6 +214,11 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .case-card .case-icon{font-size:32px;margin-bottom:4px;}
 .case-card .case-name{font-weight:700;font-size:12px;margin-bottom:2px;}
 .case-card .case-price{color:var(--gold);font-family:'Orbitron';font-size:11px;}
+.case-card.limited{border-color:#ff4500;background:linear-gradient(135deg,rgba(255,69,0,.12),rgba(255,215,0,.08));position:relative;overflow:hidden;}
+.case-card.limited::before{content:'LIMITED';position:absolute;top:4px;right:-18px;background:linear-gradient(90deg,#ff4500,#ff8c00);color:#fff;font-size:7px;font-weight:900;padding:1px 20px;transform:rotate(30deg);font-family:'Orbitron';letter-spacing:0.5px;}
+.case-card.limited:hover{border-color:#ff8c00;box-shadow:0 0 20px rgba(255,69,0,.3);}
+.case-card.limited.selected{border-color:#ff4500;box-shadow:0 0 25px rgba(255,69,0,.4);}
+.case-card.limited .case-name{color:#ff8c00;}
 .case-opener{position:relative;width:min(700px,92vw);height:120px;background:var(--surface);
   border-radius:12px;border:1px solid var(--border);overflow:hidden;}
 .case-strip{display:flex;position:absolute;top:0;height:100%;transition:transform 4s cubic-bezier(.08,.82,.17,1);}
@@ -1396,6 +1401,31 @@ if (!localStorage.getItem('seen_db_switch_feb2026')) {
   const ov = document.getElementById('dbResetOverlay');
   ov.style.display = 'flex';
   ov.innerHTML = '<div class="db-reset-box"><div class="db-reset-icon">\ud83d\udd27</div><div class="db-reset-title">SERVER UPGRADE</div><div class="db-reset-msg">We had to switch to a new database \u2014 so many people were playing that the old one maxed out!<br><br>Everything has been reset. You\'ll need to <strong style=\"color:#ffd700;\">create a new account</strong> with your same username.<br><br>Sorry for the inconvenience! \ud83c\udfb0</div><button class="db-reset-btn" onclick="document.getElementById(\'dbResetOverlay\').style.display=\'none\';localStorage.setItem(\'seen_db_switch_feb2026\',\'1\');">GOT IT</button></div>';
+}
+</script>
+
+<!-- Update Changelog Popup -->
+<div id="updateChangelogOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:999998;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:dbResetFadeIn .4s ease;"></div>
+<script>
+if (!localStorage.getItem('seen_update_v4')) {
+  const ov = document.getElementById('updateChangelogOverlay');
+  ov.style.display = 'flex';
+  ov.innerHTML = '<div style="z-index:1;width:420px;max-height:80vh;overflow-y:auto;padding:32px 28px;background:linear-gradient(180deg,rgba(20,20,60,.97),rgba(12,12,30,.99));border:1px solid rgba(0,240,255,.3);border-radius:20px;box-shadow:0 0 80px rgba(0,240,255,.15),0 0 200px rgba(255,215,0,.08);text-align:center;animation:dbResetBoxIn .5s ease;">'
+    + '<div style="font-size:48px;margin-bottom:8px;animation:dbResetPulse 2s ease infinite;">\ud83d\ude80</div>'
+    + '<div style="font-family:Orbitron;font-weight:900;font-size:20px;background:linear-gradient(135deg,#00f0ff,#8847ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;letter-spacing:2px;">NEW UPDATE!</div>'
+    + '<div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:16px;font-family:Orbitron;">v4.0 — PRESTIGE & CASES UPDATE</div>'
+    + '<div style="text-align:left;font-size:13px;color:rgba(255,255,255,.85);line-height:1.8;margin-bottom:20px;">'
+    + '<div style="font-family:Orbitron;font-size:12px;color:#ffd700;margin-bottom:6px;font-weight:700;">\ud83d\udc51 PRESTIGE BENEFITS</div>'
+    + '<div style="padding-left:12px;margin-bottom:12px;">\u2022 Each prestige level now gives <b style=\"color:#4ade80;\">+5% win bonus</b> on ALL games!<br>\u2022 Level 5 = +25% bonus, Level 10 = +50% bonus, etc.<br>\u2022 Stacks with Lucky Potion boosts!</div>'
+    + '<div style="font-family:Orbitron;font-size:12px;color:#ff8c00;margin-bottom:6px;font-weight:700;">\ud83c\udfb0 NEW CASES</div>'
+    + '<div style="padding-left:12px;margin-bottom:12px;">\u2022 <b>Supernova Vault</b> ($1B) & <b>Omega Crate</b> ($25B) added<br>\u2022 All existing case prices rebalanced</div>'
+    + '<div style="font-family:Orbitron;font-size:12px;color:#ff4500;margin-bottom:6px;font-weight:700;">\ud83d\udd25 LIMITED EDITION CASES</div>'
+    + '<div style="padding-left:12px;margin-bottom:12px;">\u2022 <b style=\"color:#ff8c00;\">Inferno Box</b> ($500M), <b style=\"color:#ff8c00;\">Celestial Ark</b> ($10B), <b style=\"color:#ff8c00;\">God Box</b> ($100B)<br>\u2022 Exclusive items worth <b style=\"color:#ff4500;\">$500B — $5T!</b><br>\u2022 Way more valuable than any regular case!</div>'
+    + '<div style="font-family:Orbitron;font-size:12px;color:#4ade80;margin-bottom:6px;font-weight:700;">\ud83d\udcb0 ITEM VALUE OVERHAUL</div>'
+    + '<div style="padding-left:12px;margin-bottom:12px;">\u2022 All item base values massively increased (5-20x)<br>\u2022 Trading & selling actually worth it now!<br>\u2022 Mythic items worth up to <b style=\"color:#ffd700;\">$100B+</b></div>'
+    + '</div>'
+    + '<button onclick="document.getElementById(\'updateChangelogOverlay\').style.display=\'none\';localStorage.setItem(\'seen_update_v4\',\'1\');" style="padding:12px 32px;background:linear-gradient(135deg,#00f0ff,#8847ff);border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:Orbitron;font-size:12px;font-weight:900;letter-spacing:1px;box-shadow:0 4px 20px rgba(0,240,255,.3);transition:all .2s;">AWESOME!</button>'
+    + '</div>';
 }
 </script>
 
@@ -5694,7 +5724,13 @@ function renderPrestige() {
   if (badge) badge.innerHTML = prestigeLevel > 0 ? getPrestigeBadgeHTML(prestigeLevel) : '<span style="font-size:11px;color:var(--text2);">Not yet prestiged</span>';
   const req = getPrestigeReq();
   const reqEl = document.getElementById('prestigeReqText');
-  if (reqEl) reqEl.textContent = 'Requires $' + formatBalance(req) + ' balance to prestige.';
+  if (reqEl) {
+    const bonusPct = Math.round(prestigeLevel * 5);
+    const nextPct = Math.round((prestigeLevel + 1) * 5);
+    reqEl.innerHTML = 'Requires $' + formatBalance(req) + ' balance to prestige.' +
+      (prestigeLevel > 0 ? '<br><span style="color:var(--green);font-size:11px;">Current bonus: +' + bonusPct + '% win payouts</span>' : '') +
+      '<br><span style="color:var(--gold);font-size:11px;">Next level: +' + nextPct + '% win payouts</span>';
+  }
   const btn = document.getElementById('prestigeBtn');
   if (btn) btn.disabled = balance < req;
 }
@@ -5716,6 +5752,10 @@ function prestigeConfirm() {
     <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">
       Your balance will reset to <b style="color:var(--gold);">$1,000</b><br>
       You'll go from <b>Prestige ${prestigeLevel}</b> → <b style="color:var(--gold);">Prestige ${prestigeLevel + 1}</b><br>
+      <div style="margin:8px 0;padding:6px 12px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);border-radius:6px;">
+        <span style="color:var(--green);font-size:12px;font-weight:bold;">Win Bonus: +${Math.round(prestigeLevel * 5)}% → +${Math.round((prestigeLevel + 1) * 5)}%</span><br>
+        <span style="color:var(--text2);font-size:10px;">All game winnings boosted!</span>
+      </div>
       <span style="color:var(--text2);font-size:10px;">Your inventory, stats and achievements are kept.</span>
     </div>
     <div style="display:flex;gap:8px;justify-content:center;">
@@ -7947,97 +7987,126 @@ const RARITY={
 // Full item catalog — each item is a unique collectible
 const ITEM_CATALOG={
   // Consumer Grade
-  rustedCoin:      {id:'rustedCoin',      name:'Rusted Coin',        icon:'🪙', rarity:'consumer',  baseValue:15},
-  brokenCompass:   {id:'brokenCompass',   name:'Broken Compass',     icon:'🧭', rarity:'consumer',  baseValue:20},
-  driftwood:       {id:'driftwood',       name:'Driftwood Charm',    icon:'🪵', rarity:'consumer',  baseValue:12},
-  seaGlass:        {id:'seaGlass',        name:'Sea Glass',          icon:'💠', rarity:'consumer',  baseValue:18},
-  coconutShell:    {id:'coconutShell',    name:'Coconut Shell',      icon:'🥥', rarity:'consumer',  baseValue:10},
+  rustedCoin:      {id:'rustedCoin',      name:'Rusted Coin',        icon:'🪙', rarity:'consumer',  baseValue:50},
+  brokenCompass:   {id:'brokenCompass',   name:'Broken Compass',     icon:'🧭', rarity:'consumer',  baseValue:75},
+  driftwood:       {id:'driftwood',       name:'Driftwood Charm',    icon:'🪵', rarity:'consumer',  baseValue:40},
+  seaGlass:        {id:'seaGlass',        name:'Sea Glass',          icon:'💠', rarity:'consumer',  baseValue:65},
+  coconutShell:    {id:'coconutShell',    name:'Coconut Shell',      icon:'🥥', rarity:'consumer',  baseValue:30},
   // Industrial Grade
-  bronzeMedallion: {id:'bronzeMedallion', name:'Bronze Medallion',   icon:'🏅', rarity:'industrial',baseValue:60},
-  pearlFragment:   {id:'pearlFragment',   name:'Pearl Fragment',     icon:'⚪', rarity:'industrial',baseValue:80},
-  corkedBottle:    {id:'corkedBottle',    name:'Corked Bottle',      icon:'🍾', rarity:'industrial',baseValue:70},
-  ancientMap:      {id:'ancientMap',      name:'Ancient Map',        icon:'🗺️', rarity:'industrial', baseValue:90},
+  bronzeMedallion: {id:'bronzeMedallion', name:'Bronze Medallion',   icon:'🏅', rarity:'industrial',baseValue:250},
+  pearlFragment:   {id:'pearlFragment',   name:'Pearl Fragment',     icon:'⚪', rarity:'industrial',baseValue:350},
+  corkedBottle:    {id:'corkedBottle',    name:'Corked Bottle',      icon:'🍾', rarity:'industrial',baseValue:300},
+  ancientMap:      {id:'ancientMap',      name:'Ancient Map',        icon:'🗺️', rarity:'industrial', baseValue:400},
   // Mil-Spec Grade
-  silverDagger:    {id:'silverDagger',    name:'Silver Dagger',      icon:'🗡️', rarity:'milspec',   baseValue:200},
-  crystalOrb:      {id:'crystalOrb',      name:'Crystal Orb',        icon:'🔮', rarity:'milspec',   baseValue:250},
-  enchantedRing:   {id:'enchantedRing',   name:'Enchanted Ring',     icon:'💍', rarity:'milspec',   baseValue:300},
-  stormLantern:    {id:'stormLantern',    name:'Storm Lantern',      icon:'🏮', rarity:'milspec',   baseValue:220},
+  silverDagger:    {id:'silverDagger',    name:'Silver Dagger',      icon:'🗡️', rarity:'milspec',   baseValue:1000},
+  crystalOrb:      {id:'crystalOrb',      name:'Crystal Orb',        icon:'🔮', rarity:'milspec',   baseValue:1200},
+  enchantedRing:   {id:'enchantedRing',   name:'Enchanted Ring',     icon:'💍', rarity:'milspec',   baseValue:1500},
+  stormLantern:    {id:'stormLantern',    name:'Storm Lantern',      icon:'🏮', rarity:'milspec',   baseValue:900},
   // Restricted
-  goldenCompass:   {id:'goldenCompass',   name:'Golden Compass',     icon:'🧭', rarity:'restricted',baseValue:600},
-  dragonScale:     {id:'dragonScale',     name:'Dragon Scale',       icon:'🐉', rarity:'restricted',baseValue:750},
-  phoenixFeather:  {id:'phoenixFeather',  name:'Phoenix Feather',    icon:'🪶', rarity:'restricted',baseValue:700},
-  moonstone:       {id:'moonstone',       name:'Moonstone Gem',      icon:'🌙', rarity:'restricted',baseValue:650},
+  goldenCompass:   {id:'goldenCompass',   name:'Golden Compass',     icon:'🧭', rarity:'restricted',baseValue:3000},
+  dragonScale:     {id:'dragonScale',     name:'Dragon Scale',       icon:'🐉', rarity:'restricted',baseValue:4000},
+  phoenixFeather:  {id:'phoenixFeather',  name:'Phoenix Feather',    icon:'🪶', rarity:'restricted',baseValue:3500},
+  moonstone:       {id:'moonstone',       name:'Moonstone Gem',      icon:'🌙', rarity:'restricted',baseValue:3200},
   // Classified
-  voidShard:       {id:'voidShard',       name:'Void Shard',         icon:'♠️', rarity:'classified',baseValue:1500},
-  starforgedBlade: {id:'starforgedBlade', name:'Starforged Blade',   icon:'⚔️', rarity:'classified',baseValue:2000},
-  abyssalPearl:    {id:'abyssalPearl',    name:'Abyssal Pearl',      icon:'⚫', rarity:'classified',baseValue:1800},
+  voidShard:       {id:'voidShard',       name:'Void Shard',         icon:'♠️', rarity:'classified',baseValue:8000},
+  starforgedBlade: {id:'starforgedBlade', name:'Starforged Blade',   icon:'⚔️', rarity:'classified',baseValue:12000},
+  abyssalPearl:    {id:'abyssalPearl',    name:'Abyssal Pearl',      icon:'⚫', rarity:'classified',baseValue:10000},
   // Covert
-  dragonheart:     {id:'dragonheart',     name:'Dragonheart',        icon:'❤️‍🔥', rarity:'covert', baseValue:5000},
-  etherealCrown:   {id:'etherealCrown',   name:'Ethereal Crown',     icon:'👑', rarity:'covert',    baseValue:6000},
-  cosmicDust:      {id:'cosmicDust',      name:'Cosmic Dust',        icon:'✨', rarity:'covert',    baseValue:5500},
+  dragonheart:     {id:'dragonheart',     name:'Dragonheart',        icon:'❤️‍🔥', rarity:'covert', baseValue:30000},
+  etherealCrown:   {id:'etherealCrown',   name:'Ethereal Crown',     icon:'👑', rarity:'covert',    baseValue:40000},
+  cosmicDust:      {id:'cosmicDust',      name:'Cosmic Dust',        icon:'✨', rarity:'covert',    baseValue:35000},
   // Legendary
-  infinityGem:     {id:'infinityGem',     name:'Infinity Gem',       icon:'💎', rarity:'legendary', baseValue:15000},
-  islandRelic:     {id:'islandRelic',     name:'Island Relic',       icon:'🏝️', rarity:'legendary', baseValue:25000},
-  casinoChip:      {id:'casinoChip',      name:'Casino Royale Chip', icon:'🎰', rarity:'legendary', baseValue:30000},
+  infinityGem:     {id:'infinityGem',     name:'Infinity Gem',       icon:'💎', rarity:'legendary', baseValue:100000},
+  islandRelic:     {id:'islandRelic',     name:'Island Relic',       icon:'🏝️', rarity:'legendary', baseValue:200000},
+  casinoChip:      {id:'casinoChip',      name:'Casino Royale Chip', icon:'🎰', rarity:'legendary', baseValue:300000},
   // ----- NEW HIGH-VALUE ITEMS -----
   // Mega tier items (for whale cases)
-  obsidianCrown:   {id:'obsidianCrown',   name:'Obsidian Crown',     icon:'🖤', rarity:'legendary', baseValue:100000},
-  solarFlare:      {id:'solarFlare',      name:'Solar Flare',        icon:'☀️', rarity:'legendary', baseValue:200000},
-  voidEngine:      {id:'voidEngine',      name:'Void Engine',        icon:'⚙️', rarity:'legendary', baseValue:500000},
+  obsidianCrown:   {id:'obsidianCrown',   name:'Obsidian Crown',     icon:'🖤', rarity:'legendary', baseValue:1000000},
+  solarFlare:      {id:'solarFlare',      name:'Solar Flare',        icon:'☀️', rarity:'legendary', baseValue:3000000},
+  voidEngine:      {id:'voidEngine',      name:'Void Engine',        icon:'⚙️', rarity:'legendary', baseValue:10000000},
   // Mythic tier (ultra rare, whale bait)
-  worldEater:      {id:'worldEater',      name:'World Eater',        icon:'🌍', rarity:'mythic',    baseValue:2000000},
-  tidalForce:      {id:'tidalForce',      name:'Tidal Force',        icon:'🌊', rarity:'mythic',    baseValue:5000000},
-  cosmicTear:      {id:'cosmicTear',      name:'Cosmic Tear',        icon:'💧', rarity:'mythic',    baseValue:15000000},
-  galaxyHeart:     {id:'galaxyHeart',     name:'Galaxy Heart',       icon:'🫀', rarity:'mythic',    baseValue:50000000},
-  infinityCascade: {id:'infinityCascade', name:'Infinity Cascade',   icon:'♾️', rarity:'mythic',    baseValue:250000000},
-  bigBang:         {id:'bigBang',         name:'Big Bang',           icon:'💥', rarity:'mythic',    baseValue:1000000000},
+  worldEater:      {id:'worldEater',      name:'World Eater',        icon:'🌍', rarity:'mythic',    baseValue:50000000},
+  tidalForce:      {id:'tidalForce',      name:'Tidal Force',        icon:'🌊', rarity:'mythic',    baseValue:150000000},
+  cosmicTear:      {id:'cosmicTear',      name:'Cosmic Tear',        icon:'💧', rarity:'mythic',    baseValue:500000000},
+  galaxyHeart:     {id:'galaxyHeart',     name:'Galaxy Heart',       icon:'🫀', rarity:'mythic',    baseValue:2000000000},
+  infinityCascade: {id:'infinityCascade', name:'Infinity Cascade',   icon:'♾️', rarity:'mythic',    baseValue:10000000000},
+  bigBang:         {id:'bigBang',         name:'Big Bang',           icon:'💥', rarity:'mythic',    baseValue:100000000000},
+  // Limited Edition (rarer than mythic, exclusive to limited cases)
+  eternalFlame:    {id:'eternalFlame',    name:'Eternal Flame',      icon:'🔥', rarity:'mythic',    baseValue:500000000000},
+  timeWarp:        {id:'timeWarp',        name:'Time Warp',          icon:'⏳', rarity:'mythic',    baseValue:1000000000000},
+  omegaStar:       {id:'omegaStar',       name:'Omega Star',         icon:'⭐', rarity:'mythic',    baseValue:5000000000000},
 };
 
 // Case definitions — each references items from ITEM_CATALOG
 // RTP target: ~90-95% per case
 const CASES = [
-  { name:'Starter Crate', icon:'📦', price:50, items:[
+  { name:'Starter Crate', icon:'📦', price:100, items:[
     {id:'rustedCoin',w:20},{id:'brokenCompass',w:18},{id:'driftwood',w:18},{id:'seaGlass',w:16},
     {id:'coconutShell',w:18},{id:'bronzeMedallion',w:10},{id:'pearlFragment',w:8},{id:'corkedBottle',w:8},
     {id:'ancientMap',w:6},{id:'silverDagger',w:3},{id:'crystalOrb',w:2},{id:'enchantedRing',w:1}
   ]},
-  { name:'Explorer Chest', icon:'🧰', price:200, items:[
+  { name:'Explorer Chest', icon:'🧰', price:500, items:[
     {id:'bronzeMedallion',w:15},{id:'pearlFragment',w:14},{id:'corkedBottle',w:14},{id:'ancientMap',w:12},
     {id:'silverDagger',w:10},{id:'crystalOrb',w:8},{id:'enchantedRing',w:7},{id:'stormLantern',w:7},
     {id:'goldenCompass',w:4},{id:'dragonScale',w:3},{id:'phoenixFeather',w:3},{id:'moonstone',w:3}
   ]},
-  { name:'Mystic Vault', icon:'🔮', price:500, items:[
+  { name:'Mystic Vault', icon:'🔮', price:2000, items:[
     {id:'silverDagger',w:10},{id:'crystalOrb',w:10},{id:'enchantedRing',w:9},{id:'stormLantern',w:9},
     {id:'goldenCompass',w:8},{id:'dragonScale',w:7},{id:'phoenixFeather',w:7},{id:'moonstone',w:7},
     {id:'voidShard',w:4},{id:'starforgedBlade',w:3},{id:'abyssalPearl',w:3.5},
     {id:'dragonheart',w:1.2},{id:'etherealCrown',w:0.8},{id:'cosmicDust',w:1}
   ]},
-  { name:'Legendary Trove', icon:'👑', price:2000, items:[
+  { name:'Legendary Trove', icon:'👑', price:10000, items:[
     {id:'goldenCompass',w:8},{id:'dragonScale',w:8},{id:'phoenixFeather',w:8},{id:'moonstone',w:8},
     {id:'voidShard',w:7},{id:'starforgedBlade',w:6},{id:'abyssalPearl',w:6},
     {id:'dragonheart',w:5},{id:'etherealCrown',w:4},{id:'cosmicDust',w:4.5},
     {id:'infinityGem',w:2},{id:'islandRelic',w:1.2},{id:'casinoChip',w:1}
   ]},
-  { name:'Diamond Vault', icon:'💎', price:10000, items:[
+  { name:'Diamond Vault', icon:'💎', price:50000, items:[
     {id:'voidShard',w:10},{id:'starforgedBlade',w:9},{id:'abyssalPearl',w:9},
     {id:'dragonheart',w:8},{id:'etherealCrown',w:7},{id:'cosmicDust',w:7},
     {id:'infinityGem',w:6},{id:'islandRelic',w:4},{id:'casinoChip',w:4},
     {id:'obsidianCrown',w:2.5},{id:'solarFlare',w:1},{id:'voidEngine',w:0.4}
   ]},
-  { name:'Whale Chest', icon:'🐋', price:100000, items:[
+  { name:'Whale Chest', icon:'🐋', price:500000, items:[
     {id:'infinityGem',w:10},{id:'islandRelic',w:8},{id:'casinoChip',w:8},
     {id:'obsidianCrown',w:7},{id:'solarFlare',w:5},{id:'voidEngine',w:3},
     {id:'worldEater',w:1.5},{id:'tidalForce',w:0.8},{id:'cosmicTear',w:0.3}
   ]},
-  { name:'Cosmic Crate', icon:'🌌', price:1000000, items:[
+  { name:'Cosmic Crate', icon:'🌌', price:5000000, items:[
     {id:'obsidianCrown',w:10},{id:'solarFlare',w:8},{id:'voidEngine',w:6},
     {id:'worldEater',w:5},{id:'tidalForce',w:3},{id:'cosmicTear',w:1.5},
     {id:'galaxyHeart',w:0.5},{id:'infinityCascade',w:0.15}
   ]},
-  { name:'Big Bang Box', icon:'💥', price:50000000, items:[
+  { name:'Big Bang Box', icon:'💥', price:100000000, items:[
     {id:'voidEngine',w:10},{id:'worldEater',w:8},{id:'tidalForce',w:6},
     {id:'cosmicTear',w:5},{id:'galaxyHeart',w:3},{id:'infinityCascade',w:1.5},
     {id:'bigBang',w:0.5}
+  ]},
+  { name:'Supernova Vault', icon:'🔆', price:1000000000, items:[
+    {id:'worldEater',w:10},{id:'tidalForce',w:8},{id:'cosmicTear',w:7},
+    {id:'galaxyHeart',w:5},{id:'infinityCascade',w:3},{id:'bigBang',w:2},
+    {id:'eternalFlame',w:0.8},{id:'timeWarp',w:0.3}
+  ]},
+  { name:'Omega Crate', icon:'🌀', price:25000000000, items:[
+    {id:'cosmicTear',w:8},{id:'galaxyHeart',w:7},{id:'infinityCascade',w:5},
+    {id:'bigBang',w:4},{id:'eternalFlame',w:2},{id:'timeWarp',w:1.2},
+    {id:'omegaStar',w:0.3}
+  ]},
+  // ═══ LIMITED EDITION CASES — worth MORE than any regular case ═══
+  { name:'🔒 LIMITED: Inferno Box', icon:'🌋', price:500000000, limited:true, items:[
+    {id:'voidEngine',w:8},{id:'worldEater',w:7},{id:'tidalForce',w:6},{id:'cosmicTear',w:5},
+    {id:'galaxyHeart',w:4},{id:'infinityCascade',w:3},{id:'bigBang',w:2},
+    {id:'eternalFlame',w:1.5},{id:'timeWarp',w:0.5}
+  ]},
+  { name:'🔒 LIMITED: Celestial Ark', icon:'🛸', price:10000000000, limited:true, items:[
+    {id:'cosmicTear',w:7},{id:'galaxyHeart',w:6},{id:'infinityCascade',w:5},
+    {id:'bigBang',w:4},{id:'eternalFlame',w:3},{id:'timeWarp',w:2},
+    {id:'omegaStar',w:0.8}
+  ]},
+  { name:'🔒 LIMITED: God Box', icon:'⚡', price:100000000000, limited:true, items:[
+    {id:'galaxyHeart',w:6},{id:'infinityCascade',w:5},{id:'bigBang',w:5},
+    {id:'eternalFlame',w:4},{id:'timeWarp',w:3},{id:'omegaStar',w:1.5}
   ]}
 ];
 
@@ -8138,8 +8207,8 @@ function initCases() {
   const sel = document.getElementById('caseSelector');
   CASES.forEach((c, i) => {
     const card = document.createElement('div');
-    card.className = 'case-card' + (i === 0 ? ' selected' : '');
-    card.innerHTML = '<div class="case-icon">' + c.icon + '</div><div class="case-name">' + c.name + '</div><div class="case-price">$' + c.price.toLocaleString() + '</div>';
+    card.className = 'case-card' + (i === 0 ? ' selected' : '') + (c.limited ? ' limited' : '');
+    card.innerHTML = '<div class="case-icon">' + c.icon + '</div><div class="case-name">' + c.name + '</div><div class="case-price">$' + formatBalance(c.price) + '</div>';
     card.onclick = () => { selectedCase = i; document.querySelectorAll('.case-card').forEach(x => x.classList.remove('selected')); card.classList.add('selected'); playClickSound(); };
     sel.appendChild(card);
   });
@@ -8675,7 +8744,7 @@ function handlePlinkoHit(ball){
   const payouts=PLINKO_PAYOUTS[ballRows][ballRisk];
   if(!payouts){return;}
   const multiplier=payouts[binIndex];
-  const payout=betAmt*multiplier;
+  const payout=betAmt*multiplier*getPrestigeMultiplier();
   const profit=payout-betAmt;
 
   balance+=payout;
@@ -9305,7 +9374,7 @@ function pylSubmitScore() {
 
   else if (pylCurrentMode === 'highstakes') {
     if (score >= pylHSTarget) {
-      const payout = pylWagerAmount * pylHSMultiplier;
+      const payout = pylWagerAmount * pylHSMultiplier * getPrestigeMultiplier();
       balance += payout;
       updateBalDisplay();
       showToast('🔥 HIGH STAKES WIN! +$' + payout.toLocaleString() + '!');
@@ -9905,8 +9974,8 @@ function bjFinish(){
   const isNatural=bjPlayer.length===2&&pv===21;
   const dealerNatural=bjDealer.length===2&&dv===21;
   if(pv>21){msg='BUST!';showToast('-$'+bjBetAmt.toFixed(2),false);playLoseSound();}
-  else if(isNatural&&!dealerNatural){w=Math.round(bjBetAmt*2.5*100)/100;msg='BLACKJACK! +$'+w.toFixed(2);balance+=w;updateBalDisplay();showBigWin(w);showToast('BLACKJACK! +$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,40);}
-  else if(dv>21||pv>dv){w=bjBetAmt*2;msg='WIN +$'+w.toFixed(2);balance+=w;updateBalDisplay();showBigWin(w);showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,30);}
+  else if(isNatural&&!dealerNatural){w=Math.round(bjBetAmt*2.5*getPrestigeMultiplier()*100)/100;msg='BLACKJACK! +$'+w.toFixed(2);balance+=w;updateBalDisplay();showBigWin(w);showToast('BLACKJACK! +$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,40);}
+  else if(dv>21||pv>dv){w=bjBetAmt*2*getPrestigeMultiplier();msg='WIN +$'+w.toFixed(2);balance+=w;updateBalDisplay();showBigWin(w);showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,30);}
   else if(pv===dv){w=bjBetAmt;msg='PUSH';balance+=w;updateBalDisplay();showToast('Push');}
   else{msg='LOSE';showToast('-$'+bjBetAmt.toFixed(2),false);playLoseSound();}
   const r=document.getElementById('bjResult');r.textContent=msg;r.style.color=w>bjBetAmt?'var(--green)':w===bjBetAmt?'var(--gold)':'var(--red)';
@@ -9930,7 +9999,7 @@ function minesStart(){
   document.getElementById('minesStartBtn').style.display='none';document.getElementById('minesCashoutBtn').style.display='';
   document.getElementById('minesMultiplier').textContent='1.00×';document.getElementById('minesProfit').textContent='Next: $'+minesBetAmt.toFixed(2);playClickSound();
 }
-function minesCashout(){if(!minesActive||minesRevealed===0)return;const payout=minesBetAmt*minesMultiplier();balance+=payout;updateBalDisplay();
+function minesCashout(){if(!minesActive||minesRevealed===0)return;const payout=minesBetAmt*minesMultiplier()*getPrestigeMultiplier();balance+=payout;updateBalDisplay();
   showBigWin(payout);showToast('+$'+payout.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,30);
   minesActive=false;minesRevealAll();document.getElementById('minesStartBtn').style.display='';document.getElementById('minesCashoutBtn').style.display='none';
   recordGame('mines',minesBetAmt,payout);firebaseSaveNow();
@@ -9960,7 +10029,7 @@ function diceRoll(){if(diceRolling)return;const bet=parseBet(document.getElement
   balance-=bet;updateBalDisplay();firebaseSaveBet();let target=parseFloat(document.getElementById('diceSlider').value);target=Math.max(5,Math.min(95,target));const chance=diceMode==='over'?(100-target):target;const payout=chance>0?Math.min(Math.floor(99/chance*100)/100,9900):0;
   const roll=Math.random()*100;const won=diceMode==='over'?roll>target:roll<target;const display=document.getElementById('diceDisplay');
   display.textContent=roll.toFixed(2);display.style.color=won?'var(--green)':'var(--red)';
-  if(won){const w=bet*payout;balance+=w;updateBalDisplay();showBigWin(w);showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,25);recordGame('dice',bet,w);firebaseSaveNow();}
+  if(won){const w=bet*payout*getPrestigeMultiplier();balance+=w;updateBalDisplay();showBigWin(w);showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,25);recordGame('dice',bet,w);firebaseSaveNow();}
   else{showToast('-$'+bet.toFixed(2),false);playLoseSound();recordGame('dice',bet,0);}playClickSound();
   // Cooldown to prevent spam
   setTimeout(()=>{diceRolling=false;document.getElementById('diceSlider').disabled=false;},400);
@@ -9980,7 +10049,7 @@ function towerStart(){
   towerRender();document.getElementById('towerStartBtn').style.display='none';document.getElementById('towerCashoutBtn').style.display='';
   document.getElementById('towerInfo').innerHTML='Floor <span style="color:var(--neon)">1</span> — Pick a tile!';playClickSound();
 }
-function towerCashout(){if(!towerActive||towerRow===0)return;const p=towerBetAmt*towerMultiplier();balance+=p;updateBalDisplay();
+function towerCashout(){if(!towerActive||towerRow===0)return;const p=towerBetAmt*towerMultiplier()*getPrestigeMultiplier();balance+=p;updateBalDisplay();
   showBigWin(p);showToast('+$'+p.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,30);
   towerActive=false;towerRevealAll();document.getElementById('towerStartBtn').style.display='';document.getElementById('towerCashoutBtn').style.display='none';
   document.getElementById('towerInfo').textContent='Cashed out at '+towerMultiplier().toFixed(2)+'× — $'+p.toFixed(2);recordGame('tower',towerBetAmt,p);firebaseSaveNow();
@@ -10009,7 +10078,7 @@ function coinFlip(){if(coinFlipping)return;const bet=parseBet(document.getElemen
   const coin=document.getElementById('coinDisplay');coin.classList.remove('flip');void coin.offsetWidth;coin.classList.add('flip');playClickSound();
   const result=Math.random()<0.5?'heads':'tails';
   setTimeout(()=>{coin.textContent=result==='heads'?'👑':'🦅';const won=result===coinChoice;
-    if(won){const w=bet*1.96;balance+=w;updateBalDisplay();showBigWin(w);showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,25);
+    if(won){const w=bet*1.96*getPrestigeMultiplier();balance+=w;updateBalDisplay();showBigWin(w);showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,25);
       document.getElementById('coinResult').innerHTML='<span style="color:var(--green)">'+result.toUpperCase()+' — WIN!</span>';recordGame('coinflip',bet,w);firebaseSaveNow();}
     else{showToast('-$'+bet.toFixed(2),false);playLoseSound();document.getElementById('coinResult').innerHTML='<span style="color:var(--red)">'+result.toUpperCase()+' — LOSE</span>';recordGame('coinflip',bet,0);}
     coinFlipping=false;document.getElementById('coinFlipBtn').disabled=false;},800);
@@ -10027,7 +10096,7 @@ function kenoDraw(){if(kenoPlaying||kenoSelected.size===0)return;const bet=parse
   const drawn=new Set();while(drawn.size<10){drawn.add(Math.floor(Math.random()*40)+1);}
   const cells=document.querySelectorAll('.keno-num');let hits=0;const drawnArr=[...drawn];let idx=0;
   const revealInterval=setInterval(()=>{if(idx>=drawnArr.length){clearInterval(revealInterval);
-    const picks=kenoSelected.size;const payTable=KENO_PAYOUTS[picks];const mult=payTable&&payTable[hits]?payTable[hits]:0;const payout=bet*mult;
+    const picks=kenoSelected.size;const payTable=KENO_PAYOUTS[picks];const mult=payTable&&payTable[hits]?payTable[hits]:0;const payout=bet*mult*getPrestigeMultiplier();
     cells.forEach((c,i)=>{if(!drawn.has(i+1)&&!kenoSelected.has(i+1))c.classList.add('miss');});
     if(payout>0){balance+=payout;updateBalDisplay();showBigWin(payout);showToast(hits+' hits! +$'+payout.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,20+hits*10);
       document.getElementById('kenoResult').innerHTML='<span style="color:var(--green)">'+hits+' HITS — '+mult+'× — +$'+payout.toFixed(2)+'</span>';}
@@ -10050,7 +10119,7 @@ function limboGo(){if(limboRolling)return;const bet=parseBet(document.getElement
     display.textContent=Math.max(1,result).toFixed(2)+'×';const won=result>=target;
     display.style.color=won?'var(--green)':'var(--red)';
     if(limboBar){const pct=Math.min(100,(result/Math.max(target,2))*100);limboBar.style.width=pct+'%';limboBar.style.background=won?'var(--green)':'var(--red)';limboBar.style.boxShadow=won?'0 0 15px var(--green)':'0 0 15px var(--red)';}
-    if(won){const w=bet*target;balance+=w;updateBalDisplay();showBigWin(w);showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,25);recordGame('limbo',bet,w);addResultDot('limboHistory',target.toFixed(1)+'×',true);firebaseSaveNow();}
+    if(won){const w=bet*target*getPrestigeMultiplier();balance+=w;updateBalDisplay();showBigWin(w);showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,25);recordGame('limbo',bet,w);addResultDot('limboHistory',target.toFixed(1)+'×',true);firebaseSaveNow();}
     else{showToast('-$'+bet.toFixed(2),false);playLoseSound();recordGame('limbo',bet,0);addResultDot('limboHistory',result.toFixed(1)+'×',false);}
     limboRolling=false;document.getElementById('limboGoBtn').disabled=false;}
   else{display.textContent=cur.toFixed(2)+'×';display.style.color='var(--neon)';if(limboBar){const pct=Math.min(100,(cur/Math.max(target,2))*100);limboBar.style.width=pct+'%';limboBar.style.background=cur>=target?'var(--green)':'var(--neon)';limboBar.style.transition='width 0.05s';}playSound(400+cur*30,'sine',.02,.015);}},50);
@@ -10067,7 +10136,7 @@ function pokerDeal(){
   document.getElementById('pokerDealBtn').textContent='DRAW';document.getElementById('pokerResult').textContent='Click cards to hold, then DRAW';playClickSound();
 }
 function pokerDrawCards(){for(let i=0;i<5;i++){if(!pokerHeld[i])pokerHandArr[i]=pokerDeckArr.pop();}pokerPhase='done';pokerRender();
-  const result=pokerEvaluate();const mult=result.mult;const payout=pokerBetAmt*mult;
+  const result=pokerEvaluate();const mult=result.mult;const payout=pokerBetAmt*mult*getPrestigeMultiplier();
   if(payout>0){balance+=payout;updateBalDisplay();showBigWin(payout);showToast(result.name+' +$'+payout.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,20+mult*5);
     document.getElementById('pokerResult').innerHTML='<span style="color:var(--green)">'+result.name+' — '+mult+'× — +$'+payout.toFixed(2)+'</span>';}
   else{showToast('No win',false);playLoseSound();document.getElementById('pokerResult').innerHTML='<span style="color:var(--red)">No winning hand</span>';}
@@ -10579,7 +10648,7 @@ function horseRace() {
       const odds = myHorse.displayOdds;
 
       if (winner === hrLockedSelection) {
-        const w = bet * odds;
+        const w = bet * odds * getPrestigeMultiplier();
         balance += w;
         updateBalDisplay();
         if (typeof showBigWin === 'function') showBigWin(w);
@@ -10646,7 +10715,7 @@ function scratchReveal(i){if(!scratchActive)return;const cells=document.querySel
   cells[i].classList.add('revealed');cells[i].textContent=scratchCells[i];scratchRevealed++;playSound(500+Math.random()*200,'sine',.04,.03);
   if(scratchRevealed===9){scratchActive=false;document.getElementById('scratchRevealAllBtn').style.display='none';const tier=SCRATCH_TIERS[scratchTier];const counts={};scratchCells.forEach(s=>{counts[s]=(counts[s]||0)+1;});
     let maxC=0;Object.values(counts).forEach(c=>{if(c>maxC)maxC=c;});let payout=0;
-    if(maxC>=3){payout=tier.price*(maxC===3?3:maxC===4?10:50);payout=Math.min(payout,tier.maxWin);}
+    if(maxC>=3){payout=tier.price*(maxC===3?3:maxC===4?10:50)*getPrestigeMultiplier();payout=Math.min(payout,tier.maxWin);}
     if(payout>0){balance+=payout;updateBalDisplay();showBigWin(payout);showToast(maxC+' matches! +$'+payout.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,30);
       document.getElementById('scratchResult').innerHTML='<span style="color:var(--green)">'+maxC+' MATCHES — +$'+payout+'!</span>';recordGame('scratch',tier.price,payout);firebaseSaveNow();}
     else{showToast('No matches',false);playLoseSound();document.getElementById('scratchResult').innerHTML='<span style="color:var(--red)">No matches</span>';recordGame('scratch',tier.price,0);}
@@ -10677,7 +10746,7 @@ function wheelSpin(){if(wheelSpinning)return;const bet=parseBet(document.getElem
     if(prog<1)requestAnimationFrame(anim);
     else{wheelAngle=cur%(Math.PI*2);wheelSpinning=false;document.getElementById('wheelSpinBtn').disabled=false;
       /* Use predetermined segment (seg) for payout, not visual readback */
-      const payout=bet*seg.mult;
+      const payout=bet*seg.mult*getPrestigeMultiplier();
       if(payout>0){balance+=payout;updateBalDisplay();showBigWin(payout);showToast(seg.label+' +$'+payout.toFixed(2));if(seg.mult>=2)playWinSound();else playClickSound();
         if(seg.mult>=5)spawnParticles(window.innerWidth/2,window.innerHeight/2,30+seg.mult*5);
         document.getElementById('wheelResult').innerHTML='<span style="color:var(--green)">'+seg.label+' — +$'+payout.toFixed(2)+'</span>';recordGame('wheel',bet,payout);firebaseSaveNow();}
@@ -10723,7 +10792,7 @@ function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}cons
       document.getElementById('baccPlayerScore').textContent=pScore;
       document.getElementById('baccBankerScore').textContent=bScore;
       let winner=pScore>bScore?'player':bScore>pScore?'banker':'tie';let payout=0;
-      if(winner===baccBetType){if(baccBetType==='player')payout=bet*2;else if(baccBetType==='banker')payout=bet*1.95;else payout=bet*9;}
+      if(winner===baccBetType){if(baccBetType==='player')payout=bet*2*getPrestigeMultiplier();else if(baccBetType==='banker')payout=bet*1.95*getPrestigeMultiplier();else payout=bet*9*getPrestigeMultiplier();}
       else if(winner==='tie'&&baccBetType!=='tie'){payout=bet;}
       setTimeout(()=>{
         if(payout>bet){balance+=payout;updateBalDisplay();showBigWin(payout);showToast((winner==='tie'?'TIE':winner.toUpperCase())+' +$'+(payout-bet).toFixed(2));playWinSound();
@@ -10762,7 +10831,7 @@ function hiloStart(){if(hiloActive)return;const bet=parseBet(document.getElement
   hiloBetAmt=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();hiloActive=true;hiloStreakCount=0;hiloSkipCount=0;hiloDeck=newDeck();hiloCard=hiloDeck.pop();hiloRender();
   document.getElementById('hiloStartBtn').style.display='none';document.getElementById('hiloCashoutBtn').style.display='';playClickSound();
 }
-function hiloCashout(){if(!hiloActive||hiloStreakCount===0)return;const p=hiloBetAmt*hiloMultiplier();balance+=p;updateBalDisplay();
+function hiloCashout(){if(!hiloActive||hiloStreakCount===0)return;const p=hiloBetAmt*hiloMultiplier()*getPrestigeMultiplier();balance+=p;updateBalDisplay();
   showBigWin(p);showToast('+$'+p.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,25);hiloActive=false;
   document.getElementById('hiloStartBtn').style.display='';document.getElementById('hiloCashoutBtn').style.display='none';
   document.getElementById('hiloStreak').textContent='Cashed out '+hiloMultiplier().toFixed(2)+'× — $'+p.toFixed(2);recordGame('hilo',hiloBetAmt,p);firebaseSaveNow();
@@ -11742,7 +11811,7 @@ function bsrEndGame(won) {
   overlay.style.display = 'flex';
 
   if(won) {
-    const winnings = Math.floor(s.bet * s.mult);
+    const winnings = Math.floor(s.bet * s.mult * getPrestigeMultiplier());
     balance += winnings;
     updateBalDisplay();
     recordGame('rusroulette', s.bet, winnings);
@@ -12148,7 +12217,7 @@ function rrEndGame(winner) {
   const s = rrState;
   const diff = RR_DIFF[s.diff];
   const won = winner === 'player';
-  const winAmount = won ? Math.floor(s.bet * s.mult) : 0;
+  const winAmount = won ? Math.floor(s.bet * s.mult * getPrestigeMultiplier()) : 0;
   
   if (won) {
     balance += winAmount;
@@ -13152,7 +13221,7 @@ function cupsPick(slotIdx){
     picked.style.borderRadius='12px';
     if(correct){
       var mult=CUPS_MULTS[_cups.diff];
-      var win=Math.floor(_cups.bet*mult*100)/100;
+      var win=Math.floor(_cups.bet*mult*getPrestigeMultiplier()*100)/100;
       balance+=win;_balMark();updateBalDisplay();firebaseSaveNow();
       playWinSound();
       document.getElementById('cupsStatus').innerHTML='🎉 CORRECT! Won <strong style="color:var(--gold);">'+formatBalance(win)+' (×'+mult+')</strong>';
@@ -13828,11 +13897,17 @@ function shopBuyPotion(type) {
   shopRefresh();
 }
 
-// Helper: get current luck bonus multiplier
+// Helper: get current luck bonus multiplier (includes prestige)
 function getLuckBonus() {
   const lp = activePotions.luck || { stacks: 0, expires: 0 };
-  if (lp.stacks > 0 && lp.expires > Date.now()) return 1 + (lp.stacks * 0.05);
-  return 1;
+  let mult = getPrestigeMultiplier();
+  if (lp.stacks > 0 && lp.expires > Date.now()) mult *= (1 + (lp.stacks * 0.05));
+  return mult;
+}
+
+// Helper: prestige win bonus — +5% per prestige level (P1=1.05, P5=1.25, P10=1.5, etc.)
+function getPrestigeMultiplier() {
+  return 1 + (prestigeLevel * 0.05);
 }
 
 // Helper: check speed potion

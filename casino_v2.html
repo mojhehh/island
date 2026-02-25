@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>CASINO ROYALE v2</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🎰</text></svg>" type="image/svg+xml">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg: #0a0a1a;
+      --surface: #111128;
+      --surface2: #1a1a3e;
+      --border: #2a2a5e;
+      --gold: #ffd700;
+      --neon: #00f0ff;
+      --neon2: #ff00e5;
+      --green: #00ff88;
+      --red: #ff3355;
+      --text: #e8e8ff;
+      --text2: #8888aa;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      max-width: 100vw;
+    }
+
+    /* ═══════════════════════════ LAYOUT ═══════════════════════════ */
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(180deg, #15153a 0%, #0d0d25 100%);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      z-index: 1000;
+      gap: 16px;
+    }
+
+    .header-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--neon) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+      overflow-x: auto;
+      padding: 0 8px;
+      scroll-behavior: smooth;
+    }
+
+    .nav-item {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text2);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-item:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(255, 0, 229, 0.05) 100%);
+      color: var(--neon);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+    }
+
+    .header-stats {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .stat-label {
+      color: var(--text2);
+    }
+
+    .stat-value {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    }
+
+    .btn-add-money {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #1a5a1a 0%, #0a3a0a 100%);
+      color: var(--green);
+      font-weight: 700;
+      font-size: 11px;
+      cursor: pointer;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-add-money:hover {
+      background: linear-gradient(135deg, #2a7a2a 0%, #1a5a1a 100%);
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+      border-color: rgba(0, 255, 136, 0.6);
+    }
+
+    /* ═══════════════════════════ MAIN CONTENT ═══════════════════════════ */
+    main {
+      flex: 1;
+      margin-top: 60px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 20px;
+    }
+
+    .content-section {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ═══════════════════════════ GAMES GRID ═══════════════════════════ */
+    .games-section {
+      padding: 20px 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--neon);
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+    }
+
+    .section-icon {
+      font-size: 20px;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .game-card {
+      aspect-ratio: 1;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--surface2) 0%, var(--surface) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 12px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(0, 240, 255, 0.1) 0%, transparent 60%);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .game-card:hover::before {
+      opacity: 1;
+    }
+
+    .game-card:hover {
+      border-color: var(--neon);
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(255, 0, 229, 0.05) 100%);
+      transform: translateY(-6px) scale(1.05);
+      box-shadow: 0 8px 24px rgba(0, 240, 255, 0.2);
+    }
+
+    .game-icon {
+      font-size: 32px;
+      z-index: 1;
+    }
+
+    .game-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+      z-index: 1;
+    }
+
+    /* ═══════════════════════════ GAME MODALS ═══════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, var(--surface2) 0%, var(--surface) 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 70vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--neon);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text2);
+      font-size: 24px;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      color: var(--neon);
+      transform: rotate(90deg);
+    }
+
+    /* ═══════════════════════════ BUTTONS ═══════════════════════════ */
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--neon) 0%, #00d4ff 100%);
+      color: #000;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 24px rgba(0, 240, 255, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+      border-color: var(--neon);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--green) 0%, #00dd77 100%);
+      color: #000;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 24px rgba(0, 255, 136, 0.4);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--red) 0%, #ff5577 100%);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(255, 51, 85, 0.3);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 24px rgba(255, 51, 85, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ═══════════════════════════ FORMS ═══════════════════════════ */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      transition: var(--transition);
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--neon);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+    }
+
+    /* ═══════════════════════════ TOAST NOTIFICATIONS ═══════════════════════════ */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-size: 12px;
+      animation: slideIn 0.3s ease-out;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      max-width: 300px;
+    }
+
+    .toast.success {
+      border-color: var(--green);
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 200, 100, 0.05) 100%);
+    }
+
+    .toast.error {
+      border-color: var(--red);
+      background: linear-gradient(135deg, rgba(255, 51, 85, 0.1) 0%, rgba(200, 0, 50, 0.05) 100%);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* ═══════════════════════════ RESPONSIVE ═══════════════════════════ */
+    @media (max-width: 768px) {
+      header {
+        height: 50px;
+        padding: 0 12px;
+        gap: 8px;
+      }
+
+      .header-logo {
+        font-size: 16px;
+      }
+
+      main {
+        margin-top: 50px;
+      }
+
+      .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 8px;
+      }
+
+      .game-icon {
+        font-size: 28px;
+      }
+
+      .game-name {
+        font-size: 10px;
+      }
+
+      .modal-content {
+        padding: 16px;
+        width: 95%;
+      }
+
+      .header-nav {
+        display: none;
+      }
+
+      .games-section {
+        padding: 16px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+    <header>
+      <div class="header-logo">💰 CASINO ROYALE</div>
+      
+      <nav class="header-nav">
+        <button class="nav-item active" data-section="games">🎮 Games</button>
+        <button class="nav-item" data-section="slots">🎰 Slots</button>
+        <button class="nav-item" data-section="crash">📉 Crash</button>
+        <button class="nav-item" data-section="dice">🎲 Dice</button>
+        <button class="nav-item" data-section="leaderboard">🏆 Leaderboard</button>
+        <button class="nav-item" data-section="stats">📊 Stats</button>
+      </nav>
+
+      <div class="header-stats">
+        <div class="stat-item">
+          <span class="stat-label">Balance:</span>
+          <span class="stat-value" id="balanceDisplay">$1,000</span>
+        </div>
+        <button class="btn-add-money" onclick="showAddMoneyModal()">+ ADD</button>
+      </div>
+    </header>
+
+    <!-- ═══════════════════════════ MAIN CONTENT ═══════════════════════════ -->
+    <main>
+      <!-- Games Overview Section -->
+      <section class="content-section active" data-page="games">
+        <div class="games-section">
+          <div class="section-title">
+            <span class="section-icon">🎮</span>
+            Popular Games
+          </div>
+          <div class="games-grid" id="gamesGrid"></div>
+        </div>
+      </section>
+
+      <!-- Slots Section -->
+      <section class="content-section" data-page="slots">
+        <div class="games-section">
+          <div class="section-title">
+            <span class="section-icon">🎰</span>
+            Slot Machines
+          </div>
+          <p style="color: var(--text2); font-size: 12px; margin-bottom: 16px;">Classic spinning reels with multiple paylines and jackpots.</p>
+          <div class="games-grid" id="slotsGrid"></div>
+        </div>
+      </section>
+
+      <!-- Crash Section -->
+      <section class="content-section" data-page="crash">
+        <div class="games-section">
+          <div class="section-title">
+            <span class="section-icon">📉</span>
+            Crash Games
+          </div>
+          <p style="color: var(--text2); font-size: 12px; margin-bottom: 16px;">Predict when the multiplier will crash!</p>
+          <div class="games-grid" id="crashGrid"></div>
+        </div>
+      </section>
+
+      <!-- Dice Section -->
+      <section class="content-section" data-page="dice">
+        <div class="games-section">
+          <div class="section-title">
+            <span class="section-icon">🎲</span>
+            Dice Games
+          </div>
+          <p style="color: var(--text2); font-size: 12px; margin-bottom: 16px;">Roll the dice and test your luck.</p>
+          <div class="games-grid" id="diceGrid"></div>
+        </div>
+      </section>
+
+      <!-- Leaderboard Section -->
+      <section class="content-section" data-page="leaderboard">
+        <div class="games-section">
+          <div class="section-title">
+            <span class="section-icon">🏆</span>
+            Leaderboard
+          </div>
+          <div id="leaderboardContent" style="display: grid; gap: 12px;">
+            <p style="color: var(--text2); font-size: 12px; text-align: center;">Loading leaderboard...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="content-section" data-page="stats">
+        <div class="games-section">
+          <div class="section-title">
+            <span class="section-icon">📊</span>
+            Your Statistics
+          </div>
+          <div id="statsContent" style="display: grid; gap: 16px;">
+            <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+              <p style="color: var(--text2); font-size: 12px; margin-bottom: 8px;">Total Wagered</p>
+              <p style="font-size: 24px; font-weight: 700; color: var(--gold);">$0</p>
+            </div>
+            <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+              <p style="color: var(--text2); font-size: 12px; margin-bottom: 8px;">Games Played</p>
+              <p style="font-size: 24px; font-weight: 700; color: var(--neon);">0</p>
+            </div>
+            <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+              <p style="color: var(--text2); font-size: 12px; margin-bottom: 8px;">Win Rate</p>
+              <p style="font-size: 24px; font-weight: 700; color: var(--green);">0%</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ═══════════════════════════ MODALS ═══════════════════════════ -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalTitle">Game</h2>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <!-- Add Money Modal -->
+    <div class="modal-overlay" id="addMoneyModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">💰 Add Money</h2>
+          <button class="modal-close" onclick="closeAddMoneyModal()">✕</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount</label>
+          <input type="number" class="form-input" id="addMoneyInput" placeholder="Enter amount" min="1">
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-success" onclick="addMoney()" style="flex: 1;">Add Money</button>
+          <button class="btn btn-secondary" onclick="closeAddMoneyModal()" style="flex: 1;">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+  </div>
+
+  <script>
+    // ═══════════════════════════ STATE MANAGEMENT ═══════════════════════════
+    const gameState = {
+      balance: parseInt(localStorage.getItem('casino_balance')) || 1000,
+      username: localStorage.getItem('casino_username') || 'Player',
+      stats: {
+        gamesPlayed: parseInt(localStorage.getItem('casino_games_played')) || 0,
+        wagered: parseInt(localStorage.getItem('casino_wagered')) || 0,
+        wins: parseInt(localStorage.getItem('casino_wins')) || 0,
+      }
+    };
+
+    // ═══════════════════════════ GAME DEFINITIONS ═══════════════════════════
+    const games = [
+      { id: 'classic_slots', name: 'Classic Slots', icon: '🎰', category: 'slots', rtp: 96.5 },
+      { id: 'mega_slots', name: 'Mega Slots', icon: '🎰', category: 'slots', rtp: 95.8 },
+      { id: 'gold_slots', name: 'Gold Rush', icon: '✨', category: 'slots', rtp: 96.2 },
+      { id: 'diamond_slots', name: 'Diamond Mine', icon: '💎', category: 'slots', rtp: 95.5 },
+      
+      { id: 'crash_lite', name: 'Quick Crash', icon: '📉', category: 'crash', maxMultiplier: 100 },
+      { id: 'crash_pro', name: 'Crash Pro', icon: '🚀', category: 'crash', maxMultiplier: 500 },
+      
+      { id: 'dice_roll', name: 'Dice Roll', icon: '🎲', category: 'dice', minBet: 10 },
+      { id: 'lucky_draw', name: 'Lucky Draw', icon: '🎯', category: 'dice', minBet: 10 },
+      
+      { id: 'coin_flip', name: 'Coin Flip', icon: '🪙', category: 'other', odds: 50 },
+      { id: 'roulette', name: 'Roulette', icon: '🎡', category: 'other', odds: 48.64 },
+      { id: 'blackjack', name: 'Blackjack', icon: '🃏', category: 'other', rtp: 99.5 },
+      { id: 'baccarat', name: 'Baccarat', icon: '🎴', category: 'other', rtp: 98.8 },
+    ];
+
+    // ═══════════════════════════ DOM UPDATES ═══════════════════════════
+    function updateBalanceDisplay() {
+      document.getElementById('balanceDisplay').textContent = `$${gameState.balance.toLocaleString()}`;
+      localStorage.setItem('casino_balance', gameState.balance);
+    }
+
+    function renderGames() {
+      const grid = document.getElementById('gamesGrid');
+      grid.innerHTML = games.slice(0, 8).map(game => `
+        <div class="game-card" onclick="openGameModal('${game.id}')">
+          <div class="game-icon">${game.icon}</div>
+          <div class="game-name">${game.name}</div>
+        </div>
+      `).join('');
+
+      const slotsGrid = document.getElementById('slotsGrid');
+      slotsGrid.innerHTML = games.filter(g => g.category === 'slots').map(game => `
+        <div class="game-card" onclick="openGameModal('${game.id}')">
+          <div class="game-icon">${game.icon}</div>
+          <div class="game-name">${game.name}</div>
+        </div>
+      `).join('');
+
+      const crashGrid = document.getElementById('crashGrid');
+      crashGrid.innerHTML = games.filter(g => g.category === 'crash').map(game => `
+        <div class="game-card" onclick="openGameModal('${game.id}')">
+          <div class="game-icon">${game.icon}</div>
+          <div class="game-name">${game.name}</div>
+        </div>
+      `).join('');
+
+      const diceGrid = document.getElementById('diceGrid');
+      diceGrid.innerHTML = games.filter(g => g.category === 'dice').map(game => `
+        <div class="game-card" onclick="openGameModal('${game.id}')">
+          <div class="game-icon">${game.icon}</div>
+          <div class="game-name">${game.name}</div>
+        </div>
+      `).join('');
+    }
+
+    // ═══════════════════════════ NAVIGATION ═══════════════════════════
+    function switchSection(sectionId) {
+      // Update nav items
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // Update sections
+      document.querySelectorAll('[data-page]').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.querySelector(`[data-page="${sectionId}"]`).classList.add('active');
+    }
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        switchSection(item.getAttribute('data-section'));
+      });
+    });
+
+    // ═══════════════════════════ MODALS ═══════════════════════════
+    function openGameModal(gameId) {
+      const game = games.find(g => g.id === gameId);
+      if (!game) return;
+
+      document.getElementById('modalTitle').textContent = `${game.icon} ${game.name}`;
+      
+      const betAmount = Math.max(1, Math.floor(gameState.balance * 0.1));
+      
+      const html = `
+        <div class="form-group">
+          <label class="form-label">Bet Amount</label>
+          <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+            <input type="number" class="form-input" id="betAmount" value="${betAmount}" min="1" style="flex: 1;">
+            <button class="btn btn-secondary" onclick="setBetAmount(Math.floor(gameState.balance * 0.1))" style="flex-shrink: 0;">10%</button>
+            <button class="btn btn-secondary" onclick="setBetAmount(Math.floor(gameState.balance * 0.5))" style="flex-shrink: 0;">50%</button>
+            <button class="btn btn-secondary" onclick="setBetAmount(gameState.balance)" style="flex-shrink: 0;">Max</button>
+          </div>
+          <p style="font-size: 11px; color: var(--text2);">You can bet up to: $${gameState.balance.toLocaleString()}</p>
+        </div>
+        <button class="btn btn-success" onclick="playGame('${gameId}')" style="width: 100%; margin-bottom: 8px;">PLAY ${game.name.toUpperCase()}</button>
+        <button class="btn btn-secondary" onclick="closeModal()" style="width: 100%;">Close</button>
+      `;
+
+      document.getElementById('modalBody').innerHTML = html;
+      document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+    }
+
+    function setBetAmount(amount) {
+      document.getElementById('betAmount').value = Math.min(amount, gameState.balance);
+    }
+
+    function showAddMoneyModal() {
+      document.getElementById('addMoneyModal').classList.add('active');
+      document.getElementById('addMoneyInput').focus();
+    }
+
+    function closeAddMoneyModal() {
+      document.getElementById('addMoneyModal').classList.remove('active');
+    }
+
+    function addMoney() {
+      const amount = parseInt(document.getElementById('addMoneyInput').value);
+      if (isNaN(amount) || amount < 1) {
+        showToast('Invalid amount', 'error');
+        return;
+      }
+      gameState.balance += amount;
+      updateBalanceDisplay();
+      closeAddMoneyModal();
+      showToast(`Added $${amount.toLocaleString()}!`, 'success');
+    }
+
+    // ═══════════════════════════ GAME LOGIC ═══════════════════════════
+    function playGame(gameId) {
+      const game = games.find(g => g.id === gameId);
+      const betEl = document.getElementById('betAmount');
+      const bet = parseInt(betEl.value);
+
+      if (isNaN(bet) || bet < 1) {
+        showToast('Invalid bet amount', 'error');
+        return;
+      }
+
+      if (bet > gameState.balance) {
+        showToast('Insufficient balance', 'error');
+        return;
+      }
+
+      // Deduct bet
+      gameState.balance -= bet;
+      gameState.stats.wagered += bet;
+      gameState.stats.gamesPlayed += 1;
+      updateBalanceDisplay();
+
+      // Simulate game result
+      const result = Math.random();
+      const win = result > 0.45;
+      const multiplier = win ? (Math.random() * 2.5 + 1) : 0;
+      const payout = Math.floor(bet * multiplier);
+
+      if (win) {
+        gameState.balance += payout;
+        gameState.stats.wins += 1;
+        showToast(`🎉 Won $${payout}!`, 'success');
+      } else {
+        showToast(`😢 Lost $${bet}`, 'error');
+      }
+
+      updateBalanceDisplay();
+      localStorage.setItem('casino_games_played', gameState.stats.gamesPlayed);
+      localStorage.setItem('casino_wagered', gameState.stats.wagered);
+      localStorage.setItem('casino_wins', gameState.stats.wins);
+
+      closeModal();
+    }
+
+    // ═══════════════════════════ TOAST NOTIFICATIONS ═══════════════════════════
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(110%)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // ═══════════════════════════ INITIALIZATION ═══════════════════════════
+    window.addEventListener('DOMContentLoaded', () => {
+      updateBalanceDisplay();
+      renderGames();
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        closeAddMoneyModal();
+      }
+    });
+  </script>
+</body>
+</html>
