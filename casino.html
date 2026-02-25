@@ -49,11 +49,12 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 
 /* ============ NEW GAMES STYLES ============ */
 .catalog-card{position:relative;overflow:visible;}
-.cup-slot{display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .15s;}
-.cup-slot:hover{transform:scale(1.08);}
+.cup-slot{display:flex;flex-direction:column;align-items:center;cursor:pointer;user-select:none;width:80px;}
+.cup-slot:hover{filter:brightness(1.2);}
+.cup-inner{display:flex;flex-direction:column;align-items:center;position:relative;}
 .cup{font-size:72px;transition:transform .3s ease;user-select:none;}
 .cup.lifted{transform:translateY(-40px);}
-.cup-ball{font-size:28px;margin-top:-8px;}
+.cup-ball{font-size:28px;margin-top:-8px;opacity:0;transition:opacity .2s;}
 .cup-slot.disabled{pointer-events:none;opacity:.7;}
 
 
@@ -2663,11 +2664,7 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
     <button class="action-btn" onclick="cupsSetDiff(2)" id="cupsDiff2" style="padding:8px 16px;font-size:12px;">Medium (×3.5)</button>
     <button class="action-btn" onclick="cupsSetDiff(3)" id="cupsDiff3" style="padding:8px 16px;font-size:12px;">Hard (×5)</button>
   </div>
-  <div id="cupsArea" style="display:flex;justify-content:center;gap:32px;margin:24px 0;min-height:140px;align-items:flex-end;">
-    <div class="cup-slot" id="cupSlot0" onclick="cupsPick(0)"><div class="cup" id="cup0">🏆</div><div class="cup-ball" id="ball0" style="display:none;">⚽</div></div>
-    <div class="cup-slot" id="cupSlot1" onclick="cupsPick(1)"><div class="cup" id="cup1">🏆</div><div class="cup-ball" id="ball1" style="display:none;">⚽</div></div>
-    <div class="cup-slot" id="cupSlot2" onclick="cupsPick(2)"><div class="cup" id="cup2">🏆</div><div class="cup-ball" id="ball2" style="display:none;">⚽</div></div>
-  </div>
+  <div id="cupsArea" style="display:flex;justify-content:center;gap:40px;margin:24px 0;min-height:150px;align-items:flex-end;"></div>
   <div id="cupsStatus" style="text-align:center;font-family:'Orbitron';font-size:16px;color:var(--text);margin-bottom:12px;min-height:24px;">Place your bet and start!</div>
   <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
     <input type="text" id="cupsBet" value="100" style="width:120px;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:15px;text-align:center;">
@@ -13026,25 +13023,28 @@ function rrDeclinePvPChallenge(gameId) {
 
 
 // ============ CUP SHUFFLE GAME ============
-let cupsActive=false,cupsBallPos=0,cupsDifficulty=1,cupsBetAmt=0;
-// cupsOrder[visualPosition] = cupId — tracks which cup is at which visual slot
-let cupsOrder=[0,1,2];
-const CUPS_MULTS=[0,2.5,3.5,5.0];const CUPS_SHUFFLES=[0,6,12,20];
-const CUPS_SLOT_GAP=104; // approximate px between cup slot centers (72px cup + 32px gap)
+const _cups={active:false,ballCup:0,slots:[0,1,2],bet:0,diff:1};
+const CUPS_MULTS=[0,2.5,3.5,5.0];
+const CUPS_SHUFFLES=[0,6,12,20];
 
 function cupsInit(){
-  // Reset cup positions
-  cupsOrder=[0,1,2];
-  cupsApplyPositions(false);
+  _cups.slots=[0,1,2];
+  _cups.active=false;
+  const area=document.getElementById('cupsArea');
+  if(!area)return;
+  area.innerHTML='';
   for(let i=0;i<3;i++){
-    document.getElementById('cup'+i).classList.remove('lifted');
-    document.getElementById('ball'+i).style.display='none';
+    const s=document.createElement('div');
+    s.className='cup-slot';
+    s.onclick=(function(pos){return function(){cupsPick(pos);};})(i);
+    s.innerHTML='<div class="cup-inner"><div class="cup">🏆</div><div class="cup-ball">⚽</div></div>';
+    area.appendChild(s);
   }
   document.getElementById('cupsStatus').textContent='Place your bet and start!';
 }
 
 function cupsSetDiff(d){
-  cupsDifficulty=d;
+  _cups.diff=d;
   for(let i=1;i<=3;i++){
     const btn=document.getElementById('cupsDiff'+i);
     if(i===d){btn.style.borderColor='var(--green)';btn.style.background='rgba(0,230,118,.15)';}
@@ -13052,112 +13052,127 @@ function cupsSetDiff(d){
   }
 }
 
-// Apply CSS transforms to move cups to their visual positions (no DOM reordering)
-function cupsApplyPositions(animated){
-  for(let cupId=0;cupId<3;cupId++){
-    const visualPos=cupsOrder.indexOf(cupId);
-    const slot=document.getElementById('cupSlot'+cupId);
-    if(!slot)continue;
-    // Each cup's "home" DOM position is at index cupId.
-    // We need to shift it to visualPos using translateX.
-    const dx=(visualPos-cupId)*CUPS_SLOT_GAP;
-    slot.style.transition=animated?'transform 0.25s ease':'none';
-    slot.style.transform=dx?'translateX('+dx+'px)':'';
+function _cupsSlots(){return Array.from(document.getElementById('cupsArea').children);}
+
+function _cupsSwap(posA,posB){
+  return new Promise(function(resolve){
+    var slotEls=_cupsSlots();
+    var elA=slotEls[posA],elB=slotEls[posB];
+    if(!elA||!elB){resolve();return;}
+    var innerA=elA.querySelector('.cup-inner');
+    var innerB=elB.querySelector('.cup-inner');
+    var rA=elA.getBoundingClientRect();
+    var rB=elB.getBoundingClientRect();
+    var dx=rB.left+rB.width/2-rA.left-rA.width/2;
+    innerA.style.transition='transform 0.22s cubic-bezier(.4,0,.2,1)';
+    innerB.style.transition='transform 0.22s cubic-bezier(.4,0,.2,1)';
+    void innerA.offsetHeight;
+    innerA.style.transform='translateX('+dx+'px)';
+    innerB.style.transform='translateX('+(-dx)+'px)';
+    setTimeout(function(){
+      innerA.style.transition='none';
+      innerB.style.transition='none';
+      var ph=document.createComment('');
+      elA.insertBefore(ph,innerA);
+      elB.appendChild(innerA);
+      elA.insertBefore(innerB,ph);
+      ph.remove();
+      innerA.style.transform='';
+      innerB.style.transform='';
+      var tmp=_cups.slots[posA];
+      _cups.slots[posA]=_cups.slots[posB];
+      _cups.slots[posB]=tmp;
+      resolve();
+    },240);
+  });
+}
+
+async function _cupsDoShuffle(count){
+  for(var i=0;i<count;i++){
+    var a=Math.floor(Math.random()*3),b;
+    do{b=Math.floor(Math.random()*3);}while(b===a);
+    await _cupsSwap(a,b);
+    var pause=Math.max(30,100-i*3);
+    await new Promise(function(r){setTimeout(r,pause);});
   }
 }
 
 function cupsStart(){
-  if(cupsActive)return;
-  const bet=parseBet(document.getElementById('cupsBet').value)||100;
-  if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
+  if(_cups.active)return;
+  var bet=parseBet(document.getElementById('cupsBet').value)||100;
+  if(bet<=0)return;
+  if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet))return;
-  balance-=bet;cupsBetAmt=bet;_balMark();updateBalDisplay();firebaseSaveBet();
-  cupsActive=true;
-  document.getElementById('cupsStartBtn').disabled=true;
-  document.getElementById('cupsStartBtn').style.opacity='0.5';
+  balance-=bet;_cups.bet=bet;_cups.active=true;
+  _balMark();updateBalDisplay();firebaseSaveBet();
+  var btn=document.getElementById('cupsStartBtn');
+  btn.disabled=true;btn.style.opacity='0.5';
+  cupsInit();
+  _cups.active=true;
+  _cups.ballCup=Math.floor(Math.random()*3);
   document.getElementById('cupsStatus').textContent='Watch carefully...';
-  // Reset positions
-  cupsOrder=[0,1,2];
-  cupsApplyPositions(false);
-  cupsBallPos=Math.floor(Math.random()*3);
-  // Hide balls, remove lifted
-  for(let i=0;i<3;i++){
-    document.getElementById('cup'+i).classList.remove('lifted');
-    document.getElementById('ball'+i).style.display='none';
-    document.getElementById('cupSlot'+i).style.pointerEvents='none';
-  }
-  // Lift cups to show ball
-  setTimeout(()=>{
-    for(let i=0;i<3;i++)document.getElementById('cup'+i).classList.add('lifted');
-    document.getElementById('ball'+cupsBallPos).style.display='block';
+  var slotEls=_cupsSlots();
+  slotEls.forEach(function(s){s.style.pointerEvents='none';});
+  setTimeout(function(){
+    var els=_cupsSlots();
+    els.forEach(function(s){s.querySelector('.cup').classList.add('lifted');});
+    var ballPos=_cups.slots.indexOf(_cups.ballCup);
+    els[ballPos].querySelector('.cup-ball').style.opacity='1';
   },400);
-  // Lower cups
-  setTimeout(()=>{
-    for(let i=0;i<3;i++){document.getElementById('cup'+i).classList.remove('lifted');document.getElementById('ball'+i).style.display='none';}
+  setTimeout(function(){
+    var els=_cupsSlots();
+    els.forEach(function(s){
+      s.querySelector('.cup').classList.remove('lifted');
+      s.querySelector('.cup-ball').style.opacity='0';
+    });
   },1800);
-  // Start shuffling
-  setTimeout(()=>{
+  setTimeout(async function(){
     document.getElementById('cupsStatus').textContent='Shuffling...';
-    cupsDoShuffle(0,CUPS_SHUFFLES[cupsDifficulty]);
+    await _cupsDoShuffle(CUPS_SHUFFLES[_cups.diff]);
+    document.getElementById('cupsStatus').textContent='Pick a cup!';
+    _cupsSlots().forEach(function(s){s.style.pointerEvents='';});
   },2200);
 }
 
-function cupsDoShuffle(step,total){
-  if(step>=total){
-    document.getElementById('cupsStatus').textContent='Pick a cup!';
-    for(let i=0;i<3;i++)document.getElementById('cupSlot'+i).style.pointerEvents='';
-    return;
-  }
-  // Pick two random visual positions to swap
-  let a=Math.floor(Math.random()*3),b;
-  do{b=Math.floor(Math.random()*3);}while(b===a);
-  // Swap the cups at those visual positions
-  const tmp=cupsOrder[a];cupsOrder[a]=cupsOrder[b];cupsOrder[b]=tmp;
-  cupsApplyPositions(true);
-  // Speed increases over time
-  const delay=Math.max(150,320-step*8);
-  setTimeout(()=>cupsDoShuffle(step+1,total),delay);
-}
-
-function cupsPick(cupId){
-  if(!cupsActive)return;
-  cupsActive=false;
-  // Disable all cups
-  for(let i=0;i<3;i++)document.getElementById('cupSlot'+i).style.pointerEvents='none';
-  // Lift all cups
-  for(let i=0;i<3;i++)document.getElementById('cup'+i).classList.add('lifted');
-  const correct=(cupId===cupsBallPos);
-  // Show ball under correct cup
-  setTimeout(()=>{
-    document.getElementById('ball'+cupsBallPos).style.display='block';
-    // Highlight picked cup
-    const pickedSlot=document.getElementById('cupSlot'+cupId);
-    pickedSlot.style.outline=correct?'3px solid var(--green)':'3px solid var(--red)';
-    pickedSlot.style.outlineOffset='4px';
-    pickedSlot.style.borderRadius='12px';
+function cupsPick(slotIdx){
+  if(!_cups.active)return;
+  _cups.active=false;
+  var slotEls=_cupsSlots();
+  slotEls.forEach(function(s){s.style.pointerEvents='none';});
+  var pickedCup=_cups.slots[slotIdx];
+  var correct=(pickedCup===_cups.ballCup);
+  slotEls.forEach(function(s){s.querySelector('.cup').classList.add('lifted');});
+  setTimeout(function(){
+    var els=_cupsSlots();
+    var ballPos=_cups.slots.indexOf(_cups.ballCup);
+    els[ballPos].querySelector('.cup-ball').style.opacity='1';
+    var picked=els[slotIdx];
+    picked.style.outline=correct?'3px solid var(--green)':'3px solid var(--red)';
+    picked.style.outlineOffset='4px';
+    picked.style.borderRadius='12px';
     if(correct){
-      const mult=CUPS_MULTS[cupsDifficulty];
-      const win=Math.floor(cupsBetAmt*mult*100)/100;
+      var mult=CUPS_MULTS[_cups.diff];
+      var win=Math.floor(_cups.bet*mult*100)/100;
       balance+=win;_balMark();updateBalDisplay();firebaseSaveNow();
       playWinSound();
-      document.getElementById('cupsStatus').innerHTML='\ud83c\udf89 CORRECT! Won <strong style=\"color:var(--gold);\">$'+win.toLocaleString()+' (\u00d7'+mult+')</strong>';
-      showToast('+$'+win.toLocaleString(),true);
-      if(window._broadcastWin&&win>=cupsBetAmt*3)window._broadcastWin(window._currentUsername,win,'cups');
-      if(window._recordGameResult)window._recordGameResult('cups',cupsBetAmt,win);
+      document.getElementById('cupsStatus').innerHTML='🎉 CORRECT! Won <strong style="color:var(--gold);">'+formatBalance(win)+' (×'+mult+')</strong>';
+      showToast('+'+formatBalance(win),true);
+      if(window._broadcastWin&&win>=_cups.bet*3)window._broadcastWin(window._currentUsername,win,'cups');
+      if(window._recordGameResult)window._recordGameResult('cups',_cups.bet,win);
     }else{
       playLoseSound();
-      document.getElementById('cupsStatus').innerHTML='\u274c Wrong cup! Lost <strong style=\"color:var(--red);\">$'+cupsBetAmt.toLocaleString()+'</strong>';
-      showToast('-$'+cupsBetAmt.toLocaleString(),false);
-      if(window._recordGameResult)window._recordGameResult('cups',cupsBetAmt,0);
+      document.getElementById('cupsStatus').innerHTML='❌ Wrong cup! Lost <strong style="color:var(--red);">'+formatBalance(_cups.bet)+'</strong>';
+      showToast('-'+formatBalance(_cups.bet),false);
+      if(window._recordGameResult)window._recordGameResult('cups',_cups.bet,0);
     }
-    // Re-enable start button after short delay
-    setTimeout(()=>{
-      document.getElementById('cupsStartBtn').disabled=false;
-      document.getElementById('cupsStartBtn').style.opacity='';
-      pickedSlot.style.outline='';pickedSlot.style.outlineOffset='';
+    setTimeout(function(){
+      var b=document.getElementById('cupsStartBtn');
+      b.disabled=false;b.style.opacity='';
+      picked.style.outline='';picked.style.outlineOffset='';
     },1200);
   },500);
 }
+cupsInit();
 
 
 // ============ MODERATION SYSTEM ============
