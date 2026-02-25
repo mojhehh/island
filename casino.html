@@ -2869,6 +2869,18 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
           <button onclick="adminClearChat()" style="padding:8px;background:linear-gradient(135deg,#ff6600,#ff3300);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">🧹 CLEAR CHAT</button>
         </div>
       </div>
+      <!-- Reset Specific Player -->
+      <div style="background:var(--bg);border:1px solid rgba(255,0,0,.3);border-radius:8px;padding:12px;margin-bottom:8px;">
+        <div style="font-size:10px;color:#ff4444;letter-spacing:1px;margin-bottom:8px;">🎯 RESET SPECIFIC PLAYER</div>
+        <div style="display:flex;gap:6px;margin-bottom:6px;">
+          <input type="text" id="adminResetPlayerName" placeholder="Username..." style="flex:1;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;" maxlength="20">
+          <button onclick="adminResetPlayer()" style="padding:8px 12px;background:linear-gradient(135deg,#ff0044,#cc0000);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:10px;">RESET</button>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button onclick="adminResetPlayer(true)" style="flex:1;padding:6px;background:linear-gradient(135deg,#880000,#440000);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:9px;">🗑️ FULL WIPE (bal+stats+inv)</button>
+        </div>
+        <div id="adminResetPlayerResult" style="font-size:10px;color:var(--text2);margin-top:6px;"></div>
+      </div>
       <!-- Mod Panel Button -->
       <div>
         <button onclick="modOpenPanel()" style="width:100%;padding:10px;background:linear-gradient(135deg,#ff0000,#ff6600);border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:900;font-size:12px;font-family:'Orbitron';letter-spacing:1px;">🛡️ MODERATION PANEL</button>
@@ -3413,7 +3425,11 @@ onAuthStateChanged(auth, async (user) => {
     if (typeof window._onAuthReady === 'function') window._onAuthReady(currentUsername, playerId);
 
     // Balance sync — poll every 30s + full sync on tab focus for cross-device
+    // _resetCooldown: when a reset happens, skip syncs for 30s to prevent overwriting the reset with stale server data
+    let _resetCooldownUntil = 0;
+    window._setResetCooldown = () => { _resetCooldownUntil = Date.now() + 30000; };
     async function _syncBalance() {
+      if (Date.now() < _resetCooldownUntil) return; // skip during reset cooldown
       try {
         const balSnap = await get(ref(db, 'casino/players/' + playerId + '/balance'));
         if (balSnap.exists()) {
@@ -3425,6 +3441,7 @@ onAuthStateChanged(auth, async (user) => {
       } catch(e) {}
     }
     async function _fullSync() {
+      if (Date.now() < _resetCooldownUntil) return; // skip during reset cooldown
       try {
         const snap = await get(playerRef);
         if (!snap.exists()) return;
@@ -3459,7 +3476,7 @@ window._firebaseSave = () => {
   const curBal = safeNum(window.getBalance());
   // Anti-exploit: compare against closure-protected shadow balance
   const shadow = window._balGetShadow();
-  if (shadow > 1 && curBal > shadow * 1e6 && curBal > 1e30) {
+  if (shadow > 1 && curBal > shadow * 1e4 && curBal > 1e6) {
     console.warn('[anti-cheat] Suspicious balance blocked from saving');
     return;
   }
@@ -4484,12 +4501,15 @@ let balance = 1000;
   let h = 0, shadow = 1000;
   const bH = v => ((v*7919+13)^0xA5A5)>>>0;
   h = bH(1000);
+  let _lastSyncTime = 0;
+  let _syncCount = 0;
+  let _firstSync = true;
 
   // _balMark: game code calls this after balance changes.
   // Validates balance hasn't jumped insanely (blocks console `balance=1e300; _balMark()`)
   // Exposed as file-scope function below, NOT directly on window
   function mark(){
-    if(shadow > 1 && balance > shadow * 1e6 && balance > 1e30){
+    if(shadow > 1 && balance > shadow * 1e4 && balance > 1e6){
       console.warn('[anti-cheat] Balance anomaly — reverting');
       balance = shadow;
     }
@@ -4501,17 +4521,25 @@ let balance = 1000;
   function check(){ return h === bH(balance); }
 
   // syncFromServer: called when loading balance from Firebase.
-  // Hard-capped at $1e15 — no legit player can reach this from $1000 start.
-  // This is the ONLY function that can set shadow directly.
+  // Rate-limited: max 1 call per 2s to prevent console injection spam.
+  // First call always allowed (initial login load).
   function syncFromServer(v){
     v = safeNum(v);
+    const now = Date.now();
+    if (!_firstSync) {
+      if (now - _lastSyncTime < 2000) { console.warn('[anti-cheat] Sync rate limited'); return; }
+      _syncCount++;
+      if (_syncCount > 200) { console.warn('[anti-cheat] Sync flood blocked'); return; }
+    }
+    _firstSync = false;
+    _lastSyncTime = now;
     shadow = v; balance = v; h = bH(v);
     if(typeof updateBalDisplay==='function')try{updateBalDisplay();}catch(e){}
   }
 
   // Register on window as non-enumerable — console CAN call these but:
   // - _setBalanceInternal goes through mark() which validates against shadow
-  // - _syncBalFromServer caps at 1e15
+  // - _syncBalFromServer is rate-limited
   Object.defineProperty(window,'_setBalanceInternal',{value:(v)=>{
     balance=safeNum(v); mark(); updateBalDisplay();
   },enumerable:false,configurable:false,writable:false});
@@ -14992,6 +15020,60 @@ async function adminClearChat() {
   showToast('Chat cleared!', true);
 }
 
+async function adminResetPlayer(fullWipe) {
+  if (!adminIsStaff()) return;
+  const nameInput = document.getElementById('adminResetPlayerName');
+  const resultEl = document.getElementById('adminResetPlayerResult');
+  const targetName = (nameInput.value || '').trim().toLowerCase();
+  if (!targetName) { resultEl.innerHTML = '<span style="color:var(--red);">Enter a username!</span>'; return; }
+  const action = fullWipe ? 'FULL WIPE (balance, stats, inventory, achievements)' : 'RESET BALANCE to $1,000';
+  if (!confirm('Are you sure you want to ' + action + ' for "' + targetName + '"?')) return;
+  resultEl.innerHTML = '<span style="color:var(--gold);">Searching for ' + targetName + '...</span>';
+  try {
+    const snap = await window._fbGet('casino/players');
+    if (!snap.exists()) { resultEl.innerHTML = '<span style="color:var(--red);">No players found.</span>'; return; }
+    const players = snap.val();
+    let foundUid = null;
+    Object.entries(players).forEach(([uid, p]) => {
+      if (p.username && p.username.toLowerCase() === targetName) foundUid = uid;
+    });
+    if (!foundUid) { resultEl.innerHTML = '<span style="color:var(--red);">Player "' + targetName + '" not found!</span>'; return; }
+    const updates = {};
+    updates['players/' + foundUid + '/balance'] = 1000;
+    if (fullWipe) {
+      updates['players/' + foundUid + '/stats'] = { totalWagered: 0, totalWon: 0, totalProfit: 0, gamesPlayed: 0, biggestWin: 0 };
+      updates['players/' + foundUid + '/gameStats'] = null;
+      updates['players/' + foundUid + '/inventory'] = null;
+      updates['players/' + foundUid + '/achievements'] = null;
+      updates['players/' + foundUid + '/prestige'] = null;
+    }
+    await window._fbUpdate('casino', updates);
+    // Remove from ALL leaderboards
+    const lbSnap = await window._fbGet('casino/leaderboards');
+    if (lbSnap.exists()) {
+      const lbs = lbSnap.val();
+      const lbUpdates = {};
+      Object.keys(lbs).forEach(cat => {
+        if (lbs[cat] && lbs[cat][foundUid]) {
+          lbUpdates['leaderboards/' + cat + '/' + foundUid] = null;
+        }
+      });
+      if (Object.keys(lbUpdates).length > 0) await window._fbUpdate('casino', lbUpdates);
+    }
+    // Force-push a targeted reset action so if the player is online, their client resets too
+    await window._fbSet('casino/admin/playerReset/' + foundUid, {
+      balance: 1000, fullWipe: !!fullWipe, time: Date.now(), by: window._currentUsername
+    });
+    nameInput.value = '';
+    const msg = fullWipe ? 'FULL WIPED' : 'Balance reset to $1,000';
+    resultEl.innerHTML = '<span style="color:var(--green);">✅ ' + targetName + ' — ' + msg + ' + removed from leaderboards</span>';
+    showToast('🎯 ' + targetName + ' has been ' + (fullWipe ? 'fully wiped' : 'reset') + '!', true);
+  } catch(e) {
+    console.error('Reset player failed:', e);
+    resultEl.innerHTML = '<span style="color:var(--red);">Error: ' + e.message + '</span>';
+  }
+}
+
 // ─── EVENTS (merged with admin abuse) ───
 let _eventActive = false;
 let _lastActionTime = 0;
@@ -15346,6 +15428,7 @@ function startAdminListeners() {
       showTaxAnimation(taxed);
       showToast('\u{1F480} Admin Tax! Lost $' + taxed.toLocaleString(), false);
     } else if (d.type === 'reset') {
+      if (window._setResetCooldown) window._setResetCooldown();
       balance = 1000; _balMark(); updateBalDisplay(); firebaseSaveNow();
       showResetAnimation();
       showToast('☢️ All balances have been reset to $1,000', false);
@@ -15366,6 +15449,28 @@ function startAdminListeners() {
       }
     }
   }));
+
+  // Targeted player reset listener — if admin resets THIS specific player
+  if (window._currentPlayerId) {
+    let _playerResetFirst = true;
+    _adminUnsubs.push(window._fbOnValue('casino/admin/playerReset/' + window._currentPlayerId, snap => {
+      const d = snap.val();
+      if (!d || !d.time) return;
+      if (_playerResetFirst) { _playerResetFirst = false; return; }
+      if (Date.now() - d.time > 30000) return; // ignore old resets
+      if (window._setResetCooldown) window._setResetCooldown();
+      balance = d.balance || 1000;
+      _balMark();
+      updateBalDisplay();
+      firebaseSaveNow();
+      if (d.fullWipe) {
+        playerStats = { totalWagered: 0, totalWon: 0, totalProfit: 0, gamesPlayed: 0, biggestWin: 0 };
+        inventory = [];
+        prestigeLevel = 0;
+      }
+      showToast('⚠️ Your account has been reset by an admin.', false);
+    }));
+  }
 
   // Event listener
   _adminUnsubs.push(window._fbOnValue('casino/admin/event', snap => {
