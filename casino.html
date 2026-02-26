@@ -10128,13 +10128,16 @@ function towerRender(){const g=document.getElementById('towerGrid');g.innerHTML=
 
 // ============ COIN FLIP ============
 let coinChoice='heads',coinFlipping=false;
-function coinSelect(c){coinChoice=c;document.getElementById('coinHeads').className='coin-choice'+(c==='heads'?' selected':'');document.getElementById('coinTails').className='coin-choice'+(c==='tails'?' selected':'');playClickSound();}
+function coinSelect(c){if(coinFlipping)return;coinChoice=c;document.getElementById('coinHeads').className='coin-choice'+(c==='heads'?' selected':'');document.getElementById('coinTails').className='coin-choice'+(c==='tails'?' selected':'');playClickSound();}
 function coinFlip(){if(coinFlipping)return;const bet=parseBet(document.getElementById('coinBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Coinflip'))return;
-  coinFlipping=true;balance-=bet;updateBalDisplay();firebaseSaveBet();document.getElementById('coinFlipBtn').disabled=true;document.getElementById('coinResult').textContent='';
+  coinFlipping=true;
+  // Lock choice at flip time to prevent mid-flip switching exploit
+  const lockedChoice=coinChoice;
+  balance-=bet;updateBalDisplay();firebaseSaveBet();document.getElementById('coinFlipBtn').disabled=true;document.getElementById('coinResult').textContent='';
   const coin=document.getElementById('coinDisplay');coin.classList.remove('flip');void coin.offsetWidth;coin.classList.add('flip');playClickSound();
   const result=Math.random()<0.5?'heads':'tails';
-  setTimeout(()=>{coin.textContent=result==='heads'?'👑':'🦅';const won=result===coinChoice;
+  setTimeout(()=>{coin.textContent=result==='heads'?'👑':'🦅';const won=result===lockedChoice;
     if(won){const w=bet*1.96*getPrestigeMultiplier();balance+=w;updateBalDisplay();showBigWin(w);showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,25);
       document.getElementById('coinResult').innerHTML='<span style="color:var(--green)">'+result.toUpperCase()+' — WIN!</span>';recordGame('coinflip',bet,w);firebaseSaveNow();}
     else{showToast('-$'+bet.toFixed(2),false);playLoseSound();document.getElementById('coinResult').innerHTML='<span style="color:var(--red)">'+result.toUpperCase()+' — LOSE</span>';recordGame('coinflip',bet,0);}
@@ -10817,11 +10820,16 @@ function wheelSpin(){if(wheelSpinning)return;const bet=parseBet(document.getElem
 
 // ============ BACCARAT ============
 let baccBetType=null;
-function baccSelect(type,btn){baccBetType=type;document.querySelectorAll('.bacc-bet').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');playClickSound();}
+function baccSelect(type,btn){if(typeof _baccLocked!=='undefined'&&_baccLocked)return;baccBetType=type;document.querySelectorAll('.bacc-bet').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');playClickSound();}
+let _baccLocked=false;
 function baccCardVal(c){const v=cardNumVal(c);return v===11?1:v>=10?0:v;}
 function baccHandTotal(hand){return hand.reduce((s,c)=>s+baccCardVal(c),0)%10;}
-function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}const bet=parseBet(document.getElementById('baccBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
+function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}if(_baccLocked){showToast('Wait for current hand!',false);return;}const bet=parseBet(document.getElementById('baccBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Baccarat'))return;
+  // Lock bet type at deal time to prevent mid-deal switching exploit
+  const lockedBaccBet=baccBetType;
+  _baccLocked=true;
+  document.querySelectorAll('.bacc-bet').forEach(b=>{b.disabled=true;b.style.pointerEvents='none';});
   balance-=bet;updateBalDisplay();firebaseSaveBet();const deck=newDeck();const player=[deck.pop(),deck.pop()],banker=[deck.pop(),deck.pop()];
   let pScore=baccHandTotal(player),bScore=baccHandTotal(banker);
   if(pScore<8&&bScore<8){let pThird=null;
@@ -10852,9 +10860,11 @@ function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}cons
       document.getElementById('baccPlayerScore').textContent=pScore;
       document.getElementById('baccBankerScore').textContent=bScore;
       let winner=pScore>bScore?'player':bScore>pScore?'banker':'tie';let payout=0;
-      if(winner===baccBetType){if(baccBetType==='player')payout=bet*2*getPrestigeMultiplier();else if(baccBetType==='banker')payout=bet*1.95*getPrestigeMultiplier();else payout=bet*9*getPrestigeMultiplier();}
-      else if(winner==='tie'&&baccBetType!=='tie'){payout=bet;}
+      if(winner===lockedBaccBet){if(lockedBaccBet==='player')payout=bet*2*getPrestigeMultiplier();else if(lockedBaccBet==='banker')payout=bet*1.95*getPrestigeMultiplier();else payout=bet*9*getPrestigeMultiplier();}
+      else if(winner==='tie'&&lockedBaccBet!=='tie'){payout=bet;}
       setTimeout(()=>{
+        _baccLocked=false;
+        document.querySelectorAll('.bacc-bet').forEach(b=>{b.disabled=false;b.style.pointerEvents='';});
         if(payout>bet){balance+=payout;updateBalDisplay();showBigWin(payout);showToast((winner==='tie'?'TIE':winner.toUpperCase())+' +$'+(payout-bet).toFixed(2));playWinSound();
           spawnParticles(window.innerWidth/2,window.innerHeight/2,25);document.getElementById('baccResult').innerHTML='<span style="color:var(--green)">'+winner.toUpperCase()+' WINS! +$'+payout.toFixed(2)+'</span>';recordGame('baccarat',bet,payout);addResultDot('baccHistory',winner[0].toUpperCase(),true);firebaseSaveNow();}
         else if(payout===bet){balance+=payout;updateBalDisplay();showToast('Push');document.getElementById('baccResult').innerHTML='<span style="color:var(--gold)">PUSH</span>';recordGame('baccarat',bet,bet);addResultDot('baccHistory','T',false);}
