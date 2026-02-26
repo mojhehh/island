@@ -5215,6 +5215,7 @@ function _getActiveGames(){
   if(typeof rrState !== 'undefined' && rrState && !rrState.gameOver) ag.push('Russian Roulette');
   if(typeof _cups !== 'undefined' && _cups && _cups.active) ag.push('Cup Shuffle');
   if(typeof pylGameActive !== 'undefined' && pylGameActive) ag.push('Push Your Luck');
+  if(typeof pylWagerEscrowed !== 'undefined' && pylWagerEscrowed) ag.push('Push Your Luck (Escrowed)');
   // Short-animation games — block sync during their animation windows
   if(typeof slotsSpinning !== 'undefined' && slotsSpinning) ag.push('Slots');
   if(typeof rouletteSpinning !== 'undefined' && rouletteSpinning) ag.push('Roulette');
@@ -9120,6 +9121,7 @@ function generateRoomCode() {
 function pylCreateRoom() {
   const wager = parseBet(document.getElementById('pylWager').value) || 100;
   if (wager < 10) { showToast('Minimum wager is $10', false); return; }
+  if (wager > balance) { showToast('Not enough balance!', false); return; }
 
   pylWagerAmount = wager;
   pylRoomCode = generateRoomCode();
@@ -9129,6 +9131,7 @@ function pylCreateRoom() {
   balance -= pylWagerAmount;
   updateBalDisplay();
   pylWagerEscrowed = true;
+  firebaseSaveNow(); // Persist escrow immediately to prevent sync overwrite exploit
 
   document.getElementById('pylRoomStatus').innerHTML =
     'Room: <span style="color:var(--neon);font-size:18px;letter-spacing:3px;">' + pylRoomCode + '</span><br>' +
@@ -9219,8 +9222,15 @@ function pylJoinRoom() {
       pylRoomCode = code;
       pylWagerAmount = data.wager || 100;
 
+      // Re-validate balance right before deduction (prevent race conditions)
+      if (pylWagerAmount > balance) {
+        showToast('Not enough balance for $' + pylWagerAmount + ' wager!', false);
+        if (window._pylDeleteRoom) window._pylDeleteRoom(code);
+        return;
+      }
       balance -= pylWagerAmount;
       updateBalDisplay();
+      firebaseSaveNow(); // Persist deduction immediately
 
       showToast('⚔️ Joined! Game on!');
       playWinSound();
@@ -9471,6 +9481,7 @@ function pylEndGame() {
     if (window._pylSubmitRoomScore) window._pylSubmitRoomScore(pylRoomCode, 0);
     // Mark ourselves offline so opponent detects the disconnect
     if (window._pylMarkOffline) window._pylMarkOffline(pylRoomCode);
+    firebaseSaveNow(); // Persist forfeit loss immediately
   }
 
   pylGameActive = false;
