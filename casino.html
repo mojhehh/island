@@ -2684,7 +2684,7 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
 
 <!-- ============ CUP SHUFFLE GAME ============ -->
 <div class="game-panel" id="cupsPanel">
-  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>A ball is placed under one of <strong>3 cups</strong>.</li><li>The cups <strong>shuffle rapidly</strong> — try to track the ball!</li><li>After shuffling, <strong>pick the cup</strong> you think has the ball.</li><li>Correct guess wins <strong>2.5x</strong> your bet!</li><li>Higher difficulty = more shuffles = higher multiplier.</li></ul></div></div>
+  <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">▶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>A ball is placed under one of <strong>3 cups</strong>.</li><li>The cups <strong>shuffle rapidly</strong> — try to track the ball!</li><li>After shuffling, <strong>pick the cup</strong> you think has the ball.</li><li>Correct guess wins <strong>1.9x</strong> your bet!</li><li>Higher difficulty = more shuffles = higher multiplier.</li></ul></div></div>
   <div style="text-align:center;margin-bottom:16px;">
     <span style="font-family:'Orbitron';font-size:28px;font-weight:900;background:linear-gradient(135deg,#e040fb,#7c4dff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:3px;">🏆 CUP SHUFFLE</span>
     <div style="font-size:11px;color:var(--text2);margin-top:4px;">Track the ball, pick the right cup!</div>
@@ -2813,7 +2813,7 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
         <div style="font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:8px;">GIVE MONEY TO PLAYER</div>
         <div style="display:flex;gap:6px;">
           <input type="text" id="adminUsername" placeholder="Username" style="flex:1;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;">
-          <input type="number" id="adminAmount" placeholder="Amount" style="width:120px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;">
+          <input type="text" id="adminAmount" placeholder="Amount (e.g. 1M)" style="width:120px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;">
           <button onclick="adminGiveMoney()" style="padding:8px 12px;background:linear-gradient(135deg,#ff6600,#ff3300);border:none;border-radius:6px;color:#fff;cursor:pointer;font-weight:700;font-size:11px;">GIVE</button>
         </div>
       </div>
@@ -3430,6 +3430,7 @@ onAuthStateChanged(auth, async (user) => {
     window._setResetCooldown = () => { _resetCooldownUntil = Date.now() + 30000; };
     async function _syncBalance() {
       if (Date.now() < _resetCooldownUntil) return; // skip during reset cooldown
+      if (typeof _anyGameActive === 'function' && _anyGameActive()) return; // don't overwrite mid-game
       try {
         const balSnap = await get(ref(db, 'casino/players/' + playerId + '/balance'));
         if (balSnap.exists()) {
@@ -3442,6 +3443,7 @@ onAuthStateChanged(auth, async (user) => {
     }
     async function _fullSync() {
       if (Date.now() < _resetCooldownUntil) return; // skip during reset cooldown
+      if (typeof _anyGameActive === 'function' && _anyGameActive()) return; // don't overwrite mid-game
       try {
         const snap = await get(playerRef);
         if (!snap.exists()) return;
@@ -3455,7 +3457,7 @@ onAuthStateChanged(auth, async (user) => {
       } catch(e) {}
     }
     if (window._balanceUnsub) { clearInterval(window._balanceUnsub); window._balanceUnsub = null; }
-    window._balanceUnsub = setInterval(_syncBalance, 10000);
+    window._balanceUnsub = setInterval(_syncBalance, 30000);
     // Full sync when user switches back to tab (cross-device fix)
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && playerId) _fullSync();
@@ -4614,7 +4616,7 @@ function updateBalDisplay(){
   if(balance<=0 && !window._pityOffered){
     window._pityOffered=true;
     // Clamp balance to 0 (no debt allowed)
-    if(balance<0) balance=0;
+    if(balance<0){ balance=0; _balMark(); }
     setTimeout(()=>{
       if(balance<=0){
         balance+=100;
@@ -5202,16 +5204,37 @@ function showBigWin(amount) {
   }
 }
 
+function _getActiveGames(){
+  const ag = [];
+  if(typeof bjActive !== 'undefined' && bjActive) ag.push('Blackjack');
+  if(typeof minesActive !== 'undefined' && minesActive) ag.push('Mines');
+  if(typeof towerActive !== 'undefined' && towerActive) ag.push('Tower');
+  if(typeof hiloActive !== 'undefined' && hiloActive) ag.push('Hi-Lo');
+  if(typeof crashRunning !== 'undefined' && crashRunning && !crashCashedOut) ag.push('Crash');
+  if(typeof bsrState !== 'undefined' && bsrState && bsrState.active) ag.push('Buckshot Roulette');
+  if(typeof rrState !== 'undefined' && rrState && !rrState.gameOver) ag.push('Russian Roulette');
+  if(typeof _cups !== 'undefined' && _cups && _cups.active) ag.push('Cup Shuffle');
+  if(typeof pylGameActive !== 'undefined' && pylGameActive) ag.push('Push Your Luck');
+  // Short-animation games — block sync during their animation windows
+  if(typeof slotsSpinning !== 'undefined' && slotsSpinning) ag.push('Slots');
+  if(typeof rouletteSpinning !== 'undefined' && rouletteSpinning) ag.push('Roulette');
+  if(typeof coinFlipping !== 'undefined' && coinFlipping) ag.push('Coinflip');
+  if(typeof diceRolling !== 'undefined' && diceRolling) ag.push('Dice');
+  if(typeof limboRolling !== 'undefined' && limboRolling) ag.push('Limbo');
+  if(typeof kenoPlaying !== 'undefined' && kenoPlaying) ag.push('Keno');
+  if(typeof wheelSpinning !== 'undefined' && wheelSpinning) ag.push('Wheel');
+  if(typeof scratchActive !== 'undefined' && scratchActive) ag.push('Scratch');
+  if(typeof hrRacing !== 'undefined' && hrRacing) ag.push('Horses');
+  if(typeof pokerPhase !== 'undefined' && pokerPhase !== 'idle') ag.push('Poker');
+  if(typeof caseOpening !== 'undefined' && caseOpening) ag.push('Cases');
+  if(typeof plinkoBallBets !== 'undefined' && Object.keys(plinkoBallBets).length > 0) ag.push('Plinko');
+  return ag;
+}
+function _anyGameActive(){ return _getActiveGames().length > 0; }
+
 function switchGame(game,btn){
   // Block switching if any game has an active bet in progress
-  const activeGames = [];
-  if(typeof bjActive !== 'undefined' && bjActive) activeGames.push('Blackjack');
-  if(typeof minesActive !== 'undefined' && minesActive) activeGames.push('Mines');
-  if(typeof towerActive !== 'undefined' && towerActive) activeGames.push('Tower');
-  if(typeof hiloActive !== 'undefined' && hiloActive) activeGames.push('Hi-Lo');
-  if(typeof crashRunning !== 'undefined' && crashRunning && !crashCashedOut) activeGames.push('Crash');
-  if(typeof bsrState !== 'undefined' && bsrState && bsrState.active) activeGames.push('Buckshot Roulette');
-  if(typeof rrState !== 'undefined' && rrState && !rrState.gameOver) activeGames.push('Russian Roulette');
+  const activeGames = _getActiveGames();
   if(activeGames.length > 0) {
     showToast('Finish your ' + activeGames[0] + ' game first!', false);
     return;
@@ -5675,28 +5698,24 @@ async function adminGiveMoney() {
       return;
     }
     const userId = usersSnap.val();
-    console.log('Found user:', userId);
     
     // Get current balance
     const playerSnap = await window._fbGet('casino/players/' + userId);
     const currentData = playerSnap.exists() ? playerSnap.val() : {};
-    const currentBal = parseFloat(currentData.balance || 0);
+    const currentBal = safeNum(parseFloat(currentData.balance || 0));
     const newBal = currentBal + amount;
     
-    console.log('Current balance:', currentBal, 'Adding:', amount, 'New balance:', newBal);
-    
-    // Update balance using UPDATE to avoid overwriting concurrent changes
+    // Write new balance to DB
     await window._fbUpdate('casino/players/' + userId, {
-      balance: newBal,
-      lastAdminGift: {
-        from: window._currentUsername,
-        amount: amount,
-        time: Date.now()
-      }
+      balance: newBal
     });
     
-    console.log('Balance updated successfully for', username);
-    showToast('✅ Gave $' + formatBalance(amount) + ' to ' + username + ' (' + newBal.toFixed(2) + ')', true);
+    // Push a targeted gift action so if the player is online, their client adds it
+    await window._fbSet('casino/admin/playerGift/' + userId, {
+      amount: amount, newBal: newBal, from: window._currentUsername, time: Date.now()
+    });
+    
+    showToast('✅ Gave $' + formatBalance(amount) + ' to ' + username + ' (now $' + formatBalance(newBal) + ')', true);
     document.getElementById('adminUsername').value = '';
     document.getElementById('adminAmount').value = '';
   } catch(e) {
@@ -5705,37 +5724,7 @@ async function adminGiveMoney() {
   }
 }
 
-async function adminSetSelfBalance() {
-  const _aName2 = (window._currentUsername||'').toLowerCase();
-  if (_aName2 !== 'mojheh' && _aName2 !== 'terpez') {
-    showToast('Admin only!', false);
-    return;
-  }
-  const amount = parseBet(document.getElementById('adminSelfBalance').value);
-  if (isNaN(amount) || amount < 0) {
-    showToast('Invalid amount!', false);
-    return;
-  }
-  try {
-    showToast('⏳ Setting balance...', true);
-    balance = amount;
-    updateBalDisplay();
-    
-    // Update with new balance
-    await window._fbUpdate('casino/players/' + window._currentPlayerId, {
-      balance: amount,
-      lastBalanceSet: Date.now()
-    });
-    
-    console.log('Self balance set to:', amount);
-    showToast('✅ Balance set to $' + formatBalance(amount), true);
-    document.getElementById('adminSelfBalance').value = '';
-    renderProfile();
-  } catch(e) {
-    console.error('Admin set balance error:', e);
-    showToast('❌ Error: ' + (e.message || 'Unknown'), false);
-  }
-}
+// adminSetSelfBalance is defined in the admin listeners section below
 
 function getPrestigeBadgeHTML(level) {
   if (!level || level <= 0) return '';
@@ -9042,6 +9031,11 @@ function pylShowWager(mode) {
 
 function pylBackToLobby() {
   playClickSound();
+  // Block leaving if 1v1 game is active (must use END GAME button which forfeits)
+  if (pylGameActive && pylCurrentMode === '1v1' && pylRoomCode) {
+    showToast('Use END GAME to forfeit your 1v1 match!', false);
+    return;
+  }
   // Refund escrowed wager if game never started
   if (pylWagerEscrowed && pylWagerAmount > 0) {
     balance += pylWagerAmount;
@@ -9175,7 +9169,6 @@ function pylCreateRoom() {
           // Listen for opponent score + disconnect
           pylRoomUnsub = window._pylListenRoom(pylRoomCode, (roomData) => {
             if (!roomData) {
-              // Room was deleted — opponent disconnected
               pylHandleOpponentDisconnect();
               return;
             }
@@ -9184,7 +9177,8 @@ function pylCreateRoom() {
               if (ps[opId].score != null) {
                 document.getElementById('pylOpponentScore').textContent = ps[opId].score + ' pts';
               }
-              if (ps[opId].online === false && pylGameActive) {
+              // Only treat as disconnect if they have NO submitted score
+              if (ps[opId].online === false && ps[opId].score == null && pylGameActive) {
                 pylHandleOpponentDisconnect();
               }
             }
@@ -9247,7 +9241,6 @@ function pylJoinRoom() {
       // Listen for opponent score + disconnect
       pylRoomUnsub = window._pylListenRoom(pylRoomCode, (roomData) => {
         if (!roomData) {
-          // Room was deleted — opponent disconnected
           pylHandleOpponentDisconnect();
           return;
         }
@@ -9256,7 +9249,8 @@ function pylJoinRoom() {
           if (ps[opId].score != null) {
             document.getElementById('pylOpponentScore').textContent = ps[opId].score + ' pts';
           }
-          if (ps[opId].online === false && pylGameActive) {
+          // Only treat as disconnect if they have NO submitted score
+          if (ps[opId].online === false && ps[opId].score == null && pylGameActive) {
             pylHandleOpponentDisconnect();
           }
         }
@@ -9469,8 +9463,9 @@ function pylHandleOpponentDisconnect() {
 function pylEndGame() {
   playClickSound();
 
-  // If 1v1 with no score submitted, forfeit
+  // If 1v1 with no score submitted, forfeit (confirm first)
   if (pylCurrentMode === '1v1' && pylGameActive && pylRoomCode) {
+    if (!confirm('Forfeit your $' + pylWagerAmount.toLocaleString() + ' wager?')) return;
     showToast('Forfeited wager: -$' + pylWagerAmount, false);
     playLoseSound();
     if (window._pylSubmitRoomScore) window._pylSubmitRoomScore(pylRoomCode, 0);
@@ -11067,7 +11062,7 @@ window.addEventListener('load',()=>{
     } catch(e){}
   }, 10000);
   // Logo should show the catalog
-  const logo = document.querySelector('.logo'); if(logo){ logo.addEventListener('click',()=>{ const catalog=document.getElementById('gameCatalog'); if(catalog) catalog.style.display='flex'; document.querySelectorAll('.game-panel').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); }); }
+  const logo = document.querySelector('.logo'); if(logo){ logo.addEventListener('click',()=>{ if(_anyGameActive()){showToast('Finish your game first!',false);return;} const catalog=document.getElementById('gameCatalog'); if(catalog) catalog.style.display='flex'; document.querySelectorAll('.game-panel').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); }); }
 });
 
 // Save on page close/refresh
@@ -12848,6 +12843,7 @@ function mpbsrJoinGame(gameId) {
       }
       gameStats.mpbsr.played++;
       recordGame('mpbsr', g.bet, iWon ? g.bet * 2 : 0);
+      if (iWon) firebaseSaveNow();
       
       setTimeout(() => {
         const box = document.getElementById('mpbsrGameOverContent');
@@ -13121,8 +13117,8 @@ function rrDeclinePvPChallenge(gameId) {
 
 // ============ CUP SHUFFLE GAME ============
 const _cups={active:false,ballCup:0,slots:[0,1,2],bet:0,diff:1};
-const CUPS_MULTS=[0,2.5,3.5,5.0];
-const CUPS_SHUFFLES=[0,6,12,20];
+const CUPS_MULTS=[0,1.9,2.5,3.5];
+const CUPS_SHUFFLES=[0,8,16,28];
 
 function cupsInit(){
   _cups.slots=[0,1,2];
@@ -13185,11 +13181,18 @@ function _cupsSwap(posA,posB){
 }
 
 async function _cupsDoShuffle(count){
+  var speed = count > 20 ? 0.14 : count > 10 ? 0.18 : 0.22; // faster for harder difficulties
   for(var i=0;i<count;i++){
     var a=Math.floor(Math.random()*3),b;
     do{b=Math.floor(Math.random()*3);}while(b===a);
+    // Dynamically set swap speed
+    var slotEls=_cupsSlots();
+    slotEls.forEach(function(s){
+      var inner=s.querySelector('.cup-inner');
+      if(inner) inner.style.transition='transform '+speed+'s cubic-bezier(.4,0,.2,1)';
+    });
     await _cupsSwap(a,b);
-    var pause=Math.max(30,100-i*3);
+    var pause=Math.max(20,80-i*3);
     await new Promise(function(r){setTimeout(r,pause);});
   }
 }
@@ -14453,6 +14456,7 @@ let _adminUnsubs = [];
 let _eventChatUnsub = null;
 let _currentPollId = null;
 let _myPollVote = null;
+let _pollDismissedId = null;
 
 function adminIsStaff() {
   const n = (window._currentUsername || '').toLowerCase();
@@ -14522,7 +14526,12 @@ async function adminEndPoll() {
 
 function showPollOverlay(data) {
   if (!data || !data.question || !data.options) return;
-  _currentPollId = data.id || null;
+  const pollId = data.id || null;
+  const overlay = document.getElementById('adminPollOverlay');
+  const isAlreadyVisible = overlay.style.display === 'flex';
+  // If user already dismissed this exact poll, just update silently (don't re-show)
+  if (_pollDismissedId && _pollDismissedId === pollId && !isAlreadyVisible) return;
+  _currentPollId = pollId;
   document.getElementById('pollQuestion').textContent = data.question;
   const container = document.getElementById('pollOptionsContainer');
   container.innerHTML = '';
@@ -14571,6 +14580,7 @@ async function voteInPoll(optIdx) {
 }
 
 function closePollOverlay() {
+  _pollDismissedId = _currentPollId;
   document.getElementById('adminPollOverlay').style.display = 'none';
 }
 
@@ -15080,10 +15090,12 @@ let _lastActionTime = 0;
 
 async function adminStartEvent() {
   if (!adminIsStaff()) return;
-  const title = prompt('Event name:', 'ADMIN ABUSE EVENT') || 'ADMIN ABUSE EVENT';
+  const title = prompt('Event name:', 'ADMIN ABUSE EVENT');
+  if (title === null) return; // user cancelled
+  const eventTitle = title.trim() || 'ADMIN ABUSE EVENT';
   await window._fbRemove('casino/admin/eventChat');
   await window._fbSet('casino/admin/event', {
-    title: title, status: 'active', time: Date.now(),
+    title: eventTitle, status: 'active', time: Date.now(),
     by: window._currentUsername || 'Admin'
   });
   // Also trigger the abuse animation for dramatic event start
@@ -15314,6 +15326,8 @@ async function eventAction(type) {
   }
   else if (type === 'endEvent') {
     if (!confirm('End the event for everyone?')) return;
+    // Immediately hide for the admin who ended it
+    hideEventOverlay();
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
       user: 'SYSTEM', text: '🚪 Event ended by ' + (window._currentUsername || 'Admin'),
@@ -15469,6 +15483,22 @@ function startAdminListeners() {
         prestigeLevel = 0;
       }
       showToast('⚠️ Your account has been reset by an admin.', false);
+    }));
+
+    // Targeted gift listener — if admin gives THIS player money
+    let _playerGiftFirst = true;
+    _adminUnsubs.push(window._fbOnValue('casino/admin/playerGift/' + window._currentPlayerId, snap => {
+      const d = snap.val();
+      if (!d || !d.time) return;
+      if (_playerGiftFirst) { _playerGiftFirst = false; return; }
+      if (Date.now() - d.time > 30000) return;
+      // Set balance to the new value from admin
+      balance = safeNum(d.newBal);
+      _balMark();
+      updateBalDisplay();
+      firebaseSaveNow();
+      showToast('🎁 Admin ' + (d.from || 'Admin') + ' gave you $' + formatBalance(d.amount) + '!', true);
+      if (typeof spawnParticles === 'function') spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 30);
     }));
   }
 
