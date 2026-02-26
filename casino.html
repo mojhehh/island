@@ -7646,6 +7646,8 @@ function spinSlots(){
       if(maxCount===3)winAmount=bet*mult;
       else if(maxCount===4)winAmount=bet*mult*5;
       else winAmount=bet*1000; // JACKPOT: 1000x bet for all 5 matching!
+      // Apply prestige bonus
+      winAmount*=getPrestigeMultiplier();
       // Apply luck potion bonus
       if(typeof getLuckBonus==='function') winAmount*=getLuckBonus();
       winAmount=Math.round(winAmount*100)/100;
@@ -7822,7 +7824,7 @@ function cashOut(){
   if(!crashRunning||crashCashedOut)return;
   if(!window._crashCashoutReady){showToast('Wait...',false);return;}
   crashCashedOut=true;
-  const winnings=crashBetAmount*crashMultVal;
+  const winnings=Math.round(crashBetAmount*crashMultVal*getPrestigeMultiplier()*100)/100;
   balance+=winnings;updateBalDisplay();
   crashRunning=false;
   window._lastCrashEnd=Date.now();
@@ -7969,6 +7971,7 @@ function spinRoulette(){
 
       if(won){
         let payout=lockedBet==='green'?bet*36:bet*2;
+        payout=Math.round(payout*getPrestigeMultiplier()*100)/100;
         // Apply luck potion bonus
         if(typeof getLuckBonus==='function') payout=Math.round(payout*getLuckBonus()*100)/100;
         balance+=payout;updateBalDisplay();
@@ -10780,11 +10783,14 @@ function wheelSpin(){if(wheelSpinning)return;const bet=parseBet(document.getElem
     if(prog<1)requestAnimationFrame(anim);
     else{wheelAngle=cur%(Math.PI*2);wheelSpinning=false;document.getElementById('wheelSpinBtn').disabled=false;
       /* Use predetermined segment (seg) for payout, not visual readback */
-      const payout=bet*seg.mult*getPrestigeMultiplier();
-      if(payout>0){balance+=payout;updateBalDisplay();showBigWin(payout);showToast(seg.label+' +$'+payout.toFixed(2));if(seg.mult>=2)playWinSound();else playClickSound();
+      const pm=getPrestigeMultiplier();
+      const payout=bet*seg.mult*pm;
+      const effMult=Math.round(seg.mult*pm*100)/100;
+      const mLabel=seg.mult===0?'0×':(effMult%1===0?effMult+'×':effMult.toFixed(2)+'×');
+      if(payout>0){balance+=payout;updateBalDisplay();showBigWin(payout);showToast(mLabel+' +$'+payout.toFixed(2));if(seg.mult>=2)playWinSound();else playClickSound();
         if(seg.mult>=5)spawnParticles(window.innerWidth/2,window.innerHeight/2,30+seg.mult*5);
-        document.getElementById('wheelResult').innerHTML='<span style="color:var(--green)">'+seg.label+' — +$'+payout.toFixed(2)+'</span>';recordGame('wheel',bet,payout);firebaseSaveNow();}
-      else{showToast(seg.label,false);playLoseSound();document.getElementById('wheelResult').innerHTML='<span style="color:var(--red)">'+seg.label+'</span>';recordGame('wheel',bet,0);}
+        document.getElementById('wheelResult').innerHTML='<span style="color:var(--green)">'+mLabel+' — +$'+payout.toFixed(2)+'</span>';recordGame('wheel',bet,payout);firebaseSaveNow();}
+      else{showToast(mLabel,false);playLoseSound();document.getElementById('wheelResult').innerHTML='<span style="color:var(--red)">'+mLabel+'</span>';recordGame('wheel',bet,0);}
     }
   }requestAnimationFrame(anim);
 }
