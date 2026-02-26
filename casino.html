@@ -3521,26 +3521,7 @@ async function _flushStats() {
     });
     await set(statsRef, s);
     if (window._loadStats) window._loadStats(s);
-    // Update game leaderboard — track biggest win per game
-    // Sanity: win amount cannot exceed 200× the wagered amount (max realistic multiplier)
-    // and the wagered amount cannot exceed the player's balance + won (they had at least that much)
-    if (won > 0 && won <= wagered * 200) {
-      const lbRef = ref(db, 'casino/leaderboards/' + game + '/' + playerId);
-      const lbSnap = await get(lbRef).catch(() => null);
-      const cur = (lbSnap && lbSnap.exists()) ? (lbSnap.val().value || 0) : 0;
-      if (won > cur) {
-        await set(lbRef, { name: currentUsername, value: won, updated: Date.now() }).catch(() => {});
-      }
-    }
-    // Profit leaderboard — throttled to every 60s, sanity-checked
-    const _pNow = Date.now();
-    const profitVal = safeNum(s.totalProfit || 0);
-    if ((!window._lastProfitLBWrite || _pNow - window._lastProfitLBWrite > 60000) && isFinite(profitVal)) {
-      window._lastProfitLBWrite = _pNow;
-      await set(ref(db, 'casino/leaderboards/profit/' + playerId), {
-        name: currentUsername, value: safeNum(s.totalProfit || 0), updated: _pNow
-      }).catch(() => {});
-    }
+    // Leaderboards now read directly from player data — no separate writes needed
   } catch(e) { console.warn('recordGameResult error:', e); }
 }
 
@@ -3554,24 +3535,24 @@ window._recordGameResult = async (game, wagered, won) => {
 window._flushStatsNow = () => { if(_statsTimer){clearTimeout(_statsTimer);_statsTimer=null;_flushStats();} };
 
 // ============ LEADERBOARD FETCH ============
+// ALL leaderboards read from casino/players — no separate leaderboard paths needed
 window._getLeaderboard = async (category) => {
   try {
-    // Richest leaderboard: read directly from player balances (tamper-proof)
-    if (category === 'richest') {
-      const snap = await get(ref(db, 'casino/players'));
-      if (!snap.exists()) return [];
-      const players = snap.val();
-      const entries = Object.entries(players)
-        .filter(([uid, p]) => p.username && p.balance != null)
-        .map(([uid, p]) => ({ uid, name: p.username, value: safeNum(p.balance), updated: p.lastPlayed || 0 }));
-      entries.sort((a, b) => b.value - a.value);
-      return entries.slice(0, 25);
-    }
-    // Other leaderboards: read from leaderboard node
-    const snap = await get(ref(db, 'casino/leaderboards/' + category));
+    const snap = await get(ref(db, 'casino/players'));
     if (!snap.exists()) return [];
-    const data = snap.val();
-    const entries = Object.entries(data).map(([uid, e]) => ({ uid, name: e.name, value: safeNum(e.value), updated: e.updated }));
+    const players = snap.val();
+    const entries = Object.entries(players)
+      .filter(([uid, p]) => p.username)
+      .map(([uid, p]) => {
+        let value = 0;
+        if (category === 'richest') value = safeNum(p.balance || 0);
+        else if (category === 'profit') value = safeNum((p.stats && p.stats.totalProfit) || 0);
+        else if (category === 'prestige') value = (p.prestige || 0);
+        else if (category === 'pyl') value = (p.gameStats && p.gameStats.pyl && p.gameStats.pyl.highScore) || 0;
+        else value = (p.gameStats && p.gameStats[category] && p.gameStats[category].biggestWin) || 0;
+        return { uid, name: p.username, value: safeNum(value), updated: p.lastPlayed || 0 };
+      })
+      .filter(e => e.value > 0 || category === 'richest');
     entries.sort((a, b) => b.value - a.value);
     return entries.slice(0, 25);
   } catch { return []; }
@@ -4322,19 +4303,20 @@ window._pylListenChoice = (roomCode, round, opponentId, callback) => {
 };
 
 window._pylGetLeaderboard = async () => {
-  const snap = await get(ref(db, 'casino/leaderboards/pyl'));
+  // Read PYL high scores from player data — no separate leaderboard path
+  const snap = await get(ref(db, 'casino/players'));
   if (!snap.exists()) return [];
-  const data = snap.val();
-  return Object.entries(data).map(([uid, e]) => ({ player: e.name, score: e.value })).sort((a, b) => b.score - a.score).slice(0, 20);
+  const players = snap.val();
+  return Object.entries(players)
+    .filter(([uid, p]) => p.username && p.gameStats && p.gameStats.pyl && p.gameStats.pyl.highScore > 0)
+    .map(([uid, p]) => ({ player: p.username, score: p.gameStats.pyl.highScore }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 20);
 };
 
 window._pylSubmitLeaderboard = (score) => {
-  if (!playerId || !currentUsername) return Promise.resolve();
-  return set(ref(db, 'casino/leaderboards/pyl/' + playerId), {
-    name: currentUsername,
-    value: score,
-    updated: Date.now()
-  });
+  // Score is already saved via gameStats.pyl.highScore in player data
+  return Promise.resolve();
 };
 
 // ============ FIREBASE BRIDGE FOR GAME SCRIPTS ============
@@ -5801,14 +5783,6 @@ function prestigeExecute() {
     showToast('👑 PRESTIGE ' + prestigeLevel + '! Welcome to ' + (PRESTIGE_NAMES[Math.min(prestigeLevel, PRESTIGE_NAMES.length) - 1] || 'Legendary') + '!');
     playWinSound();
     spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 50);
-    // Update leaderboard
-    if (window._currentPlayerId && window._currentUsername) {
-      window._fbSet('casino/leaderboards/prestige/' + window._currentPlayerId, {
-        name: window._currentUsername,
-        value: prestigeLevel,
-        updated: Date.now()
-      }).catch((err) => { console.error('Prestige leaderboard update failed:', err); });
-    }
     firebaseSave();
     renderProfile();
     renderPrestige();
@@ -13751,11 +13725,7 @@ async function modSetBalance(uid, username) {
   if (isNaN(val) || val < 0) { showToast('Invalid amount', false); return; }
   try {
     await window._fbSet('casino/players/' + uid + '/balance', val);
-    // Also nuke their leaderboard entries if setting low
-    if (val <= 1e9) {
-      await window._fbRemove('casino/leaderboards/richest/' + uid).catch(()=>{});
-      await window._fbRemove('casino/leaderboards/profit/' + uid).catch(()=>{});
-    }
+    // Leaderboards read from player data directly — no separate entries to clean
     showToast('✅ Set ' + username + ' balance to $' + val.toLocaleString(), true);
   } catch(e) { showToast('❌ Failed: ' + (e.message || 'Unknown'), false); }
 }
@@ -15061,9 +15031,7 @@ async function adminResetAll() {
       });
       await window._fbUpdate('casino', updates);
     }
-    // Clear leaderboards so they rebuild fresh
-    await window._fbRemove('casino/leaderboards/richest').catch(()=>{});
-    await window._fbRemove('casino/leaderboards/profit').catch(()=>{});
+    // Leaderboards read from player data — no separate paths to clear
     showToast('All ' + (players ? Object.keys(players).length : 0) + ' players reset to $1,000!', true);
   } catch(e) {
     console.error('Reset all failed:', e);
@@ -15336,12 +15304,6 @@ async function eventAction(type) {
     renderPrestige();
     showPrestigeAnimation(prestigeLevel);
     showToast('Prestige +1! Now P' + prestigeLevel, true);
-    // Update prestige leaderboard
-    if (window._currentPlayerId && window._currentUsername) {
-      window._fbSet('casino/leaderboards/prestige/' + window._currentPlayerId, {
-        name: window._currentUsername, value: prestigeLevel, updated: Date.now()
-      }).catch(()=>{});
-    }
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
       user: 'SYSTEM', text: '👑 ' + (window._currentUsername || 'Admin') + ' gave everyone +1 prestige!',
@@ -15502,12 +15464,6 @@ function startAdminListeners() {
       renderPrestige();
       showPrestigeAnimation(prestigeLevel);
       showToast('Prestige +1! Now P' + prestigeLevel, true);
-      // Update prestige leaderboard
-      if (window._currentPlayerId && window._currentUsername) {
-        window._fbSet('casino/leaderboards/prestige/' + window._currentPlayerId, {
-          name: window._currentUsername, value: prestigeLevel, updated: Date.now()
-        }).catch(()=>{});
-      }
     }
   }));
 
