@@ -3431,6 +3431,8 @@ onAuthStateChanged(auth, async (user) => {
     async function _syncBalance() {
       if (Date.now() < _resetCooldownUntil) return; // skip during reset cooldown
       if (typeof _anyGameActive === 'function' && _anyGameActive()) return; // don't overwrite mid-game
+      if (typeof _fbSaveDirty !== 'undefined' && _fbSaveDirty) return; // don't overwrite unsaved local changes
+      if (typeof _fbSaveTimer !== 'undefined' && _fbSaveTimer) return; // debounced save pending
       try {
         const balSnap = await get(ref(db, 'casino/players/' + playerId + '/balance'));
         if (balSnap.exists()) {
@@ -3444,6 +3446,8 @@ onAuthStateChanged(auth, async (user) => {
     async function _fullSync() {
       if (Date.now() < _resetCooldownUntil) return; // skip during reset cooldown
       if (typeof _anyGameActive === 'function' && _anyGameActive()) return; // don't overwrite mid-game
+      if (typeof _fbSaveDirty !== 'undefined' && _fbSaveDirty) return; // don't overwrite unsaved local changes
+      if (typeof _fbSaveTimer !== 'undefined' && _fbSaveTimer) return; // debounced save pending
       try {
         const snap = await get(playerRef);
         if (!snap.exists()) return;
@@ -14993,7 +14997,7 @@ async function adminDoubleAll() {
   await window._fbSet('casino/admin/action', {
     type: 'double', time: Date.now(), by: window._currentUsername || 'Admin'
   });
-  balance *= 2; updateBalDisplay(); firebaseSave();
+  balance *= 2; updateBalDisplay(); firebaseSaveNow();
   showDoubleMoneyAnimation();
   showMoneyRain(balance);
   showToast('Doubled everyone\'s money!', true);
@@ -15004,7 +15008,7 @@ async function adminRainMoney(amt) {
   await window._fbSet('casino/admin/action', {
     type: 'rain', amount: amt, time: Date.now(), by: window._currentUsername || 'Admin'
   });
-  balance += amt; updateBalDisplay(); firebaseSave();
+  balance += amt; updateBalDisplay(); firebaseSaveNow();
   showMoneyRain(amt);
 }
 
@@ -15205,7 +15209,7 @@ async function eventAction(type) {
 
   if (type === 'double') {
     await window._fbSet('casino/admin/action', { type: 'double', time: now, by: window._currentUsername });
-    balance *= 2; updateBalDisplay(); firebaseSave();
+    balance *= 2; updateBalDisplay(); firebaseSaveNow();
     showDoubleMoneyAnimation();
     showMoneyRain(balance);
     const mk = now.toString(36) + 'sys';
@@ -15218,7 +15222,7 @@ async function eventAction(type) {
     const rainAmounts = {rain50:50,rain500:500,rain5000:5000,rain25000:25000,rain100000:100000,rain1000000:1000000,rain10000000:10000000,rain1000000000:1000000000,rain1000000000000:1000000000000,rain1000000000000000:1000000000000000};
     const amt = rainAmounts[type] || 50;
     await window._fbSet('casino/admin/action', { type: 'rain', amount: amt, time: now, by: window._currentUsername });
-    balance += amt; updateBalDisplay(); firebaseSave();
+    balance += amt; updateBalDisplay(); firebaseSaveNow();
     showMoneyRain(amt);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
@@ -15230,7 +15234,7 @@ async function eventAction(type) {
     const amounts = [100,500,1000,5000,10000,25000,50000,100000,250000,500000];
     const jackpotAmt = amounts[Math.floor(Math.random() * amounts.length)];
     await window._fbSet('casino/admin/action', { type: 'jackpot', amount: jackpotAmt, time: now, by: window._currentUsername });
-    balance += jackpotAmt; updateBalDisplay(); firebaseSave();
+    balance += jackpotAmt; updateBalDisplay(); firebaseSaveNow();
     showJackpotAnimation(jackpotAmt);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
@@ -15242,7 +15246,7 @@ async function eventAction(type) {
     const win = Math.random() < 0.5;
     await window._fbSet('casino/admin/action', { type: 'coinflip', win: win, time: now, by: window._currentUsername });
     if (win) { balance *= 2; } else { balance = Math.floor(balance / 2); }
-    updateBalDisplay(); firebaseSave();
+    updateBalDisplay(); firebaseSaveNow();
     showCoinFlipAnimation(win);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
@@ -15253,7 +15257,7 @@ async function eventAction(type) {
   else if (type === 'tax') {
     await window._fbSet('casino/admin/action', { type: 'tax', time: now, by: window._currentUsername });
     const taxed = Math.floor(balance / 2);
-    balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSave();
+    balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSaveNow();
     showTaxAnimation(taxed);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
@@ -15428,26 +15432,26 @@ function startAdminListeners() {
     if (isMe) return;
 
     if (d.type === 'double') {
-      balance *= 2; updateBalDisplay(); firebaseSave();
+      balance *= 2; updateBalDisplay(); firebaseSaveNow();
       showDoubleMoneyAnimation();
       showMoneyRain(balance);
       showToast('💰 ' + (d.by || 'Admin') + ' DOUBLED everyone\'s money!', true);
     } else if (d.type === 'rain' && d.amount) {
-      balance += d.amount; updateBalDisplay(); firebaseSave();
+      balance += d.amount; updateBalDisplay(); firebaseSaveNow();
       showMoneyRain(d.amount);
       showToast('\u{1F327}\uFE0F Money Rain! +$' + d.amount.toLocaleString(), true);
     } else if (d.type === 'jackpot' && d.amount) {
-      balance += d.amount; updateBalDisplay(); firebaseSave();
+      balance += d.amount; updateBalDisplay(); firebaseSaveNow();
       showJackpotAnimation(d.amount);
       showToast('\u{1F3B0} JACKPOT! +$' + d.amount.toLocaleString(), true);
     } else if (d.type === 'coinflip') {
       if (d.win) { balance *= 2; } else { balance = Math.floor(balance / 2); }
-      updateBalDisplay(); firebaseSave();
+      updateBalDisplay(); firebaseSaveNow();
       showCoinFlipAnimation(d.win);
       showToast(d.win ? '\u{1FA99} Coin Flip: DOUBLED!' : '\u{1FA99} Coin Flip: Lost half!', d.win);
     } else if (d.type === 'tax') {
       const taxed = Math.floor(balance / 2);
-      balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSave();
+      balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSaveNow();
       showTaxAnimation(taxed);
       showToast('\u{1F480} Admin Tax! Lost $' + taxed.toLocaleString(), false);
     } else if (d.type === 'reset') {
