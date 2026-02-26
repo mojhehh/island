@@ -5216,6 +5216,8 @@ function _getActiveGames(){
   if(typeof _cups !== 'undefined' && _cups && _cups.active) ag.push('Cup Shuffle');
   if(typeof pylGameActive !== 'undefined' && pylGameActive) ag.push('Push Your Luck');
   if(typeof pylWagerEscrowed !== 'undefined' && pylWagerEscrowed) ag.push('Push Your Luck (Escrowed)');
+  if(typeof currentDuelRoom !== 'undefined' && currentDuelRoom) ag.push('Duels');
+  if(typeof _liveTradeId !== 'undefined' && _liveTradeId) ag.push('Trading');
   // Short-animation games — block sync during their animation windows
   if(typeof slotsSpinning !== 'undefined' && slotsSpinning) ag.push('Slots');
   if(typeof rouletteSpinning !== 'undefined' && rouletteSpinning) ag.push('Roulette');
@@ -5833,6 +5835,7 @@ async function duelCreate() {
   const code = duelGenCode();
   balance -= wager;
   updateBalDisplay();
+  firebaseSaveNow(); // Persist deduction immediately to prevent sync overwrite exploit
   try {
     await window._fbSet('casino/duelRooms/' + code, {
       host: window._currentPlayerId,
@@ -5865,6 +5868,7 @@ async function duelJoin(code) {
     if (room.wager > balance) { showToast('Not enough balance!', false); return; }
     balance -= room.wager;
     updateBalDisplay();
+    firebaseSaveNow(); // Persist deduction immediately to prevent sync overwrite exploit
     await window._fbUpdate('casino/duelRooms/' + code, {
       challenger: window._currentPlayerId,
       challengerName: window._currentUsername,
@@ -5936,11 +5940,14 @@ function duelWatchGame(code, wager) {
           duelResolve(code);
           // If still stuck after 3 more seconds, refund and close
           setTimeout(async () => {
+            if (currentDuelRoom !== code) return; // Already resolved/closed
             const finalSnap = await window._fbGet('casino/duelRooms/' + code);
             if (finalSnap.exists() && !finalSnap.val().result) {
               balance += wager; updateBalDisplay();
+              firebaseSaveNow(); // Persist refund
               showToast('Duel timed out — wager refunded!', false);
               document.getElementById('duelGameOverlay').style.display = 'none';
+              currentDuelRoom = null;
               if (duelRoomUnsub) { duelRoomUnsub(); duelRoomUnsub = null; }
               window._fbRemove('casino/duelRooms/' + code).catch(()=>{});
             }
@@ -6565,6 +6572,14 @@ async function liveTradeExecute() {
   const statusEl = document.getElementById('tradeStatus');
   statusEl.textContent = '⏳ Executing trade...';
   
+  // Validate cash before executing
+  const cash = Math.max(0, parseBet(document.getElementById('tradeCashAmount').value) || 0);
+  if (cash > balance) {
+    statusEl.textContent = '❌ Not enough balance for $' + cash + ' cash offer!';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+
   // Remove items from local inventory before executing
   const myItemsCopy = [..._liveTradeMyItems];
   for (const itemId of myItemsCopy) {
@@ -6573,7 +6588,6 @@ async function liveTradeExecute() {
   }
   
   // Deduct cash
-  const cash = Math.max(0, parseBet(document.getElementById('tradeCashAmount').value) || 0);
   if (cash > 0) { balance -= cash; updateBalDisplay(); }
   
   const res = await window._executeLiveTrade(_liveTradeId);
@@ -6581,12 +6595,14 @@ async function liveTradeExecute() {
     statusEl.textContent = '❌ ' + res.error;
     statusEl.style.color = 'var(--red)';
     // Restore items on error
+    for (const itemId of myItemsCopy) { addToInventory(itemId); }
+    if (cash > 0) { balance += cash; updateBalDisplay(); }
     return;
   }
   
   statusEl.textContent = '✅ Trade completed!';
   statusEl.style.color = 'var(--green)';
-  firebaseSave();
+  firebaseSaveNow(); // Immediate save after trade
   // Listener will handle cleanup via status=completed
 }
 
