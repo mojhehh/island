@@ -6257,6 +6257,9 @@ async function duelCancel(code) {
       balance += room.wager; // Refund
       updateBalDisplay();
       await window._fbRemove('casino/duelRooms/' + code);
+      if (duelRoomUnsub) { duelRoomUnsub(); duelRoomUnsub = null; }
+      currentDuelRoom = null;
+      firebaseSaveNow(); // Persist refund immediately
       showToast('Duel cancelled, wager refunded.', true);
     }
   }
@@ -9062,6 +9065,7 @@ function pylBackToLobby() {
     updateBalDisplay();
     showToast('Wager refunded ($' + pylWagerAmount + ')');
     pylWagerEscrowed = false;
+    firebaseSaveNow(); // Persist refund immediately
   }
   // Clean up any room listener
   if (pylRoomUnsub) { pylRoomUnsub(); pylRoomUnsub = null; }
