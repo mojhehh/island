@@ -1305,7 +1305,7 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .cc-countdown-num{font-size:clamp(80px,20vw,180px);font-weight:900;color:#00ffcc;text-shadow:0 0 60px rgba(0,255,204,.8),0 0 120px rgba(0,255,204,.4);animation:ccPulse .5s ease-in-out infinite;}
 .cc-explain{font-size:clamp(12px,3vw,22px);color:#fff;text-align:center;max-width:90%;line-height:1.6;letter-spacing:2px;margin-bottom:24px;}
 .cc-explain strong{color:#00ffcc;}
-.cc-click-area{width:clamp(200px,60vw,400px);height:clamp(200px,60vw,400px);border-radius:50%;background:radial-gradient(circle,#00ffcc 0%,#006655 60%,#002222 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;box-shadow:0 0 60px rgba(0,255,204,.4),0 0 120px rgba(0,255,204,.2);transition:transform .05s,box-shadow .1s;position:relative;}
+.cc-click-area{width:clamp(200px,60vw,400px);height:clamp(200px,60vw,400px);border-radius:50%;background:radial-gradient(circle,#00ffcc 0%,#006655 60%,#002222 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;box-shadow:0 0 60px rgba(0,255,204,.4),0 0 120px rgba(0,255,204,.2);transition:transform .05s,box-shadow .1s;position:relative;touch-action:none;-webkit-touch-callout:none;overflow:hidden;}
 .cc-click-area:active{transform:scale(.95);box-shadow:0 0 80px rgba(0,255,204,.7),0 0 160px rgba(0,255,204,.4);}
 .cc-click-count{font-size:clamp(48px,14vw,120px);font-weight:900;color:#fff;text-shadow:0 0 20px rgba(255,255,255,.5);pointer-events:none;}
 .cc-click-label{font-size:clamp(10px,2.5vw,16px);color:rgba(255,255,255,.7);letter-spacing:3px;pointer-events:none;margin-top:4px;}
@@ -4194,13 +4194,13 @@ window._fbSet = (path, data) => {
     }
   }
 
-  if (typeof path === 'string' && /casino\/bugReports\
+  if (typeof path === 'string' && /casino\/bugReports\//.test(path)) {
     const isTester = ['youguyssuck','mojheh','terpez'].includes((window._currentUsername||'').toLowerCase());
     if (!isTester) { console.warn('[anti-cheat] Bug report write blocked'); return Promise.reject(new Error('Blocked')); }
     return set(ref(db, path), data);
   }
 
-  if (typeof path === 'string' && /casino\/admin\
+  if (typeof path === 'string' && /casino\/admin\//.test(path)) {
     const isStaff = ['mojheh','terpez','jiddy'].includes((window._currentUsername||'').toLowerCase());
     if (!isStaff) { console.warn('[anti-cheat] Admin write blocked'); return Promise.reject(new Error('Blocked')); }
   }
@@ -14612,48 +14612,60 @@ function showClickChallenge(isAdmin) {
     const startTime = Date.now();
     let timerRaf;
 
-    function renderClick() {
+    // Build DOM once — only update values each frame
+    overlay.innerHTML = '<div class="cc-timer-text" id="ccTimerText">\u23F1\uFE0F 5.00s</div>' +
+      '<div class="cc-timer-bar"><div class="cc-timer-fill" id="ccTimerFill" style="width:100%"></div></div>' +
+      '<div class="cc-click-area" id="ccClickArea">' +
+        '<div class="cc-click-count" id="ccClickCount" style="color:#00ffcc">0</div>' +
+        '<div class="cc-click-label">CLICKS</div>' +
+      '</div>' +
+      '<div class="cc-target" id="ccTargetText">TARGET: ' + TARGET + ' clicks | 0%</div>' +
+      '<div style="width:80%;max-width:400px;height:8px;border-radius:4px;background:rgba(255,255,255,.1);margin-top:8px;overflow:hidden;">' +
+        '<div id="ccProgressFill" style="height:100%;border-radius:4px;background:#00ffcc;width:0%;transition:width .05s;"></div>' +
+      '</div>';
+
+    const timerTextEl = document.getElementById('ccTimerText');
+    const timerFillEl = document.getElementById('ccTimerFill');
+    const clickCountEl = document.getElementById('ccClickCount');
+    const targetTextEl = document.getElementById('ccTargetText');
+    const progressFillEl = document.getElementById('ccProgressFill');
+    const area = document.getElementById('ccClickArea');
+
+    function updateDisplay() {
       const elapsed = Date.now() - startTime;
       const remaining = Math.max(0, TIME_LIMIT - elapsed);
       const pct = (remaining / TIME_LIMIT) * 100;
       const secs = (remaining / 1000).toFixed(2);
       const progress = Math.min(100, (clickCount / TARGET) * 100);
       const progressColor = progress >= 100 ? '#00ff88' : (progress >= 60 ? '#ffd700' : '#00ffcc');
-
-      overlay.innerHTML = '<div class="cc-timer-text">⏱️ ' + secs + 's</div>' +
-        '<div class="cc-timer-bar"><div class="cc-timer-fill" style="width:' + pct + '%"></div></div>' +
-        '<div class="cc-click-area" id="ccClickArea">' +
-          '<div class="cc-click-count" style="color:' + progressColor + '">' + clickCount + '</div>' +
-          '<div class="cc-click-label">CLICKS</div>' +
-        '</div>' +
-        '<div class="cc-target">TARGET: ' + TARGET + ' clicks | ' + Math.round(progress) + '%</div>' +
-        '<div style="width:80%;max-width:400px;height:8px;border-radius:4px;background:rgba(255,255,255,.1);margin-top:8px;overflow:hidden;">' +
-          '<div style="height:100%;border-radius:4px;background:' + progressColor + ';width:' + progress + '%;transition:width .05s;"></div>' +
-        '</div>';
-
-      const area = document.getElementById('ccClickArea');
-      if (area) {
-        area.onpointerdown = function(e) {
-          e.preventDefault();
-          if (phase !== 'clicking') return;
-          clickCount++;
-          try { playSound(600 + Math.random() * 400, 'square', 0.02, 0.05); } catch(e2) {}
-          const ripple = document.createElement('div');
-          ripple.className = 'cc-ripple';
-          ripple.style.left = (e.offsetX || area.offsetWidth/2) + 'px';
-          ripple.style.top = (e.offsetY || area.offsetHeight/2) + 'px';
-          area.appendChild(ripple);
-          setTimeout(() => ripple.remove(), 600);
-          renderClick();
-          if (clickCount >= TARGET) {
-            phase = 'won';
-            cancelAnimationFrame(timerRaf);
-            showClickWin();
-          }
-        };
-      }
+      timerTextEl.textContent = '\u23F1\uFE0F ' + secs + 's';
+      timerFillEl.style.width = pct + '%';
+      clickCountEl.textContent = clickCount;
+      clickCountEl.style.color = progressColor;
+      targetTextEl.textContent = 'TARGET: ' + TARGET + ' clicks | ' + Math.round(progress) + '%';
+      progressFillEl.style.width = progress + '%';
+      progressFillEl.style.background = progressColor;
     }
-    renderClick();
+
+    // Bind click handler once — no rebinding needed
+    area.onpointerdown = function(e) {
+      e.preventDefault();
+      if (phase !== 'clicking') return;
+      clickCount++;
+      try { playSound(600 + Math.random() * 400, 'square', 0.02, 0.05); } catch(e2) {}
+      const ripple = document.createElement('div');
+      ripple.className = 'cc-ripple';
+      ripple.style.left = (e.offsetX || area.offsetWidth/2) + 'px';
+      ripple.style.top = (e.offsetY || area.offsetHeight/2) + 'px';
+      area.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+      updateDisplay();
+      if (clickCount >= TARGET) {
+        phase = 'won';
+        cancelAnimationFrame(timerRaf);
+        showClickWin();
+      }
+    };
 
     function tickTimer() {
       if (phase !== 'clicking') return;
@@ -14663,7 +14675,7 @@ function showClickChallenge(isAdmin) {
         showClickLose();
         return;
       }
-      renderClick();
+      updateDisplay();
       timerRaf = requestAnimationFrame(tickTimer);
     }
     timerRaf = requestAnimationFrame(tickTimer);
