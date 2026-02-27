@@ -1432,24 +1432,21 @@ if (!localStorage.getItem('seen_db_switch_feb2026')) {
 <!-- Update Changelog Popup -->
 <div id="updateChangelogOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:999998;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:dbResetFadeIn .4s ease;"></div>
 <script>
-if (!localStorage.getItem('seen_update_v4')) {
+if (!localStorage.getItem('seen_upcoming_v5')) {
   const ov = document.getElementById('updateChangelogOverlay');
   ov.style.display = 'flex';
-  ov.innerHTML = '<div style="z-index:1;width:420px;max-height:80vh;overflow-y:auto;padding:32px 28px;background:linear-gradient(180deg,rgba(20,20,60,.97),rgba(12,12,30,.99));border:1px solid rgba(0,240,255,.3);border-radius:20px;box-shadow:0 0 80px rgba(0,240,255,.15),0 0 200px rgba(255,215,0,.08);text-align:center;animation:dbResetBoxIn .5s ease;">'
-    + '<div style="font-size:48px;margin-bottom:8px;animation:dbResetPulse 2s ease infinite;">\ud83d\ude80</div>'
-    + '<div style="font-family:Orbitron;font-weight:900;font-size:20px;background:linear-gradient(135deg,#00f0ff,#8847ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;letter-spacing:2px;">NEW UPDATE!</div>'
-    + '<div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:16px;font-family:Orbitron;">v4.0 — PRESTIGE & CASES UPDATE</div>'
-    + '<div style="text-align:left;font-size:13px;color:rgba(255,255,255,.85);line-height:1.8;margin-bottom:20px;">'
-    + '<div style="font-family:Orbitron;font-size:12px;color:#ffd700;margin-bottom:6px;font-weight:700;">\ud83d\udc51 PRESTIGE BENEFITS</div>'
-    + '<div style="padding-left:12px;margin-bottom:12px;">\u2022 Each prestige level now gives <b style=\"color:#4ade80;\">+5% win bonus</b> on ALL games!<br>\u2022 Level 5 = +25% bonus, Level 10 = +50% bonus, etc.<br>\u2022 Stacks with Lucky Potion boosts!</div>'
-    + '<div style="font-family:Orbitron;font-size:12px;color:#ff8c00;margin-bottom:6px;font-weight:700;">\ud83c\udfb0 NEW CASES</div>'
-    + '<div style="padding-left:12px;margin-bottom:12px;">\u2022 <b>Supernova Vault</b> ($1B) & <b>Omega Crate</b> ($25B) added<br>\u2022 All existing case prices rebalanced</div>'
-    + '<div style="font-family:Orbitron;font-size:12px;color:#ff4500;margin-bottom:6px;font-weight:700;">\ud83d\udd25 LIMITED EDITION CASES</div>'
-    + '<div style="padding-left:12px;margin-bottom:12px;">\u2022 <b style=\"color:#ff8c00;\">Inferno Box</b> ($500M), <b style=\"color:#ff8c00;\">Celestial Ark</b> ($10B), <b style=\"color:#ff8c00;\">God Box</b> ($100B)<br>\u2022 Exclusive items worth <b style=\"color:#ff4500;\">$500B — $5T!</b><br>\u2022 Way more valuable than any regular case!</div>'
-    + '<div style="font-family:Orbitron;font-size:12px;color:#4ade80;margin-bottom:6px;font-weight:700;">\ud83d\udcb0 ITEM VALUE OVERHAUL</div>'
-    + '<div style="padding-left:12px;margin-bottom:12px;">\u2022 All item base values massively increased (5-20x)<br>\u2022 Trading & selling actually worth it now!<br>\u2022 Mythic items worth up to <b style=\"color:#ffd700;\">$100B+</b></div>'
+  ov.innerHTML = '<div style="z-index:1;width:min(400px,92vw);padding:26px 24px;background:linear-gradient(180deg,rgba(15,15,50,.98),rgba(10,10,30,.99));border:1px solid rgba(255,215,0,.35);border-radius:20px;box-shadow:0 0 60px rgba(255,215,0,.12),0 0 120px rgba(255,140,0,.06);text-align:center;animation:dbResetBoxIn .5s ease;display:flex;flex-direction:column;align-items:center;">'
+    + '<div style="font-size:44px;margin-bottom:4px;filter:drop-shadow(0 0 12px rgba(255,215,0,.5));">⚡</div>'
+    + '<div style="font-family:Orbitron;font-weight:900;font-size:20px;background:linear-gradient(135deg,#ffd700,#ff6600,#ffd700);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:3px;margin-bottom:4px;">BIG UPDATE</div>'
+    + '<div style="font-family:Orbitron;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:4px;margin-bottom:16px;">DROPPING SOON</div>'
+    + '<div style="font-size:14px;color:rgba(255,255,255,.9);line-height:2.1;margin-bottom:20px;">'
+    + '⭐ <b style="color:#ffd700;">ASCENSION</b> — a whole new tier beyond prestige<br>'
+    + '🛡️ <b style="color:#4ade80;">PERMANENT PERKS</b> — luck, money & loss protection<br>'
+    + '📊 <b style="color:#00f0ff;">XP & LEVELS</b> — earn XP from every game you play<br>'
+    + '🏪 <b style="color:#ff8c00;">ASCENSION SHOP</b> — exclusive rewards & items'
     + '</div>'
-    + '<button onclick="document.getElementById(\'updateChangelogOverlay\').style.display=\'none\';localStorage.setItem(\'seen_update_v4\',\'1\');" style="padding:12px 32px;background:linear-gradient(135deg,#00f0ff,#8847ff);border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:Orbitron;font-size:12px;font-weight:900;letter-spacing:1px;box-shadow:0 4px 20px rgba(0,240,255,.3);transition:all .2s;">AWESOME!</button>'
+    + '<div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:14px;letter-spacing:1px;">The grind is about to get real.</div>'
+    + '<button onclick="document.getElementById(\'updateChangelogOverlay\').style.display=\'none\';localStorage.setItem(\'seen_upcoming_v5\',\'1\');" style="padding:13px 44px;background:linear-gradient(135deg,#ffd700,#ff8c00);border:none;border-radius:10px;color:#000;cursor:pointer;font-family:Orbitron;font-size:14px;font-weight:900;letter-spacing:2px;box-shadow:0 4px 24px rgba(255,215,0,.35);transition:all .2s;">I\'M READY</button>'
     + '</div>';
 }
 </script>
