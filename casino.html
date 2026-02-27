@@ -14714,7 +14714,7 @@ setTimeout(initLimitedCases, 1000);
       </div>
       <div class="event-action-btn" onclick="eventAction('clickchallenge')">
         <div class="ea-icon">🖱️</div>
-        <div><div class="ea-label" style="color:#00ffcc;font-weight:900;">Click Challenge</div><div class="ea-desc">150 clicks in 5 sec = 10x money + items + prestige</div></div>
+        <div><div class="ea-label" style="color:#00ffcc;font-weight:900;">Click Challenge</div><div class="ea-desc">100 clicks in 7 sec = 10x money + items + prestige</div></div>
       </div>
       <div class="event-action-btn" onclick="eventAction('endEvent')" style="border-color:rgba(255,50,50,.3);">
         <div class="ea-icon">🚪</div>
@@ -15242,8 +15242,8 @@ function showClickChallenge(isAdmin) {
   let clickCount = 0;
   let phase = 'countdown';
   let countdownVal = 3;
-  const TARGET = 150;
-  const TIME_LIMIT = 5000;
+  const TARGET = 100;
+  const TIME_LIMIT = 7000;
 
   // Build DOM once
   const explainDiv = document.createElement('div');
@@ -15251,10 +15251,10 @@ function showClickChallenge(isAdmin) {
   explainDiv.className = 'cc-explain';
   const explain2 = document.createElement('div');
   explain2.className = 'cc-explain';
-  explain2.innerHTML = 'Get <strong>' + TARGET + ' clicks</strong> in <strong>5 seconds</strong>';
+  explain2.innerHTML = 'Click the circle <strong>' + TARGET + ' times</strong> in <strong>7 seconds</strong> to win!';
   const explain3 = document.createElement('div');
   explain3.className = 'cc-explain';
-  explain3.innerHTML = 'Win: <strong>10x Money</strong> + <strong>Legendary Items</strong> + <strong>+1 Prestige</strong>';
+  explain3.innerHTML = '🏆 <strong>10x your money</strong> &nbsp; 💎 <strong>5 Legendary Items</strong> &nbsp; 👑 <strong>+1 Prestige</strong>';
   const cdNum = document.createElement('div');
   cdNum.className = 'cc-countdown-num';
   cdNum.textContent = countdownVal;
@@ -15405,7 +15405,7 @@ function showClickChallenge(isAdmin) {
       '<div style="font-family:Orbitron;font-size:clamp(14px,3.5vw,28px);font-weight:700;margin-top:16px;animation:ccRainbow 2s linear infinite;">💰 10x MONEY = +$' + reward.toLocaleString() + '</div>' +
       '<div style="font-family:Orbitron;font-size:clamp(12px,3vw,22px);color:#ffd700;margin-top:10px;">💎 5 Legendary Items Added!</div>' +
       '<div style="font-family:Orbitron;font-size:clamp(12px,3vw,22px);color:#ffd700;margin-top:6px;">👑 Prestige +1 → P' + prestigeLevel + '</div>' +
-      '<div style="font-family:Orbitron;font-size:clamp(10px,2vw,14px);color:rgba(255,255,255,.5);margin-top:20px;letter-spacing:2px;">' + clickCount + ' clicks in 5 seconds!</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(10px,2vw,14px);color:rgba(255,255,255,.5);margin-top:20px;letter-spacing:2px;">' + clickCount + ' clicks in 7 seconds!</div>' +
     '</div>';
 
     try {
@@ -15787,7 +15787,7 @@ async function eventAction(type) {
     showClickChallenge(true);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
-      user: 'SYSTEM', text: '🖱️ CLICK CHALLENGE STARTED! 150 clicks in 5 seconds for 10x money + items + prestige!',
+      user: 'SYSTEM', text: '🖱️ CLICK CHALLENGE STARTED! 100 clicks in 7 seconds for 10x money + items + prestige!',
       time: now, isAdmin: true, isSystem: true
     });
   }
@@ -15945,6 +15945,8 @@ function startAdminListeners() {
       renderPrestige();
       showPrestigeAnimation(prestigeLevel);
       showToast('Prestige +1! Now P' + prestigeLevel, true);
+    } else if (d.type === 'clickchallenge') {
+      showClickChallenge(false);
     }
   }));
 
@@ -16026,26 +16028,6 @@ function adminSetSelfBalance() {
   }, 1000);
 })();
 
-// Click Challenge listener
-(function initClickChallengeListener() {
-  var _ccFirstFire = true, _ccLastTime = 0;
-  var check = setInterval(function() {
-    if (window._fbOnValue && window._currentPlayerId) {
-      clearInterval(check);
-      window._fbOnValue('casino/admin/action', function(snap) {
-        var d = snap.val();
-        if (!d || !d.time || d.type !== 'clickchallenge') return;
-        if (_ccFirstFire) { _ccFirstFire = false; _ccLastTime = d.time; return; }
-        if (d.time <= _ccLastTime) return;
-        if (Date.now() - d.time > 15000) { _ccLastTime = d.time; return; }
-        _ccLastTime = d.time;
-        var isMe = d.by && d.by.toLowerCase() === (window._currentUsername || '').toLowerCase();
-        if (isMe) return;
-        showClickChallenge(false);
-      });
-    }
-  }, 1000);
-})();
 </script>
 
 <!-- ============ MODERATION OVERLAYS ============ -->
