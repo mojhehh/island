@@ -916,6 +916,8 @@ html,body{height:100%;height:100dvh;overflow:hidden;overflow-x:hidden;background
 .chat-msg-name.guest-name{color:var(--text2);}
 .role-badge-owner{display:inline-block;font-size:8px;padding:1px 5px;border-radius:6px;margin-left:4px;background:linear-gradient(135deg,#ff3300,#ff6600);color:#fff;font-weight:900;letter-spacing:.5px;vertical-align:middle;}
 .role-badge-coowner{display:inline-block;font-size:8px;padding:1px 5px;border-radius:6px;margin-left:4px;background:linear-gradient(135deg,#9b59b6,#8e44ad);color:#fff;font-weight:900;letter-spacing:.5px;vertical-align:middle;}
+.role-badge-admin{display:inline-block;font-size:8px;padding:1px 5px;border-radius:6px;margin-left:4px;background:linear-gradient(135deg,#ff4444,#cc0000);color:#fff;font-weight:900;letter-spacing:.5px;vertical-align:middle;}
+.role-badge-bugtester{display:inline-block;font-size:8px;padding:1px 5px;border-radius:6px;margin-left:4px;background:linear-gradient(135deg,#00cc88,#00aa66);color:#fff;font-weight:900;letter-spacing:.5px;vertical-align:middle;}
 .chat-msg-text{font-size:12px;color:var(--text);line-height:1.4;word-break:break-word;}
 .chat-msg-time{font-size:9px;color:var(--text2);margin-top:2px;}
 .chat-msg-system{text-align:center;color:var(--text2);font-size:11px;font-style:italic;padding:4px 0;}
@@ -4434,6 +4436,8 @@ window._sendChatMsg = async (text, username, type) => {
   let role = '';
   if (uname === 'mojheh') role = 'owner';
   else if (uname === 'terpez') role = 'co-owner';
+  else if (uname === 'jiddy') role = 'admin';
+  else if (uname === 'youguyssuck') role = 'bugtester';
   await set(msgRef, {
     user: username || 'Guest',
     text: text.slice(0, 200),
@@ -4649,10 +4653,16 @@ function firebaseSaveNow(){ // immediate save for critical actions (logout, pres
   if(window._firebaseSave) window._firebaseSave();
 }
 // Save after every bet deduction to prevent refresh exploit
-function firebaseSaveBet(){
-  if(!_balIntegrityCheck()) return;
-  // Immediate async save — prevents undo-by-refresh
-  if(window._firebaseSave) window._firebaseSave();
+// betAmt: the amount just deducted — reverted if save fails (offline)
+function firebaseSaveBet(betAmt){
+  if(!navigator.onLine){
+    if(betAmt>0){balance+=betAmt;updateBalDisplay();}
+    showToast('You are offline! Bet blocked.',false); return false;
+  }
+  if(!_balIntegrityCheck()) return false;
+  // Immediate managed save — clears pending debounce, writes now
+  firebaseSaveNow();
+  return true;
 }
 
 // ============ AUTH UI ============
@@ -4884,6 +4894,7 @@ let dailyBonusData = { lastClaimed: 0, streak: 0 };
 
 // Bet validation: max you can bet is what you have
 function checkMaxBet(bet, game) {
+  if (!navigator.onLine) { showToast('You are offline! Connect to the internet to play.', false); return false; }
   if (bet > balance) { showToast('Max bet is your balance: $' + Math.floor(balance).toLocaleString(), false); return false; }
   return true;
 }
@@ -5641,7 +5652,7 @@ function renderProfile() {
   // Admin panel (mojheh + co-owners)
   const adminPanel = document.getElementById('adminPanel');
   const lowerName = name.toLowerCase();
-  if (lowerName === 'mojheh' || lowerName === 'terpez') {
+  if (lowerName === 'mojheh' || lowerName === 'terpez' || lowerName === 'jiddy') {
     adminPanel.style.display = 'block';
   } else {
     adminPanel.style.display = 'none';
@@ -7597,7 +7608,7 @@ function spinSlots(){
   slotsSpinning=true;
   // Shield potion: refund half on loss (applied at bet time, settled after result)
   const slotsShielded = typeof isShieldActive==='function' && isShieldActive();
-  balance-=bet;updateBalDisplay();firebaseSaveBet();
+  balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet)){slotsSpinning=false;return;}
   document.getElementById('spinBtn').disabled=true;
   playClickSound();
 
@@ -7759,7 +7770,7 @@ function startCrash(){
   if(bet<=0)return;
   if(!checkMaxBet(bet,'Crash'))return;
   if(bet>balance){showToast('Not enough balance!',false);return;}
-  crashBetAmount=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();
+  crashBetAmount=bet;balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet))return;
   crashCashedOut=false;crashRunning=true;
   window._crashCashoutReady=false;
   setTimeout(()=>{window._crashCashoutReady=true;},200);
@@ -7905,7 +7916,7 @@ function spinRoulette(){
   const lockedBet=selectedRoulBet;
   // Disable all bet buttons during spin
   document.querySelectorAll('.roul-bet-btn').forEach(b=>{b.disabled=true;b.style.pointerEvents='none';});
-  balance-=bet;updateBalDisplay();firebaseSaveBet();
+  balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet)){rouletteSpinning=false;return;}
   document.getElementById('roulSpinBtn').disabled=true;
   document.getElementById('rouletteResult').textContent='';
   playClickSound();
@@ -8916,7 +8927,7 @@ function dropPlinkoBall(){
   if(bet>balance){showToast('Not enough balance!',false);if(autoDropping)toggleAutoDrop();plinkoDropLock=false;return;}
   if(bet<=0){plinkoDropLock=false;return;}
 
-  balance-=bet;updateBalDisplay();firebaseSaveBet();
+  balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet)){plinkoDropLock=false;return;}
   plinkoDropLock=false;
   playSound(500,'sine',.04,.05);
 
@@ -9997,13 +10008,13 @@ function bjDeal(){
   if(bjActive)return;const bet=parseBet(document.getElementById('bjBet').value)||10;if(bet<=0)return;
   if(!checkMaxBet(bet,'Blackjack'))return;
   if(bet>balance){showToast('Not enough balance!',false);return;}
-  bjBetAmt=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();bjDeck=newDeck();bjPlayer=[bjDrawCard(),bjDrawCard()];bjDealer=[bjDrawCard(),bjDrawCard()];bjActive=true;bjRender();
+  bjBetAmt=bet;balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet))return;bjDeck=newDeck();bjPlayer=[bjDrawCard(),bjDrawCard()];bjDealer=[bjDrawCard(),bjDrawCard()];bjActive=true;bjRender();
   document.getElementById('bjResult').textContent='';
   if(bjHandVal(bjPlayer)===21)bjStand();playClickSound();
 }
 function bjHit(){if(!bjActive)return;bjPlayer.push(bjDrawCard());if(bjHandVal(bjPlayer)>21){bjActive=false;bjRender();bjFinish();}else if(bjHandVal(bjPlayer)===21)bjStand();else bjRender();}
 function bjStand(){if(!bjActive)return;while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
-function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;if(!checkMaxBet(bjBetAmt*2,'Blackjack'))return;if(bjBetAmt>balance){showToast('Not enough balance to double!',false);return;}balance-=bjBetAmt;bjBetAmt*=2;updateBalDisplay();firebaseSaveBet();bjPlayer.push(bjDrawCard());while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
+function bjDouble(){if(!bjActive||bjPlayer.length!==2)return;if(!checkMaxBet(bjBetAmt*2,'Blackjack'))return;if(bjBetAmt>balance){showToast('Not enough balance to double!',false);return;}const _dblAmt=bjBetAmt;balance-=_dblAmt;bjBetAmt*=2;updateBalDisplay();if(!firebaseSaveBet(_dblAmt)){bjBetAmt/=2;return;}bjPlayer.push(bjDrawCard());while(bjHandVal(bjDealer)<17)bjDealer.push(bjDrawCard());bjActive=false;bjRender();bjFinish();}
 function bjFinish(){
   const pv=bjHandVal(bjPlayer),dv=bjHandVal(bjDealer);let w=0,msg='';
   const isNatural=bjPlayer.length===2&&pv===21;
@@ -10028,7 +10039,7 @@ function minesStart(){
   if(!minesCount||minesCount<1)minesCount=1;if(minesCount>24)minesCount=24;
   if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Mines'))return;
-  minesBetAmt=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();minesActive=true;minesRevealed=0;
+  minesBetAmt=bet;balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet))return;minesActive=true;minesRevealed=0;
   _minesKey=Math.floor(Math.random()*250)+2;_minesEnc=Array(25).fill(0^_minesKey);const pos=[];while(pos.length<minesCount){const p=Math.floor(Math.random()*25);if(!pos.includes(p))pos.push(p);}
   pos.forEach(p=>_minesEnc[p]=1^_minesKey);minesRenderGrid();
   document.getElementById('minesStartBtn').style.display='none';document.getElementById('minesCashoutBtn').style.display='';
@@ -10061,7 +10072,7 @@ function diceRoll(){if(diceRolling)return;const bet=parseBet(document.getElement
   diceRolling=true;
   // Lock slider and mode during roll
   document.getElementById('diceSlider').disabled=true;
-  balance-=bet;updateBalDisplay();firebaseSaveBet();let target=parseFloat(document.getElementById('diceSlider').value);target=Math.max(5,Math.min(95,target));const chance=diceMode==='over'?(100-target):target;const payout=chance>0?Math.min(Math.floor(99/chance*100)/100,9900):0;
+  balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet))return;let target=parseFloat(document.getElementById('diceSlider').value);target=Math.max(5,Math.min(95,target));const chance=diceMode==='over'?(100-target):target;const payout=chance>0?Math.min(Math.floor(99/chance*100)/100,9900):0;
   const roll=Math.random()*100;const won=diceMode==='over'?roll>target:roll<target;const display=document.getElementById('diceDisplay');
   display.textContent=roll.toFixed(2);display.style.color=won?'var(--green)':'var(--red)';
   if(won){const w=bet*payout*getPrestigeMultiplier();balance+=w;updateBalDisplay();showBigWin(w);showToast('+$'+w.toFixed(2));playWinSound();spawnParticles(window.innerWidth/2,window.innerHeight/2,25);recordGame('dice',bet,w);firebaseSaveNow();}
@@ -10079,7 +10090,7 @@ function towerStart(){
   if(!checkMaxBet(bet,'Tower'))return;
   const diff=document.getElementById('towerDiff').value;
   if(diff==='easy'){towerCols=4;towerSafePerRow=3;}else if(diff==='medium'){towerCols=3;towerSafePerRow=2;}else if(diff==='hard'){towerCols=4;towerSafePerRow=2;}else{towerCols=4;towerSafePerRow=1;}
-  towerBetAmt=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();towerActive=true;towerRow=0;towerRows=8;
+  towerBetAmt=bet;balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet))return;towerActive=true;towerRow=0;towerRows=8;
   _towerKey=Math.floor(Math.random()*250)+2;_towerEnc=[];for(let r=0;r<towerRows;r++){const row=[];for(let c=0;c<towerCols;c++)row.push(1^_towerKey);const traps=towerCols-towerSafePerRow;const trapPos=[];while(trapPos.length<traps){const p=Math.floor(Math.random()*towerCols);if(!trapPos.includes(p))trapPos.push(p);}trapPos.forEach(p=>row[p]=0^_towerKey);_towerEnc.push(row);}
   towerRender();document.getElementById('towerStartBtn').style.display='none';document.getElementById('towerCashoutBtn').style.display='';
   document.getElementById('towerInfo').innerHTML='Floor <span style="color:var(--neon)">1</span> — Pick a tile!';playClickSound();
@@ -10112,7 +10123,7 @@ function coinFlip(){if(coinFlipping)return;const bet=parseBet(document.getElemen
   coinFlipping=true;
   // Lock choice at flip time to prevent mid-flip switching exploit
   const lockedChoice=coinChoice;
-  balance-=bet;updateBalDisplay();firebaseSaveBet();document.getElementById('coinFlipBtn').disabled=true;document.getElementById('coinResult').textContent='';
+  balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet)){coinFlipping=false;return;}document.getElementById('coinFlipBtn').disabled=true;document.getElementById('coinResult').textContent='';
   const coin=document.getElementById('coinDisplay');coin.classList.remove('flip');void coin.offsetWidth;coin.classList.add('flip');playClickSound();
   const result=Math.random()<0.5?'heads':'tails';
   setTimeout(()=>{coin.textContent=result==='heads'?'👑':'🦅';const won=result===lockedChoice;
@@ -10130,7 +10141,7 @@ function kenoToggle(n){if(kenoPlaying)return;const cells=document.querySelectorA
 function kenoClear(){if(kenoPlaying)return;kenoSelected.clear();document.querySelectorAll('.keno-num').forEach(c=>{c.className='keno-num';});document.getElementById('kenoInfo').textContent='Pick up to 10 numbers';document.getElementById('kenoResult').textContent='';}
 function kenoDraw(){if(kenoPlaying||kenoSelected.size===0)return;const bet=parseBet(document.getElementById('kenoBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Keno'))return;
-  kenoPlaying=true;balance-=bet;updateBalDisplay();firebaseSaveBet();document.getElementById('kenoDrawBtn').disabled=true;
+  kenoPlaying=true;balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet)){kenoPlaying=false;return;}document.getElementById('kenoDrawBtn').disabled=true;
   const drawn=new Set();while(drawn.size<10){drawn.add(Math.floor(Math.random()*40)+1);}
   const cells=document.querySelectorAll('.keno-num');let hits=0;const drawnArr=[...drawn];let idx=0;
   const revealInterval=setInterval(()=>{if(idx>=drawnArr.length){clearInterval(revealInterval);
@@ -10150,7 +10161,7 @@ function limboUpdateInfo(){const t=parseFloat(document.getElementById('limboTarg
 function limboGo(){if(limboRolling)return;const bet=parseBet(document.getElementById('limboBet').value)||10;if(bet<=0)return;let target=parseFloat(document.getElementById('limboTarget').value)||2;target=Math.max(1.01,Math.min(1000,target));
   if(bet>balance){showToast('Not enough!',false);return;}if(target<1.01){showToast('Min target 1.01×',false);return;}
   if(!checkMaxBet(bet,'Limbo'))return;
-  limboRolling=true;balance-=bet;updateBalDisplay();firebaseSaveBet();document.getElementById('limboGoBtn').disabled=true;
+  limboRolling=true;balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet)){limboRolling=false;return;}document.getElementById('limboGoBtn').disabled=true;
   const result=Math.min(10000,0.99/(1-Math.random()));const display=document.getElementById('limboResult');const limboBar=document.getElementById('limboBar');
   let cur=1;const step=Math.max(0.01,(result-1)/20);
   const anim=setInterval(()=>{cur+=step;if(cur>=result){cur=result;clearInterval(anim);
@@ -10169,7 +10180,7 @@ function pokerDeal(){
   if(pokerPhase==='hold'){pokerDrawCards();return;}
   const bet=parseBet(document.getElementById('pokerBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Poker'))return;
-  pokerBetAmt=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();pokerDeckArr=newDeck();pokerHandArr=[];pokerHeld=Array(5).fill(false);
+  pokerBetAmt=bet;balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet))return;pokerDeckArr=newDeck();pokerHandArr=[];pokerHeld=Array(5).fill(false);
   for(let i=0;i<5;i++)pokerHandArr.push(pokerDeckArr.pop());pokerPhase='hold';pokerRender();
   document.getElementById('pokerDealBtn').textContent='DRAW';document.getElementById('pokerResult').textContent='Click cards to hold, then DRAW';playClickSound();
 }
@@ -10599,7 +10610,7 @@ function horseRace() {
   hrRacing = true;
   const hrLockedSelection = hrSelected; // Lock selection at race start
   balance -= bet;
-  updateBalDisplay();firebaseSaveBet();
+  updateBalDisplay();if(!firebaseSaveBet(bet)){hrRacing=false;return;}
   document.getElementById('horseRaceBtn').disabled = true;
   document.getElementById('horseResult').textContent = '';
   playClickSound();
@@ -10772,7 +10783,7 @@ function drawWheel(angle){wheelDrawn=true;const c=document.getElementById('wheel
 }
 function wheelSpin(){if(wheelSpinning)return;const bet=parseBet(document.getElementById('wheelBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet,'Wheel'))return;
-  wheelSpinning=true;balance-=bet;updateBalDisplay();firebaseSaveBet();document.getElementById('wheelSpinBtn').disabled=true;document.getElementById('wheelResult').textContent='';playClickSound();
+  wheelSpinning=true;balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet)){wheelSpinning=false;return;}document.getElementById('wheelSpinBtn').disabled=true;document.getElementById('wheelResult').textContent='';playClickSound();
   const totalW=WHEEL_SEGMENTS.reduce((s,seg)=>s+seg.weight,0);let rnd=Math.random()*totalW,winIdx=0;
   for(let i=0;i<WHEEL_SEGMENTS.length;i++){rnd-=WHEEL_SEGMENTS[i].weight;if(rnd<=0){winIdx=i;break;}}const seg=WHEEL_SEGMENTS[winIdx];
   let cumAngle=0;for(let i=0;i<winIdx;i++){cumAngle+=(WHEEL_SEGMENTS[i].weight/totalW)*Math.PI*2;}cumAngle+=(seg.weight/totalW)*Math.PI;
@@ -10808,7 +10819,7 @@ function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}if(_
   const lockedBaccBet=baccBetType;
   _baccLocked=true;
   document.querySelectorAll('.bacc-bet').forEach(b=>{b.disabled=true;b.style.pointerEvents='none';});
-  balance-=bet;updateBalDisplay();firebaseSaveBet();const deck=newDeck();const player=[deck.pop(),deck.pop()],banker=[deck.pop(),deck.pop()];
+  balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet)){_baccLocked=false;return;}const deck=newDeck();const player=[deck.pop(),deck.pop()],banker=[deck.pop(),deck.pop()];
   let pScore=baccHandTotal(player),bScore=baccHandTotal(banker);
   if(pScore<8&&bScore<8){let pThird=null;
     if(pScore<=5){pThird=deck.pop();player.push(pThird);pScore=baccHandTotal(player);}
@@ -10876,7 +10887,7 @@ function hiloMultiplier(){
 function hiloStart(){if(hiloActive)return;const bet=parseBet(document.getElementById('hiloBet').value)||10;if(bet<=0)return;
   if(!checkMaxBet(bet,'Hi-Lo'))return;
   if(bet>balance){showToast('Not enough balance!',false);return;}
-  hiloBetAmt=bet;balance-=bet;updateBalDisplay();firebaseSaveBet();hiloActive=true;hiloStreakCount=0;hiloSkipCount=0;hiloDeck=newDeck();hiloCard=hiloDeck.pop();hiloRender();
+  hiloBetAmt=bet;balance-=bet;updateBalDisplay();if(!firebaseSaveBet(bet))return;hiloActive=true;hiloStreakCount=0;hiloSkipCount=0;hiloDeck=newDeck();hiloCard=hiloDeck.pop();hiloRender();
   document.getElementById('hiloStartBtn').style.display='none';document.getElementById('hiloCashoutBtn').style.display='';playClickSound();
 }
 function hiloCashout(){if(!hiloActive||hiloStreakCount===0)return;const p=hiloBetAmt*hiloMultiplier()*getPrestigeMultiplier();balance+=p;updateBalDisplay();
@@ -10884,9 +10895,12 @@ function hiloCashout(){if(!hiloActive||hiloStreakCount===0)return;const p=hiloBe
   document.getElementById('hiloStartBtn').style.display='';document.getElementById('hiloCashoutBtn').style.display='none';
   document.getElementById('hiloStreak').textContent='Cashed out '+hiloMultiplier().toFixed(2)+'× — $'+p.toFixed(2);recordGame('hilo',hiloBetAmt,p);firebaseSaveNow();
 }
-function hiloGuess(guess){if(!hiloActive)return;if(hiloDeck.length<2)hiloDeck=newDeck();
+function hiloGuess(guess){if(!hiloActive)return;
+  if(!navigator.onLine){showToast('You are offline! Reconnect to continue.',false);return;}
+  if(hiloDeck.length<2)hiloDeck=newDeck();
   const next=hiloDeck.pop();const curRank=cardRankIdx(hiloCard),nextRank=cardRankIdx(next);
   if(guess==='skip'){hiloSkipCount++;hiloCard=next;hiloRender();playSound(400,'sine',.04,.04);
+    firebaseSaveNow(); // Persist skip penalty immediately
     showToast('Skipped! (-10% payout penalty)',false);return;}
   let correct=false;
   const tied = nextRank===curRank;
@@ -10968,6 +10982,8 @@ window._onChatMessages = function(msgs) {
       let roleBadge = '';
       if (m.role === 'owner') roleBadge = '<span class="role-badge-owner">OWNER</span>';
       else if (m.role === 'co-owner') roleBadge = '<span class="role-badge-coowner">CO-OWNER</span>';
+      else if (m.role === 'admin') roleBadge = '<span class="role-badge-admin">ADMIN</span>';
+      else if (m.role === 'bugtester') roleBadge = '<span class="role-badge-bugtester">BUG TESTER</span>';
       const avatarContent = m.profilePicUrl ? `<img src="${m.profilePicUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : initial;
       let chatAdminHtml = '';
       if (modIsStaff()) {
@@ -11174,7 +11190,7 @@ function bsrStartGame() {
   const bet = parseBet(document.getElementById('bsrBet').value) || 100;
   if (bet <= 0) { showToast('Bet must be positive!', false); return; }
   if (bet > balance) { showToast('Not enough balance!', false); return; }
-  balance -= bet; updateBalDisplay();firebaseSaveBet();
+  balance -= bet; updateBalDisplay();if(!firebaseSaveBet(bet))return;
   playClickSound();
 
   const diff = BSR_DIFF[bsrDifficulty];
@@ -12015,7 +12031,7 @@ function rrStartBot() {
   };
 
   balance -= bet;
-  updateBalDisplay();firebaseSaveBet();
+  updateBalDisplay();if(!firebaseSaveBet(bet))return;
 
   document.getElementById('rrBotLobby').style.display = 'none';
   document.getElementById('rrPvpLobby').style.display = 'none';
@@ -12354,7 +12370,7 @@ async function rrStartPvP() {
     await window._fbSet('casino/rrGames/' + gameId, gameData);
     
     balance -= bet;
-    updateBalDisplay();firebaseSaveBet();
+    updateBalDisplay();if(!firebaseSaveBet(bet))return;
     
     const notifKey = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
     await window._fbSet('casino/players/' + opUid + '/notifications/' + notifKey, {
@@ -12396,7 +12412,7 @@ async function rrAcceptPvPChallenge(gameId, bet) {
   if (!checkMaxBet(bet, 'russianr')) return;
   
   balance -= bet;
-  updateBalDisplay();firebaseSaveBet();
+  updateBalDisplay();if(!firebaseSaveBet(bet))return;
   
   const chambers = [0, 0, 0, 0, 0, 0];
   chambers[Math.floor(Math.random() * 6)] = 1;
@@ -12692,7 +12708,7 @@ async function mpbsrChallenge() {
     });
     
     balance -= bet;
-    updateBalDisplay();firebaseSaveBet();
+    updateBalDisplay();if(!firebaseSaveBet(bet))return;
     
     const nk = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
     await window._fbSet('casino/players/' + opUid + '/notifications/' + nk, {
@@ -12738,7 +12754,7 @@ function mpbsrCancelChallenge(gameId, bet) {
 async function mpbsrAccept(gameId, bet) {
   if (!checkMaxBet(bet, 'mpbsr')) return;
   balance -= bet;
-  updateBalDisplay();firebaseSaveBet();
+  updateBalDisplay();if(!firebaseSaveBet(bet))return;
   
   await window._fbUpdate('casino/bsrGames/' + gameId, { status: 'active' });
   
@@ -13229,7 +13245,7 @@ function cupsStart(){
   if(bet>balance){showToast('Not enough!',false);return;}
   if(!checkMaxBet(bet))return;
   balance-=bet;_cups.bet=bet;_cups.active=true;
-  _balMark();updateBalDisplay();firebaseSaveBet();
+  _balMark();updateBalDisplay();if(!firebaseSaveBet(bet)){_cups.active=false;return;}
   var btn=document.getElementById('cupsStartBtn');
   btn.disabled=true;btn.style.opacity='0.5';
   cupsInit();
@@ -13301,7 +13317,7 @@ cupsInit();
 
 
 // ============ MODERATION SYSTEM ============
-const MOD_ADMINS = ['mojheh', 'terpez']; // hardcoded staff
+const MOD_ADMINS = ['mojheh', 'terpez', 'jiddy']; // hardcoded staff
 
 function modIsStaff() {
   const name = (window._currentUsername || '').toLowerCase();
@@ -13311,6 +13327,7 @@ function modGetStaffLevel() {
   const name = (window._currentUsername || '').toLowerCase();
   if (name === 'mojheh') return 'owner';
   if (name === 'terpez') return 'co-owner';
+  if (name === 'jiddy') return 'admin';
   return null;
 }
 
@@ -14481,7 +14498,7 @@ let _pollDismissedId = null;
 
 function adminIsStaff() {
   const n = (window._currentUsername || '').toLowerCase();
-  return ['mojheh','terpez'].includes(n);
+  return ['mojheh','terpez','jiddy'].includes(n);
 }
 
 // ─── ANNOUNCEMENT ───
@@ -15109,6 +15126,8 @@ let _lastActionTime = 0;
 
 async function adminStartEvent() {
   if (!adminIsStaff()) return;
+  const n = (window._currentUsername || '').toLowerCase();
+  if (n === 'jiddy') { showToast('You don\'t have access to admin abuse events!', false); return; }
   const title = prompt('Event name:', 'ADMIN ABUSE EVENT');
   if (title === null) return; // user cancelled
   const eventTitle = title.trim() || 'ADMIN ABUSE EVENT';
@@ -15132,7 +15151,7 @@ function showEventOverlay(data) {
   _eventActive = true;
   document.getElementById('eventTitle').textContent = '⚡ ' + (data.title || 'CASINO EVENT');
   document.getElementById('adminEventOverlay').style.display = 'flex';
-  document.getElementById('eventAdminPanel').style.display = adminIsStaff() ? 'flex' : 'none';
+  document.getElementById('eventAdminPanel').style.display = adminIsStaff() && (window._currentUsername||'').toLowerCase() !== 'jiddy' ? 'flex' : 'none';
   document.getElementById('eventStatus').textContent = 'Event is live — started by ' + (data.by || 'Admin');
   if (!_eventChatUnsub) {
     _eventChatUnsub = window._fbOnValueLimited('casino/admin/eventChat', 50, snap => {
@@ -15203,6 +15222,8 @@ async function sendEventChat() {
 
 async function eventAction(type) {
   if (!adminIsStaff()) return;
+  const _evtName = (window._currentUsername || '').toLowerCase();
+  if (_evtName === 'jiddy') { showToast('You don\'t have access to event actions!', false); return; }
   const now = Date.now();
   if (now - _lastActionTime < 2000) { showToast('Cooldown!', false); return; }
   _lastActionTime = now;
