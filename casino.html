@@ -2850,11 +2850,11 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
         </div>
       </div>
       <!-- Start Event (combined admin abuse + event) -->
-      <div style="margin-bottom:8px;">
+      <div id="adminAbuseStartBtn" style="margin-bottom:8px;">
         <button onclick="adminStartEvent()" style="width:100%;padding:14px;background:linear-gradient(135deg,#ff0000,#ff6600,#ffd700);border:none;border-radius:10px;color:#fff;cursor:pointer;font-weight:900;font-size:14px;font-family:'Orbitron';letter-spacing:2px;text-shadow:0 2px 8px rgba(0,0,0,.4);box-shadow:0 4px 20px rgba(255,100,0,.3);transition:all .2s;">⚡ START EVENT / ADMIN ABUSE ⚡</button>
       </div>
-      <!-- Quick Actions -->
-      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;">
+      <!-- Quick Actions (abuse) -->
+      <div id="adminAbuseQuickActions" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;">
         <div style="font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:8px;">⚡ QUICK ACTIONS</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
           <button onclick="adminDoubleAll()" style="padding:8px;background:linear-gradient(135deg,#00cc88,#00ff88);border:none;border-radius:6px;color:#000;cursor:pointer;font-weight:700;font-size:10px;">💰 2X ALL MONEY</button>
@@ -2888,6 +2888,66 @@ MULTIPLAYER BUCKSHOT ROULETTE ============ -->
         <button onclick="modOpenPanel()" style="width:100%;padding:10px;background:linear-gradient(135deg,#ff0000,#ff6600);border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:900;font-size:12px;font-family:'Orbitron';letter-spacing:1px;">🛡️ MODERATION PANEL</button>
       </div>
     </div>
+
+    <!-- Bug Report Panel (youguyssuck only) -->
+    <div id="bugReportPanel" style="display:none;margin-top:16px;padding:16px;background:linear-gradient(135deg,rgba(0,200,100,.05),rgba(0,180,80,.08));border:2px solid rgba(0,200,100,.3);border-radius:12px;">
+      <div style="font-family:'Orbitron';font-size:13px;color:#00cc66;letter-spacing:2px;margin-bottom:12px;">🐛 BUG REPORT</div>
+      <input type="text" id="bugReportTitle" placeholder="Bug title..." maxlength="60" style="width:100%;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;margin-bottom:6px;box-sizing:border-box;">
+      <select id="bugReportGame" style="width:100%;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;margin-bottom:6px;box-sizing:border-box;">
+        <option value="general">General / Not game-specific</option>
+        <option value="slots">🎰 Slots</option>
+        <option value="crash">📈 Crash</option>
+        <option value="mines">💣 Mines</option>
+        <option value="plinko">⚡ Plinko</option>
+        <option value="cases">📦 Cases</option>
+        <option value="blackjack">🃏 Blackjack</option>
+        <option value="poker">♠️ Video Poker</option>
+        <option value="baccarat">🎴 Baccarat</option>
+        <option value="hilo">↕️ Hi-Lo</option>
+        <option value="roulette">🎡 Roulette</option>
+        <option value="wheel">💫 Wheel</option>
+        <option value="keno">🔢 Keno</option>
+        <option value="horses">🏇 Horse Racing</option>
+        <option value="dice">🎯 Dice</option>
+        <option value="limbo">🚀 Limbo</option>
+        <option value="coinflip">🪙 Coin Flip</option>
+        <option value="tower">🗼 Tower</option>
+        <option value="scratch">🎫 Scratch Cards</option>
+        <option value="pyl">🎲 Push Your Luck</option>
+        <option value="stocks">📊 Stocks</option>
+        <option value="rusroulette">🔫 Buckshot Roulette</option>
+        <option value="russianr">🎰 Russian Roulette</option>
+        <option value="mpbsr">💥 MP Buckshot</option>
+        <option value="crypto">₿ Crypto</option>
+        <option value="duels">⚔️ Duels</option>
+        <option value="cups">🏆 Cup Shuffle</option>
+        <option value="chat">💬 Chat</option>
+        <option value="profile">👤 Profile</option>
+        <option value="leaderboard">🏆 Leaderboard</option>
+        <option value="inventory">🎒 Inventory</option>
+        <option value="trading">🤝 Trading</option>
+        <option value="prestige">⭐ Prestige</option>
+      </select>
+      <textarea id="bugReportDesc" placeholder="Describe the bug in detail... What happened? What did you expect?" maxlength="500" rows="4" style="width:100%;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;margin-bottom:8px;box-sizing:border-box;resize:vertical;font-family:inherit;"></textarea>
+      <button onclick="bugReportSubmit()" style="width:100%;padding:10px;background:linear-gradient(135deg,#00cc66,#00aa44);border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:900;font-size:12px;font-family:'Orbitron';letter-spacing:1px;">📤 SUBMIT BUG REPORT</button>
+      <div id="bugReportStatus" style="font-size:10px;color:var(--text2);margin-top:6px;text-align:center;"></div>
+      <div id="bugReportMyList" style="margin-top:12px;"></div>
+    </div>
+
+    <!-- Bug Report Viewer (mojheh/terpez only) -->
+    <div id="bugReportViewer" style="display:none;margin-top:16px;padding:16px;background:linear-gradient(135deg,rgba(0,200,100,.05),rgba(0,180,80,.08));border:2px solid rgba(0,200,100,.3);border-radius:12px;">
+      <div style="font-family:'Orbitron';font-size:13px;color:#00cc66;letter-spacing:2px;margin-bottom:12px;">🐛 BUG REPORTS <span id="bugReportCount" style="font-size:10px;color:var(--text2);"></span></div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <select id="bugViewFilter" onchange="bugReportLoadAll()" style="flex:1;padding:6px 8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:10px;">
+          <option value="all">All Reports</option>
+          <option value="open">Open Only</option>
+          <option value="resolved">Resolved Only</option>
+        </select>
+        <button onclick="bugReportLoadAll()" style="padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);cursor:pointer;font-size:10px;">🔄 Refresh</button>
+      </div>
+      <div id="bugReportList" style="max-height:400px;overflow-y:auto;"></div>
+    </div>
+
   </div>
 </div>
 
@@ -4340,21 +4400,27 @@ window._fbSet = (path, data) => {
       console.warn('[anti-cheat] Fake pending refund blocked'); return Promise.reject(new Error('Blocked'));
     }
   }
+  // Allow bug tester to write bug reports
+  if (typeof path === 'string' && /casino\/bugReports\//.test(path)) {
+    const isTester = ['youguyssuck','mojheh','terpez'].includes((window._currentUsername||'').toLowerCase());
+    if (!isTester) { console.warn('[anti-cheat] Bug report write blocked'); return Promise.reject(new Error('Blocked')); }
+    return set(ref(db, path), data);
+  }
   // Block non-staff writing to admin paths
   if (typeof path === 'string' && /casino\/admin\//.test(path)) {
-    const isStaff = ['mojheh','terpez'].includes((window._currentUsername||'').toLowerCase());
+    const isStaff = ['mojheh','terpez','jiddy'].includes((window._currentUsername||'').toLowerCase());
     if (!isStaff) { console.warn('[anti-cheat] Admin write blocked'); return Promise.reject(new Error('Blocked')); }
   }
   // Block non-staff writing ban/mute/warn
   if (typeof path === 'string' && /casino\/(bannedUsers|mutedUsers|warnings)/.test(path)) {
-    const isStaff = ['mojheh','terpez'].includes((window._currentUsername||'').toLowerCase());
+    const isStaff = ['mojheh','terpez','jiddy'].includes((window._currentUsername||'').toLowerCase());
     if (!isStaff) { console.warn('[anti-cheat] Mod action blocked'); return Promise.reject(new Error('Blocked')); }
   }
   return set(ref(db, path), data);
 };
 window._fbGet = (path) => get(ref(db, path));
 window._fbUpdate = (path, data) => {
-  const isStaff = ['mojheh','terpez'].includes((window._currentUsername||'').toLowerCase());
+  const isStaff = ['mojheh','terpez','jiddy'].includes((window._currentUsername||'').toLowerCase());
   if (!isStaff && typeof data === 'object' && data !== null && typeof path === 'string') {
     const uid = window._currentPlayerId || '';
     // Multi-path update via 'casino' root: block unilateral balance writes to other players
@@ -5649,15 +5715,168 @@ function renderProfile() {
   }).filter(Boolean).join('');
   // Prestige
   renderPrestige();
-  // Admin panel (mojheh + co-owners)
+  // Admin panel (mojheh + co-owners + jiddy)
   const adminPanel = document.getElementById('adminPanel');
   const lowerName = name.toLowerCase();
   if (lowerName === 'mojheh' || lowerName === 'terpez' || lowerName === 'jiddy') {
     adminPanel.style.display = 'block';
+    // Hide abuse sections from jiddy
+    const abuseBtn = document.getElementById('adminAbuseStartBtn');
+    const abuseActions = document.getElementById('adminAbuseQuickActions');
+    if (lowerName === 'jiddy') {
+      if (abuseBtn) abuseBtn.style.display = 'none';
+      if (abuseActions) abuseActions.style.display = 'none';
+    } else {
+      if (abuseBtn) abuseBtn.style.display = '';
+      if (abuseActions) abuseActions.style.display = '';
+    }
   } else {
     adminPanel.style.display = 'none';
   }
+  // Bug Report Panel (youguyssuck only)
+  const bugPanel = document.getElementById('bugReportPanel');
+  if (bugPanel) {
+    if (lowerName === 'youguyssuck') {
+      bugPanel.style.display = 'block';
+      bugReportLoadMine();
+    } else {
+      bugPanel.style.display = 'none';
+    }
+  }
+  // Bug Report Viewer (mojheh/terpez only)
+  const bugViewer = document.getElementById('bugReportViewer');
+  if (bugViewer) {
+    if (lowerName === 'mojheh' || lowerName === 'terpez') {
+      bugViewer.style.display = 'block';
+      bugReportLoadAll();
+    } else {
+      bugViewer.style.display = 'none';
+    }
+  }
 }
+
+// ============ BUG REPORT SYSTEM ============
+async function bugReportSubmit() {
+  const n = (window._currentUsername || '').toLowerCase();
+  if (n !== 'youguyssuck') { showToast('Only bug testers can submit reports!', false); return; }
+  const title = (document.getElementById('bugReportTitle').value || '').trim();
+  const game = document.getElementById('bugReportGame').value || 'general';
+  const desc = (document.getElementById('bugReportDesc').value || '').trim();
+  if (!title) { showToast('Please enter a bug title!', false); return; }
+  if (!desc) { showToast('Please describe the bug!', false); return; }
+  const statusEl = document.getElementById('bugReportStatus');
+  statusEl.textContent = 'Submitting...';
+  try {
+    const reportId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    await window._fbSet('casino/bugReports/' + reportId, {
+      title: title,
+      game: game,
+      description: desc,
+      reporter: window._currentUsername,
+      reporterUid: window._currentPlayerId,
+      time: Date.now(),
+      status: 'open'
+    });
+    document.getElementById('bugReportTitle').value = '';
+    document.getElementById('bugReportDesc').value = '';
+    document.getElementById('bugReportGame').selectedIndex = 0;
+    statusEl.innerHTML = '<span style="color:#00cc66;">✅ Report submitted!</span>';
+    setTimeout(() => { statusEl.textContent = ''; }, 3000);
+    bugReportLoadMine();
+  } catch (e) {
+    statusEl.innerHTML = '<span style="color:var(--red);">Failed to submit. Try again.</span>';
+  }
+}
+
+async function bugReportLoadMine() {
+  const listEl = document.getElementById('bugReportMyList');
+  if (!listEl) return;
+  try {
+    const snap = await window._fbGet('casino/bugReports');
+    const data = snap.val();
+    if (!data) { listEl.innerHTML = '<div style="font-size:10px;color:var(--text2);text-align:center;">No reports yet.</div>'; return; }
+    const reports = Object.entries(data)
+      .filter(([, r]) => r.reporterUid === window._currentPlayerId)
+      .sort((a, b) => (b[1].time || 0) - (a[1].time || 0));
+    if (reports.length === 0) { listEl.innerHTML = '<div style="font-size:10px;color:var(--text2);text-align:center;">No reports yet.</div>'; return; }
+    listEl.innerHTML = '<div style="font-size:10px;color:var(--text2);letter-spacing:1px;margin-bottom:6px;">YOUR REPORTS</div>' +
+      reports.map(([id, r]) => {
+        const status = r.status === 'resolved' ? '<span style="color:#00cc66;">RESOLVED</span>' : '<span style="color:#ffaa00;">OPEN</span>';
+        const date = new Date(r.time).toLocaleDateString();
+        const adminNote = r.adminNote ? '<div style="font-size:9px;color:#44aaff;margin-top:4px;">Admin: ' + _escHtml(r.adminNote) + '</div>' : '';
+        return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px;margin-bottom:4px;">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+          '<span style="font-size:11px;color:var(--text);font-weight:700;">' + _escHtml(r.title) + '</span>' +
+          '<span style="font-size:9px;">' + status + '</span></div>' +
+          '<div style="font-size:9px;color:var(--text2);margin-top:2px;">[' + _escHtml(r.game) + '] — ' + date + '</div>' +
+          adminNote + '</div>';
+      }).join('');
+  } catch (e) { listEl.innerHTML = ''; }
+}
+
+async function bugReportLoadAll() {
+  const listEl = document.getElementById('bugReportList');
+  const countEl = document.getElementById('bugReportCount');
+  if (!listEl) return;
+  const filter = (document.getElementById('bugViewFilter') || {}).value || 'all';
+  try {
+    const snap = await window._fbGet('casino/bugReports');
+    const data = snap.val();
+    if (!data) { listEl.innerHTML = '<div style="font-size:11px;color:var(--text2);text-align:center;padding:20px;">No bug reports.</div>'; if (countEl) countEl.textContent = '(0)'; return; }
+    let reports = Object.entries(data).sort((a, b) => (b[1].time || 0) - (a[1].time || 0));
+    const total = reports.length;
+    const openCount = reports.filter(([, r]) => r.status !== 'resolved').length;
+    if (countEl) countEl.textContent = '(' + openCount + ' open / ' + total + ' total)';
+    if (filter === 'open') reports = reports.filter(([, r]) => r.status !== 'resolved');
+    else if (filter === 'resolved') reports = reports.filter(([, r]) => r.status === 'resolved');
+    if (reports.length === 0) { listEl.innerHTML = '<div style="font-size:11px;color:var(--text2);text-align:center;padding:20px;">No reports match filter.</div>'; return; }
+    listEl.innerHTML = reports.map(([id, r]) => {
+      const isOpen = r.status !== 'resolved';
+      const statusBadge = isOpen ? '<span style="background:#ffaa00;color:#000;padding:1px 6px;border-radius:3px;font-size:8px;font-weight:900;">OPEN</span>' : '<span style="background:#00cc66;color:#000;padding:1px 6px;border-radius:3px;font-size:8px;font-weight:900;">RESOLVED</span>';
+      const date = new Date(r.time).toLocaleString();
+      const toggleBtn = isOpen
+        ? '<button onclick="bugReportResolve(\'' + id + '\')" style="padding:3px 8px;background:#00aa44;border:none;border-radius:4px;color:#fff;cursor:pointer;font-size:9px;font-weight:700;">✅ Resolve</button>'
+        : '<button onclick="bugReportReopen(\'' + id + '\')" style="padding:3px 8px;background:#ff6600;border:none;border-radius:4px;color:#fff;cursor:pointer;font-size:9px;font-weight:700;">🔄 Reopen</button>';
+      const noteHtml = r.adminNote ? '<div style="font-size:9px;color:#44aaff;margin-top:4px;padding:4px 6px;background:rgba(68,170,255,.08);border-radius:4px;">💬 ' + _escHtml(r.adminNote) + '</div>' : '';
+      return '<div style="background:var(--surface);border:1px solid ' + (isOpen ? 'rgba(255,170,0,.3)' : 'rgba(0,200,100,.2)') + ';border-radius:8px;padding:10px;margin-bottom:6px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+        '<span style="font-size:12px;color:var(--text);font-weight:700;">' + _escHtml(r.title) + '</span>' + statusBadge + '</div>' +
+        '<div style="font-size:9px;color:var(--text2);margin-bottom:4px;">By: ' + _escHtml(r.reporter || 'unknown') + ' — [' + _escHtml(r.game) + '] — ' + date + '</div>' +
+        '<div style="font-size:10px;color:var(--text);line-height:1.4;padding:6px;background:var(--bg);border-radius:4px;margin-bottom:6px;">' + _escHtml(r.description) + '</div>' +
+        noteHtml +
+        '<div style="display:flex;gap:4px;align-items:center;">' + toggleBtn +
+        '<button onclick="bugReportAddNote(\'' + id + '\')" style="padding:3px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text);cursor:pointer;font-size:9px;">💬 Note</button>' +
+        '<button onclick="bugReportDelete(\'' + id + '\')" style="padding:3px 8px;background:#880000;border:none;border-radius:4px;color:#fff;cursor:pointer;font-size:9px;">🗑️</button>' +
+        '</div></div>';
+    }).join('');
+  } catch (e) { listEl.innerHTML = '<div style="color:var(--red);font-size:10px;">Error loading reports.</div>'; }
+}
+
+async function bugReportResolve(id) {
+  await window._fbUpdate('casino/bugReports/' + id, { status: 'resolved', resolvedBy: window._currentUsername, resolvedAt: Date.now() });
+  showToast('Report resolved!', true);
+  bugReportLoadAll();
+}
+async function bugReportReopen(id) {
+  await window._fbUpdate('casino/bugReports/' + id, { status: 'open' });
+  showToast('Report reopened', true);
+  bugReportLoadAll();
+}
+async function bugReportAddNote(id) {
+  const note = prompt('Add admin note:');
+  if (note === null) return;
+  await window._fbUpdate('casino/bugReports/' + id, { adminNote: note.trim() });
+  showToast('Note added', true);
+  bugReportLoadAll();
+}
+async function bugReportDelete(id) {
+  if (!confirm('Delete this bug report?')) return;
+  await window._fbRemove('casino/bugReports/' + id);
+  showToast('Report deleted', true);
+  bugReportLoadAll();
+}
+
+function _escHtml(s) { return typeof escapeHtml==='function' ? escapeHtml(s||'') : (s||''); }
 
 // ============ PRESTIGE SYSTEM ============
 let prestigeLevel = 0;
@@ -15010,6 +15229,7 @@ function showPrestigeAnimation(level) {
 // ─── QUICK ACTIONS (from admin panel) ───
 async function adminDoubleAll() {
   if (!adminIsStaff()) return;
+  if ((window._currentUsername||'').toLowerCase()==='jiddy'){showToast('No access to abuse actions!',false);return;}
   if (!confirm('Double EVERYONE\'s money?')) return;
   await window._fbSet('casino/admin/action', {
     type: 'double', time: Date.now(), by: window._currentUsername || 'Admin'
@@ -15022,6 +15242,7 @@ async function adminDoubleAll() {
 
 async function adminRainMoney(amt) {
   if (!adminIsStaff()) return;
+  if ((window._currentUsername||'').toLowerCase()==='jiddy'){showToast('No access to abuse actions!',false);return;}
   await window._fbSet('casino/admin/action', {
     type: 'rain', amount: amt, time: Date.now(), by: window._currentUsername || 'Admin'
   });
@@ -15031,6 +15252,7 @@ async function adminRainMoney(amt) {
 
 async function adminResetAll() {
   if (!adminIsStaff()) return;
+  if ((window._currentUsername||'').toLowerCase()==='jiddy'){showToast('No access to abuse actions!',false);return;}
   if (!confirm('RESET everyone\'s balance to $1000? This cannot be undone!')) return;
   if (!confirm('Are you REALLY sure?')) return;
   // Broadcast reset action to all online players
@@ -15062,6 +15284,7 @@ async function adminResetAll() {
 
 async function adminClearChat() {
   if (!adminIsStaff()) return;
+  if ((window._currentUsername||'').toLowerCase()==='jiddy'){showToast('No access to abuse actions!',false);return;}
   await window._fbRemove('casino/chat');
   showToast('Chat cleared!', true);
 }
