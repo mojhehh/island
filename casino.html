@@ -14709,9 +14709,34 @@ setTimeout(initLimitedCases, 1000);
         <div class="ea-icon">📊</div>
         <div><div class="ea-label">Quick Poll</div><div class="ea-desc">Yes/No poll for everyone</div></div>
       </div>
-      <div class="event-action-btn" onclick="eventAction('clickchallenge')">
-        <div class="ea-icon">🖱️</div>
-        <div><div class="ea-label" style="color:#00ffcc;font-weight:900;">Click Challenge</div><div class="ea-desc">100 clicks in 7 sec = 10x money + items + prestige</div></div>
+      <div style="width:100%;padding:4px 0;">
+        <div style="padding:6px 12px;color:#00ffcc;font-weight:900;font-family:Orbitron;font-size:12px;letter-spacing:1px;">🖱️ SOLO CLICK CHALLENGE</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;padding:0 8px 6px;">
+          <div class="event-action-btn" style="flex:1;min-width:90px;" onclick="eventAction('click_normal')">
+            <div><div class="ea-label" style="color:#00ff88;font-weight:900;">Normal</div><div class="ea-desc">100 clicks / 7s · 10x</div></div>
+          </div>
+          <div class="event-action-btn" style="flex:1;min-width:90px;" onclick="eventAction('click_medium')">
+            <div><div class="ea-label" style="color:#ffd700;font-weight:900;">Medium</div><div class="ea-desc">125 clicks / 5s · 15x</div></div>
+          </div>
+          <div class="event-action-btn" style="flex:1;min-width:90px;" onclick="eventAction('click_hard')">
+            <div><div class="ea-label" style="color:#ff4444;font-weight:900;">Hard</div><div class="ea-desc">150 clicks / 5s · 25x</div></div>
+          </div>
+        </div>
+        <div style="padding:6px 12px 2px;color:#00ccff;font-weight:900;font-family:Orbitron;font-size:12px;letter-spacing:1px;">👥 GROUP CLICK CHALLENGE</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;padding:0 8px 6px;">
+          <div class="event-action-btn" style="flex:1;min-width:70px;" onclick="eventAction('clickgroup_500')">
+            <div><div class="ea-label" style="color:#00ccff;font-weight:900;">500</div><div class="ea-desc">15s · 5x</div></div>
+          </div>
+          <div class="event-action-btn" style="flex:1;min-width:70px;" onclick="eventAction('clickgroup_1000')">
+            <div><div class="ea-label" style="color:#ffd700;font-weight:900;">1K</div><div class="ea-desc">20s · 10x</div></div>
+          </div>
+          <div class="event-action-btn" style="flex:1;min-width:70px;" onclick="eventAction('clickgroup_1500')">
+            <div><div class="ea-label" style="color:#ff8800;font-weight:900;">1.5K</div><div class="ea-desc">25s · 15x</div></div>
+          </div>
+          <div class="event-action-btn" style="flex:1;min-width:70px;" onclick="eventAction('clickgroup_2000')">
+            <div><div class="ea-label" style="color:#ff4444;font-weight:900;">2K</div><div class="ea-desc">30s · 25x</div></div>
+          </div>
+        </div>
       </div>
       <div class="event-action-btn" onclick="eventAction('endEvent')" style="border-color:rgba(255,50,50,.3);">
         <div class="ea-icon">🚪</div>
@@ -15232,26 +15257,32 @@ function showTaxAnimation(taxed) {
   setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 3500);
 }
 
-function showClickChallenge(isAdmin) {
+function showClickChallenge(isAdmin, cfg) {
+  cfg = cfg || {};
   if (document.querySelector('.clickchallenge-overlay')) return;
   const overlay = document.createElement('div');
   overlay.className = 'clickchallenge-overlay';
   let clickCount = 0;
   let phase = 'countdown';
   let countdownVal = 3;
-  const TARGET = 100;
-  const TIME_LIMIT = 7000;
+  const TARGET = cfg.target || 100;
+  const TIME_LIMIT = cfg.time || 7000;
+  const LABEL = cfg.label || 'Normal';
+  const REWARD_MULT = cfg.rewardMult || 10;
+  const REWARD_ITEMS = cfg.rewardItems || 5;
+  const REWARD_PRESTIGE = cfg.rewardPrestige || 1;
+  const LABEL_COLOR = cfg.labelColor || '#00ff88';
 
   // Build DOM once
   const explainDiv = document.createElement('div');
-  explainDiv.innerHTML = '🖱️ <strong>CLICK CHALLENGE</strong> 🖱️';
+  explainDiv.innerHTML = '🖱️ <strong>CLICK CHALLENGE</strong> <span style="color:' + LABEL_COLOR + ';font-size:0.7em;">(' + LABEL + ')</span> 🖱️';
   explainDiv.className = 'cc-explain';
   const explain2 = document.createElement('div');
   explain2.className = 'cc-explain';
-  explain2.innerHTML = 'Click the circle <strong>' + TARGET + ' times</strong> in <strong>7 seconds</strong> to win!';
+  explain2.innerHTML = 'Click the circle <strong>' + TARGET + ' times</strong> in <strong>' + (TIME_LIMIT/1000) + ' seconds</strong> to win!';
   const explain3 = document.createElement('div');
   explain3.className = 'cc-explain';
-  explain3.innerHTML = '🏆 <strong>10x your money</strong> &nbsp; 💎 <strong>5 Legendary Items</strong> &nbsp; 👑 <strong>+1 Prestige</strong>';
+  explain3.innerHTML = '🏆 <strong>' + REWARD_MULT + 'x your money</strong> &nbsp; 💎 <strong>' + REWARD_ITEMS + ' Legendary Items</strong> &nbsp; 👑 <strong>+' + REWARD_PRESTIGE + ' Prestige</strong>';
   const cdNum = document.createElement('div');
   cdNum.className = 'cc-countdown-num';
   cdNum.textContent = countdownVal;
@@ -15368,13 +15399,14 @@ function showClickChallenge(isAdmin) {
   }
 
   function showClickWin() {
-    const reward = balance * 9;
+    const reward = balance * (REWARD_MULT - 1);
     balance += reward;
+    _balMark();
     updateBalDisplay();
-    prestigeLevel += 1;
+    prestigeLevel += REWARD_PRESTIGE;
     if (window._loadPrestige) window._loadPrestige(prestigeLevel);
-    const rewardItems = ['infinityGem','etherealCrown','dragonheart','starforgedBlade','voidShard'];
-    rewardItems.forEach(id => { if (typeof addToInventory === 'function') addToInventory(id); });
+    const _itemPool = ['infinityGem','etherealCrown','dragonheart','starforgedBlade','voidShard'];
+    for (let ri = 0; ri < REWARD_ITEMS; ri++) { if (typeof addToInventory === 'function') addToInventory(_itemPool[ri % _itemPool.length]); }
     firebaseSaveNow();
     renderPrestige();
 
@@ -15399,10 +15431,10 @@ function showClickChallenge(isAdmin) {
     overlay.innerHTML = '<div style="animation:ccWinExplode .6s cubic-bezier(.2,.8,.2,1) both;text-align:center;">' +
       '<div style="font-size:clamp(60px,18vw,140px);filter:drop-shadow(0 0 40px rgba(0,255,204,.8));animation:ccWinShine 1s ease-in-out infinite;">🏆</div>' +
       '<div style="font-family:Orbitron;font-size:clamp(28px,8vw,64px);font-weight:900;color:#00ffcc;text-shadow:0 0 40px rgba(0,255,204,.6),0 0 80px rgba(0,255,204,.3);margin-top:12px;">CHALLENGE COMPLETE!</div>' +
-      '<div style="font-family:Orbitron;font-size:clamp(14px,3.5vw,28px);font-weight:700;margin-top:16px;animation:ccRainbow 2s linear infinite;">💰 10x MONEY = +$' + reward.toLocaleString() + '</div>' +
-      '<div style="font-family:Orbitron;font-size:clamp(12px,3vw,22px);color:#ffd700;margin-top:10px;">💎 5 Legendary Items Added!</div>' +
-      '<div style="font-family:Orbitron;font-size:clamp(12px,3vw,22px);color:#ffd700;margin-top:6px;">👑 Prestige +1 → P' + prestigeLevel + '</div>' +
-      '<div style="font-family:Orbitron;font-size:clamp(10px,2vw,14px);color:rgba(255,255,255,.5);margin-top:20px;letter-spacing:2px;">' + clickCount + ' clicks in 7 seconds!</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(14px,3.5vw,28px);font-weight:700;margin-top:16px;animation:ccRainbow 2s linear infinite;">💰 ' + REWARD_MULT + 'x MONEY = +$' + reward.toLocaleString() + '</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(12px,3vw,22px);color:#ffd700;margin-top:10px;">💎 ' + REWARD_ITEMS + ' Legendary Items Added!</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(12px,3vw,22px);color:#ffd700;margin-top:6px;">👑 Prestige +' + REWARD_PRESTIGE + ' → P' + prestigeLevel + '</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(10px,2vw,14px);color:rgba(255,255,255,.5);margin-top:20px;letter-spacing:2px;">' + clickCount + ' clicks in ' + (TIME_LIMIT/1000) + ' seconds!</div>' +
     '</div>';
 
     try {
@@ -15422,6 +15454,259 @@ function showClickChallenge(isAdmin) {
       '<div style="font-size:clamp(60px,15vw,120px);opacity:.6;">😔</div>' +
       '<div style="font-family:Orbitron;font-size:clamp(20px,6vw,44px);font-weight:900;color:#ff4444;text-shadow:0 0 30px rgba(255,68,68,.4);margin-top:12px;">CHALLENGE FAILED</div>' +
       '<div style="font-family:Orbitron;font-size:clamp(12px,3vw,20px);color:rgba(255,255,255,.6);margin-top:12px;">' + clickCount + ' / ' + TARGET + ' clicks</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(10px,2vw,14px);color:rgba(255,255,255,.3);margin-top:16px;letter-spacing:2px;">Better luck next time...</div>' +
+    '</div>';
+    try { playSound(200, 'sawtooth', 0.04, 0.3); } catch(e) {}
+    setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 4000);
+  }
+}
+
+// ============ GROUP CLICK CHALLENGE ============
+function showGroupClickChallenge(isAdmin, cfg) {
+  cfg = cfg || {};
+  if (document.querySelector('.clickchallenge-overlay')) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'clickchallenge-overlay';
+  let myClicks = 0;
+  let totalClicks = 0;
+  let phase = 'countdown';
+  let countdownVal = 3;
+  const TARGET = cfg.target || 500;
+  const TIME_LIMIT = cfg.time || 15000;
+  const LABEL = cfg.label || 'Group';
+  const REWARD_MULT = cfg.rewardMult || 5;
+  const REWARD_ITEMS = cfg.rewardItems || 3;
+  const REWARD_PRESTIGE = cfg.rewardPrestige || 1;
+  const LABEL_COLOR = cfg.labelColor || '#00ccff';
+  const myId = window._currentPlayerId || ('anon_' + Math.random().toString(36).slice(2));
+  let groupUnsub = null;
+  let writeInterval = null;
+
+  const explainDiv = document.createElement('div');
+  explainDiv.innerHTML = '👥 <strong>GROUP CLICK CHALLENGE</strong> <span style="color:' + LABEL_COLOR + ';font-size:0.7em;">(' + LABEL + ')</span>';
+  explainDiv.className = 'cc-explain';
+  const explain2 = document.createElement('div');
+  explain2.className = 'cc-explain';
+  explain2.innerHTML = 'Everyone clicks together! Hit <strong>' + TARGET + ' total clicks</strong> in <strong>' + (TIME_LIMIT/1000) + ' seconds</strong>!';
+  const explain3 = document.createElement('div');
+  explain3.className = 'cc-explain';
+  explain3.innerHTML = '🏆 <strong>' + REWARD_MULT + 'x money</strong> &nbsp; 💎 <strong>' + REWARD_ITEMS + ' Items</strong> &nbsp; 👑 <strong>+' + REWARD_PRESTIGE + ' Prestige</strong>';
+  const cdNum = document.createElement('div');
+  cdNum.className = 'cc-countdown-num';
+  cdNum.textContent = countdownVal;
+  const readyDiv = document.createElement('div');
+  readyDiv.className = 'cc-explain';
+  readyDiv.style.cssText = 'margin-top:16px;opacity:.6';
+  readyDiv.textContent = 'Get ready...';
+  overlay.appendChild(explainDiv);
+  overlay.appendChild(explain2);
+  overlay.appendChild(explain3);
+  overlay.appendChild(cdNum);
+  overlay.appendChild(readyDiv);
+  document.body.appendChild(overlay);
+
+  try { playSound(400, 'sine', 0.04, 0.2); } catch(e) {}
+
+  const cdInterval = setInterval(() => {
+    countdownVal--;
+    if (countdownVal > 0) {
+      cdNum.textContent = countdownVal;
+      try { playSound(400, 'sine', 0.04, 0.2); } catch(e) {}
+    } else {
+      clearInterval(cdInterval);
+      try { playSound(800, 'sine', 0.06, 0.3); } catch(e) {}
+      startGroupClickPhase();
+    }
+  }, 1000);
+
+  function cleanup() {
+    if (groupUnsub) { groupUnsub(); groupUnsub = null; }
+    if (writeInterval) { clearInterval(writeInterval); writeInterval = null; }
+  }
+
+  function startGroupClickPhase() {
+    phase = 'clicking';
+    const startTime = Date.now();
+    let timerRaf;
+
+    overlay.innerHTML = '';
+    const timerText = document.createElement('div');
+    timerText.className = 'cc-timer-text';
+    const timerBar = document.createElement('div');
+    timerBar.className = 'cc-timer-bar';
+    const timerFill = document.createElement('div');
+    timerFill.className = 'cc-timer-fill';
+    timerBar.appendChild(timerFill);
+    const clickArea = document.createElement('div');
+    clickArea.className = 'cc-click-area';
+    clickArea.style.borderColor = LABEL_COLOR;
+    clickArea.style.boxShadow = '0 0 40px ' + LABEL_COLOR + '33, inset 0 0 60px ' + LABEL_COLOR + '11';
+    const countEl = document.createElement('div');
+    countEl.className = 'cc-click-count';
+    countEl.textContent = '0';
+    const labelEl = document.createElement('div');
+    labelEl.className = 'cc-click-label';
+    labelEl.textContent = 'TOTAL CLICKS';
+    clickArea.appendChild(countEl);
+    clickArea.appendChild(labelEl);
+    const myClicksEl = document.createElement('div');
+    myClicksEl.style.cssText = 'font-family:Orbitron;font-size:clamp(10px,2.5vw,16px);color:rgba(255,255,255,.5);margin-top:6px;';
+    myClicksEl.textContent = 'Your clicks: 0';
+    const targetEl = document.createElement('div');
+    targetEl.className = 'cc-target';
+    const progressBar = document.createElement('div');
+    progressBar.style.cssText = 'width:80%;max-width:400px;height:8px;border-radius:4px;background:rgba(255,255,255,.1);margin-top:8px;overflow:hidden;';
+    const progressFill = document.createElement('div');
+    progressFill.style.cssText = 'height:100%;border-radius:4px;width:0%;transition:width .05s;';
+    progressBar.appendChild(progressFill);
+    overlay.appendChild(timerText);
+    overlay.appendChild(timerBar);
+    overlay.appendChild(clickArea);
+    overlay.appendChild(myClicksEl);
+    overlay.appendChild(targetEl);
+    overlay.appendChild(progressBar);
+
+    // Write initial clicks to Firebase
+    window._fbSet('casino/groupClick/clicks/' + myId, 0);
+
+    // Listen for combined clicks from everyone
+    groupUnsub = window._fbOnValue('casino/groupClick/clicks', snap => {
+      const data = snap.val();
+      if (!data) return;
+      let sum = 0;
+      Object.values(data).forEach(v => { sum += (typeof v === 'number' ? v : 0); });
+      totalClicks = sum;
+    });
+
+    // Throttled write of my clicks every 200ms
+    writeInterval = setInterval(() => {
+      if (phase === 'clicking') {
+        window._fbSet('casino/groupClick/clicks/' + myId, myClicks);
+      }
+    }, 200);
+
+    function updateDisplay() {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, TIME_LIMIT - elapsed);
+      const pct = (remaining / TIME_LIMIT) * 100;
+      const secs = (remaining / 1000).toFixed(2);
+      const progress = Math.min(100, (totalClicks / TARGET) * 100);
+      const progressColor = progress >= 100 ? '#00ff88' : (progress >= 60 ? '#ffd700' : LABEL_COLOR);
+      timerText.textContent = '⏱️ ' + secs + 's';
+      timerFill.style.width = pct + '%';
+      timerFill.style.background = 'linear-gradient(90deg,' + LABEL_COLOR + ',' + progressColor + ')';
+      countEl.textContent = totalClicks;
+      countEl.style.color = progressColor;
+      myClicksEl.textContent = 'Your clicks: ' + myClicks;
+      targetEl.textContent = 'TARGET: ' + TARGET + ' total | ' + Math.round(progress) + '%';
+      progressFill.style.background = progressColor;
+      progressFill.style.width = progress + '%';
+    }
+    updateDisplay();
+
+    clickArea.onpointerdown = function(e) {
+      e.preventDefault();
+      if (phase !== 'clicking') return;
+      myClicks++;
+      totalClicks++;
+      try { playSound(600 + Math.random() * 400, 'square', 0.02, 0.05); } catch(e2) {}
+      const ripple = document.createElement('div');
+      ripple.className = 'cc-ripple';
+      ripple.style.left = (e.offsetX || clickArea.offsetWidth/2) + 'px';
+      ripple.style.top = (e.offsetY || clickArea.offsetHeight/2) + 'px';
+      clickArea.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+      updateDisplay();
+      if (totalClicks >= TARGET) {
+        phase = 'won';
+        cancelAnimationFrame(timerRaf);
+        window._fbSet('casino/groupClick/clicks/' + myId, myClicks);
+        cleanup();
+        showGroupWin();
+      }
+    };
+
+    function tickTimer() {
+      if (phase !== 'clicking' && phase !== 'waiting') return;
+      const elapsed = Date.now() - startTime;
+      if (elapsed >= TIME_LIMIT && phase === 'clicking') {
+        window._fbSet('casino/groupClick/clicks/' + myId, myClicks);
+        phase = 'waiting';
+        updateDisplay();
+        setTimeout(() => {
+          if (phase === 'waiting') {
+            if (totalClicks >= TARGET) {
+              phase = 'won'; cleanup(); showGroupWin();
+            } else {
+              phase = 'lost'; cleanup(); showGroupLose();
+            }
+          }
+        }, 2000);
+        return;
+      }
+      updateDisplay();
+      timerRaf = requestAnimationFrame(tickTimer);
+    }
+    timerRaf = requestAnimationFrame(tickTimer);
+  }
+
+  function showGroupWin() {
+    const reward = balance * (REWARD_MULT - 1);
+    balance += reward;
+    _balMark();
+    updateBalDisplay();
+    prestigeLevel += REWARD_PRESTIGE;
+    if (window._loadPrestige) window._loadPrestige(prestigeLevel);
+    const _itemPool = ['infinityGem','etherealCrown','dragonheart','starforgedBlade','voidShard'];
+    for (let ri = 0; ri < REWARD_ITEMS; ri++) { if (typeof addToInventory === 'function') addToInventory(_itemPool[ri % _itemPool.length]); }
+    firebaseSaveNow();
+    renderPrestige();
+
+    const particlesDiv = document.createElement('div');
+    particlesDiv.className = 'cc-win-particles';
+    for (let i = 0; i < 80; i++) {
+      const p = document.createElement('div');
+      p.className = 'cc-win-particle';
+      const colors = ['#00ffcc','#ffd700','#ff44aa','#00ccff','#ff6600','#aa44ff','#00ff88'];
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.left = '50%';
+      p.style.top = '50%';
+      p.style.setProperty('--dx', (Math.random() - 0.5) * 800 + 'px');
+      p.style.setProperty('--dy', (Math.random() - 0.5) * 800 + 'px');
+      p.style.animationDelay = (Math.random() * 0.5) + 's';
+      p.style.width = (4 + Math.random() * 8) + 'px';
+      p.style.height = p.style.width;
+      particlesDiv.appendChild(p);
+    }
+    document.body.appendChild(particlesDiv);
+
+    overlay.innerHTML = '<div style="animation:ccWinExplode .6s cubic-bezier(.2,.8,.2,1) both;text-align:center;">' +
+      '<div style="font-size:clamp(60px,18vw,140px);filter:drop-shadow(0 0 40px rgba(0,204,255,.8));animation:ccWinShine 1s ease-in-out infinite;">🏆</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(24px,7vw,52px);font-weight:900;color:' + LABEL_COLOR + ';text-shadow:0 0 40px ' + LABEL_COLOR + '99;margin-top:12px;">GROUP CHALLENGE COMPLETE!</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(14px,3.5vw,28px);font-weight:700;margin-top:16px;animation:ccRainbow 2s linear infinite;">💰 ' + REWARD_MULT + 'x MONEY = +$' + reward.toLocaleString() + '</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(12px,3vw,22px);color:#ffd700;margin-top:10px;">💎 ' + REWARD_ITEMS + ' Legendary Items Added!</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(12px,3vw,22px);color:#ffd700;margin-top:6px;">👑 Prestige +' + REWARD_PRESTIGE + ' → P' + prestigeLevel + '</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(10px,2vw,14px);color:rgba(255,255,255,.5);margin-top:20px;letter-spacing:2px;">Your clicks: ' + myClicks + ' | Total: ' + totalClicks + '</div>' +
+    '</div>';
+
+    try {
+      playSound(523, 'sine', 0.06, 0.2);
+      setTimeout(() => playSound(659, 'sine', 0.06, 0.2), 100);
+      setTimeout(() => playSound(784, 'sine', 0.06, 0.2), 200);
+      setTimeout(() => playSound(1047, 'sine', 0.08, 0.4), 350);
+    } catch(e) {}
+    setTimeout(() => {
+      if (overlay.parentNode) overlay.remove();
+      if (particlesDiv.parentNode) particlesDiv.remove();
+    }, 6000);
+  }
+
+  function showGroupLose() {
+    overlay.innerHTML = '<div style="animation:ccLoseFade .5s ease-out both;text-align:center;">' +
+      '<div style="font-size:clamp(60px,15vw,120px);opacity:.6;">😔</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(20px,6vw,44px);font-weight:900;color:#ff4444;text-shadow:0 0 30px rgba(255,68,68,.4);margin-top:12px;">GROUP CHALLENGE FAILED</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(12px,3vw,20px);color:rgba(255,255,255,.6);margin-top:12px;">' + totalClicks + ' / ' + TARGET + ' total clicks</div>' +
+      '<div style="font-family:Orbitron;font-size:clamp(10px,2vw,14px);color:rgba(255,255,255,.3);margin-top:8px;">Your contribution: ' + myClicks + ' clicks</div>' +
       '<div style="font-family:Orbitron;font-size:clamp(10px,2vw,14px);color:rgba(255,255,255,.3);margin-top:16px;letter-spacing:2px;">Better luck next time...</div>' +
     '</div>';
     try { playSound(200, 'sawtooth', 0.04, 0.3); } catch(e) {}
@@ -15455,7 +15740,7 @@ async function adminDoubleAll() {
   await window._fbSet('casino/admin/action', {
     type: 'double', time: Date.now(), by: window._currentUsername || 'Admin'
   });
-  balance *= 2; updateBalDisplay(); firebaseSaveNow();
+  balance *= 2; _balMark(); updateBalDisplay(); firebaseSaveNow();
   showDoubleMoneyAnimation();
   showMoneyRain(balance);
   showToast('Doubled everyone\'s money!', true);
@@ -15467,7 +15752,7 @@ async function adminRainMoney(amt) {
   await window._fbSet('casino/admin/action', {
     type: 'rain', amount: amt, time: Date.now(), by: window._currentUsername || 'Admin'
   });
-  balance += amt; updateBalDisplay(); firebaseSaveNow();
+  balance += amt; _balMark(); updateBalDisplay(); firebaseSaveNow();
   showMoneyRain(amt);
 }
 
@@ -15674,7 +15959,7 @@ async function eventAction(type) {
 
   if (type === 'double') {
     await window._fbSet('casino/admin/action', { type: 'double', time: now, by: window._currentUsername });
-    balance *= 2; updateBalDisplay(); firebaseSaveNow();
+    balance *= 2; _balMark(); updateBalDisplay(); firebaseSaveNow();
     showDoubleMoneyAnimation();
     showMoneyRain(balance);
     const mk = now.toString(36) + 'sys';
@@ -15687,7 +15972,7 @@ async function eventAction(type) {
     const rainAmounts = {rain50:50,rain500:500,rain5000:5000,rain25000:25000,rain100000:100000,rain1000000:1000000,rain10000000:10000000,rain1000000000:1000000000,rain1000000000000:1000000000000,rain1000000000000000:1000000000000000};
     const amt = rainAmounts[type] || 50;
     await window._fbSet('casino/admin/action', { type: 'rain', amount: amt, time: now, by: window._currentUsername });
-    balance += amt; updateBalDisplay(); firebaseSaveNow();
+    balance += amt; _balMark(); updateBalDisplay(); firebaseSaveNow();
     showMoneyRain(amt);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
@@ -15699,7 +15984,7 @@ async function eventAction(type) {
     const amounts = [100,500,1000,5000,10000,25000,50000,100000,250000,500000];
     const jackpotAmt = amounts[Math.floor(Math.random() * amounts.length)];
     await window._fbSet('casino/admin/action', { type: 'jackpot', amount: jackpotAmt, time: now, by: window._currentUsername });
-    balance += jackpotAmt; updateBalDisplay(); firebaseSaveNow();
+    balance += jackpotAmt; _balMark(); updateBalDisplay(); firebaseSaveNow();
     showJackpotAnimation(jackpotAmt);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
@@ -15711,7 +15996,7 @@ async function eventAction(type) {
     const win = Math.random() < 0.5;
     await window._fbSet('casino/admin/action', { type: 'coinflip', win: win, time: now, by: window._currentUsername });
     if (win) { balance *= 2; } else { balance = Math.floor(balance / 2); }
-    updateBalDisplay(); firebaseSaveNow();
+    _balMark(); updateBalDisplay(); firebaseSaveNow();
     showCoinFlipAnimation(win);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
@@ -15722,7 +16007,7 @@ async function eventAction(type) {
   else if (type === 'tax') {
     await window._fbSet('casino/admin/action', { type: 'tax', time: now, by: window._currentUsername });
     const taxed = Math.floor(balance / 2);
-    balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSaveNow();
+    balance = Math.floor(balance / 2); _balMark(); updateBalDisplay(); firebaseSaveNow();
     showTaxAnimation(taxed);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
@@ -15779,12 +16064,38 @@ async function eventAction(type) {
       time: now, isAdmin: true, isSystem: true
     });
   }
-  else if (type === 'clickchallenge') {
-    await window._fbSet('casino/admin/action', { type: 'clickchallenge', time: now, by: window._currentUsername });
-    showClickChallenge(true);
+  else if (type.startsWith('click_')) {
+    const diff = type.split('_')[1];
+    const _clickCfgs = {
+      normal: { target: 100, time: 7000, label: 'Normal', rewardMult: 10, rewardItems: 5, rewardPrestige: 1, labelColor: '#00ff88' },
+      medium: { target: 125, time: 5000, label: 'Medium', rewardMult: 15, rewardItems: 7, rewardPrestige: 1, labelColor: '#ffd700' },
+      hard:   { target: 150, time: 5000, label: 'Hard',   rewardMult: 25, rewardItems: 10, rewardPrestige: 2, labelColor: '#ff4444' }
+    };
+    const cfg = _clickCfgs[diff] || _clickCfgs.normal;
+    await window._fbSet('casino/admin/action', { type: 'clickchallenge', target: cfg.target, timeLimit: cfg.time, label: cfg.label, rewardMult: cfg.rewardMult, rewardItems: cfg.rewardItems, rewardPrestige: cfg.rewardPrestige, labelColor: cfg.labelColor, time: now, by: window._currentUsername });
+    showClickChallenge(true, cfg);
     const mk = now.toString(36) + 'sys';
     await window._fbSet('casino/admin/eventChat/' + mk, {
-      user: 'SYSTEM', text: '🖱️ CLICK CHALLENGE STARTED! 100 clicks in 7 seconds for 10x money + items + prestige!',
+      user: 'SYSTEM', text: '🖱️ CLICK CHALLENGE (' + cfg.label.toUpperCase() + ')! ' + cfg.target + ' clicks in ' + (cfg.time/1000) + 's for ' + cfg.rewardMult + 'x money + items + prestige!',
+      time: now, isAdmin: true, isSystem: true
+    });
+  }
+  else if (type.startsWith('clickgroup_')) {
+    const _tgt = parseInt(type.split('_')[1]) || 500;
+    const _grpCfgs = {
+      500:  { target: 500,  time: 15000, label: 'Group 500',  rewardMult: 5,  rewardItems: 3, rewardPrestige: 1, labelColor: '#00ccff' },
+      1000: { target: 1000, time: 20000, label: 'Group 1K',   rewardMult: 10, rewardItems: 5, rewardPrestige: 1, labelColor: '#ffd700' },
+      1500: { target: 1500, time: 25000, label: 'Group 1.5K', rewardMult: 15, rewardItems: 7, rewardPrestige: 1, labelColor: '#ff8800' },
+      2000: { target: 2000, time: 30000, label: 'Group 2K',   rewardMult: 25, rewardItems: 10, rewardPrestige: 2, labelColor: '#ff4444' }
+    };
+    const cfg = _grpCfgs[_tgt] || _grpCfgs[500];
+    const groupId = now.toString(36);
+    await window._fbSet('casino/groupClick', { target: cfg.target, timeLimit: cfg.time, time: now, clicks: {} });
+    await window._fbSet('casino/admin/action', { type: 'clickgroup', target: cfg.target, timeLimit: cfg.time, label: cfg.label, rewardMult: cfg.rewardMult, rewardItems: cfg.rewardItems, rewardPrestige: cfg.rewardPrestige, labelColor: cfg.labelColor, groupId: groupId, time: now, by: window._currentUsername });
+    showGroupClickChallenge(true, cfg);
+    const mk = now.toString(36) + 'sys';
+    await window._fbSet('casino/admin/eventChat/' + mk, {
+      user: 'SYSTEM', text: '👥 GROUP CLICK CHALLENGE! ' + cfg.target + ' total clicks in ' + (cfg.time/1000) + 's! Everyone works together for ' + cfg.rewardMult + 'x money!',
       time: now, isAdmin: true, isSystem: true
     });
   }
@@ -15906,26 +16217,26 @@ function startAdminListeners() {
     if (isMe) return;
 
     if (d.type === 'double') {
-      balance *= 2; updateBalDisplay(); firebaseSaveNow();
+      balance *= 2; _balMark(); updateBalDisplay(); firebaseSaveNow();
       showDoubleMoneyAnimation();
       showMoneyRain(balance);
       showToast('💰 ' + (d.by || 'Admin') + ' DOUBLED everyone\'s money!', true);
     } else if (d.type === 'rain' && d.amount) {
-      balance += d.amount; updateBalDisplay(); firebaseSaveNow();
+      balance += d.amount; _balMark(); updateBalDisplay(); firebaseSaveNow();
       showMoneyRain(d.amount);
       showToast('\u{1F327}\uFE0F Money Rain! +$' + d.amount.toLocaleString(), true);
     } else if (d.type === 'jackpot' && d.amount) {
-      balance += d.amount; updateBalDisplay(); firebaseSaveNow();
+      balance += d.amount; _balMark(); updateBalDisplay(); firebaseSaveNow();
       showJackpotAnimation(d.amount);
       showToast('\u{1F3B0} JACKPOT! +$' + d.amount.toLocaleString(), true);
     } else if (d.type === 'coinflip') {
       if (d.win) { balance *= 2; } else { balance = Math.floor(balance / 2); }
-      updateBalDisplay(); firebaseSaveNow();
+      _balMark(); updateBalDisplay(); firebaseSaveNow();
       showCoinFlipAnimation(d.win);
       showToast(d.win ? '\u{1FA99} Coin Flip: DOUBLED!' : '\u{1FA99} Coin Flip: Lost half!', d.win);
     } else if (d.type === 'tax') {
       const taxed = Math.floor(balance / 2);
-      balance = Math.floor(balance / 2); updateBalDisplay(); firebaseSaveNow();
+      balance = Math.floor(balance / 2); _balMark(); updateBalDisplay(); firebaseSaveNow();
       showTaxAnimation(taxed);
       showToast('\u{1F480} Admin Tax! Lost $' + taxed.toLocaleString(), false);
     } else if (d.type === 'reset') {
@@ -15943,7 +16254,9 @@ function startAdminListeners() {
       showPrestigeAnimation(prestigeLevel);
       showToast('Prestige +1! Now P' + prestigeLevel, true);
     } else if (d.type === 'clickchallenge') {
-      showClickChallenge(false);
+      showClickChallenge(false, { target: d.target || 100, time: d.timeLimit || 7000, label: d.label || 'Normal', rewardMult: d.rewardMult || 10, rewardItems: d.rewardItems || 5, rewardPrestige: d.rewardPrestige || 1, labelColor: d.labelColor || '#00ff88' });
+    } else if (d.type === 'clickgroup') {
+      showGroupClickChallenge(false, { target: d.target || 500, time: d.timeLimit || 15000, label: d.label || 'Group', rewardMult: d.rewardMult || 5, rewardItems: d.rewardItems || 3, rewardPrestige: d.rewardPrestige || 1, labelColor: d.labelColor || '#00ccff' });
     }
   }));
 
