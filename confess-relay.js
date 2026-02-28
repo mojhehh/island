@@ -1,8 +1,5 @@
-/**
- * Confess Relay — Firebase RTDB ↔ Ollama bridge
- * Watches Firebase for AI requests, forwards to local Ollama, writes responses back.
- * Run via PM2: pm2 start confess-relay.js --name "confess-relay"
- */
+
+
 
 const admin = require('firebase-admin');
 const http = require('http');
@@ -12,7 +9,7 @@ const OLLAMA_HOST = 'localhost';
 const OLLAMA_PORT = 11434;
 const OLLAMA_PATH = '/api/chat';
 
-// ── Firebase Init ──
+
 const serviceAccount = require(SERVICE_ACCOUNT_PATH);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -21,31 +18,31 @@ admin.initializeApp({
 const db = admin.database();
 console.log('[confess-relay] Firebase connected. Watching for AI requests...');
 
-// ── Watch for new requests ──
+
 const requestsRef = db.ref('ai_requests');
 
 requestsRef.on('child_added', async (snapshot) => {
   const id = snapshot.key;
   const data = snapshot.val();
 
-  // Skip if already processed or no payload
+  
   if (!data || data.status === 'done' || data.status === 'processing') return;
 
   console.log(`[confess-relay] New request: ${id}`);
 
-  // Mark as processing
+  
   await db.ref(`ai_requests/${id}/status`).set('processing');
 
   try {
     const ollamaResponse = await callOllama(data.payload);
     
-    // Write response to Firebase
+    
     await db.ref(`ai_responses/${id}`).set({
       response: ollamaResponse,
       timestamp: Date.now()
     });
 
-    // Mark done and clean up request
+    
     await db.ref(`ai_requests/${id}`).remove();
     console.log(`[confess-relay] Done: ${id}`);
 
@@ -59,7 +56,7 @@ requestsRef.on('child_added', async (snapshot) => {
   }
 });
 
-// ── Call local Ollama ──
+
 function callOllama(payload) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify(payload);
@@ -93,7 +90,7 @@ function callOllama(payload) {
   });
 }
 
-// ── Cleanup old requests on startup ──
+
 (async () => {
   try {
     const snap = await requestsRef.once('value');
@@ -109,6 +106,6 @@ function callOllama(payload) {
   }
 })();
 
-// ── Keep alive ──
+
 process.on('SIGINT', () => { console.log('[confess-relay] Shutting down'); process.exit(0); });
 process.on('SIGTERM', () => { console.log('[confess-relay] Shutting down'); process.exit(0); });

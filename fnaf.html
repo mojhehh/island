@@ -48,7 +48,7 @@
             border-radius: 50%;
         }
 
-        /* ========== TITLE SCREEN ========== */
+        
         #titleScreen {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -206,7 +206,7 @@
             letter-spacing: 2px;
         }
 
-        /* ========== NIGHT START ========== */
+        
         #nightStartScreen {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -237,7 +237,7 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* ========== WIN/LOSE SCREENS ========== */
+        
         #winScreen, #loseScreen {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -297,7 +297,7 @@
             box-shadow: 0 0 20px rgba(192,57,43,0.3);
         }
 
-        /* ========== HUD ========== */
+        
         #hud {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -359,7 +359,7 @@
             margin-bottom: 2px;
         }
 
-        /* Vent indicators */
+        
         .vent-indicator {
             position: absolute;
             top: 50%;
@@ -415,7 +415,7 @@
             50% { opacity: 0.3; }
         }
 
-        /* ========== ACTION BUTTONS ========== */
+        
         #actionBar {
             position: absolute;
             bottom: 15px;
@@ -464,7 +464,7 @@
             pointer-events: none;
         }
 
-        /* Touch / iPad: big horizontal buttons like real FNAF 2 */
+        
         @media (pointer: coarse) {
             #actionBar {
                 bottom: 0;
@@ -489,13 +489,13 @@
             .action-btn.mask-btn {
                 border-right: 1px solid rgba(255,255,255,0.1);
             }
-            /* Hide flashlight button on touch — tap hallway instead */
+            
             .action-btn.flash-btn { display: none; }
-            /* Hide vent light buttons on touch — tap vents instead */
+            
             .vent-light-btn { display: none !important; }
         }
 
-        /* ========== CAMERA VIEW ========== */
+        
         #cameraOverlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -592,7 +592,7 @@
             color: #f1c40f;
         }
 
-        /* Music box wind button on camera */
+        
         #windBtn {
             position: absolute;
             bottom: 80px;
@@ -616,7 +616,7 @@
             box-shadow: 0 0 20px rgba(46,204,64,0.3);
         }
 
-        /* ========== JUMPSCARE ========== */
+        
         #jumpscareOverlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -641,7 +641,7 @@
             100% { transform: translate(-3px, 2px) scale(1.1); }
         }
 
-        /* ========== STATIC NOISE ========== */
+        
         #staticOverlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -651,7 +651,7 @@
             transition: opacity 0.1s;
         }
 
-        /* ========== VIGNETTE ========== */
+        
         #vignette {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -660,7 +660,7 @@
             z-index: 5;
         }
 
-        /* Flash overlay */
+        
         .action-flash {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -674,7 +674,7 @@
 </head>
 <body>
 
-<!-- ══════ SPLASH SCREEN ══════ -->
+
 <div id="splashScreen">
   <img src="Untitled%20design.png" alt="Logo" id="splashLogo">
 </div>
@@ -723,7 +723,7 @@
         <div id="actionFlash" class="action-flash"></div>
         <canvas id="staticOverlay"></canvas>
 
-        <!-- HUD -->
+        
         <div id="hud">
             <div id="musicBoxDisplay">
                 <div class="mb-label">🎵 MUSIC BOX</div>
@@ -735,23 +735,23 @@
                 <div class="night-label" id="nightLabel">NIGHT 1</div>
                 <div class="time-value" id="timeValue">12 AM</div>
             </div>
-            <!-- Vent indicators -->
+            
             <div class="vent-indicator left"><div class="vent-light" id="ventLeftLight"></div></div>
             <div class="vent-indicator right"><div class="vent-light" id="ventRightLight"></div></div>
         </div>
 
-        <!-- Action buttons -->
+        
         <div id="actionBar">
             <div class="action-btn mask-btn" id="maskBtn" onclick="toggleMask()">MASK</div>
             <div class="action-btn cam-btn-action" id="camBtn" onclick="toggleCamera()">CAMERAS</div>
             <div class="action-btn flash-btn" id="flashBtn" onclick="toggleFlashlight()">FLASHLIGHT</div>
         </div>
 
-        <!-- Vent light buttons -->
+        
         <div class="vent-light-btn" id="ventLightL" onclick="toggleVentLight('left')">◀ VENT LIGHT [Q]</div>
         <div class="vent-light-btn" id="ventLightR" onclick="toggleVentLight('right')">VENT LIGHT [E] ▶</div>
 
-        <!-- Camera overlay -->
+        
         <div id="cameraOverlay">
             <div class="cam-static"></div>
             <div class="cam-label" id="camLabel">CAM 01 — MAIN STAGE</div>
@@ -775,12 +775,12 @@
             </div>
         </div>
 
-        <!-- Jumpscare -->
+        
         <div id="jumpscareOverlay">
             <img id="jumpscareImg" src="">
         </div>
 
-        <!-- Title Screen -->
+        
         <div id="titleScreen">
             <canvas id="titleBg" width="800" height="600"></canvas>
             <div class="title-content">
@@ -809,20 +809,20 @@
             <div class="title-controls">SPACE: CAMERAS | F: FLASHLIGHT | SHIFT: MASK | Q/E: VENT LIGHTS | W/S: CYCLE CAMS</div>
         </div>
 
-        <!-- Night start -->
+        
         <div id="nightStartScreen">
             <div class="night-start-text" id="nightStartText">12:00 AM</div>
             <div class="night-start-number" id="nightStartNumber">1st Night</div>
         </div>
 
-        <!-- Win -->
+        
         <div id="winScreen">
             <div class="six-am-text">6 AM</div>
             <div class="six-am-sub" id="winNightText">NIGHT 1 COMPLETE</div>
             <div class="six-am-sub" style="margin-top:20px; color:#333; cursor:pointer;" onclick="proceedAfterWin()">▸ CONTINUE ◂</div>
         </div>
 
-        <!-- Lose -->
+        
         <div id="loseScreen">
             <div class="gameover-text">GAME OVER</div>
             <div class="gameover-sub" id="loseText">You were caught</div>
@@ -832,9 +832,7 @@
     </div>
 
 <script>
-// ================================================================
-// FIVE NIGHTS AT EPSTEIN'S 2 — FNAF 2 Style
-// ================================================================
+
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -850,12 +848,12 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', () => {
     resizeCanvas();
-    // Resize title canvas too
+    
     titleBgCanvas.width = window.innerWidth;
     titleBgCanvas.height = window.innerHeight;
 });
 
-// Cursor
+
 document.addEventListener('mousemove', e => {
     const c = document.getElementById('cursor');
     c.style.left = (e.clientX - 10) + 'px';
@@ -863,7 +861,7 @@ document.addEventListener('mousemove', e => {
     mouseXRatio = e.clientX / window.innerWidth;
 });
 
-// ============== LOAD IMAGES ==============
+
 const images = {};
 const imageSources = {
     epstein: 'guard.webp',
@@ -893,7 +891,7 @@ Object.entries(imageSources).forEach(([key, src]) => {
     images[key] = img;
 });
 
-// ============== GAME CONSTANTS ==============
+
 const CAMERAS = {
     'CAM1': { name: 'MAIN STAGE', photo: 'cam_stage' },
     'CAM2': { name: 'DINING AREA', photo: 'cam_dining' },
@@ -937,7 +935,7 @@ const ANIMATRONICS_CONFIG = [
       aggressionBase: -1, aggressionPerNight: 1.0, maxAggro: 16 }
 ];
 
-// ============== GAME STATE ==============
+
 let gameState = 'title';
 let currentNight = 1;
 let maxNightUnlocked = parseInt(localStorage.getItem('fnae2_maxNight')) || 1;
@@ -954,33 +952,33 @@ let flashlightDisabled = false;
 let flashlightDisableTimer = 0;
 
 let musicBoxLevel = 100;
-let musicBoxDrainRate = 0.8; // per second, increases with night
+let musicBoxDrainRate = 0.8; 
 let isWinding = false;
 let puppetReleased = false;
 let puppetAttackTimer = 0;
-const PUPPET_ATTACK_DELAY = 12; // seconds after music box empties
+const PUPPET_ATTACK_DELAY = 12; 
 
 let animatronics = [];
 let staticAmount = 0;
 
-// Entrance states
+
 let hallEnemy = null;
 let ventLeftEnemy = null;
 let ventRightEnemy = null;
 
-// Vent lights
+
 let ventLightLeft = false;
 let ventLightRight = false;
 let ventLightLeftTimer = 0;
 let ventLightRightTimer = 0;
-const VENT_LIGHT_DURATION = 3; // seconds each toggle lasts
+const VENT_LIGHT_DURATION = 3; 
 
-// Office panning
-let officeScrollX = 0; // -1 to 1 range
+
+let officeScrollX = 0; 
 const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-let mouseXRatio = 0.5; // 0 to 1, mouse position across screen
+let mouseXRatio = 0.5; 
 
-// Title screen
+
 const titleBgCanvas = document.getElementById('titleBg');
 titleBgCanvas.width = window.innerWidth;
 titleBgCanvas.height = window.innerHeight;
@@ -996,7 +994,7 @@ for (let i = 0; i < 60; i++) {
     });
 }
 
-// ============== TITLE SCREEN ==============
+
 document.getElementById('newGameBtn').addEventListener('click', () => showNightStart(1));
 document.getElementById('continueBtn').addEventListener('click', () => showNightStart(maxNightUnlocked));
 document.getElementById('continueNight').textContent = maxNightUnlocked;
@@ -1043,17 +1041,17 @@ function drawTitleBg() {
     });
 }
 
-// ============== SCREEN MANAGEMENT ==============
+
 let nightStartTimeout = null;
 
 function showNightStart(night) {
     currentNight = night;
     gameState = 'nightstart';
 
-    // Clear any previous timeout
+    
     if (nightStartTimeout) clearTimeout(nightStartTimeout);
 
-    // Hide other screens
+    
     document.getElementById('loseScreen').classList.remove('active');
     document.getElementById('winScreen').classList.remove('active');
     document.getElementById('jumpscareOverlay').classList.remove('active');
@@ -1098,14 +1096,14 @@ function initNight(night) {
     ventLightRightTimer = 0;
     officeScrollX = 0;
 
-    // Init animatronics
+    
     animatronics = ANIMATRONICS_CONFIG.map(config => ({
         ...config,
         aggression: Math.min(config.maxAggro, Math.max(0, config.aggressionBase + night * config.aggressionPerNight)),
         currentCam: config.path[0],
         pathIndex: 0,
         state: 'roaming',
-        moveTimer: Math.random() * 3, // stagger initial movement
+        moveTimer: Math.random() * 3, 
         moveInterval: 4 + Math.random() * 3,
         attackTimer: 0,
         maskTimer: 0,
@@ -1115,7 +1113,7 @@ function initNight(night) {
         retreatTimer: 0
     }));
 
-    // Show HUD
+    
     document.getElementById('hud').classList.add('active');
     document.getElementById('actionBar').classList.add('active');
     document.getElementById('nightLabel').textContent = 'NIGHT ' + night;
@@ -1128,46 +1126,46 @@ function initNight(night) {
 }
 
 function updateUI() {
-    // Music box bar
+    
     const fill = document.getElementById('mbFill');
     fill.style.width = musicBoxLevel + '%';
     fill.className = 'mb-bar-fill';
     if (musicBoxLevel < 20) fill.classList.add('critical');
     else if (musicBoxLevel < 40) fill.classList.add('warning');
 
-    // Time
+    
     const hours = ['12 AM','1 AM','2 AM','3 AM','4 AM','5 AM','6 AM'];
     document.getElementById('timeValue').textContent = hours[Math.min(nightTime, 6)];
 
-    // Camera overlay
+    
     document.getElementById('cameraOverlay').classList.toggle('active', cameraOpen);
     const windBtn = document.getElementById('windBtn');
     windBtn.style.display = (cameraOpen && currentCam === 'CAM4') ? 'block' : 'none';
 
-    // Cam label
+    
     if (cameraOpen) {
         const cam = CAMERAS[currentCam];
         document.getElementById('camLabel').textContent = currentCam.replace('CAM','CAM ') + ' — ' + cam.name;
     }
 
-    // Action buttons
+    
     document.getElementById('maskBtn').classList.toggle('active', maskOn);
     document.getElementById('camBtn').classList.toggle('active', cameraOpen);
     document.getElementById('flashBtn').classList.toggle('active', flashlightOn);
     document.getElementById('flashBtn').classList.toggle('disabled', flashlightDisabled);
 
-    // Disable incompatible buttons
+    
     document.getElementById('maskBtn').classList.toggle('disabled', cameraOpen);
     document.getElementById('flashBtn').classList.toggle('disabled', cameraOpen || maskOn || flashlightDisabled);
     document.getElementById('camBtn').classList.toggle('disabled', maskOn);
 
-    // Vent light buttons
+    
     const vlBtn = document.getElementById('ventLightL');
     const vrBtn = document.getElementById('ventLightR');
     vlBtn.style.display = (!cameraOpen && !maskOn) ? 'block' : 'none';
     vrBtn.style.display = (!cameraOpen && !maskOn) ? 'block' : 'none';
 
-    // Cam buttons - highlight ones with animatronics
+    
     CAM_IDS.forEach(id => {
         const btn = document.getElementById('cam-' + id);
         if (!btn) return;
@@ -1177,7 +1175,7 @@ function updateUI() {
         if (hasAnim) btn.classList.add('has-entity');
     });
 
-    // Vent indicators
+    
     const vl = document.getElementById('ventLeftLight');
     const vr = document.getElementById('ventRightLight');
     vl.className = 'vent-light';
@@ -1187,12 +1185,12 @@ function updateUI() {
     if (ventRightEnemy) vr.classList.add('danger');
     else if (animatronics.some(a => a.entrance === 'vent_r' && a.currentCam === 'CAM9')) vr.classList.add('warning');
 
-    // Vent light button highlights
+    
     document.getElementById('ventLightL').classList.toggle('active', ventLightLeft);
     document.getElementById('ventLightR').classList.toggle('active', ventLightRight);
 }
 
-// ============== GAME LOOP ==============
+
 let lastTime = performance.now();
 
 function gameLoop(now) {
@@ -1211,9 +1209,9 @@ function gameLoop(now) {
 }
 requestAnimationFrame(gameLoop);
 
-// ============== UPDATE ==============
+
 function update(dt) {
-    // Time
+    
     nightTimer += dt;
     if (nightTimer >= HOUR_DURATION) {
         nightTimer -= HOUR_DURATION;
@@ -1224,7 +1222,7 @@ function update(dt) {
         }
     }
 
-    // Music box drain
+    
     if (!isWinding && !puppetReleased) {
         musicBoxLevel -= musicBoxDrainRate * dt;
         if (musicBoxLevel <= 0) {
@@ -1233,12 +1231,12 @@ function update(dt) {
         }
     }
 
-    // Winding
+    
     if (isWinding && cameraOpen && currentCam === 'CAM4') {
         musicBoxLevel = Math.min(100, musicBoxLevel + 15 * dt);
     }
 
-    // Puppet attack countdown
+    
     if (puppetReleased) {
         puppetAttackTimer += dt;
         if (puppetAttackTimer >= PUPPET_ATTACK_DELAY) {
@@ -1248,7 +1246,7 @@ function update(dt) {
         }
     }
 
-    // Flashlight disable timer
+    
     if (flashlightDisabled) {
         flashlightDisableTimer -= dt;
         if (flashlightDisableTimer <= 0) {
@@ -1257,7 +1255,7 @@ function update(dt) {
         }
     }
 
-    // Vent light timers
+    
     if (ventLightLeft) {
         ventLightLeftTimer -= dt;
         if (ventLightLeftTimer <= 0) { ventLightLeft = false; ventLightLeftTimer = 0; }
@@ -1267,15 +1265,15 @@ function update(dt) {
         if (ventLightRightTimer <= 0) { ventLightRight = false; ventLightRightTimer = 0; }
     }
 
-    // Office panning (smooth follow mouse position) — desktop only
+    
     if (!cameraOpen && !isTouchDevice) {
-        const targetScroll = (mouseXRatio - 0.5) * 2; // -1 to 1
+        const targetScroll = (mouseXRatio - 0.5) * 2; 
         officeScrollX += (targetScroll - officeScrollX) * Math.min(1, dt * 4);
     }
 
-    // Update animatronics
+    
     animatronics.forEach(anim => {
-        if (anim.isPuppet) return; // puppet handled by music box
+        if (anim.isPuppet) return; 
         if (anim.state === 'attacking') return;
 
         if (anim.state === 'roaming') {
@@ -1296,7 +1294,7 @@ function update(dt) {
                 anim.entranceAggro = 0;
                 anim.retreatThreshold = 0;
                 delete anim.maskWillWork;
-                // Clear entrance slot
+                
                 if (anim.entrance === 'hall' && hallEnemy === anim) hallEnemy = null;
                 if (anim.entrance === 'vent_l' && ventLeftEnemy === anim) ventLeftEnemy = null;
                 if (anim.entrance === 'vent_r' && ventRightEnemy === anim) ventRightEnemy = null;
@@ -1304,12 +1302,12 @@ function update(dt) {
         }
     });
 
-    // Check entrance attacks
+    
     checkEntranceAttack(hallEnemy, 'hall', dt);
     checkEntranceAttack(ventLeftEnemy, 'vent_l', dt);
     checkEntranceAttack(ventRightEnemy, 'vent_r', dt);
 
-    // Static
+    
     if (cameraOpen) {
         staticAmount = 0.03 + Math.random() * 0.02;
     } else {
@@ -1327,25 +1325,25 @@ function updateRoaming(anim, dt) {
 
         const moveChance = anim.aggression / 20;
         if (Math.random() < moveChance) {
-            // If being watched on camera, reduced chance
+            
             if (cameraOpen && currentCam === anim.currentCam) {
                 if (Math.random() > 0.3) return;
             }
 
             let nextIdx = anim.pathIndex + 1;
-            if (nextIdx >= anim.path.length) return; // Already past end
+            if (nextIdx >= anim.path.length) return; 
 
-            // Check if next step is an entrance code, not a camera
+            
             const nextStep = anim.path[nextIdx];
             if (nextStep === 'HALL' || nextStep === 'VENT_L' || nextStep === 'VENT_R') {
-                // Go directly to entrance instead of setting currentCam to the label
+                
                 if (nextStep === 'HALL') {
                     if (!hallEnemy) {
                         hallEnemy = anim;
                         anim.state = 'at_entrance';
                         anim.attackTimer = 0;
                         anim.maskTimer = 0;
-                        // Force cameras down like FNAF 2
+                        
                         if (cameraOpen) {
                             cameraOpen = false;
                             stopWinding();
@@ -1385,12 +1383,12 @@ function updateRoaming(anim, dt) {
     }
 }
 
-// Per-animatronic entrance behavior
+
 function updateAtEntrance(anim, dt) {
-    // Entrance logic is mostly in checkEntranceAttack
-    // This handles per-animatronic ambient behavior at entrances
+    
+    
     if (anim.entrance === 'hall' && hallEnemy === anim) {
-        // Hall enemy gets more aggressive over time
+        
         anim.entranceAggro = (anim.entranceAggro || 0) + dt * 0.1;
     }
 }
@@ -1398,28 +1396,28 @@ function updateAtEntrance(anim, dt) {
 function checkEntranceAttack(enemy, entranceType, dt) {
     if (!enemy || enemy.state !== 'at_entrance') return;
 
-    // Grace period — animatronic is visible but won't attack yet
-    // For hall: gives player time to flash light and spot them
+    
+    
     const gracePeriod = entranceType === 'hall' ? 1.5 : 1.0;
     enemy.attackTimer += dt;
-    if (enemy.attackTimer < gracePeriod) return; // Still in warning phase
+    if (enemy.attackTimer < gracePeriod) return; 
 
     const activeTime = enemy.attackTimer - gracePeriod;
 
-    // Check if mask is fooling them
+    
     const maskEffective = maskOn && !cameraOpen;
     if (maskEffective) {
-        // Mask resistant (Ghislaine) — 40% chance mask fails
+        
         if (enemy.maskResistant) {
             if (!enemy.maskRolled) {
-                // Roll once when mask first goes on
-                enemy.maskWillWork = Math.random() > 0.4; // 60% works, 40% fails
+                
+                enemy.maskWillWork = Math.random() > 0.4; 
                 enemy.maskRolled = true;
             }
             if (enemy.maskWillWork) {
                 enemy.maskTimer += dt;
             } else {
-                // Mask failed — she sees through it, attack after shorter delay
+                
                 enemy.maskFailTimer = (enemy.maskFailTimer || 0) + dt;
                 if (enemy.maskFailTimer >= 2.0) {
                     triggerJumpscare(enemy);
@@ -1430,16 +1428,16 @@ function checkEntranceAttack(enemy, entranceType, dt) {
             enemy.maskTimer += dt;
         }
 
-        // After enough mask time, they retreat
+        
         if (!enemy.retreatThreshold) {
-            enemy.retreatThreshold = 2 + Math.random() * 2; // Roll once, not every frame
+            enemy.retreatThreshold = 2 + Math.random() * 2; 
         }
         if (enemy.maskTimer >= enemy.retreatThreshold) {
             enemy.state = 'retreating';
             enemy.retreatTimer = 3 + Math.random() * 3;
             enemy.entranceAggro = 0;
 
-            // Special: Musk disables flashlight if he got close
+            
             if (enemy.disablesFlashlight && enemy.attackTimer > 3) {
                 flashlightDisabled = true;
                 flashlightDisableTimer = 10;
@@ -1451,18 +1449,18 @@ function checkEntranceAttack(enemy, entranceType, dt) {
         enemy.maskTimer = 0;
         enemy.maskRolled = false;
         enemy.maskFailTimer = 0;
-        enemy.retreatThreshold = 0; // Reset so it re-rolls next time mask goes on
+        enemy.retreatThreshold = 0; 
         delete enemy.maskWillWork;
     }
 
-    // Attack threshold — if not masked in time, jumpscare
+    
     const attackThreshold = entranceType === 'hall' ? 4 : 3;
     if (activeTime >= attackThreshold && !maskEffective) {
         triggerJumpscare(enemy);
     }
 }
 
-// ============== ACTIONS ==============
+
 function toggleCamera() {
     if (gameState !== 'playing') return;
     if (maskOn) return;
@@ -1471,15 +1469,15 @@ function toggleCamera() {
     if (cameraOpen) {
         flashlightOn = false;
     } else {
-        stopWinding(); // Stop winding when closing cameras
+        stopWinding(); 
     }
-    staticAmount = 0.5; // transition static
+    staticAmount = 0.5; 
 }
 
 function selectCam(camId) {
     if (!cameraOpen) return;
     if (currentCam === 'CAM4' && camId !== 'CAM4') {
-        stopWinding(); // Stop winding when navigating away from Prize Corner
+        stopWinding(); 
     }
     currentCam = camId;
     staticAmount = 0.3;
@@ -1527,7 +1525,7 @@ function toggleVentLight(side) {
     }
 }
 
-// ============== CANVAS TAP FOR TOUCH (flashlight + vent lights) ==============
+
 if (isTouchDevice) {
     canvas.addEventListener('touchstart', function(e) {
         if (gameState !== 'playing' || cameraOpen || maskOn) return;
@@ -1537,7 +1535,7 @@ if (isTouchDevice) {
         const ty = touch.clientY - rect.top;
         const w = canvas.width, h = canvas.height;
 
-        // Hallway area — tap to toggle flashlight
+        
         const hallX = w * 0.35, hallY = h * 0.1, hallW = w * 0.3, hallH = h * 0.55;
         if (tx >= hallX && tx <= hallX + hallW && ty >= hallY && ty <= hallY + hallH) {
             e.preventDefault();
@@ -1545,7 +1543,7 @@ if (isTouchDevice) {
             return;
         }
 
-        // Left vent area — tap to toggle left vent light (wider hit area)
+        
         const ventLX = 0, ventLY = h * 0.15, ventLW = w * 0.2, ventLH = h * 0.55;
         if (tx >= ventLX && tx <= ventLX + ventLW && ty >= ventLY && ty <= ventLY + ventLH) {
             e.preventDefault();
@@ -1553,7 +1551,7 @@ if (isTouchDevice) {
             return;
         }
 
-        // Right vent area — tap to toggle right vent light (wider hit area)
+        
         const ventRX = w * 0.8, ventRY = h * 0.15, ventRW = w * 0.2, ventRH = h * 0.55;
         if (tx >= ventRX && tx <= ventRX + ventRW && ty >= ventRY && ty <= ventRY + ventRH) {
             e.preventDefault();
@@ -1563,7 +1561,7 @@ if (isTouchDevice) {
     }, {passive: false});
 }
 
-// ============== JUMPSCARE ==
+
 function triggerJumpscare(anim) {
     if (gameState !== 'playing') return;
     gameState = 'jumpscare';
@@ -1638,7 +1636,7 @@ function goToTitle() {
     updateTitleStars();
 }
 
-// ============== DRAW ==============
+
 function draw() {
     const w = canvas.width, h = canvas.height;
     ctx.fillStyle = '#000';
@@ -1654,19 +1652,19 @@ function draw() {
     }
 }
 
-// ============== OFFICE VIEW ==============
+
 function drawOfficeView() {
     const w = canvas.width, h = canvas.height;
 
-    // Office panning - the office is wider than the screen
-    const panRange = isTouchDevice ? 0 : w * 0.25; // no panning on touch
+    
+    const panRange = isTouchDevice ? 0 : w * 0.25; 
     const panX = -officeScrollX * panRange;
     ctx.save();
     ctx.translate(panX, 0);
-    const ow = w + panRange * 2; // office total width
-    const ox = -panRange; // office left edge
+    const ow = w + panRange * 2; 
+    const ox = -panRange; 
 
-    // Dark office background
+    
     const wallGrad = ctx.createLinearGradient(0, 0, 0, h);
     wallGrad.addColorStop(0, '#252525');
     wallGrad.addColorStop(0.5, '#1e1e1e');
@@ -1674,17 +1672,17 @@ function drawOfficeView() {
     ctx.fillStyle = wallGrad;
     ctx.fillRect(ox, 0, ow, h);
 
-    // Floor
+    
     ctx.fillStyle = '#1a1a1a';
     ctx.fillRect(ox, h * 0.65, ow, h * 0.35);
-    // Floor tiles
+    
     ctx.strokeStyle = 'rgba(255,255,255,0.05)';
     ctx.lineWidth = 1;
     for (let tx = ox; tx < ox + ow; tx += 60) {
         ctx.beginPath(); ctx.moveTo(tx, h * 0.65); ctx.lineTo(tx - 20, h); ctx.stroke();
     }
 
-    // Ambient ceiling light (warm glow from above center)
+    
     const ceilGrad = ctx.createRadialGradient(w * 0.5, h * 0.1, 10, w * 0.5, h * 0.4, w * 0.4);
     ceilGrad.addColorStop(0, 'rgba(255,240,200,0.08)');
     ceilGrad.addColorStop(0.5, 'rgba(255,240,200,0.03)');
@@ -1692,22 +1690,22 @@ function drawOfficeView() {
     ctx.fillStyle = ceilGrad;
     ctx.fillRect(ox, 0, ow, h * 0.7);
 
-    // === CENTER HALLWAY OPENING ===
+    
     const hallX = w * 0.35, hallY = h * 0.1, hallW = w * 0.3, hallH = h * 0.55;
     ctx.fillStyle = '#101010';
     ctx.fillRect(hallX, hallY, hallW, hallH);
-    // Hallway frame
+    
     ctx.strokeStyle = '#353535';
     ctx.lineWidth = 3;
     ctx.strokeRect(hallX, hallY, hallW, hallH);
 
-    // Hallway depth lines
+    
     ctx.strokeStyle = 'rgba(255,255,255,0.04)';
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(hallX, hallY); ctx.lineTo(hallX + hallW*0.2, hallY + hallH*0.3); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(hallX + hallW, hallY); ctx.lineTo(hallX + hallW*0.8, hallY + hallH*0.3); ctx.stroke();
 
-    // Flashlight cone
+    
     if (flashlightOn && !flashlightDisabled) {
         const coneGrad = ctx.createRadialGradient(
             hallX + hallW/2, h * 0.7, 10,
@@ -1720,46 +1718,46 @@ function drawOfficeView() {
         ctx.fillStyle = coneGrad;
         ctx.fillRect(hallX - 20, hallY, hallW + 40, hallH + 50);
 
-        // Illuminate hallway interior
+        
         ctx.fillStyle = 'rgba(255,240,200,0.12)';
         ctx.fillRect(hallX, hallY, hallW, hallH);
 
-        // Show animatronic in hallway if present
+        
         if (hallEnemy && hallEnemy.state === 'at_entrance') {
             drawAnimatronicInOpening(hallEnemy, hallX, hallY, hallW, hallH, 1.0, 'hall');
         }
 
-        // Occasional flicker
+        
         if (Math.random() > 0.97) {
             ctx.fillStyle = 'rgba(0,0,0,0.3)';
             ctx.fillRect(hallX, hallY, hallW, hallH);
         }
     } else {
-        // Without flashlight — barely visible shadow, almost impossible to see
+        
         if (hallEnemy && hallEnemy.state === 'at_entrance') {
             drawAnimatronicInOpening(hallEnemy, hallX, hallY, hallW, hallH, 0.03 + Math.random() * 0.02, 'hall');
         }
     }
 
-    // === LEFT VENT OPENING ===
+    
     const ventLX = w * 0.05, ventLY = h * 0.35, ventLW = w * 0.12, ventLH = h * 0.25;
     ctx.fillStyle = '#121212';
     ctx.fillRect(ventLX, ventLY, ventLW, ventLH);
     ctx.strokeStyle = '#353535';
     ctx.lineWidth = 2;
     ctx.strokeRect(ventLX, ventLY, ventLW, ventLH);
-    // Vent grate lines
+    
     ctx.strokeStyle = 'rgba(255,255,255,0.06)';
     for (let gy = ventLY; gy < ventLY + ventLH; gy += 12) {
         ctx.beginPath(); ctx.moveTo(ventLX, gy); ctx.lineTo(ventLX + ventLW, gy); ctx.stroke();
     }
-    // Label
+    
     ctx.font = '8px "Share Tech Mono", monospace';
     ctx.fillStyle = 'rgba(255,255,255,0.15)';
     ctx.textAlign = 'center';
     ctx.fillText('LEFT VENT', ventLX + ventLW/2, ventLY - 4);
 
-    // Vent light illumination
+    
     if (ventLightLeft) {
         const vlGrad = ctx.createRadialGradient(ventLX + ventLW/2, ventLY + ventLH/2, 5, ventLX + ventLW/2, ventLY + ventLH/2, ventLH * 0.8);
         vlGrad.addColorStop(0, 'rgba(255,240,200,0.35)');
@@ -1771,18 +1769,18 @@ function drawOfficeView() {
         ctx.fillRect(ventLX, ventLY, ventLW, ventLH);
     }
 
-    // Show animatronic in left vent
+    
     if (ventLeftEnemy && ventLeftEnemy.state === 'at_entrance') {
         const ventLAlpha = ventLightLeft ? 1.0 : 0.1;
         drawAnimatronicInOpening(ventLeftEnemy, ventLX, ventLY, ventLW, ventLH, ventLAlpha, 'vent_l');
         if (ventLightLeft) {
-            // Red warning glow when lit
+            
             ctx.fillStyle = 'rgba(192,57,43,0.12)';
             ctx.fillRect(ventLX - 10, ventLY - 10, ventLW + 20, ventLH + 20);
         }
     }
 
-    // === RIGHT VENT OPENING ===
+    
     const ventRX = w * 0.83, ventRY = h * 0.35, ventRW = w * 0.12, ventRH = h * 0.25;
     ctx.fillStyle = '#121212';
     ctx.fillRect(ventRX, ventRY, ventRW, ventRH);
@@ -1798,7 +1796,7 @@ function drawOfficeView() {
     ctx.textAlign = 'center';
     ctx.fillText('RIGHT VENT', ventRX + ventRW/2, ventRY - 4);
 
-    // Vent light illumination
+    
     if (ventLightRight) {
         const vrGrad = ctx.createRadialGradient(ventRX + ventRW/2, ventRY + ventRH/2, 5, ventRX + ventRW/2, ventRY + ventRH/2, ventRH * 0.8);
         vrGrad.addColorStop(0, 'rgba(255,240,200,0.35)');
@@ -1819,25 +1817,25 @@ function drawOfficeView() {
         }
     }
 
-    // === DESK ===
+    
     const deskY = h * 0.62;
     ctx.fillStyle = '#252015';
     ctx.fillRect(w * 0.15, deskY, w * 0.7, h * 0.08);
     ctx.fillStyle = '#302a1e';
     ctx.fillRect(w * 0.15, deskY, w * 0.7, 3);
 
-    // Monitor on desk
+    
     ctx.fillStyle = '#152535';
     ctx.fillRect(w * 0.42, deskY - 35, 70, 35);
     ctx.strokeStyle = '#444';
     ctx.strokeRect(w * 0.42, deskY - 35, 70, 35);
-    // Monitor static
+    
     for (let i = 0; i < 15; i++) {
         ctx.fillStyle = `rgba(${Math.random()*40},${Math.random()*80},${Math.random()*40},0.3)`;
         ctx.fillRect(w*0.42 + 3 + Math.random()*64, deskY - 32 + Math.random()*29, 3, 2);
     }
 
-    // Fan
+    
     const fanX = w * 0.58, fanY = deskY - 15;
     ctx.save();
     ctx.translate(fanX, fanY);
@@ -1852,7 +1850,7 @@ function drawOfficeView() {
     ctx.fillStyle = '#444'; ctx.fill();
     ctx.restore();
 
-    // Papers
+    
     ctx.fillStyle = 'rgba(200,190,170,0.1)';
     ctx.save();
     ctx.translate(w * 0.3, deskY + 10);
@@ -1860,7 +1858,7 @@ function drawOfficeView() {
     ctx.fillRect(0, 0, 25, 35);
     ctx.restore();
 
-    // Wall poster
+    
     ctx.fillStyle = '#252018';
     ctx.fillRect(w * 0.22, h * 0.15, 45, 60);
     ctx.strokeStyle = '#353025';
@@ -1870,31 +1868,31 @@ function drawOfficeView() {
     ctx.textAlign = 'center';
     ctx.fillText('RULES', w * 0.22 + 22, h * 0.15 + 18);
 
-    // Right wall poster (missing child)
+    
     ctx.fillStyle = '#201c18';
     ctx.fillRect(w * 0.72, h * 0.18, 40, 55);
     ctx.strokeStyle = '#302a20';
     ctx.strokeRect(w * 0.72, h * 0.18, 40, 55);
 
-    // Wall pipes/conduit
+    
     ctx.strokeStyle = 'rgba(255,255,255,0.06)';
     ctx.lineWidth = 3;
     ctx.beginPath(); ctx.moveTo(w * 0.18, 0); ctx.lineTo(w * 0.18, h * 0.65); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(w * 0.82, 0); ctx.lineTo(w * 0.82, h * 0.65); ctx.stroke();
 
-    // Ambient light flicker
+    
     const flicker = Math.random();
     if (flicker > 0.98) {
         ctx.fillStyle = 'rgba(255,240,200,0.04)';
         ctx.fillRect(ox, 0, ow, h);
     }
 
-    // Restore from panning transform
+    
     ctx.restore();
 
-    // === HUD overlays drawn in screen space (not panned) ===
+    
 
-    // Puppet warning
+    
     if (puppetReleased) {
         const pulseSpeed = puppetAttackTimer > PUPPET_ATTACK_DELAY * 0.7 ? 100 : 200;
         const blink = Math.sin(Date.now() / pulseSpeed) > 0;
@@ -1905,7 +1903,7 @@ function drawOfficeView() {
             ctx.textAlign = 'center';
             ctx.fillText('⚠ MUSIC BOX EMPTY ⚠', w/2, h * 0.08);
         }
-        // Puppet flicker in hallway when close to attacking
+        
         if (puppetAttackTimer > PUPPET_ATTACK_DELAY * 0.5 && Math.random() > 0.95) {
             const puppet = animatronics.find(a => a.isPuppet);
             if (puppet) {
@@ -1922,7 +1920,7 @@ function drawOfficeView() {
         }
     }
 
-    // Ghislaine mask-resistance warning
+    
     if (maskOn && ventRightEnemy && ventRightEnemy.maskResistant && ventRightEnemy.maskRolled && !ventRightEnemy.maskWillWork) {
         const blink = Math.sin(Date.now() / 150) > 0;
         if (blink) {
@@ -1933,7 +1931,7 @@ function drawOfficeView() {
         }
     }
 
-    // Flashlight disabled warning
+    
     if (flashlightDisabled) {
         ctx.font = '12px "Share Tech Mono", monospace';
         ctx.fillStyle = 'rgba(241,196,15,0.6)';
@@ -1941,7 +1939,7 @@ function drawOfficeView() {
         ctx.fillText('FLASHLIGHT MALFUNCTION  [' + Math.ceil(flashlightDisableTimer) + 's]', w/2, h * 0.95);
     }
 
-    // Dark vignette (drawn in screen space, not panned)
+    
     const vigGrad = ctx.createRadialGradient(w/2, h/2, h*0.35, w/2, h/2, h*0.9);
     vigGrad.addColorStop(0, 'transparent');
     vigGrad.addColorStop(1, 'rgba(0,0,0,0.25)');
@@ -1959,13 +1957,13 @@ function drawAnimatronicInOpening(anim, ox, oy, ow, oh, alpha, type) {
     let drawH, drawW, dx, dy;
 
     if (type === 'hall') {
-        // Hallway: standing in the doorway, big and centered
+        
         drawH = oh * 0.9;
         drawW = drawH * imgAR;
         dx = ox + (ow - drawW) / 2;
         dy = oy + oh - drawH;
     } else {
-        // Vents: crawling out, face filling the vent opening
+        
         drawH = oh * 1.4;
         drawW = drawH * imgAR;
         dx = ox + (ow - drawW) / 2;
@@ -1975,7 +1973,7 @@ function drawAnimatronicInOpening(anim, ox, oy, ow, oh, alpha, type) {
     ctx.save();
     ctx.globalAlpha = Math.min(alpha, 1.0);
 
-    // Distortion glitch
+    
     const glitch = Math.random() > 0.93 ? (Math.random() - 0.5) * 6 : 0;
     ctx.drawImage(img, dx + glitch, dy, drawW, drawH);
 
@@ -1983,25 +1981,25 @@ function drawAnimatronicInOpening(anim, ox, oy, ow, oh, alpha, type) {
     ctx.restore();
 }
 
-// ============== MASK OVERLAY ==============
+
 function drawMaskOverlay() {
     const w = canvas.width, h = canvas.height;
 
-    // Dark mask with two eye holes
+    
     ctx.save();
     ctx.beginPath();
     ctx.rect(0, 0, w, h);
-    // Left eye hole
+    
     ctx.moveTo(w * 0.36 + w * 0.1, h * 0.4);
     ctx.ellipse(w * 0.36, h * 0.4, w * 0.1, h * 0.09, 0, 0, Math.PI * 2);
-    // Right eye hole — moveTo breaks the connecting line
+    
     ctx.moveTo(w * 0.64 + w * 0.1, h * 0.4);
     ctx.ellipse(w * 0.64, h * 0.4, w * 0.1, h * 0.09, 0, 0, Math.PI * 2);
     ctx.fillStyle = '#000';
     ctx.fill('evenodd');
     ctx.restore();
 
-    // Subtle eye hole rims
+    
     ctx.save();
     ctx.strokeStyle = 'rgba(90,65,35,0.25)';
     ctx.lineWidth = 2;
@@ -2013,23 +2011,23 @@ function drawMaskOverlay() {
     ctx.stroke();
     ctx.restore();
 
-    // "MASK ON" indicator
+    
     ctx.font = '10px "Share Tech Mono", monospace';
     ctx.fillStyle = 'rgba(52,152,219,0.5)';
     ctx.textAlign = 'center';
     ctx.fillText('MASK ON', w/2, h * 0.92);
 }
 
-// ============== CAMERA VIEW ==============
+
 function drawCameraView() {
     const w = canvas.width, h = canvas.height;
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
-    // Draw photo background
+    
     drawCamBackground(currentCam, w, h);
 
-    // Draw animatronics on this camera
+    
     const camAnims = animatronics.filter(a => a.currentCam === currentCam && a.state === 'roaming');
     camAnims.forEach((a, idx) => {
         const img = images[a.imgKey];
@@ -2056,7 +2054,7 @@ function drawCameraView() {
         ctx.drawImage(img, xPos + distort, yPos, drawW, drawH);
         ctx.globalAlpha = 1;
 
-        // Vignette around figure
+        
         const vx = xPos + drawW/2, vy = yPos + drawH/2;
         const vr = Math.max(drawW, drawH) * 0.6;
         const fvig = ctx.createRadialGradient(vx, vy, vr*0.4, vx, vy, vr);
@@ -2068,7 +2066,7 @@ function drawCameraView() {
         ctx.restore();
     });
 
-    // Puppet at prize corner
+    
     if (currentCam === 'CAM4') {
         const puppet = animatronics.find(a => a.isPuppet);
         if (puppet && !puppetReleased) {
@@ -2084,7 +2082,7 @@ function drawCameraView() {
             }
         }
 
-        // Music box level on camera
+        
         ctx.fillStyle = 'rgba(0,0,0,0.7)';
         ctx.fillRect(w*0.3, h*0.88, w*0.4, 16);
         ctx.fillStyle = musicBoxLevel > 30 ? '#2ecc40' : (musicBoxLevel > 15 ? '#f1c40f' : '#c0392b');
@@ -2097,7 +2095,7 @@ function drawCameraView() {
         ctx.fillText('MUSIC BOX', w*0.5, h*0.87);
     }
 
-    // Camera noise
+    
     ctx.fillStyle = 'rgba(0,0,0,0.2)';
     for (let i = 0; i < 40; i++) {
         ctx.globalAlpha = Math.random() * 0.08;
@@ -2105,16 +2103,16 @@ function drawCameraView() {
     }
     ctx.globalAlpha = 1;
 
-    // Scan line
+    
     const scanY = (Date.now() / 10) % h;
     ctx.fillStyle = 'rgba(255,255,255,0.03)';
     ctx.fillRect(0, scanY, w, 3);
 
-    // Green tint
+    
     ctx.fillStyle = 'rgba(0,40,0,0.03)';
     ctx.fillRect(0, 0, w, h);
 
-    // Timestamp
+    
     ctx.font = '10px "Share Tech Mono", monospace';
     ctx.fillStyle = 'rgba(255,255,255,0.3)';
     ctx.textAlign = 'right';
@@ -2139,13 +2137,13 @@ function drawCamBackground(camId, w, h) {
         }
         ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
 
-        // Darken for night vision look
+        
         ctx.fillStyle = 'rgba(0,0,0,0.15)';
         ctx.fillRect(0, 0, w, h);
         ctx.fillStyle = 'rgba(0,40,0,0.04)';
         ctx.fillRect(0, 0, w, h);
     } else {
-        // Fallback drawn background
+        
         ctx.fillStyle = '#222222';
         ctx.fillRect(0, h * 0.6, w, h * 0.4);
         ctx.fillStyle = '#1e1c1a';
@@ -2157,7 +2155,7 @@ function drawCamBackground(camId, w, h) {
     }
 }
 
-// ============== STATIC ==============
+
 function drawStatic() {
     if (staticAmount <= 0.01) return;
     const w = staticCanvas.width, h = staticCanvas.height;
@@ -2179,7 +2177,7 @@ function drawStatic() {
     staticCanvas.style.opacity = Math.min(staticAmount, 0.6);
 }
 
-// ============== INPUT ==============
+
 document.addEventListener('keydown', e => {
     if (gameState === 'title') {
         if (e.code === 'Space' || e.code === 'Enter') {
@@ -2254,7 +2252,7 @@ document.addEventListener('keydown', e => {
     }
 });
 
-// Right-click for mask
+
 document.addEventListener('contextmenu', e => {
     e.preventDefault();
     if (gameState === 'playing') {
@@ -2262,7 +2260,7 @@ document.addEventListener('contextmenu', e => {
     }
 });
 
-// ============== START ==============
+
 </script>
 </body>
 </html>

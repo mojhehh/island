@@ -15,7 +15,7 @@
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;}
 
-/* Top Nav */
+
 #topNav{position:fixed;top:0;left:0;right:0;height:50px;background:linear-gradient(180deg,#15153a,#0d0d25);
   border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 10px;z-index:1000;gap:2px;}
 #topNav .logo{font-family:'Orbitron';font-weight:900;font-size:16px;
@@ -49,7 +49,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   background:linear-gradient(135deg,#1a5a1a,#0a3a0a);color:var(--green);font-weight:700;font-size:12px;
   border:1px solid rgba(0,255,136,.3);transition:all .2s;font-family:'Inter',sans-serif;}
 #balanceDisplay .add-btn:hover{background:linear-gradient(135deg,#2a7a2a,#1a5a1a);box-shadow:0 0 15px rgba(0,255,136,.2);}
-/* How-to-play info boxes */
+
 .htp-box{background:linear-gradient(135deg,rgba(0,240,255,.05),rgba(255,0,229,.03));border:1px solid rgba(0,240,255,.15);
   border-radius:10px;padding:0;margin:6px 0;max-width:420px;overflow:hidden;font-size:12px;line-height:1.5;transition:all .3s;}
 .htp-toggle{display:flex;align-items:center;gap:6px;padding:8px 12px;cursor:pointer;color:var(--neon);font-weight:600;font-size:11px;
@@ -63,11 +63,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .htp-content li{margin:2px 0;}
 .htp-content strong{color:var(--text);}
 
-/* Game Panels */
+
 .game-panel{position:fixed;top:50px;left:0;right:0;bottom:0;display:none;overflow:hidden;}
 .game-panel.active{display:flex;}
 
-/* Shared Controls */
+
 .bet-controls{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);
   border-radius:12px;border:1px solid var(--border);}
 .bet-input{width:120px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);
@@ -88,7 +88,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .action-btn.danger{background:linear-gradient(135deg,#cc3355,#991133);color:#fff;
   box-shadow:0 4px 20px rgba(204,51,85,.3);}
 
-/* ============ SLOTS ============ */
+
 #slotsPanel{flex-direction:column;align-items:center;justify-content:center;gap:24px;
   background:radial-gradient(ellipse at center,#15153a 0%,#0a0a1a 70%);}
 .slots-machine{position:relative;background:linear-gradient(180deg,#1a1a4e,#111138);
@@ -109,7 +109,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   height:3px;background:var(--gold);box-shadow:0 0 10px var(--gold);z-index:3;border-radius:2px;}
 .slots-info{text-align:center;color:var(--text2);font-size:13px;margin-top:8px;}
 
-/* ============ CRASH ============ */
+
 #crashPanel{flex-direction:column;align-items:center;justify-content:center;gap:20px;
   background:radial-gradient(ellipse at bottom,#0a1a2a 0%,#0a0a1a 70%);}
 .crash-container{position:relative;width:min(700px,90vw);height:min(400px,50vh);
@@ -122,7 +122,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .crash-status{font-family:'Orbitron';font-size:14px;color:var(--text2);text-align:center;}
 @keyframes crashShake{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(-48%,-52%)}75%{transform:translate(-52%,-48%)}}
 
-/* ============ ROULETTE ============ */
+
 #roulettePanel{flex-direction:column;align-items:center;justify-content:center;gap:20px;
   background:radial-gradient(ellipse at center,#1a0a1a 0%,#0a0a1a 70%);}
 .roulette-wrapper{position:relative;}
@@ -143,7 +143,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .roul-bet-btn.green-btn{border-color:#00aa44;}
 .roul-bet-btn.green-btn.selected{background:rgba(0,170,68,.2);color:var(--green);border-color:var(--green);}
 
-/* ============ CASES ============ */
+
 #casesPanel{flex-direction:column;align-items:center;justify-content:center;gap:14px;
   background:radial-gradient(ellipse at top,#1a1a0a 0%,#0a0a1a 70%);overflow-y:auto;padding:70px 16px 20px!important;}
 .case-selector{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
@@ -166,7 +166,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .case-won{font-family:'Orbitron';font-size:18px;font-weight:700;text-align:center;min-height:32px;}
 .case-won-detail{font-size:11px;color:var(--text2);text-align:center;}
 
-/* Item Rarity Colors */
+
 .rarity-consumer{color:#b0c3d9!important;}
 .rarity-industrial{color:#5e98d9!important;}
 .rarity-milspec{color:#4b69ff!important;}
@@ -175,7 +175,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .rarity-covert{color:#eb4b4b!important;}
 .rarity-legendary{color:#ffd700!important;}
 
-/* ============ INVENTORY OVERLAY ============ */
+
 #inventoryOverlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);
   z-index:2000;display:none;flex-direction:column;align-items:center;padding:20px;overflow-y:auto;}
 #inventoryOverlay.show{display:flex;}
@@ -205,14 +205,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .inv-sell-btn:hover{background:#ff4466;}
 .inv-empty{grid-column:1/-1;text-align:center;padding:40px;color:var(--text2);font-size:14px;}
 
-/* Market stats */
+
 .market-stats{display:flex;gap:16px;align-items:center;justify-content:center;width:100%;max-width:900px;
   margin-bottom:12px;padding:10px;background:var(--surface);border-radius:10px;border:1px solid var(--border);}
 .market-stat{text-align:center;}
 .market-stat .ms-label{font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;}
 .market-stat .ms-val{font-family:'Orbitron';font-size:14px;font-weight:700;}
 
-/* ============ PLINKO ============ */
+
 #plinkoPanel{flex-direction:row;background:radial-gradient(ellipse at center,#0a1a2a 0%,#0a0a1a 70%);}
 .plinko-sidebar{width:280px;padding:20px;display:flex;flex-direction:column;gap:16px;
   background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;}
@@ -233,12 +233,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .plinko-last-win{width:48px;height:48px;display:flex;align-items:center;justify-content:center;
   font-size:12px;font-weight:700;color:#111;}
 
-/* ============ PUSH YOUR LUCK ============ */
+
 #luckPanel{flex-direction:column;align-items:center;justify-content:flex-start;gap:0;
   background:#000;padding:0!important;overflow:hidden;}
 #luckPanel iframe{width:100%;height:100%;border:none;position:absolute;top:0;left:0;z-index:1;}
 
-/* PYL Lobby Overlay */
+
 .pyl-lobby{position:absolute;top:0;left:0;right:0;bottom:0;z-index:10;
   background:radial-gradient(ellipse at top,#1a0a2e 0%,#0a0a1a 60%,#000 100%);
   display:flex;flex-direction:column;align-items:center;padding:80px 20px 20px;overflow-y:auto;}
@@ -259,7 +259,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .pyl-mode .pm-badge{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:20px;
   font-size:10px;font-weight:700;background:rgba(0,240,255,.1);color:var(--neon);border:1px solid var(--neon);}
 
-/* PYL Game Overlay */
+
 .pyl-overlay{position:absolute;top:60px;right:10px;z-index:15;display:flex;flex-direction:column;gap:6px;
   pointer-events:none;}
 .pyl-overlay.hidden{display:none;}
@@ -272,7 +272,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   transition:all .2s;text-align:center;}
 .pyl-back-btn:hover{border-color:var(--red);color:var(--red);}
 
-/* PYL Leaderboard */
+
 .pyl-leaderboard{width:100%;max-width:660px;}
 .pyl-lb-title{font-family:'Orbitron';font-size:16px;font-weight:700;color:var(--gold);margin-bottom:10px;}
 .pyl-lb-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface);
@@ -282,7 +282,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .pyl-lb-row .lb-score{font-family:'Orbitron';font-weight:700;color:var(--neon);}
 .pyl-lb-row .lb-wager{font-size:11px;color:var(--gold);}
 
-/* 1v1 Room */
+
 .pyl-room{width:100%;max-width:500px;background:var(--surface);border:1px solid var(--border);
   border-radius:14px;padding:20px;text-align:center;}
 .pyl-room .pr-title{font-family:'Orbitron';font-size:18px;font-weight:700;margin-bottom:12px;}
@@ -296,7 +296,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .pyl-room .pr-player.ready{border-color:var(--green);color:var(--green);}
 .pyl-vs{font-family:'Orbitron';font-weight:900;font-size:20px;color:var(--red);}
 
-/* ============ STOCKS ============ */
+
 #stocksPanel{flex-direction:column;align-items:center;gap:0;overflow-y:auto;
   padding:70px 16px 20px!important;background:radial-gradient(ellipse at top,#0f1923 0%,#080c10 70%);}
 .stock-hero{text-align:center;margin-bottom:6px;}
@@ -332,10 +332,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   animation:stockPulse 1.5s infinite;margin-right:6px;vertical-align:middle;}
 @keyframes stockPulse{0%,100%{opacity:1;box-shadow:0 0 4px #3fb950}50%{opacity:.4;box-shadow:0 0 8px #3fb950}}
 
-/* Particles */
+
 #particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
 
-/* Win Toast */
+
 .win-toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);
   background:linear-gradient(135deg,#1a3a1a,#0a2a0a);border:1px solid var(--green);
   border-radius:12px;padding:16px 32px;font-family:'Orbitron';font-size:20px;color:var(--green);
@@ -344,7 +344,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .win-toast.loss{background:linear-gradient(135deg,#3a1a1a,#2a0a0a);border-color:var(--red);color:var(--red);
   box-shadow:0 0 30px rgba(255,51,85,.3);}
 
-/* Responsive */
+
 @media(max-width:768px){
   .plinko-sidebar{width:200px;padding:12px;}
   .slots-machine{padding:16px;}
@@ -352,12 +352,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   .reel-symbol{width:70px;height:66px;font-size:36px;}
 }
 
-/* Scrollbar */
+
 ::-webkit-scrollbar{width:6px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
-/* ============ LOGIN SCREEN ============ */
+
 #loginScreen{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,#0a0a2e 0%,#1a0a3e 40%,#0a0a1a 100%);overflow:hidden;}
 #loginScreen .login-bg-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
@@ -390,7 +390,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .login-toggle a{color:var(--neon);cursor:pointer;text-decoration:none;font-weight:600;}
 .login-toggle a:hover{text-decoration:underline;}
 
-/* User display in nav */
+
 .user-info{display:flex;align-items:center;gap:8px;margin-left:8px;}
 .user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--neon),var(--neon2));
   display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;
@@ -401,7 +401,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   transition:all .2s;font-family:'Inter',sans-serif;}
 .logout-btn:hover{background:rgba(255,51,85,.1);border-color:var(--red);}
 
-/* Global Leaderboard Tab */
+
 #leaderboardPanel{flex-direction:column;align-items:center;gap:16px;overflow-y:auto;
   padding:80px 20px 20px;background:radial-gradient(ellipse at top,#1a1a40 0%,#0a0a1a 70%);}
 .lb-container{width:100%;max-width:700px;}
@@ -425,7 +425,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .lb-col-extra{width:100px;text-align:right;font-size:12px;color:var(--text2);}
 .lb-empty{text-align:center;padding:30px;color:var(--text2);font-size:13px;}
 
-/* Daily bonus */
+
 .daily-bonus-btn{padding:6px 12px;border:none;border-radius:6px;cursor:pointer;
   background:linear-gradient(135deg,#ffd700,#ff8c00);color:#0a0a1a;font-weight:800;font-size:12px;
   font-family:'Orbitron';animation:dailyPulse 2s infinite;transition:all .2s;}
@@ -434,7 +434,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   background:var(--surface2);color:var(--text2);}
 @keyframes dailyPulse{0%,100%{box-shadow:0 0 10px rgba(255,215,0,.3)}50%{box-shadow:0 0 25px rgba(255,215,0,.6)}}
 
-/* ============ BLACKJACK ============ */
+
 #blackjackPanel{flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at top,#0a2a0a 0%,#0a0a1a 70%);}
 .bj-table{width:min(560px,90vw);min-height:260px;background:linear-gradient(180deg,#0d4a0d,#0a380a);border-radius:18px;border:3px solid #1a6a1a;padding:18px;box-shadow:inset 0 0 40px rgba(0,0,0,.5);}
 .bj-area{min-height:85px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;justify-content:center;padding:5px;}
@@ -445,7 +445,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .bj-card.hidden{background:linear-gradient(135deg,#1a1a8e,#2a1a6e);color:transparent;background-image:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(255,255,255,.05) 5px,rgba(255,255,255,.05) 10px);}
 #bjResult{font-family:'Orbitron';font-size:15px;font-weight:700;min-height:22px;text-align:center;}
 
-/* ============ MINES ============ */
+
 #minesPanel{flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at center,#1a1a0a 0%,#0a0a1a 70%);}
 .mines-wrap{display:flex;gap:14px;align-items:flex-start;}
 .mines-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;}
@@ -459,7 +459,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #minesMultiplier{font-family:'Orbitron';font-size:15px;font-weight:700;text-align:center;}
 #minesProfit{font-size:11px;text-align:center;color:var(--text2);}
 
-/* ============ DICE ============ */
+
 #dicePanel{flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at top,#1a0a2a 0%,#0a0a1a 70%);}
 .dice-roll-display{font-family:'Orbitron';font-size:60px;font-weight:900;min-height:74px;text-shadow:0 0 30px rgba(0,240,255,.4);}
 .dice-slider-wrap{width:min(480px,85vw);}
@@ -471,7 +471,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .dice-mode-btn{padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text2);cursor:pointer;font-weight:700;font-size:11px;transition:all .2s;}
 .dice-mode-btn.active{border-color:var(--neon);color:var(--neon);background:rgba(0,240,255,.08);}
 
-/* ============ TOWER ============ */
+
 #towerPanel{flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(ellipse at bottom,#1a1a2e 0%,#0a0a1a 70%);}
 .tower-grid{display:flex;flex-direction:column-reverse;gap:3px;padding:8px;background:var(--surface);border-radius:10px;border:1px solid var(--border);}
 .tower-row{display:flex;gap:3px;}
@@ -483,7 +483,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .tower-cell.current-row{border-color:var(--neon);opacity:1;}
 #towerInfo{font-family:'Orbitron';font-size:13px;text-align:center;}
 
-/* ============ COIN FLIP ============ */
+
 #coinflipPanel{flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(ellipse at center,#1a1a2e 0%,#0a0a1a 70%);}
 .coin{width:120px;height:120px;border-radius:50%;font-size:52px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ffd700,#ff8c00);color:#333;box-shadow:0 0 40px rgba(255,215,0,.3);font-weight:900;}
 .coin.flip{animation:coinSpin .8s ease-out;}@keyframes coinSpin{0%{transform:rotateY(0)}100%{transform:rotateY(1800deg)}}
@@ -493,7 +493,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .coin-choice.selected{border-color:var(--gold);background:rgba(255,215,0,.12);color:var(--gold);}
 #coinResult{font-family:'Orbitron';font-size:16px;font-weight:700;min-height:24px;}
 
-/* ============ KENO ============ */
+
 #kenoPanel{flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(ellipse at top,#0a1a2a 0%,#0a0a1a 70%);}
 .keno-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;}
 .keno-num{width:46px;height:38px;border-radius:5px;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:all .15s;}
@@ -505,7 +505,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #kenoInfo{font-size:11px;color:var(--text2);text-align:center;}
 #kenoResult{font-family:'Orbitron';font-size:15px;font-weight:700;min-height:22px;text-align:center;}
 
-/* ============ LIMBO ============ */
+
 #limboPanel{flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(ellipse at center,#0a0a2a 0%,#0a0a1a 70%);}
 #limboResult{font-family:'Orbitron';font-size:60px;font-weight:900;min-height:74px;transition:color .3s;text-shadow:0 0 30px rgba(0,240,255,.3);}
 .limbo-target-wrap{display:flex;align-items:center;gap:10px;}
@@ -513,7 +513,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #limboTarget{width:85px;padding:7px;border-radius:7px;border:1px solid var(--border);background:var(--bg);color:var(--neon);font-family:'Orbitron';font-size:15px;text-align:center;}
 #limboPayout{font-size:12px;color:var(--text2);}
 
-/* ============ VIDEO POKER ============ */
+
 #pokerPanel{flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(ellipse at top,#0a1a0a 0%,#0a0a1a 70%);}
 .poker-hand{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
 .poker-card{width:72px;height:100px;border-radius:9px;background:#fff;color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:17px;font-weight:900;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(0,0,0,.3);border:2px solid transparent;position:relative;}
@@ -525,7 +525,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .poker-paytable .pt-v{color:var(--gold);font-family:'Orbitron';text-align:right;}
 #pokerResult{font-family:'Orbitron';font-size:15px;font-weight:700;min-height:22px;text-align:center;}
 
-/* ============ HORSE RACING ============ */
+
 #horsesPanel{flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(ellipse at bottom,#1a0a0a 0%,#0a0a1a 70%);}
 .horse-track{width:min(620px,90vw);background:var(--surface);border-radius:10px;border:1px solid var(--border);padding:10px;}
 .horse-lane{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05);}
@@ -541,7 +541,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .horse-bet.selected{border-color:var(--gold);background:rgba(255,215,0,.1);color:var(--gold);}
 #horseResult{font-family:'Orbitron';font-size:14px;font-weight:700;min-height:22px;text-align:center;}
 
-/* ============ SCRATCH CARDS ============ */
+
 #scratchPanel{flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(ellipse at center,#1a1a0a 0%,#0a0a1a 70%);}
 .scratch-card{width:260px;padding:14px;background:linear-gradient(135deg,#2a2a5e,#1a1a3e);border-radius:12px;border:2px solid var(--gold);box-shadow:0 0 30px rgba(255,215,0,.1);}
 .scratch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px;}
@@ -553,13 +553,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .scratch-tier:hover{border-color:var(--gold);}
 .scratch-tier.selected{border-color:var(--gold);background:rgba(255,215,0,.1);}
 
-/* ============ WHEEL ============ */
+
 #wheelPanel{flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(ellipse at center,#1a0a2e 0%,#0a0a1a 70%);}
 .wheel-wrap{position:relative;}
 .wheel-ptr{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:20px solid var(--neon);filter:drop-shadow(0 0 6px rgba(0,240,255,.6));z-index:5;}
 #wheelResult{font-family:'Orbitron';font-size:18px;font-weight:700;min-height:26px;}
 
-/* ============ BACCARAT ============ */
+
 #baccaratPanel{flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(ellipse at top,#1a0a0a 0%,#0a0a1a 70%);}
 .bacc-table{width:min(520px,90vw);background:linear-gradient(180deg,#1a0a0a,#150808);border-radius:16px;border:2px solid #4a2020;padding:18px;}
 .bacc-hands{display:flex;justify-content:space-around;gap:16px;}
@@ -573,7 +573,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .bacc-bet.selected{border-color:var(--gold);background:rgba(255,215,0,.1);color:var(--gold);}
 #baccResult{font-family:'Orbitron';font-size:15px;font-weight:700;min-height:22px;text-align:center;}
 
-/* ============ HILO ============ */
+
 #hiloPanel{flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(ellipse at center,#0a1a2a 0%,#0a0a1a 70%);}
 .hilo-card{width:100px;height:140px;border-radius:12px;background:#fff;color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:26px;font-weight:900;box-shadow:0 8px 30px rgba(0,0,0,.4);border:2px solid #ddd;}
 .hilo-card.red{color:#cc2233;}
@@ -591,7 +591,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
+
 <div id="loginScreen">
   <div class="login-bg-particles" id="loginParticles"></div>
   <div class="login-box">
@@ -609,11 +609,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- Top Navigation -->
+
 <nav id="topNav" style="display:none;">
   <div class="logo" onclick="switchGame('slots',null)">CASINO</div>
 
-  <!-- Category: Popular -->
+  
   <div class="nav-cat" onmouseenter="openCat(this)" onmouseleave="closeCat(this)">
     <button class="nav-cat-btn"><span class="cat-icon">â­</span>Popular<span class="cat-arrow">â–¼</span></button>
     <div class="nav-dropdown">
@@ -625,7 +625,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     </div>
   </div>
 
-  <!-- Category: Card Games -->
+  
   <div class="nav-cat" onmouseenter="openCat(this)" onmouseleave="closeCat(this)">
     <button class="nav-cat-btn"><span class="cat-icon">ðŸƒ</span>Cards<span class="cat-arrow">â–¼</span></button>
     <div class="nav-dropdown">
@@ -636,7 +636,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     </div>
   </div>
 
-  <!-- Category: Table Games -->
+  
   <div class="nav-cat" onmouseenter="openCat(this)" onmouseleave="closeCat(this)">
     <button class="nav-cat-btn"><span class="cat-icon">ðŸŽ¡</span>Table<span class="cat-arrow">â–¼</span></button>
     <div class="nav-dropdown">
@@ -647,7 +647,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     </div>
   </div>
 
-  <!-- Category: Quick Games -->
+  
   <div class="nav-cat" onmouseenter="openCat(this)" onmouseleave="closeCat(this)">
     <button class="nav-cat-btn"><span class="cat-icon">âš¡</span>Quick<span class="cat-arrow">â–¼</span></button>
     <div class="nav-dropdown">
@@ -659,7 +659,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     </div>
   </div>
 
-  <!-- Category: Special -->
+  
   <div class="nav-cat" onmouseenter="openCat(this)" onmouseleave="closeCat(this)">
     <button class="nav-cat-btn"><span class="cat-icon">ðŸ’Ž</span>Special<span class="cat-arrow">â–¼</span></button>
     <div class="nav-dropdown">
@@ -668,7 +668,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     </div>
   </div>
 
-  <!-- Inline buttons for important sections -->
+  
   <button class="nav-btn-inline" onclick="switchGame('leaderboard',this)"><span class="icon">ðŸ†</span>Board</button>
   <button class="nav-btn-inline" onclick="switchGame('profile',this)"><span class="icon">ðŸ‘¤</span>Profile</button>
   <button class="nav-btn-inline" onclick="showInventory()"><span class="icon">ðŸŽ’</span>Inv</button>
@@ -686,13 +686,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </nav>
 
-<!-- Particles Canvas -->
+
 <canvas id="particles"></canvas>
 
-<!-- Win Toast -->
+
 <div class="win-toast" id="winToast"></div>
 
-<!-- ============ SLOTS ============ -->
+
 <div class="game-panel active" id="slotsPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet amount</strong> using the bet controls.</li><li>Press <strong>SPIN</strong> to spin the reels.</li><li>Match <strong>3+ symbols</strong> in a row to win â€” multiplier depends on the symbol.</li><li>Special symbols like ðŸ’Ž and ðŸ‘‘ pay the highest.</li><li>Wins are calculated as <strong>bet Ã— symbol multiplier</strong>.</li></ul></div></div>
   <div class="slots-machine">
@@ -714,7 +714,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ CRASH ============ -->
+
 <div class="game-panel" id="crashPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet amount</strong> before the round starts.</li><li>Press <strong>START</strong> â€” the multiplier begins climbing from 1.00Ã—.</li><li>Press <strong>CASH OUT</strong> before the rocket crashes to lock in your win.</li><li>If you don't cash out in time, you <strong>lose your bet</strong>.</li><li>The crash point is random â€” it could crash at 1.01Ã— or go past 100Ã—!</li></ul></div></div>
   <div class="crash-container">
@@ -735,7 +735,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ ROULETTE ============ -->
+
 <div class="game-panel" id="roulettePanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Place bets on <strong>numbers, colors, or sections</strong> of the wheel.</li><li>Choose Red (2Ã—), Black (2Ã—), Green (14Ã—), or specific number ranges.</li><li>Press <strong>SPIN</strong> to spin the roulette wheel.</li><li>If the ball lands on your selection, you win <strong>bet Ã— the multiplier</strong>.</li><li>Green (0) is the rarest outcome but pays the most.</li></ul></div></div>
   <div class="roulette-wrapper">
@@ -765,7 +765,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ CASES ============ -->
+
 <div class="game-panel" id="casesPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet amount</strong> â€” this is the case price.</li><li>Press <strong>OPEN CASE</strong> to reveal a random prize.</li><li>Items range from common (low value) to legendary (huge value).</li><li>Your win is based on the <strong>item rarity</strong> you unbox.</li><li>Legendary items can pay <strong>50Ã— your bet</strong> or more!</li></ul></div></div>
   <div class="case-selector" id="caseSelector"></div>
@@ -779,7 +779,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   <button class="action-btn primary" id="openCaseBtn" onclick="openCase()">OPEN CASE</button>
 </div>
 
-<!-- ============ PLINKO ============ -->
+
 <div class="game-panel" id="plinkoPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet</strong> and choose <strong>risk level</strong> (Low/Medium/High).</li><li>Press <strong>DROP</strong> to release a ball from the top.</li><li>The ball bounces off pegs randomly as it falls down.</li><li>Higher risk = bigger potential wins but also more losing slots.</li><li>The slot the ball lands in determines your <strong>multiplier</strong>.</li></ul></div></div>
   <div class="plinko-sidebar">
@@ -826,13 +826,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ PUSH YOUR LUCK ============ -->
+
 <div class="game-panel" id="luckPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>This is a <strong>multiplayer trivia game</strong>!</li><li>Answer questions correctly to earn points and avoid Whammy spaces.</li><li>Press your luck to keep going, or stop to keep your points.</li><li>Landing on a <strong>Whammy</strong> loses all your round points.</li><li>The player with the most points at the end wins!</li></ul></div></div>
-  <!-- iframe gets created dynamically when needed -->
+  
     
 
-  <!-- Lobby Overlay -->
+  
   <div class="pyl-lobby" id="pylLobby">
     <div class="pyl-title">PUSH YOUR LUCK</div>
     <div class="pyl-subtitle">Choose your game mode</div>
@@ -864,7 +864,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       </div>
     </div>
 
-    <!-- 1v1 Room UI (hidden by default) -->
+    
     <div class="pyl-room" id="pylRoomUI" style="display:none;">
       <div class="pr-title" id="pylRoomTitle">1v1 WAGER MATCH</div>
       <div style="display:flex;gap:8px;justify-content:center;margin-bottom:12px;">
@@ -885,7 +885,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       <button class="pyl-back-btn" onclick="pylBackToLobby()" style="margin-top:10px;">â† Back to modes</button>
     </div>
 
-    <!-- High Stakes UI -->
+    
     <div class="pyl-room" id="pylHighStakesUI" style="display:none;">
       <div class="pr-title">ðŸ’€ HIGH STAKES</div>
       <div style="color:var(--text2);font-size:12px;margin-bottom:12px;">
@@ -912,14 +912,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
       <button class="pyl-back-btn" onclick="pylBackToLobby()" style="margin-top:10px;">â† Back to modes</button>
     </div>
 
-    <!-- Leaderboard -->
+    
     <div class="pyl-leaderboard" id="pylLeaderboard">
       <div class="pyl-lb-title">ðŸ† TOP SCORES</div>
       <div id="pylLBRows"></div>
     </div>
   </div>
 
-  <!-- In-Game Overlay -->
+  
   <div class="pyl-overlay hidden" id="pylOverlay">
     <div class="pyl-score-card">
       <div class="psc-label" id="pylModeLabel">FREE PLAY</div>
@@ -938,7 +938,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ STOCKS ============ -->
+
 <div class="game-panel" id="stocksPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>View the stock chart and current price trend.</li><li>Choose to <strong>Buy Long</strong> (price goes up) or <strong>Short Sell</strong> (price goes down).</li><li>Set your <strong>bet amount</strong> â€” this is your investment.</li><li>Wait for the stock to move â€” cash out anytime to lock in profit.</li><li>If the stock moves against you too far, you lose your investment.</li></ul></div></div>
   <div class="stock-hero">
@@ -969,7 +969,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ BLACKJACK ============ -->
+
 <div class="game-panel" id="blackjackPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet</strong> and press <strong>DEAL</strong> to start.</li><li>Try to get your cards as close to <strong>21</strong> as possible without going over.</li><li><strong>HIT</strong> for another card, <strong>STAND</strong> to keep your hand.</li><li>Face cards = 10, Aces = 1 or 11. Beat the dealer to win <strong>2Ã— your bet</strong>.</li><li>Blackjack (Ace + 10-value) pays <strong>2.5Ã— your bet</strong>!</li></ul></div></div>
   <div class="bj-table">
@@ -995,7 +995,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ MINES ============ -->
+
 <div class="game-panel" id="minesPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet</strong> and choose the <strong>number of mines</strong> (1-24).</li><li>Click tiles to reveal gems ðŸ’Ž â€” each safe tile increases your multiplier.</li><li>Hit a mine ðŸ’£ and you <strong>lose everything</strong>.</li><li>Press <strong>CASH OUT</strong> anytime to collect your current winnings.</li><li>More mines = higher risk but <strong>bigger multipliers</strong> per tile!</li></ul></div></div>
   <div class="mines-wrap">
@@ -1019,7 +1019,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ DICE ============ -->
+
 <div class="game-panel" id="dicePanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Choose <strong>Roll Over</strong> or <strong>Roll Under</strong> mode.</li><li>Use the slider to set your <strong>target number</strong> (2-98).</li><li>The closer to the edge, the higher the multiplier but lower the chance.</li><li>Press <strong>ROLL</strong> â€” if the dice result matches your prediction, you win!</li><li>Win chance and multiplier are shown before you roll.</li></ul></div></div>
   <div class="dice-roll-display" id="diceDisplay">â€”</div>
@@ -1048,7 +1048,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   
 </div>
 
-<!-- ============ TOWER ============ -->
+
 <div class="game-panel" id="towerPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet</strong> and choose <strong>difficulty</strong> (Easy to Insane).</li><li>Each row has safe tiles and trap tiles â€” click a tile to climb.</li><li>Each safe tile increases your <strong>multiplier</strong>.</li><li>Hit a trap ðŸ’€ and you <strong>lose your bet</strong>.</li><li>Press <strong>CASH OUT</strong> anytime to collect. Higher floors = bigger wins!</li></ul></div></div>
   <div id="towerInfo">Pick a difficulty and start climbing!</div>
@@ -1068,7 +1068,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <button class="action-btn danger" id="towerCashoutBtn" onclick="towerCashout()" style="display:none;">CASH OUT</button>
   </div>
 </div>
-<!-- ============ COIN FLIP ============ -->
+
 <div class="game-panel" id="coinflipPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet amount</strong>.</li><li>Choose <strong>Heads</strong> or <strong>Tails</strong>.</li><li>The coin flips â€” if it matches your pick, you win <strong>2Ã— your bet</strong>!</li><li>Simple 50/50 odds â€” pure luck!</li><li>Watch the result history strip to spot streaks.</li></ul></div></div>
   <div class="coin" id="coinDisplay">ðŸª™</div>
@@ -1089,7 +1089,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ KENO ============ -->
+
 <div class="game-panel" id="kenoPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Click to select <strong>1-10 numbers</strong> on the board (1-40).</li><li>Set your <strong>bet</strong> and press <strong>DRAW</strong>.</li><li>10 numbers are drawn randomly â€” matches earn payouts.</li><li>More numbers selected = harder to hit but <strong>bigger payouts</strong>.</li><li>Hitting all your picks pays the <strong>jackpot multiplier</strong>!</li></ul></div></div>
   <div style="font-family:'Orbitron';font-size:16px;font-weight:700;color:var(--gold);">KENO</div>
@@ -1110,7 +1110,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   
 </div>
 
-<!-- ============ LIMBO ============ -->
+
 <div class="game-panel" id="limboPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet</strong> and enter a <strong>target multiplier</strong>.</li><li>Press <strong>GO</strong> â€” the game generates a random multiplier.</li><li>If the result is <strong>â‰¥ your target</strong>, you win at that multiplier!</li><li>Higher targets = lower chance but bigger payouts.</li><li>Minimum target is 1.01Ã— (99% chance), max risk for max reward!</li></ul></div></div>
   <div id="limboResult">â€”</div>
@@ -1132,7 +1132,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   <div class="last-results" id="limboHistory"></div>
 </div>
 
-<!-- ============ VIDEO POKER ============ -->
+
 <div class="game-panel" id="pokerPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet</strong> and press <strong>DEAL</strong> to get 5 cards.</li><li>Click cards to <strong>hold</strong> the ones you want to keep.</li><li>Press <strong>DRAW</strong> to replace un-held cards.</li><li>Your final hand is evaluated â€” <strong>Jacks or Better</strong> wins.</li><li>Royal Flush pays <strong>250Ã—</strong>, Straight Flush pays <strong>50Ã—</strong>!</li></ul></div></div>
   <div class="poker-paytable">
@@ -1161,7 +1161,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ HORSE RACING ============ -->
+
 <div class="game-panel" id="horsesPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Review the <strong>odds</strong> for each horse â€” lower odds = more likely to win.</li><li>Set your <strong>bet</strong> and click a horse to place your wager.</li><li>Watch the race â€” horses run at speeds influenced by their odds.</li><li>If your horse wins, you earn <strong>bet Ã— horse odds</strong>.</li><li>Underdogs pay big but win less often!</li></ul></div></div>
   <div style="font-family:'Orbitron';font-size:16px;font-weight:700;color:var(--gold);">ðŸ‡ HORSE RACING</div>
@@ -1180,7 +1180,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ SCRATCH CARDS ============ -->
+
 <div class="game-panel" id="scratchPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet</strong> (card price) and press <strong>BUY CARD</strong>.</li><li>Scratch tiles by clicking them, or press <strong>SCRATCH ALL</strong> to reveal everything.</li><li>Match <strong>3 identical symbols</strong> to win that symbol's prize.</li><li>Match <strong>4 symbols</strong> for an even bigger payout!</li><li>Prizes range from 1Ã— to 50Ã— your bet depending on the symbol.</li></ul></div></div>
   <div style="font-family:'Orbitron';font-size:16px;font-weight:700;color:var(--gold);">ðŸŽ« SCRATCH CARDS</div>
@@ -1197,7 +1197,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   <button class="action-btn primary" id="scratchRevealAllBtn" onclick="scratchRevealAll()" style="display:none;font-size:12px;padding:8px 16px;">SCRATCH ALL</button>
 </div>
 
-<!-- ============ WHEEL ============ -->
+
 <div class="game-panel" id="wheelPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Set your <strong>bet amount</strong>.</li><li>Press <strong>SPIN</strong> to spin the wheel.</li><li>The wheel has segments with different <strong>multipliers</strong>.</li><li>Where the wheel stops determines your payout.</li><li>Rare high-value segments can pay <strong>huge multipliers</strong>!</li></ul></div></div>
   <div class="wheel-wrap">
@@ -1217,7 +1217,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ BACCARAT ============ -->
+
 <div class="game-panel" id="baccaratPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Choose to bet on <strong>Player</strong>, <strong>Banker</strong>, or <strong>Tie</strong>.</li><li>Set your <strong>bet</strong> and press <strong>DEAL</strong>.</li><li>Cards are dealt automatically â€” closest to <strong>9</strong> wins.</li><li>Player pays <strong>2Ã—</strong>, Banker pays <strong>1.95Ã—</strong>, Tie pays <strong>8Ã—</strong>.</li><li>Face cards and 10s count as 0. Only the last digit of the total matters.</li></ul></div></div>
   <div class="bacc-table">
@@ -1245,7 +1245,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ HILO ============ -->
+
 <div class="game-panel" id="hiloPanel">
   <div class="htp-box"><button class="htp-toggle" onclick="htpToggle(this)"><span class="htp-arrow">â–¶</span> HOW TO PLAY</button><div class="htp-content"><ul><li>Press <strong>START</strong> â€” a card is revealed.</li><li>Guess if the next card will be <strong>Higher</strong> or <strong>Lower</strong>.</li><li>Each correct guess multiplies your winnings â€” the streak continues!</li><li>The probability of each choice is shown on the buttons.</li><li>Press <strong>CASH OUT</strong> anytime to collect, or risk it for more!</li></ul></div></div>
   <div id="hiloStreak">Start a game to begin!</div>
@@ -1269,7 +1269,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ LEADERBOARD PANEL ============ -->
+
 <div class="game-panel" id="leaderboardPanel">
   <div class="lb-container">
     <div style="text-align:center;margin-bottom:8px;">
@@ -1291,7 +1291,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ PROFILE PANEL ============ -->
+
 <div class="game-panel" id="profilePanel">
   <div style="max-width:600px;margin:0 auto;padding:20px;">
     <div style="text-align:center;margin-bottom:16px;">
@@ -1338,7 +1338,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- ============ INVENTORY OVERLAY ============ -->
+
 <div id="inventoryOverlay">
   <div class="inv-header">
     <div class="inv-title">INVENTORY</div>
@@ -1361,7 +1361,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
     <button class="inv-tab" onclick="showTradePanel()" style="border-color:rgba(0,230,118,0.3);color:#00e676;">ðŸ”„ Trade</button>
   </div>
   <div class="inv-grid" id="invGrid"></div>
-  <!-- Trade Panel (hidden by default) -->
+  
   <div id="tradePanel" style="display:none;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-top:12px;">
     <div style="font-family:'Orbitron';font-size:14px;color:var(--gold);letter-spacing:2px;margin-bottom:10px;">ðŸ”„ TRADE ITEMS</div>
     <div style="font-size:11px;color:var(--text2);margin-bottom:10px;">Send an item to another player by username.</div>
@@ -1378,7 +1378,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 
-<!-- Firebase -->
+
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import{getDatabase,ref,set,get,onValue,push,update,remove,off,onDisconnect}from"https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
@@ -1398,7 +1398,7 @@ const app=initializeApp(firebaseConfig);
 const db=getDatabase(app);
 const auth=getAuth(app);
 
-// ============ AUTH ============
+
 let currentUser = null;
 let currentUsername = '';
 let playerId = '';
@@ -1412,7 +1412,7 @@ function emailToUsername(email) {
   return email.replace('@casinoroyale.gg','');
 }
 
-// Auth submit (sign in or register)
+
 window._authSubmit = async (username, password, isRegister) => {
   const email = usernameToEmail(username);
   if (username.length < 3) throw new Error('Username must be at least 3 characters');
@@ -1421,13 +1421,13 @@ window._authSubmit = async (username, password, isRegister) => {
   if (password.length < 6) throw new Error('Password must be at least 6 characters');
 
   if (isRegister) {
-    // Check if username is taken
+    
     const nameSnap = await get(ref(db, 'casino/usernames/' + username.toLowerCase()));
     if (nameSnap.exists()) throw new Error('Username already taken');
     const cred = await createUserWithEmailAndPassword(auth, email, password);
-    // Reserve username
+    
     await set(ref(db, 'casino/usernames/' + username.toLowerCase()), cred.user.uid);
-    // Create player profile
+    
     await set(ref(db, 'casino/players/' + cred.user.uid), {
       username: username,
       balance: 1000,
@@ -1453,14 +1453,14 @@ window._authSubmit = async (username, password, isRegister) => {
 
 window._authLogout = () => signOut(auth);
 
-// Listen for auth state changes
+
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     currentUser = user;
     playerId = user.uid;
     playerRef = ref(db, 'casino/players/' + playerId);
 
-    // Load username
+    
     const snap = await get(playerRef);
     if (snap.exists()) {
       const data = snap.val();
@@ -1476,7 +1476,7 @@ onAuthStateChanged(auth, async (user) => {
       currentUsername = emailToUsername(user.email);
     }
 
-    // Set up session ID for multiplayer
+    
     let pylSessionId = sessionStorage.getItem('pyl_session_id');
     if (!pylSessionId) {
       pylSessionId = playerId + '_' + Math.random().toString(36).substr(2, 4);
@@ -1487,7 +1487,7 @@ onAuthStateChanged(auth, async (user) => {
     window._currentUsername = currentUsername;
     window._currentPlayerId = playerId;
 
-    // Show casino, hide login
+    
     window._onAuthReady(currentUsername, playerId);
   } else {
     currentUser = null;
@@ -1498,7 +1498,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// ============ FIREBASE SAVE ============
+
 window._firebaseSave = () => {
   if (!playerRef) return;
   const saveData = {
@@ -1512,10 +1512,10 @@ window._firebaseSave = () => {
     gameStats: window._getGameStats ? window._getGameStats() : null,
     dailyBonus: window._getDailyBonus ? window._getDailyBonus() : null,
   };
-  // Clean nulls
+  
   Object.keys(saveData).forEach(k => { if (saveData[k] == null) delete saveData[k]; });
   update(playerRef, saveData).catch(() => {});
-  // Also update leaderboard entry for "richest"
+  
   if (playerId && currentUsername) {
     set(ref(db, 'casino/leaderboards/richest/' + playerId), {
       name: currentUsername,
@@ -1525,11 +1525,11 @@ window._firebaseSave = () => {
   }
 };
 
-// ============ GAME STAT RECORDING ============
+
 window._recordGameResult = (game, wagered, won) => {
   if (!playerRef) return;
   const profit = won - wagered;
-  // Update global stats
+  
   const statsRef = ref(db, 'casino/players/' + playerId + '/stats');
   get(statsRef).then(snap => {
     const s = snap.exists() ? snap.val() : { totalWagered: 0, totalWon: 0, totalProfit: 0, gamesPlayed: 0, biggestWin: 0 };
@@ -1539,7 +1539,7 @@ window._recordGameResult = (game, wagered, won) => {
     s.gamesPlayed = (s.gamesPlayed || 0) + 1;
     if (won > (s.biggestWin || 0)) s.biggestWin = won;
     set(statsRef, s);
-    // Update game-specific leaderboard
+    
     if (won > 0) {
       set(ref(db, 'casino/leaderboards/' + game + '/' + playerId), {
         name: currentUsername,
@@ -1547,7 +1547,7 @@ window._recordGameResult = (game, wagered, won) => {
         updated: Date.now()
       }).catch(() => {});
     }
-    // Update profit leaderboard
+    
     set(ref(db, 'casino/leaderboards/profit/' + playerId), {
       name: currentUsername,
       value: s.totalProfit,
@@ -1556,7 +1556,7 @@ window._recordGameResult = (game, wagered, won) => {
   }).catch(() => {});
 };
 
-// ============ LEADERBOARD FETCH ============
+
 window._getLeaderboard = async (category) => {
   try {
     const snap = await get(ref(db, 'casino/leaderboards/' + category));
@@ -1568,7 +1568,7 @@ window._getLeaderboard = async (category) => {
   } catch { return []; }
 };
 
-// ============ DAILY BONUS ============
+
 window._claimDailyBonus = async () => {
   if (!playerRef) return null;
   const bonusRef = ref(db, 'casino/players/' + playerId + '/dailyBonus');
@@ -1577,26 +1577,26 @@ window._claimDailyBonus = async () => {
   const data = snap.exists() ? snap.val() : { lastClaimed: 0, streak: 0 };
   const lastDate = new Date(data.lastClaimed).toDateString();
   const todayDate = new Date(now).toDateString();
-  if (lastDate === todayDate) return null; // Already claimed today
+  if (lastDate === todayDate) return null; 
   const yesterdayDate = new Date(now - 86400000).toDateString();
   const newStreak = (lastDate === yesterdayDate) ? (data.streak || 0) + 1 : 1;
-  const bonus = Math.min(500 + (newStreak - 1) * 100, 2000); // $500 base, +$100/day streak, max $2000
+  const bonus = Math.min(500 + (newStreak - 1) * 100, 2000); 
   await set(bonusRef, { lastClaimed: now, streak: newStreak });
   return { amount: bonus, streak: newStreak };
 };
 
-// ============ TRADING SYSTEM (Firebase) ============
+
 window._sendTradeOffer = async (recipientUsername, item) => {
   if (!playerId || !currentUsername) return { error: 'Not logged in' };
-  // Look up recipient UID
+  
   const nameSnap = await get(ref(db, 'casino/usernames/' + recipientUsername));
   if (!nameSnap.exists()) return { error: 'Player not found' };
   const recipientUid = nameSnap.val();
   if (recipientUid === playerId) return { error: "Can't trade with yourself" };
-  // Get item name
+  
   const itemDef = window.ITEMS ? window.ITEMS.find(d => d.id === item.itemId) : null;
   const itemName = itemDef ? itemDef.name : item.itemId;
-  // Create trade offer
+  
   const tradeRef = push(ref(db, 'casino/trades/' + recipientUid));
   await set(tradeRef, {
     from: currentUsername,
@@ -1624,7 +1624,7 @@ window._acceptTradeOffer = async (tradeId) => {
   await remove(ref(db, 'casino/trades/' + playerId + '/' + tradeId));
 };
 
-// ============ PYL Firebase helpers ============
+
 window._pylCreateRoom = (roomCode, wager) => {
   const sid = window._currentPylSessionId;
   const name = window._currentUsername || sid.slice(-5);
@@ -1730,7 +1730,7 @@ window._pylSubmitLeaderboard = (score) => {
 </script>
 
 <script>
-// ============ GLOBAL STATE ============
+
 let balance = 1000;
 window.getBalance=()=>balance;
 window.setBalance=(v)=>{balance=v;updateBalDisplay();};
@@ -1746,7 +1746,7 @@ function updateBalDisplay(){
 function addMoney(amt){balance+=amt;updateBalDisplay();firebaseSave();}
 function firebaseSave(){if(window._firebaseSave)window._firebaseSave();}
 
-// ============ AUTH UI ============
+
 let authIsRegister = false;
 let isGuestMode = false;
 
@@ -1757,7 +1757,7 @@ function authGuestMode() {
     guestId = 'guest_' + Math.random().toString(36).substr(2, 8);
     localStorage.setItem('casino_guest_id', guestId);
   }
-  // Load from localStorage
+  
   const savedBal = localStorage.getItem('casino_guest_balance');
   if (savedBal != null) { balance = parseFloat(savedBal); }
   const savedStats = localStorage.getItem('casino_guest_stats');
@@ -1770,20 +1770,20 @@ function authGuestMode() {
   window._pylPlayerId = guestId;
   window._currentPylSessionId = guestId;
 
-  // Override save to use localStorage
+  
   window._firebaseSave = () => {
     localStorage.setItem('casino_guest_balance', balance.toString());
     localStorage.setItem('casino_guest_stats', JSON.stringify(playerStats));
     localStorage.setItem('casino_guest_gameStats', JSON.stringify(gameStats));
   };
-  // Guests don't write to leaderboards
+  
   window._recordGameResult = () => {};
   window._claimDailyBonus = async () => null;
 
   window._onAuthReady('Guest', guestId);
 }
 
-// Login screen particles
+
 (function initLoginParticles() {
   const c = document.getElementById('loginParticles');
   if (!c) return;
@@ -1833,10 +1833,10 @@ function authLogout() {
   firebaseSave();
   isGuestMode = false;
   if (window._authLogout) window._authLogout();
-  else window._onAuthLoggedOut(); // For guest mode (no Firebase auth to sign out of)
+  else window._onAuthLoggedOut(); 
 }
 
-// Auth state callbacks (called from module)
+
 window._onAuthReady = function(username, uid) {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('topNav').style.display = '';
@@ -1847,13 +1847,13 @@ window._onAuthReady = function(username, uid) {
 };
 
 window._onAuthLoggedOut = function() {
-  if (isGuestMode) return; // Don't show login if in guest mode
+  if (isGuestMode) return; 
   document.getElementById('loginScreen').style.display = '';
   document.getElementById('topNav').style.display = 'none';
   document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
 };
 
-// Enter key on login
+
 document.getElementById('authPassword').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') authSubmit();
 });
@@ -1861,7 +1861,7 @@ document.getElementById('authUsername').addEventListener('keydown', function(e) 
   if (e.key === 'Enter') document.getElementById('authPassword').focus();
 });
 
-// ============ STATS TRACKING ============
+
 let playerStats = { totalWagered: 0, totalWon: 0, totalProfit: 0, gamesPlayed: 0, biggestWin: 0 };
 let gameStats = {
   slots: { played: 0, won: 0, biggestWin: 0 },
@@ -1907,7 +1907,7 @@ function recordGame(game, wagered, won) {
   }
   if (window._recordGameResult) window._recordGameResult(game, wagered, won);
   firebaseSave();
-  // Check achievements after recording
+  
   checkCasinoAchievements(game, wagered, won);
 }
 
@@ -1918,7 +1918,7 @@ function addResultDot(containerId,label,isWin){
   c.appendChild(dot);if(c.children.length>20)c.removeChild(c.firstChild);
 }
 
-// ============ DAILY BONUS ============
+
 function checkDailyBonus() {
   const btn = document.getElementById('dailyBonusBtn');
   if (!btn) return;
@@ -1956,7 +1956,7 @@ async function claimDailyBonus() {
   }
 }
 
-// ============ GLOBAL LEADERBOARD ============
+
 let currentLBCategory = 'richest';
 
 function switchLB(category, btn) {
@@ -2009,12 +2009,11 @@ const labels = {
 }
 
 
-// ============ NAV DROPDOWN HELPERS ============
 function openCat(el){el.classList.add('open');}
 function closeCat(el){el.classList.remove('open');}
-// Close dropdowns if clicking outside
+
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-cat'))document.querySelectorAll('.nav-cat').forEach(c=>c.classList.remove('open'));});
-// How-to-play toggle
+
 function htpToggle(el){el.closest('.htp-box').classList.toggle('open');}
 function showToast(msg,isWin=true){
   const t=document.getElementById('winToast');
@@ -2042,19 +2041,19 @@ function switchGame(game,btn){
   if(game==='luck'){
     let iframe=document.getElementById('pylIframe');
     if(!iframe){
-      // Create iframe dynamically so it doesn't interfere before needed
+      
       iframe=document.createElement('iframe');
       iframe.id='pylIframe';
       iframe.allow='autoplay';
       document.getElementById('luckPanel').insertBefore(iframe,document.getElementById('luckPanel').firstChild);
     }
     if(!iframe.src||!iframe.src.includes('push-your-luck')){
-      // Delay loading so iframe has real layout dimensions before Phaser inits
+      
       setTimeout(()=>{ iframe.src='push-your-luck/index.html'; }, 300);
     }
     pylLoadLeaderboard();
   }
-  firebaseSave(); // Save on every game switch
+  firebaseSave(); 
 }
 
 function adjustBet(id,mult){
@@ -2062,7 +2061,7 @@ function adjustBet(id,mult){
   el.value=Math.max(1,Math.round(parseFloat(el.value||10)*mult));
 }
 
-// ============ PARTICLES ============
+
 const pCanvas=document.getElementById('particles');
 const pCtx=pCanvas.getContext('2d');
 let particles=[];
@@ -2093,7 +2092,7 @@ function updateParticles(){
 }
 updateParticles();
 
-// ============ SOUND ============
+
 const audioCtx=new(window.AudioContext||window.webkitAudioContext)();
 function playSound(freq,type='sine',dur=0.15,vol=0.1){
   try{
@@ -2108,7 +2107,7 @@ function playWinSound(){playSound(523,'sine',.1,.12);setTimeout(()=>playSound(65
 function playLoseSound(){playSound(200,'sawtooth',.25,.06);setTimeout(()=>playSound(150,'sawtooth',.3,.05),100);}
 function playClickSound(){playSound(800,'sine',.04,.06);}
 
-// ============ MUTE TOGGLE ============
+
 let soundMuted = false;
 function toggleMute() {
   soundMuted = !soundMuted;
@@ -2116,14 +2115,14 @@ function toggleMute() {
   btn.textContent = soundMuted ? 'ðŸ”‡' : 'ðŸ”Š';
   btn.style.opacity = soundMuted ? '0.5' : '1';
 }
-// Wrap playSound with mute check
+
 const _origPlaySound = playSound;
 playSound = function(freq, type, dur, vol) {
   if (soundMuted) return;
   _origPlaySound(freq, type, dur, vol);
 };
 
-// ============ CASINO ACHIEVEMENTS ============
+
 const CASINO_ACHIEVEMENTS = [
   { id:'first_game', icon:'ðŸŽ®', name:'FIRST SPIN', desc:'Play your first game' },
   { id:'first_win', icon:'ðŸ†', name:'WINNER', desc:'Win your first bet' },
@@ -2164,37 +2163,37 @@ function checkCasinoAchievements(game, wagered, won) {
       if (a) { newAchs.push(a); showAchToast(a); }
     }
   }
-  // First game
+  
   tryAward('first_game');
-  // First win
+  
   if (won > 0) tryAward('first_win');
-  // Big wins
+  
   if (won >= 5000) tryAward('big_win');
   if (won >= 50000) tryAward('mega_win');
-  // Wagering milestones
+  
   if (playerStats.totalWagered >= 10000) tryAward('high_roller');
   if (playerStats.totalWagered >= 100000) tryAward('whale');
-  // Games played
+  
   if (playerStats.gamesPlayed >= 50) tryAward('games_50');
   if (playerStats.gamesPlayed >= 500) tryAward('games_500');
   if (playerStats.gamesPlayed >= 5000) tryAward('games_5000');
-  // Game-specific
+  
   if (gameStats.slots && gameStats.slots.won >= 50) tryAward('slots_pro');
   if (gameStats.crash && gameStats.crash.won >= 50) tryAward('crash_pro');
-  // Diversified
+  
   const gamesPlayed = Object.values(gameStats).filter(g => g.played > 0).length;
   if (gamesPlayed >= 5) tryAward('diversified');
-  // Broke
+  
   if (balance <= 0) tryAward('broke');
-  // Profit
+  
   if (playerStats.totalProfit >= 10000) tryAward('profit_10k');
-  // Collector
+  
   if (inventory.length >= 10) tryAward('collector');
-  // Inventory value
+  
   if (typeof getInventoryValue === 'function' && getInventoryValue() >= 10000) tryAward('inv_value');
-  // Daily streak
+  
   if (dailyBonusData.streak >= 7) tryAward('daily_7');
-  // Comeback
+  
   if (balance >= 10000 && (getCasinoAch()['broke'])) tryAward('comeback');
   return newAchs;
 }
@@ -2202,7 +2201,7 @@ function showAchToast(ach) {
   showToast(ach.icon + ' Achievement: ' + ach.name + ' â€” ' + ach.desc, true);
 }
 
-// ============ PROFILE RENDER ============
+
 function renderProfile() {
   const name = document.getElementById('userNameDisplay').textContent || 'PLAYER';
   document.getElementById('profileName').textContent = name;
@@ -2218,7 +2217,7 @@ function renderProfile() {
   if (typeof getInventoryValue === 'function') {
     document.getElementById('profInvValue').textContent = '$' + getInventoryValue().toFixed(2);
   }
-  // Achievements
+  
   const achs = getCasinoAch();
   const count = Object.keys(achs).length;
   document.getElementById('casinoAchCount').textContent = '(' + count + '/' + CASINO_ACHIEVEMENTS.length + ')';
@@ -2231,7 +2230,7 @@ function renderProfile() {
       ${done ? '<span style="color:var(--green)">âœ“</span>' : ''}
     </div>`;
   }).join('');
-  // Game stats
+  
   document.getElementById('profGameStats').innerHTML = Object.entries(gameStats).map(([name, s]) => {
     if (!s.played) return '';
     const wr = s.played > 0 ? Math.round((s.won / s.played) * 100) : 0;
@@ -2243,7 +2242,7 @@ function renderProfile() {
   }).filter(Boolean).join('');
 }
 
-// ============ TRADING SYSTEM ============
+
 function showTradePanel() {
   const panel = document.getElementById('tradePanel');
   panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
@@ -2316,7 +2315,7 @@ async function acceptTrade(tradeId, itemId) {
   }
 }
 
-// ============ SLOTS ============
+
 const SYMBOLS=['ðŸ’','ðŸ‹','ðŸ””','ðŸ’Ž','7ï¸âƒ£','ðŸ€','â­','ðŸ‘‘'];
 const SYMBOL_VALUES={'ðŸ‘‘':50,'7ï¸âƒ£':25,'ðŸ’Ž':15,'â­':10,'ðŸ””':8,'ðŸ€':6,'ðŸ‹':4,'ðŸ’':3};
 const REEL_COUNT=5;
@@ -2348,27 +2347,27 @@ function spinSlots(){
   document.getElementById('spinBtn').disabled=true;
   playClickSound();
 
-  // Determine results
+  
   const results=[];
   for(let r=0;r<REEL_COUNT;r++) results.push(SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)]);
 
   for(let r=0;r<REEL_COUNT;r++){
     const strip=document.getElementById('reel'+r);
     const children=strip.children;
-    // Randomize all symbols
+    
     for(let i=0;i<children.length;i++){
       children[i].textContent=SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
     }
-    // Place result at target position (center of view = index 1 of visible 3)
+    
     const targetIdx=42+r*2;
     children[targetIdx].textContent=results[r];
 
     setTimeout(()=>{
-      // Reset to top
+      
       strip.style.transition='none';
       strip.style.transform='translateY(0px)';
       void strip.offsetWidth;
-      // Animate to target
+      
       strip.style.transition='transform '+(1.2+r*0.25)+'s cubic-bezier(.15,.72,.12,1)';
       strip.style.transform='translateY(-'+((targetIdx-1)*SYM_H)+'px)';
       playSound(300+r*50,'square',.04,.03);
@@ -2377,7 +2376,7 @@ function spinSlots(){
 
   const totalDuration=1200+REEL_COUNT*250+300;
   setTimeout(()=>{
-    // Count matches
+    
     const counts={};
     results.forEach(s=>{counts[s]=(counts[s]||0)+1;});
     let maxCount=0,maxSym='';
@@ -2408,7 +2407,7 @@ function spinSlots(){
     slotsSpinning=false;
     document.getElementById('spinBtn').disabled=false;
 
-    // Reset strips for next spin
+    
     setTimeout(()=>{
       for(let r=0;r<REEL_COUNT;r++){
         const strip=document.getElementById('reel'+r);
@@ -2422,7 +2421,7 @@ function spinSlots(){
   },totalDuration);
 }
 
-// ============ CRASH ============
+
 let crashRunning=false,crashBetAmount=0,crashCashedOut=false;
 let crashMultVal=1,crashPoint=0,crashStartTime=0,crashHistory=[];
 
@@ -2439,7 +2438,7 @@ function drawCrashGraph(){
   const w=c.width,h=c.height;
   ctx.clearRect(0,0,w,h);
 
-  // Grid lines
+  
   ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
   for(let i=1;i<10;i++){
     const y=h*(1-i/10);
@@ -2450,7 +2449,7 @@ function drawCrashGraph(){
 
   const maxMult=Math.max(...crashHistory.map(p=>p.m),2);
 
-  // Gradient fill
+  
   ctx.beginPath();
   crashHistory.forEach((p,i)=>{
     const x=(i/(crashHistory.length-1||1))*w;
@@ -2464,7 +2463,7 @@ function drawCrashGraph(){
   grad.addColorStop(0,'rgba('+col+',.2)');grad.addColorStop(1,'rgba('+col+',0)');
   ctx.fillStyle=grad;ctx.fill();
 
-  // Line
+  
   ctx.beginPath();
   const lineColor=crashRunning&&!crashCashedOut?'#00f0ff':(crashCashedOut?'#00ff88':'#ff3355');
   ctx.strokeStyle=lineColor;ctx.lineWidth=4;ctx.shadowColor=lineColor;ctx.shadowBlur=12;
@@ -2476,7 +2475,7 @@ function drawCrashGraph(){
   ctx.stroke();
   ctx.shadowBlur=0;
 
-  // Dot at end
+  
   if(crashHistory.length>1){
     const lp=crashHistory[crashHistory.length-1];
     const dx=(1)*w;
@@ -2496,7 +2495,7 @@ function startCrash(){
   crashBetAmount=bet;balance-=bet;updateBalDisplay();
   crashCashedOut=false;crashRunning=true;
   crashMultVal=1;crashHistory=[{t:0,m:1}];
-  // House edge ~4%
+  
   crashPoint=1+(0.96/(1-Math.random()))-0.96;
   if(crashPoint<1.02)crashPoint=1.02;
 
@@ -2558,7 +2557,7 @@ function cashOut(){
   firebaseSave();drawCrashGraph();
 }
 
-// ============ ROULETTE ============
+
 const ROUL_NUMS=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 const RED_NUMS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 let rouletteSpinning=false,rouletteAngle=0,selectedRoulBet=null,rouletteDrawn=false;
@@ -2587,7 +2586,7 @@ function drawRouletteWheel(angle){
     ctx.fill();
     ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1;ctx.stroke();
 
-    // Number
+    
     const ta=start+sliceAngle/2;
     const tx=cx+Math.cos(ta)*(r*0.78);const ty=cy+Math.sin(ta)*(r*0.78);
     ctx.save();ctx.translate(tx,ty);ctx.rotate(ta+Math.PI/2);
@@ -2595,14 +2594,14 @@ function drawRouletteWheel(angle){
     ctx.fillText(num.toString(),0,0);ctx.restore();
   });
 
-  // Inner ring
+  
   ctx.beginPath();ctx.arc(cx,cy,r*0.15,0,Math.PI*2);
   const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,r*0.15);
   cg.addColorStop(0,'#2a2a5e');cg.addColorStop(1,'#15153a');
   ctx.fillStyle=cg;ctx.fill();
   ctx.strokeStyle='rgba(255,215,0,.5)';ctx.lineWidth=2;ctx.stroke();
 
-  // Outer ring
+  
   ctx.beginPath();ctx.arc(cx,cy,r+3,0,Math.PI*2);
   ctx.strokeStyle='rgba(255,215,0,.25)';ctx.lineWidth=5;ctx.stroke();
   ctx.beginPath();ctx.arc(cx,cy,r-1,0,Math.PI*2);
@@ -2626,7 +2625,7 @@ function spinRoulette(){
   const winNum=ROUL_NUMS[winIdx];
   const sliceAngle=Math.PI*2/n;
 
-  // Target: winning slice at top (angle = -PI/2)
+  
   const targetCenter=winIdx*sliceAngle+sliceAngle/2;
   const targetAngle=-Math.PI/2-targetCenter+Math.PI*2*(6+Math.random()*3);
   const startAngle=rouletteAngle;
@@ -2641,7 +2640,7 @@ function spinRoulette(){
     const cur=startAngle+totalRot*eased;
     drawRouletteWheel(cur);
 
-    // Tick sound when passing slot boundaries
+    
     const angleDiff=Math.abs(cur-lastTickAngle);
     if(angleDiff>sliceAngle){
       lastTickAngle=cur;
@@ -2686,7 +2685,7 @@ function spinRoulette(){
   requestAnimationFrame(animWheel);
 }
 
-// ============ CASES (CSGO-STYLE) ============
+
 const RARITY={
   consumer:  {label:'Consumer Grade', color:'#b0c3d9',cls:'rarity-consumer',  tier:0},
   industrial:{label:'Industrial Grade',color:'#5e98d9',cls:'rarity-industrial',tier:1},
@@ -2697,48 +2696,48 @@ const RARITY={
   legendary: {label:'â˜… Legendary',    color:'#ffd700',cls:'rarity-legendary', tier:6},
 };
 
-// Full item catalog â€” each item is a unique collectible
+
 const ITEM_CATALOG={
-  // Consumer Grade
+  
   rustedCoin:      {id:'rustedCoin',      name:'Rusted Coin',        icon:'ðŸª™', rarity:'consumer',  baseValue:8},
   brokenCompass:   {id:'brokenCompass',   name:'Broken Compass',     icon:'ðŸ§­', rarity:'consumer',  baseValue:12},
   driftwood:       {id:'driftwood',       name:'Driftwood Charm',    icon:'ðŸªµ', rarity:'consumer',  baseValue:6},
   seaGlass:        {id:'seaGlass',        name:'Sea Glass',          icon:'ðŸ’ ', rarity:'consumer',  baseValue:10},
   coconutShell:    {id:'coconutShell',    name:'Coconut Shell',      icon:'ðŸ¥¥', rarity:'consumer',  baseValue:5},
-  // Industrial Grade
+  
   bronzeMedallion: {id:'bronzeMedallion', name:'Bronze Medallion',   icon:'ðŸ…', rarity:'industrial',baseValue:25},
   pearlFragment:   {id:'pearlFragment',   name:'Pearl Fragment',     icon:'âšª', rarity:'industrial',baseValue:35},
   corkedBottle:    {id:'corkedBottle',    name:'Message in a Bottle',icon:'ðŸ¾', rarity:'industrial',baseValue:30},
   ancientKey:      {id:'ancientKey',      name:'Ancient Key',        icon:'ðŸ—ï¸', rarity:'industrial',baseValue:40},
   ironAnchor:      {id:'ironAnchor',      name:'Iron Anchor',        icon:'âš“', rarity:'industrial',baseValue:28},
-  // Mil-Spec
+  
   silverDagger:    {id:'silverDagger',    name:'Silver Dagger',      icon:'ðŸ—¡ï¸', rarity:'milspec',   baseValue:75},
   jadeMask:        {id:'jadeMask',        name:'Jade Mask',          icon:'ðŸŽ­', rarity:'milspec',   baseValue:100},
   crystalSkull:    {id:'crystalSkull',    name:'Crystal Skull',      icon:'ðŸ’€', rarity:'milspec',   baseValue:120},
   enchantedMap:    {id:'enchantedMap',    name:'Enchanted Map',      icon:'ðŸ—ºï¸', rarity:'milspec',   baseValue:90},
   obsidianArrow:   {id:'obsidianArrow',   name:'Obsidian Arrow',     icon:'ðŸ¹', rarity:'milspec',   baseValue:85},
-  // Restricted
+  
   goldenIdol:      {id:'goldenIdol',      name:'Golden Idol',        icon:'ðŸ—¿', rarity:'restricted',baseValue:250},
   sapphireRing:    {id:'sapphireRing',    name:'Sapphire Ring',      icon:'ðŸ’', rarity:'restricted',baseValue:350},
   dragonScale:     {id:'dragonScale',     name:'Dragon Scale',       icon:'ðŸ‰', rarity:'restricted',baseValue:300},
   phoenixFeather:  {id:'phoenixFeather',  name:'Phoenix Feather',    icon:'ðŸª¶', rarity:'restricted',baseValue:280},
   moonstone:       {id:'moonstone',       name:'Moonstone Amulet',   icon:'ðŸŒ™', rarity:'restricted',baseValue:320},
-  // Classified
+  
   voidOrb:         {id:'voidOrb',         name:'Void Orb',           icon:'ðŸ”®', rarity:'classified',baseValue:800},
   sunforgedBlade:  {id:'sunforgedBlade',  name:'Sunforged Blade',    icon:'âš”ï¸', rarity:'classified',baseValue:1200},
   krakenTooth:     {id:'krakenTooth',     name:'Kraken Tooth',       icon:'ðŸ¦·', rarity:'classified',baseValue:1000},
   starChart:       {id:'starChart',       name:'Star Chart',         icon:'âœ¨', rarity:'classified',baseValue:900},
-  // Covert
+  
   bloodDiamond:    {id:'bloodDiamond',    name:'Blood Diamond',      icon:'â™¦ï¸', rarity:'covert',    baseValue:3000},
   poseidonTrident: {id:'poseidonTrident', name:"Poseidon's Trident", icon:'ðŸ”±', rarity:'covert',    baseValue:4500},
   eternityCrown:   {id:'eternityCrown',   name:'Eternity Crown',     icon:'ðŸ‘‘', rarity:'covert',    baseValue:5000},
-  // Legendary (â˜…)
+  
   islandHeart:     {id:'islandHeart',     name:'Heart of the Island',icon:'â¤ï¸â€ðŸ”¥',rarity:'legendary', baseValue:15000},
   worldEater:      {id:'worldEater',      name:'World Eater Blade',  icon:'ðŸŒ€', rarity:'legendary', baseValue:25000},
   infinityGem:     {id:'infinityGem',     name:'Infinity Gem',       icon:'ðŸ’Ž', rarity:'legendary', baseValue:50000},
 };
 
-// Cases with weighted item pools
+
 const CASES=[
   {name:'Flotsam',icon:'ðŸ“¦',price:50,items:[
     {id:'rustedCoin',w:30},{id:'brokenCompass',w:25},{id:'driftwood',w:28},{id:'seaGlass',w:22},{id:'coconutShell',w:30},
@@ -2772,7 +2771,7 @@ const CASES=[
   ]},
 ];
 
-// Demand / Market Price system â€” simulated demand multiplier per item
+
 let itemDemand={};
 function initDemand(){
   Object.keys(ITEM_CATALOG).forEach(id=>{
@@ -2785,14 +2784,14 @@ function getItemMarketValue(id){
   return Math.round(cat.baseValue*d.mult);
 }
 function tickDemand(){
-  // Simulate organic demand shifts
+  
   Object.keys(itemDemand).forEach(id=>{
     const d=itemDemand[id];
-    // Random walk + mean reversion
+    
     d.velocity+=(Math.random()-.5)*.04;
-    d.velocity*=.92; // damping
-    d.velocity+=(1-d.mult)*.008; // mean revert
-    // Rarer items = more volatile
+    d.velocity*=.92; 
+    d.velocity+=(1-d.mult)*.008; 
+    
     const cat=ITEM_CATALOG[id];
     const vol=cat?1+RARITY[cat.rarity].tier*.15:1;
     d.mult=Math.max(.3,Math.min(3,d.mult+d.velocity*vol));
@@ -2800,14 +2799,14 @@ function tickDemand(){
 }
 setInterval(tickDemand,5000);
 
-// Player inventory
-let inventory=[]; // [{id,itemId,acquiredAt,acquiredPrice}]
+
+let inventory=[]; 
 let invIdCounter=Date.now();
 
 function addToInventory(itemId){
   const val=getItemMarketValue(itemId);
   inventory.push({id:++invIdCounter,itemId,acquiredAt:Date.now(),acquiredPrice:val});
-  // Increase supply => slightly lower demand
+  
   const d=itemDemand[itemId];
   if(d){d.supply++;d.mult=Math.max(.3,d.mult-.02);}
 }
@@ -2899,7 +2898,7 @@ function openCase(){
     clearInterval(tickI);caseOpening=false;
     document.getElementById('openCaseBtn').disabled=false;
 
-    // Add to inventory instead of cash!
+    
     addToInventory(winRef.id);
     const mktVal=getItemMarketValue(winRef.id);
     const profit=mktVal-c.price;
@@ -2926,7 +2925,7 @@ function openCase(){
   },4300);
 }
 
-// ============ INVENTORY ============
+
 function showInventory(){playClickSound();document.getElementById('inventoryOverlay').classList.add('show');renderInventory();}
 function hideInventory(){document.getElementById('inventoryOverlay').classList.remove('show');}
 let invFilter='all';
@@ -2945,7 +2944,7 @@ function renderInventory(){
   document.getElementById('invTotalValue').textContent=totalVal.toLocaleString();
   document.getElementById('invCount').textContent=inventory.length;
 
-  // Find rarest
+  
   let rarestTier=-1,rarestName='â€”';
   inventory.forEach(x=>{
     const cat=ITEM_CATALOG[x.itemId];
@@ -2954,7 +2953,7 @@ function renderInventory(){
   });
   document.getElementById('invRarest').textContent=rarestName;
 
-  // Market trend
+  
   const trends=Object.values(itemDemand).map(d=>d.velocity);
   const avg=trends.length?trends.reduce((a,b)=>a+b,0)/trends.length:0;
   document.getElementById('invTrend').innerHTML=avg>0.005?'<span style="color:var(--green)">ðŸ“ˆ Bullish</span>'
@@ -2965,7 +2964,7 @@ function renderInventory(){
     filtered=inventory.filter(x=>ITEM_CATALOG[x.itemId].rarity===invFilter);
   }
 
-  // Sort by rarity desc then value desc
+  
   filtered.sort((a,b)=>{
     const ra=RARITY[ITEM_CATALOG[a.itemId].rarity].tier;
     const rb=RARITY[ITEM_CATALOG[b.itemId].rarity].tier;
@@ -2998,7 +2997,7 @@ function renderInventory(){
     grid.appendChild(el);
   });
 
-  // Attach sell handlers
+  
   grid.querySelectorAll('.inv-sell-btn').forEach(btn=>{
     btn.onclick=(e)=>{
       e.stopPropagation();
@@ -3015,13 +3014,13 @@ function renderInventory(){
   });
 }
 
-// Inventory / Demand data persistence accessors
+
 window._getInventoryData=()=>inventory;
 window._loadInventory=(data)=>{if(Array.isArray(data)){inventory=data;invIdCounter=inventory.reduce((m,x)=>Math.max(m,x.id||0),Date.now());}};
 window._getDemandData=()=>itemDemand;
 window._loadDemand=(data)=>{if(data&&typeof data==='object'){Object.assign(itemDemand,data);}};
 
-// ============ PLINKO ============
+
 const PLINKO_PAYOUTS={
   8:{LOW:[5.6,2.1,1.1,1,.5,1,1.1,2.1,5.6],MEDIUM:[13,3,1.3,.7,.4,.7,1.3,3,13],HIGH:[29,4,1.5,.3,.2,.3,1.5,4,29]},
   9:{LOW:[5.6,2,1.6,1,.7,.7,1,1.6,2,5.6],MEDIUM:[18,4,1.7,.9,.5,.5,.9,1.7,4,18],HIGH:[43,7,2,.6,.2,.2,.6,2,7,43]},
@@ -3065,7 +3064,7 @@ function initPlinko(){
     });
   });
 
-  // Pin collision glow + sound
+  
   Matter.Events.on(engine,'collisionStart',({pairs})=>{
     pairs.forEach(({bodyA,bodyB})=>{
       const pin=(bodyA.collisionFilter.category===PIN_CAT)?bodyA:
@@ -3084,7 +3083,7 @@ function initPlinko(){
   Matter.Render.run(render);
   Matter.Runner.run(runner,engine);
 
-  // Ball glow trail
+  
   Matter.Events.on(render,'afterRender',()=>{
     const ctx=render.context;
     Matter.Composite.allBodies(engine.world).forEach(body=>{
@@ -3099,7 +3098,7 @@ function initPlinko(){
     });
   });
 
-  // Cleanup balls that fall off-screen or get stuck
+  
   setInterval(()=>{
     Matter.Composite.allBodies(engine.world).forEach(body=>{
       if(body.collisionFilter.category===BALL_CAT&&(body.position.y>PH+60||body.position.x<-20||body.position.x>PW+20)){
@@ -3144,7 +3143,7 @@ function placePlinkoPins(){
   }
   Matter.Composite.add(plinkoMatterEngine.world,plinkoPins);
 
-  // Walls
+  
   if(plinkoLastRowXCoords.length>1){
     const firstPinX=plinkoPins[0].position.x;
     const wallAngle=Math.atan2(firstPinX-plinkoLastRowXCoords[0],PH-PPT-PPB);
@@ -3163,12 +3162,12 @@ function updatePlinkoBins(){
   const count=payouts.length;
   binsEl.innerHTML='';
 
-  // Reference colors: edges rgb(255,0,63) â†’ center rgb(255,192,0)
-  // Shadow:           edges rgb(166,0,4)  â†’ center rgb(171,121,0)
+  
+  
   const half=Math.ceil(count/2);
   function lerpC(a,b,t){return Math.round(a+(b-a)*t);}
   function binBg(i){
-    const t2=Math.abs(i-(count-1)/2)/((count-1)/2);// 0=center 1=edge
+    const t2=Math.abs(i-(count-1)/2)/((count-1)/2);
     return'rgb('+lerpC(255,255,t2)+','+lerpC(192,0,t2)+','+lerpC(0,63,t2)+')';
   }
   function binSh(i){
@@ -3194,20 +3193,20 @@ function updatePlinkoBins(){
 function handlePlinkoHit(ball){
   if(!plinkoLastRowXCoords.length)return;
   const coords=plinkoLastRowXCoords;
-  const ballX=ball.position.x;// capture before removal
-  // Find which bin the ball landed in
+  const ballX=ball.position.x;
+  
   let binIndex=-1;
   for(let i=coords.length-1;i>=0;i--){
     if(coords[i]<ballX){binIndex=i;break;}
   }
 
-  // Clean up ball
+  
   Matter.Composite.remove(plinkoMatterEngine.world,ball);
   const betAmt=plinkoBallBets[ball.id]||0;
   delete plinkoBallBets[ball.id];
 
   if(binIndex<0||binIndex>=coords.length-1)return;
-  // Landing thud sound
+  
   playSound(180+(binIndex/(coords.length-1))*120,'triangle',.06,.04);
 
   const payouts=PLINKO_PAYOUTS[plinkoRowCount][plinkoRiskLevel];
@@ -3225,16 +3224,16 @@ function handlePlinkoHit(ball){
   profitEl.textContent='$'+(plinkoTotalProfit>=0?'+':'')+plinkoTotalProfit.toFixed(2);
   profitEl.style.color=plinkoTotalProfit>=0?'var(--green)':'var(--red)';
 
-  // Bin bounce
+  
   const binEl=document.getElementById('plinkoBin'+binIndex);
   if(binEl){binEl.classList.remove('bounce');void binEl.offsetWidth;binEl.classList.add('bounce');}
 
-  // Last wins display
+  
   plinkoLastWinsList.push({multiplier,binIndex});
   if(plinkoLastWinsList.length>4)plinkoLastWinsList.shift();
   renderPlinkoLastWins();
 
-  // Effects
+  
   if(multiplier>=10){
     playWinSound();
     const rect=document.getElementById('plinkoCanvas').getBoundingClientRect();
@@ -3314,37 +3313,37 @@ function toggleAutoDrop(){
   }
 }
 
-// ============ PUSH YOUR LUCK (Multiplayer Modes) ============
-let pylCurrentMode = null; // 'solo','1v1','highstakes','tournament'
+
+let pylCurrentMode = null; 
 let pylRoomCode = null;
-let pylRoomUnsub = null; // Firebase listener cleanup
+let pylRoomUnsub = null; 
 let pylWagerAmount = 0;
 let pylHSTarget = 500;
 let pylHSMultiplier = 2;
 let pylGameActive = false;
-let pylOpponentId = null; // Track opponent session ID for 1v1 choice relay
+let pylOpponentId = null; 
 
-// Listen for score messages from the PYL iframe
+
 window.addEventListener('message', function(evt) {
   if (evt.data && evt.data.type === 'pylScore' && pylGameActive) {
     const score = evt.data.score || 0;
     document.getElementById('pylScoreDisplay').textContent = 'Score: ' + score;
     document.getElementById('pylScoreInput').value = score;
-    // Auto-submit for all modes
+    
     pylSubmitScore();
   }
-  // 1v1 choice relay: player made a choice in the iframe â€” write to Firebase and listen for opponent
+  
   if (evt.data && evt.data.type === 'pylChoice' && pylCurrentMode === '1v1' && pylRoomCode && pylOpponentId) {
     const round = evt.data.round;
     const choice = evt.data.choice;
-    // Write our choice to Firebase
+    
     if (window._pylWriteChoice) {
       window._pylWriteChoice(pylRoomCode, round, choice);
     }
-    // Listen for opponent's choice for this round
+    
     if (window._pylListenChoice) {
       window._pylListenChoice(pylRoomCode, round, pylOpponentId, function(opChoice) {
-        // Relay opponent's choice back to the iframe
+        
         const iframe = document.getElementById('pylIframe');
         if (iframe && iframe.contentWindow) {
           iframe.contentWindow.postMessage({ type: 'pylOpponentChoice', choice: opChoice, round: round }, '*');
@@ -3374,7 +3373,7 @@ function pylShowWager(mode) {
   playClickSound();
   pylCurrentMode = mode;
 
-  // Hide mode cards
+  
   document.querySelector('.pyl-modes').style.display = 'none';
   document.getElementById('pylLeaderboard').style.display = 'none';
 
@@ -3391,14 +3390,14 @@ function pylShowWager(mode) {
 
 function pylBackToLobby() {
   playClickSound();
-  // Clean up any room listener
+  
   if (pylRoomUnsub) { pylRoomUnsub(); pylRoomUnsub = null; }
   if (pylRoomCode && pylCurrentMode === '1v1') {
-    // Cancel our onDisconnect handlers since we're leaving cleanly
+    
     if (window._pylCancelDisconnect) window._pylCancelDisconnect(pylRoomCode);
-    // Mark ourselves offline and delete room
+    
     if (window._pylDeleteRoom) window._pylDeleteRoom(pylRoomCode);
-    // Reset iframe so next game doesn't carry stale 1v1 config
+    
     const iframe = document.getElementById('pylIframe');
     if (iframe) iframe.src = '';
   }
@@ -3408,7 +3407,7 @@ function pylBackToLobby() {
   pylOpponentId = null;
   _pylDisconnectHandled = false;
 
-  // Show lobby, hide everything else
+  
   document.querySelector('.pyl-modes').style.display = '';
   document.getElementById('pylRoomUI').style.display = 'none';
   document.getElementById('pylHighStakesUI').style.display = 'none';
@@ -3420,7 +3419,7 @@ function pylBackToLobby() {
 
 function pylHideLobby(opponentName, roomCode) {
   document.getElementById('pylLobby').style.display = 'none';
-  // Ensure the game iframe exists and is loaded
+  
   let iframe = document.getElementById('pylIframe');
   if (!iframe) {
     iframe = document.createElement('iframe');
@@ -3429,12 +3428,12 @@ function pylHideLobby(opponentName, roomCode) {
     const panel = document.getElementById('luckPanel');
     panel.insertBefore(iframe, panel.firstChild);
   }
-  // Build URL with 1v1 hash if opponent name provided
+  
   let url = 'push-your-luck/index.html';
   if (opponentName) {
     url += '?t=' + Date.now() + '#1v1=' + encodeURIComponent(opponentName) + '&room=' + (roomCode || 'default');
   }
-  // Always force reload for 1v1 so PYL_1V1 is picked up fresh; also reload for non-1v1 if coming from a 1v1 game
+  
   if (opponentName || !iframe.src || !iframe.src.includes('push-your-luck') || iframe.src.includes('#1v1=')) {
     iframe.src = url;
   }
@@ -3457,7 +3456,7 @@ function pylShowOverlay(label, wager) {
   document.getElementById('pylOpponentCard').style.display = 'none';
 }
 
-// ---- 1v1 ROOM ----
+
 function generateRoomCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
@@ -3481,10 +3480,10 @@ function pylCreateRoom() {
     '<div style="color:var(--green);margin:4px 0;">âœ“ You (host) â€” $' + wager + ' wager</div>' +
     '<div style="color:var(--text2);margin:4px 0;">â³ Waiting for opponent...</div>';
 
-  // Create room in Firebase
+  
   if (window._pylCreateRoom) {
     window._pylCreateRoom(pylRoomCode, wager).then(() => {
-      // Listen for opponent joining
+      
       let pylGameStarted = false;
       pylRoomUnsub = window._pylListenRoom(pylRoomCode, (data) => {
         if (!data || pylGameStarted) return;
@@ -3510,10 +3509,10 @@ function pylCreateRoom() {
           document.getElementById('pylOpponentScore').textContent = 'Playing...';
           pylGameActive = true;
 
-          // Listen for opponent score + disconnect
+          
           pylRoomUnsub = window._pylListenRoom(pylRoomCode, (roomData) => {
             if (!roomData) {
-              // Room was deleted â€” opponent disconnected
+              
               pylHandleOpponentDisconnect();
               return;
             }
@@ -3576,10 +3575,10 @@ function pylJoinRoom() {
       document.getElementById('pylOpponentScore').textContent = 'Playing...';
       pylGameActive = true;
 
-      // Listen for opponent score + disconnect
+      
       pylRoomUnsub = window._pylListenRoom(pylRoomCode, (roomData) => {
         if (!roomData) {
-          // Room was deleted â€” opponent disconnected
+          
           pylHandleOpponentDisconnect();
           return;
         }
@@ -3597,7 +3596,7 @@ function pylJoinRoom() {
   }
 }
 
-// ---- HIGH STAKES ----
+
 function pylStartHighStakes() {
   const wager = parseFloat(document.getElementById('pylHSWager').value) || 500;
   if (wager > balance) { showToast('Not enough balance!', false); return; }
@@ -3620,7 +3619,7 @@ function pylStartHighStakes() {
   showToast('ðŸ’€ Hit ' + pylHSTarget + ' pts to win $' + (wager * pylHSMultiplier).toLocaleString() + '!');
 }
 
-// ---- SCORE SUBMISSION ----
+
 function pylSubmitScore() {
   const scoreInput = document.getElementById('pylScoreInput');
   const score = parseInt(scoreInput.value);
@@ -3631,7 +3630,7 @@ function pylSubmitScore() {
   scoreInput.value = '';
   pylGameActive = false;
 
-  // Track PYL stats
+  
   if (gameStats.pyl) {
     gameStats.pyl.played = (gameStats.pyl.played || 0) + 1;
     if (score > (gameStats.pyl.highScore || 0)) gameStats.pyl.highScore = score;
@@ -3642,17 +3641,17 @@ function pylSubmitScore() {
   }
 
   else if (pylCurrentMode === '1v1') {
-    // Submit score to Firebase
+    
     if (window._pylSubmitRoomScore && pylRoomCode) {
       window._pylSubmitRoomScore(pylRoomCode, score).then(() => {
         document.getElementById('pylScoreDisplay').textContent = 'Your Score: ' + score + ' â€” Waiting for opponent...';
 
-        // Check if opponent already submitted
+        
         const checkResult = () => {
           if (pylRoomUnsub) pylRoomUnsub();
           pylRoomUnsub = window._pylListenRoom(pylRoomCode, (data) => {
             if (!data) {
-              // Room deleted â€” opponent disconnected while we were waiting
+              
               if (!_pylDisconnectHandled) {
                 _pylDisconnectHandled = true;
                 pylGameActive = false;
@@ -3674,7 +3673,7 @@ function pylSubmitScore() {
             const myScore = score;
             const opId = Object.keys(ps).find(k => k !== window._pylPlayerId);
 
-            // Check if opponent disconnected
+            
             if (opId && ps[opId] && ps[opId].online === false && ps[opId].score == null) {
               if (!_pylDisconnectHandled) {
                 _pylDisconnectHandled = true;
@@ -3715,14 +3714,14 @@ function pylSubmitScore() {
                 document.getElementById('pylScoreDisplay').innerHTML =
                   '<span style="color:var(--red);">ðŸ’€ YOU LOSE</span> ' + myScore + ' vs ' + opScore;
               } else {
-                balance += pylWagerAmount; // refund on tie
+                balance += pylWagerAmount; 
                 updateBalDisplay();
                 showToast('ðŸ¤ Tie! Wager refunded.');
                 document.getElementById('pylScoreDisplay').innerHTML =
                   '<span style="color:var(--gold);">ðŸ¤ TIE</span> ' + myScore + ' vs ' + opScore + ' â€” Refunded';
               }
 
-              // Clean up room after a delay
+              
               setTimeout(() => { if (window._pylDeleteRoom) window._pylDeleteRoom(pylRoomCode); pylRoomCode = null; }, 5000);
               firebaseSave();
             }
@@ -3771,7 +3770,7 @@ function pylHandleOpponentDisconnect() {
   if (_pylDisconnectHandled || !pylGameActive) return;
   _pylDisconnectHandled = true;
 
-  // Opponent disconnected â€” refund wager, auto-win
+  
   if (pylRoomUnsub) { pylRoomUnsub(); pylRoomUnsub = null; }
   pylGameActive = false;
 
@@ -3788,12 +3787,12 @@ function pylHandleOpponentDisconnect() {
     '<span style="color:var(--green);">âš”ï¸ OPPONENT DISCONNECTED</span> â€” You win $' + pot.toLocaleString() + '!';
   document.getElementById('pylOpponentScore').textContent = 'DISCONNECTED';
 
-  // Clean up the room
+  
   if (pylRoomCode && window._pylDeleteRoom) {
     window._pylDeleteRoom(pylRoomCode);
   }
 
-  // Auto return to lobby after 4 seconds
+  
   setTimeout(() => {
     pylBackToLobby();
   }, 4000);
@@ -3802,12 +3801,12 @@ function pylHandleOpponentDisconnect() {
 function pylEndGame() {
   playClickSound();
 
-  // If 1v1 with no score submitted, forfeit
+  
   if (pylCurrentMode === '1v1' && pylGameActive && pylRoomCode) {
     showToast('Forfeited wager: -$' + pylWagerAmount, false);
     playLoseSound();
     if (window._pylSubmitRoomScore) window._pylSubmitRoomScore(pylRoomCode, 0);
-    // Mark ourselves offline so opponent detects the disconnect
+    
     if (window._pylMarkOffline) window._pylMarkOffline(pylRoomCode);
   }
 
@@ -3817,7 +3816,7 @@ function pylEndGame() {
   pylBackToLobby();
 }
 
-// ---- LEADERBOARD ----
+
 function pylLoadLeaderboard() {
   const container = document.getElementById('pylLBRows');
   if (!container) return;
@@ -3843,12 +3842,7 @@ function pylLoadLeaderboard() {
   }
 }
 
-// ============ STOCKS (Deterministic Time-Based Market) ============
-// Prices are deterministic based on real time â€” every 3-second "tick" since
-// epoch produces the same price no matter when you compute it. The market
-// truly runs 24/7 whether the page is open or not.
 
-// -- Seeded PRNG (Mulberry32) --
 function mulberry32(seed) {
   let t = (seed >>> 0) + 0x6D2B79F5;
   t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -3865,50 +3859,50 @@ const STOCK_DEFS = [
   { ticker: 'GMBL', name: 'Gamble Corp', basePrice: 100, volatility: 0.025, drift: 0.00012 },
 ];
 
-// Tick epoch: Jan 1 2025 00:00 UTC â€” all ticks counted from here
+
 const TICK_EPOCH = new Date('2025-01-01T00:00:00Z').getTime();
-const TICK_MS = 3000; // 3 seconds per tick
+const TICK_MS = 3000; 
 
 function getCurrentTick() {
   return Math.floor((Date.now() - TICK_EPOCH) / TICK_MS);
 }
 
-// Get deterministic price change for a stock at a specific tick
+
 function getTickRandom(tickerHash, tickNum) {
   return mulberry32(tickerHash ^ (tickNum * 2654435761));
 }
 
-let stockPrices = {};       // ticker -> current price
-let stockHoldings = {};     // ticker -> { shares, totalCost }
-let stockPriceHistory = {}; // ticker -> [last 100 prices]
+let stockPrices = {};       
+let stockHoldings = {};     
+let stockPriceHistory = {}; 
 let stocksInitialized = false;
 let stockTickInterval = null;
-let lastComputedTick = 0;   // global: the tick number we've computed up to
+let lastComputedTick = 0;   
 
 function initStocks() {
   if (stocksInitialized) return;
   stocksInitialized = true;
 
-  // Set initial prices = base prices at tick 0
+  
   STOCK_DEFS.forEach(s => {
     if (!stockPrices[s.ticker]) stockPrices[s.ticker] = s.basePrice;
     if (!stockPriceHistory[s.ticker]) stockPriceHistory[s.ticker] = [];
   });
 
-  // If no saved state, compute from tick 0 to now
+  
   if (lastComputedTick === 0) {
-    // For fresh start, begin from 200 ticks ago so chart has data
+    
     const now = getCurrentTick();
     lastComputedTick = Math.max(0, now - 500);
-    // Reset to base prices for a clean computation
+    
     STOCK_DEFS.forEach(s => { stockPrices[s.ticker] = s.basePrice; });
     advanceToTick(now);
   } else {
-    // Advance from saved state to current time
+    
     advanceToTick(getCurrentTick());
   }
 
-  // Live tick every 3 seconds
+  
   startStockTicker();
 }
 
@@ -3916,24 +3910,24 @@ function advanceToTick(targetTick) {
   if (targetTick <= lastComputedTick) return;
 
   const startTick = lastComputedTick;
-  // Record old prices for offline message
+  
   const oldPrices = {};
   STOCK_DEFS.forEach(s => { oldPrices[s.ticker] = stockPrices[s.ticker]; });
 
   for (let t = startTick + 1; t <= targetTick; t++) {
     STOCK_DEFS.forEach(s => {
       const h = hashTicker(s.ticker);
-      const r = getTickRandom(h, t); // deterministic 0..1
+      const r = getTickRandom(h, t); 
       const price = stockPrices[s.ticker];
       const change = price * s.volatility * (r * 2 - 1);
       const reversion = (s.basePrice - price) * 0.0015;
       const driftAmt = price * s.drift;
       let newPrice = price + change + reversion + driftAmt;
-      newPrice = Math.max(s.basePrice * 0.05, newPrice); // floor at 5% of base
+      newPrice = Math.max(s.basePrice * 0.05, newPrice); 
       stockPrices[s.ticker] = Math.round(newPrice * 10000) / 10000;
     });
 
-    // Record history every ~5 ticks (or always for last 500)
+    
     const remaining = targetTick - t;
     if (remaining < 500 || t % 5 === 0) {
       STOCK_DEFS.forEach(s => {
@@ -3947,7 +3941,7 @@ function advanceToTick(targetTick) {
   const ticksAdvanced = targetTick - startTick;
   lastComputedTick = targetTick;
 
-  // Show offline catchup message if significant
+  
   if (ticksAdvanced > 10) {
     const elapsed = ticksAdvanced * TICK_MS;
     const mins = Math.floor(elapsed / 60000);
@@ -3958,7 +3952,7 @@ function advanceToTick(targetTick) {
     else if (hours > 0) timeStr = hours + 'h ' + (mins % 60) + 'm';
     else timeStr = mins + 'm';
 
-    // Show price changes
+    
     let biggestMove = '', biggestPct = 0;
     STOCK_DEFS.forEach(s => {
       const pct = Math.abs((stockPrices[s.ticker] - oldPrices[s.ticker]) / oldPrices[s.ticker] * 100);
@@ -3978,9 +3972,9 @@ function startStockTicker() {
     if (now > lastComputedTick) {
       advanceToTick(now);
       if (document.querySelector('#stocksPanel.active')) renderStocks();
-      // Auto-save periodically to keep tick state fresh
+      
     }
-  }, 1000); // check every second for smoother updates
+  }, 1000); 
 }
 
 function buyStock(ticker) {
@@ -4034,7 +4028,7 @@ function sellStock(ticker) {
 function renderStocks() {
   if (!stocksInitialized) initStocks();
 
-  const s = STOCK_DEFS[0]; // single stock
+  const s = STOCK_DEFS[0]; 
   const price = stockPrices[s.ticker];
   const hist = stockPriceHistory[s.ticker] || [price];
   const prev = hist.length > 1 ? hist[hist.length - 2] : price;
@@ -4043,10 +4037,10 @@ function renderStocks() {
   const holding = stockHoldings[s.ticker];
   const hasHolding = holding && holding.shares > 0;
 
-  // Update hero
+  
   document.getElementById('stockPriceDisplay').textContent = '$' + formatStockPrice(price);
   const changeEl = document.getElementById('stockChangeDisplay');
-  // Show change from first recorded price for a bigger number
+  
   const firstPrice = hist[0] || price;
   const totalChangePct = ((price - firstPrice) / firstPrice * 100).toFixed(2);
   const tickChangePct = changePct;
@@ -4054,7 +4048,7 @@ function renderStocks() {
     (price >= firstPrice ? 'â–²' : 'â–¼') + ' ' + totalChangePct + '% <span style="color:#8b949e;font-size:12px;">session</span>';
   changeEl.className = 'sh-change ' + (isUp ? 'up' : 'down');
 
-  // Update bottom bar
+  
   if (hasHolding) {
     const curVal = holding.shares * price;
     const pnl = curVal - holding.totalCost;
@@ -4072,7 +4066,7 @@ function renderStocks() {
   }
   document.getElementById('stockSellBtn').disabled = !hasHolding;
 
-  // Draw the BIG chart
+  
   drawStockChart(hist);
 }
 
@@ -4100,7 +4094,7 @@ function drawStockChart(hist) {
   const cW = W - pad.left - pad.right;
   const cH = H - pad.top - pad.bottom;
 
-  // Grid lines + price labels
+  
   const gridLines = 4;
   ctx.strokeStyle = '#1e2933';
   ctx.lineWidth = 1;
@@ -4117,7 +4111,7 @@ function drawStockChart(hist) {
     ctx.fillText('$' + formatStockPrice(priceAtLine), pad.left - 6, y + 4);
   }
 
-  // Build points
+  
   const points = [];
   for (let i = 0; i < hist.length; i++) {
     const x = pad.left + (i / (hist.length - 1)) * cW;
@@ -4129,7 +4123,7 @@ function drawStockChart(hist) {
   const lineColor = isUpOverall ? '#3fb950' : '#f85149';
   const fillColor = isUpOverall ? 'rgba(63,185,80,' : 'rgba(248,81,73,';
 
-  // Gradient fill under line
+  
   const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
   grad.addColorStop(0, fillColor + '0.35)');
   grad.addColorStop(1, fillColor + '0.0)');
@@ -4142,7 +4136,7 @@ function drawStockChart(hist) {
   ctx.fillStyle = grad;
   ctx.fill();
 
-  // Line
+  
   ctx.beginPath();
   points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
   ctx.strokeStyle = lineColor;
@@ -4150,7 +4144,7 @@ function drawStockChart(hist) {
   ctx.lineJoin = 'round';
   ctx.stroke();
 
-  // Current price dot (pulsing)
+  
   const last = points[points.length - 1];
   ctx.beginPath();
   ctx.arc(last.x, last.y, 5, 0, Math.PI * 2);
@@ -4171,20 +4165,20 @@ function formatStockPrice(p) {
   return p.toFixed(4);
 }
 
-// Save/Load stocks to/from Firebase
+
 window._getStocksData = () => {
   if (!stocksInitialized && Object.keys(stockHoldings).length === 0) return null;
   return {
     prices: stockPrices,
     holdings: stockHoldings,
-    lastTick: lastComputedTick // save the tick NUMBER, not timestamp
+    lastTick: lastComputedTick 
   };
 };
 
 window._loadStocks = (data) => {
   if (!data) return;
 
-  // Restore prices from saved state
+  
   if (data.prices) {
     stockPrices = data.prices;
     STOCK_DEFS.forEach(s => {
@@ -4193,25 +4187,25 @@ window._loadStocks = (data) => {
     });
   }
 
-  // Restore holdings
+  
   if (data.holdings) stockHoldings = data.holdings;
 
-  // Restore tick position â€” then advanceToTick will deterministically
-  // compute all ticks that happened while offline
+  
+  
   if (data.lastTick) {
     lastComputedTick = data.lastTick;
   }
 
   stocksInitialized = true;
 
-  // Advance to current real time (deterministic catchup)
+  
   advanceToTick(getCurrentTick());
 
-  // Start live ticker
+  
   startStockTicker();
 };
 
-// ============ CARD UTILS ============
+
 const CARD_SUITS=['â™ ','â™¥','â™¦','â™£'];const CARD_RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 function newDeck(){let d=[];CARD_SUITS.forEach(s=>CARD_RANKS.forEach(r=>d.push({r,s})));for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
 function cardNumVal(c){if(c.r==='A')return 11;if('KQJ'.includes(c.r))return 10;return parseInt(c.r);}
@@ -4219,7 +4213,7 @@ function cardIsRed(c){return c.s==='â™¥'||c.s==='â™¦';}
 function renderCard(c,hidden){if(hidden)return'<div class="bj-card hidden">?</div>';return'<div class="bj-card'+(cardIsRed(c)?' red':'')+'">'+c.r+'<br>'+c.s+'</div>';}
 function cardRankIdx(c){return CARD_RANKS.indexOf(c.r);}
 
-// ============ BLACKJACK ============
+
 let bjDeck=[],bjPlayer=[],bjDealer=[],bjBetAmt=0,bjActive=false;
 function bjHandVal(h){let v=0,a=0;h.forEach(c=>{v+=cardNumVal(c);if(c.r==='A')a++;});while(v>21&&a>0){v-=10;a--;}return v;}
 function bjDeal(){
@@ -4243,7 +4237,7 @@ function bjFinish(){
 }
 function bjRender(){const s=!bjActive;document.getElementById('bjDealerCards').innerHTML=bjDealer.map((c,i)=>renderCard(c,!s&&i===1)).join('');document.getElementById('bjPlayerCards').innerHTML=bjPlayer.map(c=>renderCard(c)).join('');document.getElementById('bjDealerScore').textContent=s?bjHandVal(bjDealer):'?';document.getElementById('bjPlayerScore').textContent=bjHandVal(bjPlayer);document.getElementById('bjHitBtn').disabled=!bjActive;document.getElementById('bjStandBtn').disabled=!bjActive;document.getElementById('bjDoubleBtn').disabled=!bjActive||bjPlayer.length!==2;document.getElementById('bjDealBtn').disabled=bjActive;}
 
-// ============ MINES ============
+
 let minesBoard=[],minesRevealed=0,minesBetAmt=0,minesActive=false,minesCount=3;
 function minesMultiplier(){const t=25,m=minesCount,r=minesRevealed;if(r===0)return 1;let mult=1;for(let i=0;i<r;i++)mult*=(t-m-i)>0?(t-i)/(t-m-i):t;return Math.round(mult*97)/100;}
 function minesStart(){
@@ -4272,7 +4266,7 @@ function minesClick(i){if(!minesActive)return;const cells=document.querySelector
 function minesRevealAll(){const cells=document.querySelectorAll('.mine-cell');minesBoard.forEach((isMine,i)=>{if(!cells[i].classList.contains('revealed')){cells[i].classList.add('revealed',isMine?'mine':'safe');cells[i].textContent=isMine?'ðŸ’£':'ðŸ’Ž';}});}
 function minesRenderGrid(){const g=document.getElementById('minesGrid');g.innerHTML='';for(let i=0;i<25;i++){const c=document.createElement('div');c.className='mine-cell';c.onclick=(()=>{const idx=i;return()=>minesClick(idx);})();g.appendChild(c);}}
 
-// ============ DICE ============
+
 let diceMode='over';
 function diceSetMode(m){diceMode=m;document.getElementById('diceOverBtn').className='dice-mode-btn'+(m==='over'?' active':'');document.getElementById('diceUnderBtn').className='dice-mode-btn'+(m==='under'?' active':'');diceUpdateSlider();}
 function diceUpdateSlider(){const v=parseFloat(document.getElementById('diceSlider').value);const chance=diceMode==='over'?(100-v):v;const payout=chance>0?Math.floor(99/chance*100)/100:0;document.getElementById('diceTarget').textContent=v.toFixed(2);document.getElementById('diceChance').textContent=chance.toFixed(2)+'%';document.getElementById('dicePayout').textContent=payout.toFixed(2)+'Ã—';
@@ -4285,7 +4279,7 @@ function diceRoll(){const bet=parseFloat(document.getElementById('diceBet').valu
   else{showToast('-$'+bet.toFixed(2),false);playLoseSound();recordGame('dice',bet,0);}playClickSound();
 }
 
-// ============ TOWER ============
+
 let towerBoard=[],towerRow=0,towerBetAmt=0,towerActive=false,towerCols=3,towerRows=8,towerSafePerRow=2;
 function towerMultiplier(){if(towerRow===0)return 1;let m=1;for(let i=0;i<towerRow;i++)m*=towerCols/towerSafePerRow;return Math.round(m*97)/100;}
 function towerStart(){
@@ -4317,7 +4311,7 @@ function towerClick(r,c){if(!towerActive||r!==towerRow)return;
 function towerRevealAll(){document.querySelectorAll('.tower-row').forEach((row,ri)=>{const actualRow=towerRows-1-ri;[...row.children].forEach((c,ci)=>{if(!c.classList.contains('revealed')){c.classList.add('revealed',towerBoard[actualRow][ci]?'safe':'trap');c.textContent=towerBoard[actualRow][ci]?'âœ…':'ðŸ’€';}});});}
 function towerRender(){const g=document.getElementById('towerGrid');g.innerHTML='';for(let r=towerRows-1;r>=0;r--){const row=document.createElement('div');row.className='tower-row';for(let c=0;c<towerCols;c++){const cell=document.createElement('div');cell.className='tower-cell';if(r===towerRow&&towerActive)cell.classList.add('current-row');else if(r>towerRow)cell.classList.add('locked');cell.onclick=(()=>{const rr=r,cc=c;return()=>towerClick(rr,cc);})();row.appendChild(cell);}g.appendChild(row);}}
 
-// ============ COIN FLIP ============
+
 let coinChoice='heads',coinFlipping=false;
 function coinSelect(c){coinChoice=c;document.getElementById('coinHeads').className='coin-choice'+(c==='heads'?' selected':'');document.getElementById('coinTails').className='coin-choice'+(c==='tails'?' selected':'');playClickSound();}
 function coinFlip(){if(coinFlipping)return;const bet=parseFloat(document.getElementById('coinBet').value)||10;if(bet>balance){showToast('Not enough!',false);return;}
@@ -4331,7 +4325,7 @@ function coinFlip(){if(coinFlipping)return;const bet=parseFloat(document.getElem
     coinFlipping=false;document.getElementById('coinFlipBtn').disabled=false;},800);
 }
 
-// ============ KENO ============
+
 let kenoSelected=new Set(),kenoPlaying=false;
 const KENO_PAYOUTS={1:[0,2.5],2:[0,1,5],3:[0,0,2,25],4:[0,0,1,5,50],5:[0,0,.5,3,15,100],6:[0,0,0,2,5,30,200],7:[0,0,0,1,3,10,50,400],8:[0,0,0,.5,2,8,25,100,500],9:[0,0,0,0,1,5,15,50,200,1000],10:[0,0,0,0,.5,3,10,25,100,500,2000]};
 function kenoInit(){const g=document.getElementById('kenoGrid');if(!g)return;g.innerHTML='';for(let i=1;i<=40;i++){const c=document.createElement('div');c.className='keno-num';c.textContent=i;c.onclick=(()=>{const n=i;return()=>kenoToggle(n);})();g.appendChild(c);}}
@@ -4352,7 +4346,7 @@ function kenoDraw(){if(kenoPlaying||kenoSelected.size===0)return;const bet=parse
   },200);
 }
 
-// ============ LIMBO ============
+
 let limboRolling=false;
 function limboUpdateInfo(){const t=parseFloat(document.getElementById('limboTarget').value)||2;const chance=Math.min(99,(99/t));document.getElementById('limboPayout').textContent='Win chance: '+chance.toFixed(2)+'% â€” Payout: '+t.toFixed(2)+'Ã—';}
 function limboGo(){if(limboRolling)return;const bet=parseFloat(document.getElementById('limboBet').value)||10;const target=parseFloat(document.getElementById('limboTarget').value)||2;
@@ -4370,7 +4364,7 @@ function limboGo(){if(limboRolling)return;const bet=parseFloat(document.getEleme
   else{display.textContent=cur.toFixed(2)+'Ã—';display.style.color='var(--neon)';if(limboBar){const pct=Math.min(100,(cur/Math.max(target,2))*100);limboBar.style.width=pct+'%';limboBar.style.background=cur>=target?'var(--green)':'var(--neon)';limboBar.style.transition='width 0.05s';}playSound(400+cur*30,'sine',.02,.015);}},50);
 }
 
-// ============ VIDEO POKER ============
+
 let pokerDeckArr=[],pokerHandArr=[],pokerHeld=[],pokerBetAmt=0,pokerPhase='idle';
 function pokerDeal(){
   if(pokerPhase==='hold'){pokerDrawCards();return;}
@@ -4401,7 +4395,7 @@ function pokerEvaluate(){const h=pokerHandArr;const ranks=h.map(c=>cardRankIdx(c
 }
 function scratchRevealAll(){if(!scratchActive)return;const cells=document.querySelectorAll('.scratch-cell');let delay=0;cells.forEach((c,i)=>{if(!c.classList.contains('revealed')){setTimeout(()=>scratchReveal(i),delay);delay+=80;}});}
 
-// ============ HORSE RACING ============
+
 const HORSES=[{name:'Thunder',emoji:'ðŸŽ',color:'#ff4444'},{name:'Lightning',emoji:'ðŸ‡',color:'#ffaa00'},{name:'Shadow',emoji:'ðŸ´',color:'#8844ff'},{name:'Spirit',emoji:'ðŸ¦„',color:'#44aaff'},{name:'Blaze',emoji:'ðŸŽ',color:'#44ff44'}];
 let horseSelected=-1,horseRacing=false;
 function horseInit(){const t=document.getElementById('horseTrack');const b=document.getElementById('horseBets');if(!t||!b)return;t.innerHTML='';b.innerHTML='';
@@ -4424,7 +4418,7 @@ function horseRace(){if(horseRacing||horseSelected<0){if(horseSelected<0)showToa
   },60);
 }
 
-// ============ SCRATCH CARDS ============
+
 const SCRATCH_TIERS=[{name:'Basic',price:5,symbols:['ðŸ’','ðŸ‹','ðŸ””','ðŸ’Ž','7ï¸âƒ£','â­'],maxWin:50},{name:'Silver',price:25,symbols:['ðŸ’Ž','7ï¸âƒ£','â­','ðŸ‘‘','ðŸ’°','ðŸ†'],maxWin:500},{name:'Gold',price:100,symbols:['ðŸ‘‘','ðŸ’°','ðŸ†','ðŸ’Ž','ðŸ”¥','ðŸŒŸ'],maxWin:5000},{name:'Diamond',price:500,symbols:['ðŸ’Ž','ðŸ‘‘','ðŸ”¥','ðŸŒŸ','ðŸ’€','ðŸŒ€'],maxWin:50000}];
 let scratchTier=0,scratchCells=[],scratchRevealed=0,scratchActive=false;
 function scratchSelectTier(t,btn){scratchTier=t;document.querySelectorAll('.scratch-tier').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');document.getElementById('scratchBuyBtn').textContent='BUY CARD â€” $'+SCRATCH_TIERS[t].price;playClickSound();}
@@ -4448,7 +4442,7 @@ function scratchReveal(i){if(!scratchActive)return;const cells=document.querySel
   }
 }
 
-// ============ WHEEL OF FORTUNE ============
+
 const WHEEL_SEGMENTS=[{label:'0Ã—',mult:0,color:'#333',weight:3},{label:'0.5Ã—',mult:0.5,color:'#444',weight:5},{label:'1Ã—',mult:1,color:'#555',weight:6},{label:'1.5Ã—',mult:1.5,color:'#1a5a1a',weight:5},{label:'2Ã—',mult:2,color:'#2a7a2a',weight:4},{label:'3Ã—',mult:3,color:'#1a1a8e',weight:3},{label:'5Ã—',mult:5,color:'#6b2fd9',weight:2},{label:'10Ã—',mult:10,color:'#cc2233',weight:1},{label:'50Ã—',mult:50,color:'#ffd700',weight:0.3}];
 let wheelAngle=0,wheelSpinning=false,wheelDrawn=false;
 function drawWheel(angle){wheelDrawn=true;const c=document.getElementById('wheelCanvas');if(!c)return;const ctx=c.getContext('2d');const cx=c.width/2,cy=c.height/2,r=c.width/2-8;ctx.clearRect(0,0,c.width,c.height);
@@ -4479,7 +4473,7 @@ function wheelSpin(){if(wheelSpinning)return;const bet=parseFloat(document.getEl
   }requestAnimationFrame(anim);
 }
 
-// ============ BACCARAT ============
+
 let baccBetType=null;
 function baccSelect(type,btn){baccBetType=type;document.querySelectorAll('.bacc-bet').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');playClickSound();}
 function baccCardVal(c){const v=cardNumVal(c);return v>=10?0:v===11?1:v;}
@@ -4536,7 +4530,7 @@ function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}cons
   playClickSound();
 }
 
-// ============ HILO ============
+
 let hiloDeck=[],hiloCard=null,hiloStreakCount=0,hiloBetAmt=0,hiloActive=false;
 function hiloMultiplier(){if(hiloStreakCount===0)return 1;let m=1;for(let i=0;i<hiloStreakCount;i++)m*=1.88;return Math.round(m*100)/100;}
 function hiloStart(){if(hiloActive)return;const bet=parseFloat(document.getElementById('hiloBet').value)||10;if(bet>balance){showToast('Not enough!',false);return;}
@@ -4565,7 +4559,7 @@ function hiloRender(){const c=hiloCard;document.getElementById('hiloCard').class
     document.getElementById('hiloCashout').textContent=hiloStreakCount>0?'Cash out: $'+(hiloBetAmt*m).toFixed(2):'';}
 }
 
-// ============ INIT ============
+
 window.addEventListener('load',()=>{
   initSlots();
   initCases();
@@ -4581,11 +4575,11 @@ window.addEventListener('load',()=>{
   setInterval(firebaseSave,30000);
 });
 
-// Save on page close/refresh
+
 window.addEventListener('beforeunload',()=>{ firebaseSave(); });
 window.addEventListener('visibilitychange',()=>{ if(document.hidden) firebaseSave(); });
 
-// Handle keyboard shortcuts
+
 document.addEventListener('keydown',e=>{
   if(e.code==='Space'){
     e.preventDefault();

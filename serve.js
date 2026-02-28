@@ -26,7 +26,7 @@ const MIME = {
 };
 
 http.createServer((req, res) => {
-  // CORS for Ollama
+  
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -36,7 +36,7 @@ http.createServer((req, res) => {
   if (url === '/') url = '/casino.html';
   const filePath = path.join(ROOT, url);
 
-  // Security: prevent directory traversal
+  
   if (!filePath.startsWith(ROOT)) { res.writeHead(403); res.end(); return; }
 
   fs.readFile(filePath, (err, data) => {

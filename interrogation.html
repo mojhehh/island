@@ -24,7 +24,7 @@
     user-select: none;
   }
 
-  /* ── TITLE SCREEN ── */
+  
   #titleScreen {
     position: fixed; inset: 0;
     display: flex; flex-direction: column;
@@ -69,7 +69,7 @@
     50% { opacity: 0.7; }
   }
 
-  /* ── GAME OVER SCREEN ── */
+  
   #gameOverScreen {
     position: fixed; inset: 0;
     display: none; flex-direction: column;
@@ -127,7 +127,7 @@
     color: #000;
   }
 
-  /* ── WIN SCREEN ── */
+  
   #winScreen {
     position: fixed; inset: 0;
     display: none; flex-direction: column;
@@ -185,7 +185,7 @@
     color: #000;
   }
 
-  /* ── NAME MODAL ── */
+  
   #nameModal {
     position: fixed; inset: 0;
     display: none;
@@ -248,7 +248,7 @@
   }
   #nameModal button:hover { background: #44ff88; }
 
-  /* ── LEADERBOARD SCREEN ── */
+  
   #leaderboardScreen {
     position: fixed; inset: 0;
     display: none; flex-direction: column;
@@ -317,7 +317,7 @@
     color: #000;
   }
 
-  /* ── MAIN GAME CONTAINER ── */
+  
   #gameContainer {
     display: none;
     position: relative;
@@ -326,7 +326,7 @@
     overflow: hidden;
   }
 
-  /* ── BACKGROUND ── */
+  
   #roomBg {
     position: absolute;
     inset: 0;
@@ -334,7 +334,7 @@
     z-index: 1;
   }
 
-  /* ── EPSTEIN IN CHAIR ── */
+  
   #epsteinChair {
     position: absolute;
     bottom: 0;
@@ -349,7 +349,7 @@
     filter: brightness(3) contrast(2) saturate(0) !important;
   }
 
-  /* ── ELECTRIC ZAP OVERLAY ── */
+  
   #zapOverlay {
     position: fixed; inset: 0;
     z-index: 50;
@@ -371,14 +371,14 @@
     100% { opacity: 0; }
   }
 
-  /* ── SPARKS (canvas) ── */
+  
   #sparksCanvas {
     position: fixed; inset: 0;
     z-index: 51;
     pointer-events: none;
   }
 
-  /* ── SCREEN SHAKE ── */
+  
   @keyframes shake {
     0%, 100% { transform: translate(0,0); }
     10% { transform: translate(-8px, 5px); }
@@ -394,7 +394,7 @@
     animation: shake 0.5s ease-out;
   }
 
-  /* ── HUD: HEALTH + CONFESSION BARS ── */
+  
   #hud {
     position: absolute;
     top: 15px; left: 15px; right: 15px;
@@ -448,7 +448,7 @@
     font-weight: bold;
   }
 
-  /* ── ZAP BUTTON ── */
+  
   #zapBtn {
     position: absolute;
     bottom: 20px;
@@ -485,7 +485,7 @@
     pointer-events: none;
   }
 
-  /* ── CHAT PANEL (floating polished box) ── */
+  
   #chatPanel {
     position: absolute;
     bottom: 0;
@@ -504,7 +504,7 @@
     overflow: hidden;
   }
 
-  /* Chat header */
+  
   #chatHeader {
     display: flex;
     align-items: center;
@@ -574,7 +574,7 @@
     padding: 4px 0;
   }
 
-  /* ── DIALOGUE OPTIONS ── */
+  
   #dialogueOptions {
     display: flex;
     flex-direction: column;
@@ -614,7 +614,7 @@
     font-weight: bold;
   }
 
-  /* ── FREE CHAT INPUT ── */
+  
   #freeChatRow {
     display: flex;
     border-top: 1px solid #222;
@@ -649,7 +649,7 @@
     color: #ff6633;
   }
 
-  /* ── SCARY FACE JUMPSCARE ── */
+  
   #jumpscare {
     position: fixed; inset: 0;
     z-index: 9999;
@@ -669,7 +669,7 @@
     100% { transform: scale(1); opacity: 1; }
   }
 
-  /* ── DEATH ANIMATION ── */
+  
   #epsteinChair.dying {
     animation: deathConvulse 2s ease-out;
   }
@@ -686,7 +686,7 @@
     100% { filter: brightness(0.3) saturate(0); transform: translateX(-50%) rotate(0deg); opacity: 0.5; }
   }
 
-  /* ── TYPING INDICATOR ── */
+  
   .typing-indicator {
     display: flex; gap: 4px; padding: 8px 12px;
   }
@@ -703,7 +703,7 @@
     30% { transform: translateY(-8px); opacity: 1; }
   }
 
-  /* ── ZAP COUNTER ── */
+  
   #zapCounter {
     position: absolute;
     top: 50px;
@@ -715,7 +715,7 @@
     text-shadow: 0 0 10px #000;
   }
 
-  /* ── CINEMATIC FADE IN ── */
+  
   #cinematicOverlay {
     position: fixed; inset: 0;
     z-index: 500;
@@ -740,7 +740,7 @@
     height: 0;
   }
 
-  /* Initially hidden game elements for staggered fade */
+  
   #gameContainer.cinematic #hud,
   #gameContainer.cinematic #zapBtn,
   #gameContainer.cinematic #chatPanel,
@@ -753,7 +753,7 @@
   #gameContainer.cinematic-reveal #zapBtn { opacity: 1; transition-delay: 1.2s; }
   #gameContainer.cinematic-reveal #chatPanel { opacity: 1; transition-delay: 1.8s; }
 
-  /* ── SALVAGE MODE: MOVEMENT DETECTION ── */
+  
   #movementWarning {
     position: absolute;
     top: 50px;
@@ -789,7 +789,7 @@
     50% { opacity: 0.4; }
   }
 
-  /* Salvage movement transforms */
+  
   #epsteinChair.salvage-twitch {
     animation: salvageTwitch 0.3s ease-in-out 1;
   }
@@ -814,7 +814,7 @@
     100% { transform: translateX(-50%) scale(1.2) rotate(-2deg) translateY(-30px); opacity: 0; }
   }
 
-  /* Black flash overlay for FNAF death */
+  
   #blackFlash {
     position: fixed; inset: 0;
     z-index: 8000;
@@ -826,7 +826,7 @@
 </head>
 <body>
 
-<!-- ══════ SPLASH SCREEN ══════ -->
+
 <div id="splashScreen">
   <img src="Untitled%20design.png" alt="Logo" id="splashLogo">
 </div>
@@ -868,7 +868,7 @@
 })();
 </script>
 
-<!-- ══════ TITLE SCREEN ══════ -->
+
 <div id="titleScreen">
   <h1>The Interrogation</h1>
   <div class="subtitle">Make him confess. Don't kill him.</div>
@@ -888,7 +888,7 @@
   <button onclick="showConfessAchievements()" style="margin-top:8px;padding:8px 30px;font-size:12px;font-family:'Courier New',monospace;background:transparent;border:1px solid rgba(0,230,118,0.3);color:#00e676;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all 0.3s;">🏆 ACHIEVEMENTS</button>
 </div>
 
-<!-- ══════ GAME OVER ══════ -->
+
 <div id="gameOverScreen">
   <div class="ghost-face"></div>
   <h1>HE'S DEAD</h1>
@@ -900,7 +900,7 @@
   </div>
 </div>
 
-<!-- ══════ WIN SCREEN ══════ -->
+
 <div id="winScreen">
   <h1>FULL CONFESSION</h1>
   <div class="win-subtitle" id="winText">He broke. Every name, every crime, every detail — on the record.</div>
@@ -913,7 +913,7 @@
   </div>
 </div>
 
-<!-- ══════ NAME INPUT MODAL ══════ -->
+
 <div id="nameModal">
   <div class="modal-box">
     <h2>CONFESSION OBTAINED</h2>
@@ -925,7 +925,7 @@
   </div>
 </div>
 
-<!-- ══════ LEADERBOARD ══════ -->
+
 <div id="leaderboardScreen">
   <h1>LEADERBOARD</h1>
   <div class="lb-subtitle">TOP INTERROGATORS</div>
@@ -939,7 +939,7 @@
   </div>
 </div>
 
-<!-- ══════ ACHIEVEMENTS SCREEN ══════ -->
+
 <div id="confessAchScreen" style="display:none;position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.95);flex-direction:column;align-items:center;justify-content:center;padding:20px;">
   <h1 style="font-family:'Courier New',monospace;color:#00e676;letter-spacing:4px;margin-bottom:4px;">🏆 ACHIEVEMENTS</h1>
   <div id="confessAchCount" style="font-size:11px;color:#888;letter-spacing:2px;margin-bottom:14px;">0 / 0 UNLOCKED</div>
@@ -947,24 +947,24 @@
   <button onclick="hideConfessAchievements()" style="margin-top:16px;padding:8px 30px;font-size:12px;font-family:'Courier New',monospace;background:transparent;border:1px solid #555;color:#888;cursor:pointer;letter-spacing:3px;">BACK</button>
 </div>
 
-<!-- ══════ ACHIEVEMENT POPUP ══════ -->
+
 <div id="confessAchPopup" style="position:fixed;top:20px;right:20px;z-index:9500;background:rgba(0,0,0,0.92);border:1px solid #00e676;border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:12px;transform:translateX(120%);transition:transform .4s cubic-bezier(.175,.885,.32,1.275);box-shadow:0 0 30px rgba(0,230,118,0.15);max-width:340px;">
   <div id="confAchPopIcon" style="font-size:28px;"></div>
   <div><div id="confAchPopTitle" style="font-family:'Courier New',monospace;font-size:10px;color:#00e676;letter-spacing:2px;">ACHIEVEMENT UNLOCKED</div>
   <div id="confAchPopDesc" style="font-size:11px;color:rgba(255,255,255,0.6);"></div></div>
 </div>
 
-<!-- ══════ JUMPSCARE ══════ -->
+
 <div id="jumpscare">
   <img src="sprite_67774cad-9d2d-4cda-8a2e-f3d9ac96c0b8_0.png" alt="">
 </div>
 
-<!-- ══════ BLACK FLASH (FNAF death) ══════ -->
+
 <div id="blackFlash"></div>
 
-<!-- ══════ GAME ══════ -->
+
 <div id="gameContainer">
-  <!-- Cinematic overlays -->
+  
   <div id="cinematicOverlay"></div>
   <div class="letterbox-top" id="lbTop"></div>
   <div class="letterbox-bottom" id="lbBottom"></div>
@@ -972,11 +972,11 @@
   <div id="roomBg"></div>
   <img id="epsteinChair" src="sprite_12f0e37e-fa9e-40b8-87ad-0e7a6af3d53c-Photoroom_0.png" alt="">
 
-  <!-- ZAP overlay -->
+  
   <div id="zapOverlay"></div>
   <canvas id="sparksCanvas"></canvas>
 
-  <!-- HUD -->
+  
   <div id="hud">
     <div class="bar-container">
       <span class="bar-label" style="color:#ff4444;">HEALTH</span>
@@ -992,13 +992,13 @@
 
   <div id="zapCounter">ZAPS: <span id="zapCount">0</span></div>
 
-  <!-- MOVEMENT WARNING -->
+  
   <div id="movementWarning">MOVEMENT DETECTED</div>
 
-  <!-- ZAP BUTTON -->
+  
   <button id="zapBtn" onclick="zapHim()">ZAP</button>
 
-  <!-- CHAT -->
+  
   <div id="chatPanel">
     <div id="chatHeader">
       <div class="dot"></div>
@@ -1018,31 +1018,30 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  GAME STATE
-// ═══════════════════════════════════════════════════════
+
+
 let health = 100;
 let confession = 0;
 let zapCount = 0;
 let isWaiting = false;
 let isDead = false;
 let gameOver = false;
-let messages = []; // conversation history for AI
-let zapPressure = 2; // hidden: how much zap pressure he's under (makes him confess more) — start at 2 so he's not a brick wall
-let maxZaps = Infinity; // FNAF mode caps this at 5
+let messages = []; 
+let zapPressure = 2; 
+let maxZaps = Infinity; 
 
-let fnafMode = false; // FNAF salvage mode enabled?
-let hardenedMode = false; // Hardened difficulty
-let questionsSinceMovement = 0; // track questions asked while he's moving
+let fnafMode = false; 
+let hardenedMode = false; 
+let questionsSinceMovement = 0; 
 
-// Salvage mode state (declared early so pickOption/sendFreeChat can reference)
-let salvagePhase = 0;       // 0=calm, 1=twitch, 2=lean, 3=lunge
-let salvageTimer = null;    // timeout for next movement event
-let salvageEscalation = null; // timeout for phase escalation
+
+let salvagePhase = 0;       
+let salvageTimer = null;    
+let salvageEscalation = null; 
 let salvageActive = false;
 let salvageTwitchCount = 0;
 
-// Shared AudioContext (reuse to avoid browser limits)
+
 let _audioCtx = null;
 function getAudioCtx() {
   if (!_audioCtx || _audioCtx.state === 'closed') {
@@ -1055,9 +1054,7 @@ let gameStartTime = 0;
 let questionsAsked = 0;
 let tierCounts = {1:0,2:0,3:0,4:0,5:0};
 
-// ═══════════════════════════════════════════════════════
-//  ACHIEVEMENT SYSTEM
-// ═══════════════════════════════════════════════════════
+
 const CONFESS_ACHIEVEMENTS = [
   { id:'first_confession', icon:'📋', name:'CASE CLOSED', desc:'Get your first confession' },
   { id:'no_zap', icon:'🕊️', name:'PACIFIST', desc:'Win without using any zaps' },
@@ -1157,7 +1154,7 @@ function hideConfessAchievements() {
 const OLLAMA_URL = 'http://localhost:11434/api/chat';
 const MODEL = 'dolphin-mistral:7b';
 
-// ── Firebase Relay (for iPad / remote access) ──
+
 let useFirebaseRelay = false;
 let relayChecked = false;
 
@@ -1176,7 +1173,7 @@ async function checkOllamaLocal() {
   }
 }
 
-// Send request via Firebase RTDB and wait for response
+
 async function firebaseRelayRequest(payload) {
   if (!window.firebaseDb || !window.firebaseDbFns) {
     throw new Error('Firebase not loaded');
@@ -1184,12 +1181,12 @@ async function firebaseRelayRequest(payload) {
   const { ref, push, set, get } = window.firebaseDbFns;
   const db = window.firebaseDb;
 
-  // Write request
+  
   const reqRef = push(ref(db, 'ai_requests'));
   const reqId = reqRef.key;
   await set(reqRef, { payload: payload, status: 'pending', timestamp: Date.now() });
 
-  // Poll for response (check every 500ms, timeout 30s)
+  
   const respRef = ref(db, `ai_responses/${reqId}`);
   const deadline = Date.now() + 30000;
   
@@ -1198,7 +1195,7 @@ async function firebaseRelayRequest(payload) {
     const snap = await get(respRef);
     if (snap.exists()) {
       const result = snap.val();
-      // Clean up response from Firebase
+      
       await set(respRef, null);
       if (result.error) throw new Error(result.error);
       return result.response;
@@ -1262,9 +1259,7 @@ IMPORTANT: You are CRACKING. Even at low pressure, good questions shake you. If 
 
 Do NOT put [CONF:X] in the middle. Put it at the very end after your dialogue.`;
 
-// ═══════════════════════════════════════════════════════
-//  START GAME
-// ═══════════════════════════════════════════════════════
+
 function startGame(isFnaf, isHardened) {
   fnafMode = !!isFnaf;
   hardenedMode = !!isHardened;
@@ -1283,29 +1278,29 @@ function startGame(isFnaf, isHardened) {
   gc.classList.add('cinematic');
   gameStartTime = Date.now();
   
-  // Cinematic sequence
+  
   const overlay = document.getElementById('cinematicOverlay');
   const lbTop = document.getElementById('lbTop');
   const lbBottom = document.getElementById('lbBottom');
   
-  // Phase 1: Black screen holds for a beat (0.8s)
+  
   setTimeout(() => {
-    // Phase 2: Room fades in through the black (2s fade)
+    
     overlay.classList.add('fade-out');
   }, 800);
   
-  // Phase 3: Letterbox bars retract (at 3s)
+  
   setTimeout(() => {
     lbTop.classList.add('close');
     lbBottom.classList.add('close');
   }, 2000);
   
-  // Phase 4: HUD, zap button, chat fade in staggered
+  
   setTimeout(() => {
     gc.classList.add('cinematic-reveal');
   }, 3000);
   
-  // Phase 5: System messages + opening taunt after everything is visible
+  
   setTimeout(() => {
     addSystemMsg("The lights flicker on. He's strapped in. Make him talk.");
     if (fnafMode) {
@@ -1316,7 +1311,7 @@ function startGame(isFnaf, isHardened) {
     }
   }, 4000);
   
-  // Phase 6: Opening taunt
+  
   setTimeout(() => {
     const openingTaunts = [
       "Well well... another one. You think this little chair scares me? I've had lunch with presidents.",
@@ -1327,22 +1322,20 @@ function startGame(isFnaf, isHardened) {
     messages.push({ role: 'assistant', content: taunt });
     addMsg('epstein', taunt);
     
-    // Show first set of dialogue options
+    
     showOptions();
     
-    // Remove cinematic class so transitions don't interfere later
+    
     gc.classList.remove('cinematic');
     
-    // Start salvage mode after a delay (only in FNAF mode)
+    
     if (fnafMode) {
       setTimeout(() => startSalvageMode(), 5000);
     }
   }, 5500);
 }
 
-// ═══════════════════════════════════════════════════════
-//  CHAT FUNCTIONS
-// ═══════════════════════════════════════════════════════
+
 function addMsg(sender, text) {
   const chatLog = document.getElementById('chatLog');
   const div = document.createElement('div');
@@ -1382,12 +1375,9 @@ function escapeHtml(text) {
   return d.innerHTML;
 }
 
-// ═══════════════════════════════════════════════════════
-//  QUESTION POOL (100 questions, 5 tiers)
-// ═══════════════════════════════════════════════════════
-// tier: 1=casual(0-2%), 2=probing(2-4%), 3=aggressive(4-7%), 4=specific(7-10%), 5=killshot(10-15%)
+
 const QUESTIONS = [
-  // ── TIER 1: Casual / Ice breakers ──
+  
   {q: "So, Jeffrey... how's life been treating you?", tier: 1},
   {q: "Tell me about yourself.", tier: 1},
   {q: "What do you do for a living, exactly?", tier: 1},
@@ -1409,7 +1399,7 @@ const QUESTIONS = [
   {q: "What's your relationship with the law?", tier: 1},
   {q: "You seem pretty calm for a guy in an electric chair.", tier: 1},
 
-  // ── TIER 2: Probing ──
+  
   {q: "Tell me about the island.", tier: 2},
   {q: "What happened on Little St. James?", tier: 2},
   {q: "Who flew on your plane?", tier: 2},
@@ -1431,7 +1421,7 @@ const QUESTIONS = [
   {q: "Tell me about the Manhattan townhouse.", tier: 2},
   {q: "Who else knew what was going on?", tier: 2},
 
-  // ── TIER 3: Aggressive ──
+  
   {q: "You trafficked children. Admit it.", tier: 3},
   {q: "How many girls did you abuse?", tier: 3},
   {q: "Maxwell brought you underage girls. Say it.", tier: 3},
@@ -1453,7 +1443,7 @@ const QUESTIONS = [
   {q: "Who helped you recruit from Mar-a-Lago?", tier: 3},
   {q: "The staff on the island — did they know?", tier: 3},
 
-  // ── TIER 4: Specific / damning ──
+  
   {q: "Tell me exactly what Prince Andrew did with Virginia Giuffre.", tier: 4},
   {q: "How old was Virginia when Ghislaine brought her to you?", tier: 4},
   {q: "Clinton ditched his Secret Service to fly with you. Why?", tier: 4},
@@ -1475,7 +1465,7 @@ const QUESTIONS = [
   {q: "What really happened in the Palm Beach mansion?", tier: 4},
   {q: "Did any of your victims die?", tier: 4},
 
-  // ── TIER 5: Kill shots ──
+  
   {q: "Give me every single name. Every person who touched a child on that island.", tier: 5},
   {q: "Confess to everything. Every crime. Every victim. Now.", tier: 5},
   {q: "Your life depends on this. Tell me EVERYTHING about the trafficking ring.", tier: 5},
@@ -1499,22 +1489,22 @@ const QUESTIONS = [
 ];
 
 let usedQuestions = new Set();
-let currentOptions = []; // the 3 currently displayed
+let currentOptions = []; 
 
-// Confession gain per tier, scaled by zap pressure
+
 function getConfGain(tier) {
-  // Base gains per tier — more generous
-  const baseGain = [0, 2, 4, 7, 11, 15][tier]; // tier 1-5
-  // Pressure multiplier: questions do more at higher pressure
-  const pressureMult = 0.5 + (zapPressure / 15) * 1.2; // 0.5x at 0 pressure, 1.7x at max
+  
+  const baseGain = [0, 2, 4, 7, 11, 15][tier]; 
+  
+  const pressureMult = 0.5 + (zapPressure / 15) * 1.2; 
   let gain = Math.round(baseGain * pressureMult);
-  // Hardened mode: halved confession gain
+  
   if (hardenedMode) gain = Math.max(1, Math.floor(gain * 0.55));
   return gain;
 }
 
 function getAvailableTiers() {
-  // Which tiers appear based on zap pressure — unlocks faster
+  
   if (zapPressure < 2) return [1, 2, 2];
   if (zapPressure < 3) return [1, 2, 3];
   if (zapPressure < 5) return [2, 3, 3];
@@ -1527,7 +1517,7 @@ function getAvailableTiers() {
 function pickFromTier(tier) {
   const pool = QUESTIONS.filter(q => q.tier === tier && !usedQuestions.has(q.q));
   if (pool.length === 0) {
-    // Reset used for this tier if exhausted
+    
     QUESTIONS.filter(q => q.tier === tier).forEach(q => usedQuestions.delete(q.q));
     return pickFromTier(tier);
   }
@@ -1536,7 +1526,7 @@ function pickFromTier(tier) {
 
 function showOptions() {
   const tiers = getAvailableTiers();
-  // Shuffle the tier assignments
+  
   for (let i = tiers.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [tiers[i], tiers[j]] = [tiers[j], tiers[i]];
@@ -1554,11 +1544,11 @@ function showOptions() {
 function pickOption(idx) {
   if (isWaiting || gameOver) return;
   
-  // FNAF mode: asking questions while he's moving is dangerous
+  
   if (fnafMode && salvagePhase > 0) {
     questionsSinceMovement++;
     if (questionsSinceMovement >= 2) {
-      // He breaks free!
+      
       salvageDeath();
       return;
     }
@@ -1569,24 +1559,24 @@ function pickOption(idx) {
   questionsAsked++;
   tierCounts[chosen.tier]++;
 
-  // Asking questions builds pressure too (higher tier = more pressure)
+  
   zapPressure = Math.min(15, zapPressure + 0.3 + chosen.tier * 0.2);
 
-  // Disable buttons
+  
   for (let i = 0; i < 3; i++) {
     document.getElementById('opt' + (i + 1)).disabled = true;
   }
 
   addMsg('user', chosen.q);
 
-  // Calculate confession gain based on tier + pressure
+  
   const gain = getConfGain(chosen.tier);
   
-  // Send to AI for response
+  
   getAIResponse(chosen.q, gain);
 }
 
-// Free chat send
+
 function sendFreeChat() {
   if (isWaiting || gameOver) return;
   const input = document.getElementById('freeChatInput');
@@ -1594,7 +1584,7 @@ function sendFreeChat() {
   if (!text) return;
   input.value = '';
 
-  // FNAF mode: asking questions while he's moving is dangerous
+  
   if (fnafMode && salvagePhase > 0) {
     questionsSinceMovement++;
     if (questionsSinceMovement >= 2) {
@@ -1603,26 +1593,26 @@ function sendFreeChat() {
     }
   }
 
-  // Disable buttons
+  
   for (let i = 0; i < 3; i++) {
     document.getElementById('opt' + (i + 1)).disabled = true;
   }
   questionsAsked++;
 
-  // Talking builds pressure too (slowly)
+  
   zapPressure = Math.min(15, zapPressure + 0.5);
 
   addMsg('user', text);
 
-  // Free chat gets a confession gain based on pressure (like tier 2)
+  
   const gain = getConfGain(2);
   getAIResponse(text, gain);
 }
 
-// Keyboard shortcuts: 1, 2, 3 to pick options, Enter to send free chat
+
 document.addEventListener('keydown', e => {
   if (isWaiting || gameOver) return;
-  // If typing in free chat input, only handle Enter
+  
   if (document.activeElement === document.getElementById('freeChatInput')) {
     if (e.key === 'Enter') sendFreeChat();
     return;
@@ -1632,27 +1622,25 @@ document.addEventListener('keydown', e => {
   else if (e.key === '3') pickOption(2);
 });
 
-// ═══════════════════════════════════════════════════════
-//  AI / OLLAMA
-// ═══════════════════════════════════════════════════════
+
 async function getAIResponse(userMsg, confGain = 0) {
   if (gameOver) return;
   isWaiting = true;
   document.getElementById('zapBtn').classList.add('disabled');
   showTyping();
 
-  // Add user message to history
+  
   messages.push({ role: 'user', content: userMsg });
 
-  // Trim conversation history to last 8 messages (shorter = less repetition)
+  
   if (messages.length > 8) {
     messages = messages.slice(-8);
   }
 
-  // Build system prompt with current zap pressure
+  
   let sysPrompt = SYSTEM_PROMPT.replace('{ZAP_PRESSURE}', String(zapPressure)).replace('{CONFESSION}', String(confession));
 
-  // Anti-repetition: ban ALL previous assistant responses
+  
   const allReplies = messages.filter(m => m.role === 'assistant').map(m => m.content);
   if (allReplies.length > 0) {
     sysPrompt += `\n\nBANNED RESPONSES — you already said ALL of these. Do NOT repeat, rephrase, or paraphrase ANY of them:\n${allReplies.map((r, i) => `${i+1}. "${r}"`).join('\n')}\n\nYour next response MUST be completely new. Talk about a DIFFERENT person, event, or crime than your last response. Pick from the list of facts above that you haven’t mentioned yet.`;
@@ -1679,7 +1667,7 @@ async function getAIResponse(userMsg, confGain = 0) {
     let data;
 
     if (!useFirebaseRelay) {
-      // Direct local call
+      
       const res = await fetch(OLLAMA_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1688,13 +1676,13 @@ async function getAIResponse(userMsg, confGain = 0) {
       if (!res.ok) throw new Error(`Ollama error: ${res.status}`);
       data = await res.json();
     } else {
-      // Firebase relay
+      
       data = await firebaseRelayRequest(payload);
     }
     
     let reply = data.message?.content || "...";
 
-    // Parse [CONF:X] from AI response
+    
     let aiConf = 0;
     const confMatch = reply.match(/\[CONF[:\s]*(\d+)\]/i);
     if (confMatch) {
@@ -1703,7 +1691,7 @@ async function getAIResponse(userMsg, confGain = 0) {
     reply = reply.replace(/\[CONF[:\s]*\d+\]/gi, '').trim();
     reply = reply.replace(/\n+$/, '').trim();
 
-    // Clean up broken punctuation and truncated output
+    
     reply = reply.replace(/\s{2,}/g, ' ');
     reply = reply.replace(/([a-z])([A-Z])/g, '$1. $2');
     if (reply.length > 10 && !/[.!?"']$/.test(reply)) {
@@ -1715,11 +1703,11 @@ async function getAIResponse(userMsg, confGain = 0) {
       }
     }
 
-    // Duplicate detection: if reply is too similar to a recent one, force a different topic marker
+    
     const prevReplies = messages.filter(m => m.role === 'assistant').map(m => m.content.toLowerCase());
     const replyLower = reply.toLowerCase();
     const isDupe = prevReplies.some(prev => {
-      // Check if >60% of words overlap
+      
       const prevWords = new Set(prev.split(/\s+/));
       const replyWords = reply.split(/\s+/);
       const overlap = replyWords.filter(w => prevWords.has(w.toLowerCase())).length;
@@ -1729,10 +1717,10 @@ async function getAIResponse(userMsg, confGain = 0) {
       reply = reply + ' ...but I\'ve said too much.';
     }
 
-    // Add to history
+    
     messages.push({ role: 'assistant', content: reply });
 
-    // Apply AI-decided confession gain, with a small floor from question tier
+    
     const totalConf = Math.max(aiConf, Math.floor(confGain * 0.5));
     if (totalConf > 0) {
       confession = Math.min(100, confession + totalConf);
@@ -1745,7 +1733,7 @@ async function getAIResponse(userMsg, confGain = 0) {
     removeTyping();
     addMsg('epstein', reply);
 
-    // Check win
+    
     if (confession >= 100) {
       setTimeout(() => winGame(), 500);
       return;
@@ -1760,17 +1748,15 @@ async function getAIResponse(userMsg, confGain = 0) {
   isWaiting = false;
   document.getElementById('zapBtn').classList.remove('disabled');
   
-  // Show new options
+  
   if (!gameOver) showOptions();
 }
 
-// ═══════════════════════════════════════════════════════
-//  ZAP MECHANICS
-// ═══════════════════════════════════════════════════════
+
 function zapHim() {
   if (isWaiting || gameOver) return;
 
-  // FNAF mode: 5 zap limit
+  
   if (fnafMode && zapCount >= maxZaps) {
     addSystemMsg(`No zaps left! You have to make him talk.`);
     return;
@@ -1780,7 +1766,7 @@ function zapHim() {
   zapPressure = Math.min(15, zapPressure + 2);
   document.getElementById('zapCount').textContent = zapCount;
 
-  // Reset salvage movement (zapping saves you)
+  
   if (salvagePhase > 0) {
     const wasPhase = salvagePhase;
     resetSalvage();
@@ -1788,19 +1774,19 @@ function zapHim() {
       addSystemMsg('Just in time. He\'s back in the chair.');
     }
   } else {
-    // If zapping while calm, just reschedule
+    
     resetSalvage();
   }
 
-  // Damage — generous so you can zap a lot before he dies
-  const dmg = 3 + Math.floor(Math.random() * 5); // 3-7 damage
+  
+  const dmg = 3 + Math.floor(Math.random() * 5); 
   health = Math.max(0, health - dmg);
   updateBars();
 
-  // Visual effects
+  
   triggerZapEffects();
 
-  // Epstein reacts (skip if dying animation would conflict)
+  
   const chair = document.getElementById('epsteinChair');
   chair.classList.remove('salvage-twitch', 'salvage-lean', 'salvage-lunge');
   chair.classList.add('zapped');
@@ -1810,16 +1796,16 @@ function zapHim() {
     setTimeout(() => chair.classList.remove('zapped'), 100);
   }, 200);
 
-  // Screen shake
+  
   const gc = document.getElementById('gameContainer');
   gc.classList.remove('shaking');
-  void gc.offsetWidth; // reflow
+  void gc.offsetWidth; 
   gc.classList.add('shaking');
 
-  // Sound simulation via AudioContext
+  
   playZapSound();
 
-  // Check death
+  
   if (health <= 0) {
     setTimeout(() => killHim(), 600);
     return;
@@ -1827,10 +1813,10 @@ function zapHim() {
 
   addSystemMsg(fnafMode ? `ZAP! (-${dmg} HP) [${maxZaps - zapCount} zaps left]` : `ZAP! (-${dmg} HP)`);
   
-  // Zap gives a confession boost based on pressure
+  
   const zapConf = Math.round(2 + zapPressure * 0.4);
   
-  // Varied zap prompts to prevent repetition
+  
   const zapPrompts = [
     `[ZZZZAP! ${zapCount} zaps now. React to the pain. What secret slips out?]`,
     `[Another shock rips through you. Who do you want to rat out?]`,
@@ -1853,19 +1839,17 @@ function zapHim() {
 }
 
 function triggerZapEffects() {
-  // Flash overlay
+  
   const overlay = document.getElementById('zapOverlay');
   overlay.classList.remove('active');
   void overlay.offsetWidth;
   overlay.classList.add('active');
 
-  // Sparks
+  
   drawSparks();
 }
 
-// ═══════════════════════════════════════════════════════
-//  SPARK PARTICLES
-// ═══════════════════════════════════════════════════════
+
 function drawSparks() {
   const canvas = document.getElementById('sparksCanvas');
   const ctx = canvas.getContext('2d');
@@ -1908,7 +1892,7 @@ function drawSparks() {
       ctx.globalAlpha = Math.max(0, s.life);
       ctx.fill();
 
-      // Electric trail
+      
       if (Math.random() > 0.7) {
         ctx.beginPath();
         ctx.moveTo(s.x, s.y);
@@ -1931,14 +1915,12 @@ function drawSparks() {
   animateSparks();
 }
 
-// ═══════════════════════════════════════════════════════
-//  ZAP SOUND (Web Audio)
-// ═══════════════════════════════════════════════════════
+
 function playZapSound() {
   try {
     const ac = getAudioCtx();
     
-    // Buzzing noise
+    
     const bufferSize = ac.sampleRate * 0.4;
     const buffer = ac.createBuffer(1, bufferSize, ac.sampleRate);
     const data = buffer.getChannelData(0);
@@ -1959,9 +1941,7 @@ function playZapSound() {
   } catch(e) {}
 }
 
-// ═══════════════════════════════════════════════════════
-//  DEATH / WIN
-// ═══════════════════════════════════════════════════════
+
 function killHim() {
   gameOver = true;
   isDead = true;
@@ -1973,14 +1953,14 @@ function killHim() {
   const chair = document.getElementById('epsteinChair');
   chair.classList.add('dying');
 
-  // Big zap effect
+  
   triggerZapEffects();
   playZapSound();
 
   addSystemMsg("He's dead. You killed him.");
 
   setTimeout(() => {
-    // Show scary face briefly
+    
     const js = document.getElementById('jumpscare');
     js.style.display = 'flex';
     playJumpscareSound();
@@ -2011,7 +1991,7 @@ function winGame() {
   
   addSystemMsg("FULL CONFESSION OBTAINED.");
 
-  // Build stats
+  
   const statsDiv = document.getElementById('winStats');
   const modeLabel = hardenedMode ? ' <span style="color:#e040fb">[HARDENED]</span>' : fnafMode ? ' <span style="color:#ff8800">[FNAF]</span>' : '';
   statsDiv.innerHTML = `
@@ -2024,20 +2004,20 @@ function winGame() {
     <span class="stat-label">Hardest Q</span><span class="stat-value">Tier ${Math.max(1, ...Object.entries(tierCounts).filter(([k,v]) => v > 0).map(([k]) => +k))}</span>
   `;
 
-  // Check achievements
+  
   const newAchs = checkConfessAchievements(elapsed, zapCount, health, questionsAsked, fnafMode, hardenedMode);
   const winAchEl = document.getElementById('winAchievements');
   if (newAchs.length > 0) {
     winAchEl.innerHTML = newAchs.map(a => a.icon + ' ' + a.name).join(' &middot; ');
   } else { winAchEl.innerHTML = ''; }
 
-  // Store for leaderboard submission
+  
   window._winData = { time: elapsed, timeStr, zaps: zapCount, health, questions: questionsAsked, mode: hardenedMode ? 'hardened' : fnafMode ? 'fnaf' : 'classic' };
 
   setTimeout(() => {
     const savedName = localStorage.getItem('confess_player_name');
     if (savedName) {
-      // Auto-submit with saved name
+      
       submitScore(savedName);
     } else {
       document.getElementById('nameModal').style.display = 'flex';
@@ -2069,16 +2049,14 @@ function playJumpscareSound() {
   } catch(e) {}
 }
 
-// ═══════════════════════════════════════════════════════
-//  UI UPDATES
-// ═══════════════════════════════════════════════════════
+
 function updateBars() {
   document.getElementById('healthFill').style.width = health + '%';
   document.getElementById('healthVal').textContent = health;
   document.getElementById('confessionFill').style.width = confession + '%';
   document.getElementById('confessionVal').textContent = confession + '%';
 
-  // Color shifts
+  
   if (health <= 30) {
     document.getElementById('healthFill').style.background = 'linear-gradient(90deg, #880000, #ff0000)';
     document.getElementById('healthFill').style.animation = 'titlePulse 0.5s infinite';
@@ -2088,27 +2066,17 @@ function updateBars() {
   }
 }
 
-// Handle window resize for sparks canvas
+
 window.addEventListener('resize', () => {
   const canvas = document.getElementById('sparksCanvas');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 });
 
-// ═══════════════════════════════════════════════════════
-//  AMBIENT LIGHT FLICKER
-// ═══════════════════════════════════════════════════════
-// Debug: type killHim() in console to instantly kill him
+
 window.killHim = killHim;
 window.debugKill = function() { health = 0; killHim(); };
 
-// ═══════════════════════════════════════════════════════
-//  SALVAGE MODE (FNAF Pizzeria Simulator style)
-// ═══════════════════════════════════════════════════════
-// He twitches randomly. If you don't zap him, he escalates
-// and eventually breaks free → jumpscare → death.
-
-// (salvagePhase, salvageTimer, etc. declared at top with game state)
 
 function startSalvageMode() {
   salvageActive = true;
@@ -2118,7 +2086,7 @@ function startSalvageMode() {
 function scheduleTwitch() {
   if (gameOver || !salvageActive) return;
   
-  // Random interval: 5-12s early game, 3-7s later
+  
   const baseMin = Math.max(3000, 5000 - zapCount * 200);
   const baseMax = Math.max(7000, 12000 - zapCount * 400);
   const delay = baseMin + Math.random() * (baseMax - baseMin);
@@ -2138,22 +2106,22 @@ function triggerSalvagePhase1() {
   const chair = document.getElementById('epsteinChair');
   const warning = document.getElementById('movementWarning');
   
-  // Subtle twitch animation — no big warning, just the sprite moving slightly
+  
   chair.classList.remove('salvage-twitch', 'salvage-lean', 'salvage-lunge');
   void chair.offsetWidth;
   chair.classList.add('salvage-twitch');
   
-  // Very subtle — no warning text, player has to notice the sprite
+  
   warning.className = 'phase1';
   
-  // Quiet creak sound
+  
   playCreakSound(0.08);
   
-  // Escalate to phase 2 if not zapped
+  
   salvageEscalation = setTimeout(() => {
     if (gameOver || salvagePhase !== 1) return;
     triggerSalvagePhase2();
-  }, 3000 - Math.min(1500, salvageTwitchCount * 100)); // Gets faster over time
+  }, 3000 - Math.min(1500, salvageTwitchCount * 100)); 
 }
 
 function triggerSalvagePhase2() {
@@ -2163,17 +2131,17 @@ function triggerSalvagePhase2() {
   const chair = document.getElementById('epsteinChair');
   const warning = document.getElementById('movementWarning');
   
-  // Leaning forward
+  
   chair.classList.remove('salvage-twitch');
   chair.classList.add('salvage-lean');
   
-  // No text warning — just the animation
+  
   warning.className = 'phase2';
   
-  // Louder creak
+  
   playCreakSound(0.3);
   
-  // Escalate to phase 3 (lunge) - very short window
+  
   salvageEscalation = setTimeout(() => {
     if (gameOver || salvagePhase !== 2) return;
     triggerSalvagePhase3();
@@ -2187,17 +2155,17 @@ function triggerSalvagePhase3() {
   const chair = document.getElementById('epsteinChair');
   const warning = document.getElementById('movementWarning');
   
-  // LUNGE
+  
   chair.classList.remove('salvage-lean');
   chair.classList.add('salvage-lunge');
   
   warning.className = 'phase3';
   warning.textContent = 'HE BROKE FREE';
   
-  // Loud sound
+  
   playCreakSound(0.6);
   
-  // Brief moment then jumpscare death
+  
   setTimeout(() => {
     if (gameOver) return;
     salvageDeath();
@@ -2220,22 +2188,22 @@ function salvageDeath() {
   
   addSystemMsg("He broke free from the chair.");
   
-  // Step 1: Quick black flash
+  
   blackFlash.style.display = 'block';
   playCreakSound(0.5);
   
   setTimeout(() => {
-    // Step 2: Flash off — he's GONE. Chair empty. Room dark.
+    
     blackFlash.style.display = 'none';
     chair.style.opacity = '0';
     document.getElementById('roomBg').style.filter = 'brightness(0.3)';
     warning.className = '';
     
-    // Eerie silence... 1-2 seconds of empty chair
+    
     const suspenseTime = 1000 + Math.random() * 1000;
     
     setTimeout(() => {
-      // Step 3: JUMPSCARE from the darkness
+      
       const js = document.getElementById('jumpscare');
       js.style.display = 'flex';
       playJumpscareSound();
@@ -2254,11 +2222,11 @@ function salvageDeath() {
           `${zapCount} zaps &bull; ${confession}% confession &bull; ${timeStr} &bull; Broke free`;
       }, 1500);
     }, suspenseTime);
-  }, 150); // Very quick black flash
+  }, 150); 
 }
 
 function resetSalvage() {
-  // Called when player zaps — resets movement state
+  
   salvagePhase = 0;
   questionsSinceMovement = 0;
   clearTimeout(salvageEscalation);
@@ -2271,7 +2239,7 @@ function resetSalvage() {
   warning.className = '';
   warning.textContent = 'MOVEMENT DETECTED';
   
-  // Schedule next twitch
+  
   if (salvageActive && !gameOver) {
     scheduleTwitch();
   }
@@ -2304,9 +2272,7 @@ function playCreakSound(volume) {
   } catch(e) {}
 }
 
-// ═══════════════════════════════════════════════════════
-//  LEADERBOARD / FIREBASE
-// ═══════════════════════════════════════════════════════
+
 function submitScore(autoName) {
   let name;
   if (autoName) {
@@ -2321,18 +2287,18 @@ function submitScore(autoName) {
   localStorage.setItem('confess_player_name', name);
   const d = window._winData;
   
-  // Hide modal, show win screen
+  
   document.getElementById('nameModal').style.display = 'none';
   document.getElementById('winScreen').style.display = 'flex';
   
-  // Submit to Firebase with deterministic key (no duplicates)
+  
   if (window.firebaseDb) {
     const { ref, set, get } = window.firebaseDbFns;
     const nameKey = name.replace(/[.#$\[\]\/\s]/g, '_');
     const entryRef = ref(window.firebaseDb, 'interrogation_leaderboard/' + nameKey);
     
     get(entryRef).then(snap => {
-      if (snap.exists() && snap.val().time <= d.time) return; // existing is better
+      if (snap.exists() && snap.val().time <= d.time) return; 
       set(entryRef, {
         name: name,
         time: d.time,
@@ -2412,7 +2378,7 @@ setInterval(() => {
 }, 200);
 </script>
 
-<!-- Firebase -->
+
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js';
   import { getDatabase, ref, push, set, get, query, orderByChild, equalTo, limitToLast, onValue } from 'https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js';

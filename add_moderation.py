@@ -10,26 +10,22 @@ FILE = r'c:\Users\sebmo\Downloads\island\casino.html'
 with open(FILE, 'r', encoding='utf-8') as f:
     content = f.read()
 
-# ============================================================
-# 1. ADD CSS STYLES before </style>
-# ============================================================
+
 MOD_CSS = """
 /* ============ MODERATION SYSTEM ============ */
-#modBanOverlay,#modWarnOverlay{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);}
-#modBanOverlay .mod-popup{background:var(--surface);border:3px solid #ff3333;border-radius:18px;padding:32px 28px;max-width:380px;width:90%;text-align:center;box-shadow:0 0 60px rgba(255,0,0,.4);animation:modShake .5s ease;}
-#modWarnOverlay .mod-popup{background:var(--surface);border:3px solid #ffaa00;border-radius:18px;padding:32px 28px;max-width:380px;width:90%;text-align:center;box-shadow:0 0 60px rgba(255,170,0,.3);animation:modShake .5s ease;}
+
+
 @keyframes modShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-8px)}30%{transform:translateX(8px)}45%{transform:translateX(-5px)}60%{transform:translateX(5px)}75%{transform:translateX(-2px)}90%{transform:translateX(2px)}}
 .mod-popup-icon{font-size:52px;margin-bottom:10px;}
 .mod-popup-title{font-family:'Orbitron';font-size:18px;font-weight:900;letter-spacing:2px;margin-bottom:10px;}
 .mod-popup-reason{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.5;}
 .mod-popup-timer{font-family:'Orbitron';font-size:22px;font-weight:700;color:var(--red);margin-bottom:8px;}
 .mod-popup-sub{font-size:11px;color:var(--text2);}
-#modMuteBanner{display:none;background:linear-gradient(90deg,rgba(255,100,0,.12),rgba(255,0,0,.08));border:1px solid rgba(255,100,0,.3);border-radius:8px;padding:6px 12px;margin:0 14px 6px;font-size:11px;color:#ff8844;text-align:center;}
+
 .mod-warn-check{display:flex;align-items:center;gap:8px;justify-content:center;margin:14px 0 10px;cursor:pointer;font-size:12px;color:var(--text);}
 .mod-warn-check input[type=checkbox]{width:16px;height:16px;accent-color:var(--gold);}
-#modReasonModal{position:fixed;inset:0;z-index:100001;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8);}
-#modReasonModal .mod-reason-box{background:var(--surface);border:2px solid var(--border);border-radius:16px;padding:24px;max-width:360px;width:90%;box-shadow:0 0 40px rgba(0,0,0,.5);}
-#modReasonModal .mod-reason-title{font-family:'Orbitron';font-size:14px;color:var(--gold);margin-bottom:14px;text-align:center;letter-spacing:1px;}
+
+
 .mod-reason-btn{display:block;width:100%;padding:10px;margin-bottom:6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;cursor:pointer;transition:all .15s;text-align:left;}
 .mod-reason-btn:hover{border-color:var(--neon);background:rgba(0,240,255,.05);}
 .mod-reason-input{width:100%;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;margin-bottom:8px;outline:none;box-sizing:border-box;}
@@ -39,8 +35,8 @@ MOD_CSS = """
 .mod-dur-btn:hover,.mod-dur-btn.active{border-color:var(--neon);color:var(--neon);background:rgba(0,240,255,.08);}
 .mod-dur-cancel{padding:8px 16px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text2);font-size:11px;cursor:pointer;margin-top:6px;}
 .mod-dur-cancel:hover{border-color:var(--red);color:var(--red);}
-#modPanel{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);}
-#modPanel .mod-panel-box{background:var(--surface);border:2px solid var(--gold);border-radius:16px;padding:0;max-width:520px;width:94%;max-height:80vh;overflow:hidden;box-shadow:0 0 50px rgba(0,0,0,.5);}
+
+
 .mod-panel-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(255,0,0,.06),rgba(255,136,0,.06));}
 .mod-panel-title{font-family:'Orbitron';font-size:15px;color:var(--gold);letter-spacing:2px;}
 .mod-panel-close{padding:6px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-size:12px;}
@@ -56,16 +52,16 @@ MOD_CSS = """
 .mod-panel-item-detail{font-size:10px;color:var(--text2);margin-top:2px;}
 .mod-panel-item-actions{display:flex;gap:6px;}
 .mod-panel-action{padding:5px 10px;border-radius:6px;border:none;font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;}
-.mod-panel-action.red{background:rgba(255,50,50,.15);color:#ff4444;border:1px solid rgba(255,50,50,.3);}
+.mod-panel-action.red{background:rgba(255,50,50,.15);color:
 .mod-panel-action.red:hover{background:rgba(255,50,50,.3);}
 .mod-panel-action.green{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2);}
 .mod-panel-action.green:hover{background:rgba(0,255,136,.2);}
-.mod-panel-action.blue{background:rgba(0,150,255,.1);color:#44aaff;border:1px solid rgba(0,150,255,.2);}
+.mod-panel-action.blue{background:rgba(0,150,255,.1);color:
 .mod-panel-action.blue:hover{background:rgba(0,150,255,.2);}
 .mod-panel-empty{text-align:center;color:var(--text2);padding:30px;font-size:13px;}
 .mod-panel-search{width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;outline:none;margin-bottom:12px;box-sizing:border-box;}
 .mod-panel-search:focus{border-color:var(--neon);}
-.mod-chat-admin-btn{position:absolute;top:4px;right:4px;width:20px;height:20px;background:rgba(255,50,50,.7);border:none;border-radius:50%;color:#fff;font-size:10px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:2;transition:all .15s;}
+.mod-chat-admin-btn{position:absolute;top:4px;right:4px;width:20px;height:20px;background:rgba(255,50,50,.7);border:none;border-radius:50%;color:
 .mod-chat-admin-btn:hover{background:rgba(255,50,50,1);transform:scale(1.1);}
 .chat-msg{position:relative;}
 .chat-msg:hover .mod-chat-admin-btn{display:flex;}
@@ -75,9 +71,7 @@ MOD_CSS = """
 content = content.replace('\n</style>', MOD_CSS + '</style>', 1)
 print("✅ CSS styles added")
 
-# ============================================================
-# 2. ADD HTML OVERLAYS before </body>
-# ============================================================
+
 MOD_HTML = """
 <!-- ============ MODERATION OVERLAYS ============ -->
 <!-- Ban Popup -->
@@ -152,10 +146,7 @@ MOD_HTML = """
 content = content.replace('\n</body>', MOD_HTML + '</body>', 1)
 print("✅ HTML overlays added")
 
-# ============================================================
-# 3. ADD MUTE BANNER above chat input
-# ============================================================
-# Find the chat input wrap area and add mute banner above it
+
 mute_banner_html = '    <div id="modMuteBanner">🔇 You are muted: <span id="modMuteReason"></span> — <span id="modMuteTimer"></span></div>\n'
 content = content.replace(
     '    <input class="chat-input" id="chatInput"',
@@ -164,10 +155,7 @@ content = content.replace(
 )
 print("✅ Mute banner added to chat")
 
-# ============================================================
-# 4. ADD BAN CHECK in Firebase onAuthStateChanged
-# ============================================================
-# After loading player data and before showing casino, check if banned
+
 ban_check_code = """
     // === MODERATION: Check ban status ===
     const banSnap = await get(ref(db, 'casino/bannedUsers/' + playerId));
@@ -186,7 +174,7 @@ ban_check_code = """
     }
 """
 
-# Insert before the "Set up session ID for multiplayer" line
+
 content = content.replace(
     "    // Set up session ID for multiplayer\n    let pylSessionId",
     ban_check_code + "    // Set up session ID for multiplayer\n    let pylSessionId",
@@ -194,9 +182,7 @@ content = content.replace(
 )
 print("✅ Ban check added to login flow")
 
-# ============================================================
-# 5. ADD MOD PANEL BUTTON to admin panel HTML
-# ============================================================
+
 mod_panel_button = """      <div style="margin-top:12px;">
         <button onclick="modOpenPanel()" style="width:100%;padding:10px;background:linear-gradient(135deg,#ff0000,#ff6600);border:none;border-radius:8px;color:#fff;cursor:pointer;font-weight:900;font-size:12px;font-family:'Orbitron';letter-spacing:1px;">🛡️ MODERATION PANEL</button>
       </div>
@@ -209,9 +195,7 @@ content = content.replace(
 )
 print("✅ Mod panel button added to admin panel")
 
-# ============================================================
-# 6. ADD MUTE CHECK to sendChatMessage function
-# ============================================================
+
 content = content.replace(
     "function sendChatMessage() {\n  const input = document.getElementById('chatInput');\n  let text = input.value.trim();\n  if (!text) return;\n  if (isGuestMode) { showToast('Sign in to chat', false); return; }",
     "function sendChatMessage() {\n  const input = document.getElementById('chatInput');\n  let text = input.value.trim();\n  if (!text) return;\n  if (isGuestMode) { showToast('Sign in to chat', false); return; }\n  if (window._modIsMuted) { showToast('🔇 You are muted!', false); return; }",
@@ -219,10 +203,7 @@ content = content.replace(
 )
 print("✅ Mute check added to sendChatMessage")
 
-# ============================================================
-# 7. ADD ADMIN DELETE BUTTON to chat messages
-# ============================================================
-# In the _onChatMessages function, add admin delete button to regular messages
+
 old_chat_el = """el.innerHTML = `<div class="chat-msg-avatar">${avatarContent}</div>
         <div class="chat-msg-body">
           <div class="chat-msg-name${isGuest?' guest-name':''}">${escapeHtml(m.user||'Guest')}${roleBadge}${pBadge} <span class="chat-msg-time">${timeStr}</span></div>
@@ -237,10 +218,7 @@ new_chat_el = """const adminDel = modIsStaff() ? \`<button class="mod-chat-admin
 content = content.replace(old_chat_el, new_chat_el, 1)
 print("✅ Admin buttons added to chat messages")
 
-# ============================================================
-# 8. ADD uid to chat messages in Firebase module
-# ============================================================
-# In _sendChatMsg, add uid field
+
 content = content.replace(
     "    user: username || 'Guest',\n    text: text.slice(0, 200),\n    type: type || 'msg', // 'msg', 'win', 'system'\n    ts: Date.now(),",
     "    user: username || 'Guest',\n    text: text.slice(0, 200),\n    type: type || 'msg', // 'msg', 'win', 'system'\n    uid: playerId || '',\n    ts: Date.now(),",
@@ -248,18 +226,12 @@ content = content.replace(
 )
 print("✅ Added uid to chat messages")
 
-# ============================================================
-# 9. ADD m.key and m.uid to chat message parsing
-# ============================================================
-# Need to pass key to the message objects. Find _initChat or chat message listener
-# Look for where chat messages are parsed and passed to _onChatMessages
 
-# Find the chat listener setup
 chat_listener_match = re.search(r'const _chatMsgs = \[\];', content)
 if chat_listener_match:
     print(f"  Found chat msgs array at pos {chat_listener_match.start()}")
 
-# We need to add key to message objects. Let's find where messages are pushed
+
 old_chat_parse = "snap.forEach(child => {\n      const val = child.val();\n      _chatMsgs.push(val);"
 new_chat_parse = "snap.forEach(child => {\n      const val = child.val();\n      val.key = child.key;\n      _chatMsgs.push(val);"
 
@@ -267,18 +239,16 @@ if old_chat_parse in content:
     content = content.replace(old_chat_parse, new_chat_parse, 1)
     print("✅ Added key to chat message objects")
 else:
-    # Try alternate format
+
     print("⚠️ Could not find chat parse pattern, searching...")
-    # Search for the forEach pattern
+
     idx = content.find('_chatMsgs.push(val)')
     if idx > 0:
-        # Find the line before it
+
         context = content[max(0,idx-200):idx+50]
         print(f"  Context around push: ...{repr(context[-100:])}...")
 
-# ============================================================
-# 10. ADD MODERATION WATCHERS to _onAuthReady
-# ============================================================
+
 content = content.replace(
     "  // Listen for RR PvP challenges\n  if (typeof rrListenForChallenges === 'function') rrListenForChallenges();\n};",
     "  // Listen for RR PvP challenges\n  if (typeof rrListenForChallenges === 'function') rrListenForChallenges();\n  // Start moderation watchers\n  if (typeof modStartWatchers === 'function') modStartWatchers();\n};",
@@ -286,9 +256,7 @@ content = content.replace(
 )
 print("✅ Mod watchers added to _onAuthReady")
 
-# ============================================================
-# 11. ADD MAIN MODERATION JAVASCRIPT before SETTINGS section
-# ============================================================
+
 MOD_JS = r"""
 // ============ MODERATION SYSTEM ============
 const MOD_ADMINS = ['mojheh', 'terpez']; // hardcoded staff
@@ -340,7 +308,7 @@ let _modWarnUnsub = null;
 function modStartWatchers() {
   const uid = window._currentPlayerId;
   if (!uid) return;
-  
+
   // Watch ban status
   if (_modBanUnsub) { try { _modBanUnsub(); } catch(e){} }
   _modBanUnsub = window._fbOnValue('casino/bannedUsers/' + uid, (snap) => {
@@ -352,7 +320,7 @@ function modStartWatchers() {
       setTimeout(() => { if (window._authLogout) window._authLogout(); }, 4000);
     }
   });
-  
+
   // Watch mute status
   if (_modMuteUnsub) { try { _modMuteUnsub(); } catch(e){} }
   _modMuteUnsub = window._fbOnValue('casino/mutedUsers/' + uid, (snap) => {
@@ -401,7 +369,7 @@ function modStartWatchers() {
       document.getElementById('modMuteTimer').textContent = 'Permanent';
     }
   });
-  
+
   // Watch warnings
   if (_modWarnUnsub) { try { _modWarnUnsub(); } catch(e){} }
   _modWarnUnsub = window._fbOnValue('casino/warnings/' + uid, (snap) => {
@@ -452,12 +420,12 @@ function modStartAction(type, uid, username) {
   _modActionTargetUid = uid;
   _modActionTargetName = username;
   _modSelectedDuration = 10080;
-  
+
   const modal = document.getElementById('modReasonModal');
   const titleEl = document.getElementById('modReasonTitle');
   const durRow = document.getElementById('modDurationRow');
   document.getElementById('modReasonCustom').value = '';
-  
+
   if (type === 'ban') {
     titleEl.textContent = '🚫 BAN — ' + username;
     durRow.style.display = 'flex';
@@ -468,11 +436,11 @@ function modStartAction(type, uid, username) {
     titleEl.textContent = '⚠️ WARN — ' + username;
     durRow.style.display = 'none';
   }
-  
+
   // Reset duration buttons
   durRow.querySelectorAll('.mod-dur-btn').forEach(b => b.classList.remove('active'));
   durRow.querySelector('.mod-dur-btn:nth-child(3)').classList.add('active'); // 1w default
-  
+
   modal.style.display = 'flex';
 }
 
@@ -500,11 +468,11 @@ async function modConfirmReason() {
   const uid = _modActionTargetUid;
   const username = _modActionTargetName;
   const type = _modActionType;
-  
+
   if (!uid || !type) { modCancelReason(); return; }
-  
+
   document.getElementById('modReasonModal').style.display = 'none';
-  
+
   try {
     if (type === 'ban') {
       const until = _modSelectedDuration === 0 ? 9999999999999 : Date.now() + _modSelectedDuration * 60000;
@@ -542,7 +510,7 @@ async function modConfirmReason() {
     console.error('Mod action error:', e);
     showToast('❌ Failed: ' + (e.message || 'Unknown error'), false);
   }
-  
+
   _modActionType = null;
   _modActionTargetUid = null;
   _modActionTargetName = null;
@@ -583,7 +551,7 @@ function modSwitchTab(tab) {
   _modPanelTab = tab;
   document.querySelectorAll('.mod-panel-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.mod-panel-tab').forEach(t => {
-    if (t.textContent.trim().toLowerCase() === tab || 
+    if (t.textContent.trim().toLowerCase() === tab ||
         (tab === 'banned' && t.textContent.includes('BANNED')) ||
         (tab === 'muted' && t.textContent.includes('MUTED')) ||
         (tab === 'actions' && t.textContent.includes('ACTIONS'))) {
@@ -596,7 +564,7 @@ function modSwitchTab(tab) {
 async function modRenderPanel() {
   const container = document.getElementById('modPanelContent');
   container.innerHTML = '<div class="mod-panel-empty">Loading...</div>';
-  
+
   try {
     if (_modPanelTab === 'banned') {
       const snap = await window._fbGet('casino/bannedUsers');
@@ -684,7 +652,7 @@ async function modLookupUser() {
         <div class="mod-panel-item-info">
           <div class="mod-panel-item-name">${username} <span style="font-size:10px;color:var(--text2);">${uid.slice(0,12)}...</span></div>
           <div class="mod-panel-item-detail">
-            Status: ${isBanned ? '<span style="color:#ff3333;">BANNED</span>' : '<span style="color:var(--green);">Not banned</span>'} · 
+            Status: ${isBanned ? '<span style="color:#ff3333;">BANNED</span>' : '<span style="color:var(--green);">Not banned</span>'} ·
             ${isMuted ? '<span style="color:#ff8800;">MUTED</span>' : '<span style="color:var(--green);">Not muted</span>'}
           </div>
         </div>
@@ -746,17 +714,15 @@ content = content.replace(
 )
 print("✅ Moderation JavaScript added")
 
-# ============================================================
-# WRITE THE RESULT
-# ============================================================
+
 with open(FILE, 'w', encoding='utf-8') as f:
     f.write(content)
 
-# Final verification
+
 lines = content.splitlines()
 print(f"\n📊 Final file: {len(lines)} lines")
 
-# Count braces in script blocks
+
 import re
 scripts = re.findall(r'<script[^>]*>(.*?)</script>', content, re.DOTALL)
 all_js = '\n'.join(scripts)

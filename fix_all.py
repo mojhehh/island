@@ -8,8 +8,7 @@ with open(file_path, 'r', encoding='utf-8') as f:
 orig_len = len(c)
 fixes = 0
 
-# ── FIX 1: Roulette readback ──
-# Replace the corrupted section with correct predetermined payout
+
 old_roul = """      document.getElementById('roulSpinBtn').disabled=false;
 Use the PREDETERMINED winner \u2014 not visual readback \u2014 to avoid mismatch bugs
       const fNum=winNum;
@@ -54,12 +53,12 @@ if old_roul in c:
     print("Fix 1 (roulette readback): APPLIED")
 else:
     print("Fix 1 (roulette readback): NOT FOUND")
-    # Debug
+
     if "PREDETERMINED" in c:
         idx = c.index("PREDETERMINED")
         print(f"  PREDETERMINED at {idx}, context: {repr(c[idx-50:idx+100])}")
 
-# ── FIX 2: Wheel readback ──
+
 old_wheel = """      /* visual readback \u2014 find which segment the top pointer actually sits on */
       const twTotal=WHEEL_SEGMENTS.reduce((s,sg)=>s+sg.weight,0);
       const pointerAng=((-Math.PI/2-wheelAngle)%(Math.PI*2)+Math.PI*4)%(Math.PI*2);
@@ -88,7 +87,7 @@ else:
         idx = c.index("visSeg")
         print(f"  visSeg at {idx}")
 
-# ── FIX 3: Horse racing selection lock ──
+
 old_horse_sel = """/* \u2500\u2500 SELECT HORSE \u2500\u2500 */
 function hrSelectHorse(idx) {
   hrSelected = idx;
@@ -107,7 +106,7 @@ if old_horse_sel in c:
 else:
     print("Fix 3 (horse select lock): NOT FOUND")
 
-# ── FIX 4: Horse racing locked selection at race start ──
+
 old_horse_race = """  hrRacing = true;
   balance -= bet;
   updateBalDisplay();firebaseSaveBet();
@@ -130,7 +129,7 @@ if old_horse_race in c:
 else:
     print("Fix 4 (horse race lock): NOT FOUND")
 
-# ── FIX 5: Horse racing payout uses locked selection ──
+
 old_horse_payout = """      const myHorse = hrRaceHorses.find(h => h.idx === hrSelected);
       const myFinish = finishOrder.findIndex(f => f.idx === hrSelected) + 1;
       const odds = myHorse.displayOdds;
@@ -150,7 +149,7 @@ if old_horse_payout in c:
 else:
     print("Fix 5 (horse payout lock): NOT FOUND")
 
-# ── FIX 6: Define mpbsrCleanup and mpbsrBackToLobby ──
+
 old_mpbsr = """let mpbsrGameId = null;
 let mpbsrIsHost = false;
 let mpbsrChallengeInterval = null;"""
@@ -183,7 +182,7 @@ if old_mpbsr in c:
 else:
     print("Fix 6 (mpbsr functions): NOT FOUND")
 
-# ── FIX 7: MAX_BALANCE from 1e18 to 1e30 ──
+
 old_max = "const MAX_BALANCE = 1e18; // $1 Quintillion hard cap"
 new_max = "const MAX_BALANCE = 1e30; // $1 Nonillion hard cap"
 
@@ -194,7 +193,7 @@ if old_max in c:
 else:
     print("Fix 7 (MAX_BALANCE): NOT FOUND")
 
-# ── FIX 8: formatBalance extended tiers ──
+
 old_fmt = """  if(abs>=1e18)return sign+(abs/1e18).toFixed(2)+'Qi';
   if(abs>=1e15)return sign+(abs/1e15).toFixed(2)+'Q';
   if(abs>=1e12)return sign+(abs/1e12).toFixed(2)+'T';
@@ -224,7 +223,7 @@ if old_fmt in c:
 else:
     print("Fix 8 (formatBalance tiers): NOT FOUND")
 
-# ── FIX 9: fmtBig in leaderboard extended tiers ──
+
 old_fmtbig = """const fmtBig = (v) => {
       const abs = Math.abs(v);
       if (abs >= 1e18) return '$' + (v/1e18).toFixed(2) + 'Qi';
@@ -284,7 +283,7 @@ if old_fmtbig in c:
 else:
     print("Fix 9 (fmtBig/fmtProfit tiers): NOT FOUND")
 
-# ── FIX 10: Leaderboard auto-refresh ──
+
 old_lb = """let currentLBCategory = 'richest';
 
 function switchLB(category, btn) {
@@ -325,7 +324,7 @@ if old_lb in c:
 else:
     print("Fix 10 (LB auto-refresh): NOT FOUND")
 
-# ── FIX 11: switchGame leaderboard auto-refresh ──
+
 old_switch = "  if(game==='leaderboard')loadLeaderboard(currentLBCategory);"
 new_switch = "  if(game==='leaderboard'){loadLeaderboard(currentLBCategory);startLBAutoRefresh();}\n  else if(lbAutoInterval){clearInterval(lbAutoInterval);lbAutoInterval=null;}"
 
@@ -336,7 +335,7 @@ if old_switch in c:
 else:
     print("Fix 11 (switchGame LB refresh): NOT FOUND")
 
-# Write back
+
 print(f"\nTotal fixes applied: {fixes}/11")
 print(f"Size change: {orig_len} -> {len(c)} chars")
 

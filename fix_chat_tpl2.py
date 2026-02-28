@@ -6,7 +6,7 @@ FILE = r'c:\Users\sebmo\Downloads\island\casino.html'
 with open(FILE, 'r', encoding='utf-8') as f:
     lines = f.readlines()
 
-# Find the corrupted block
+
 start_idx = None
 end_idx = None
 
@@ -15,7 +15,7 @@ for i, line in enumerate(lines):
         start_idx = i
         print(f"Found start at line {i+1}")
     if start_idx is not None and "container.appendChild(el)" in line:
-        end_idx = i  # this line itself stays
+        end_idx = i
         print(f"Found end at line {i+1}")
         break
 
@@ -28,7 +28,7 @@ print(f"Old content:")
 for i in range(start_idx, end_idx):
     print(f"  {i+1}: {lines[i].rstrip()}")
 
-# Build replacement using simple string building (no nested templates)
+
 replacement = '''      let chatAdminHtml = '';
       if (modIsStaff()) {
         chatAdminHtml += '<button class="mod-chat-admin-btn" onclick="modDeleteChatMsg(\\'' + m.id + '\\')" title="Delete message">\\ud83d\\uddd1</button>';
@@ -50,7 +50,7 @@ lines[start_idx:end_idx] = new_lines
 with open(FILE, 'w', encoding='utf-8') as f:
     f.writelines(lines)
 
-# Verify
+
 import re
 content = ''.join(lines)
 scripts = re.findall(r'<script[^>]*>(.*?)</script>', content, re.DOTALL)

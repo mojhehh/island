@@ -41,7 +41,7 @@
       max-width: 100vw;
     }
 
-    /* ═══════════════════════════ LAYOUT ═══════════════════════════ */
+    
     .app-container {
       display: flex;
       flex-direction: column;
@@ -160,7 +160,7 @@
       border-color: rgba(0, 255, 136, 0.6);
     }
 
-    /* ═══════════════════════════ MAIN CONTENT ═══════════════════════════ */
+    
     main {
       flex: 1;
       margin-top: 60px;
@@ -189,7 +189,7 @@
       }
     }
 
-    /* ═══════════════════════════ GAMES GRID ═══════════════════════════ */
+    
     .games-section {
       padding: 20px 16px;
       max-width: 1400px;
@@ -271,7 +271,7 @@
       z-index: 1;
     }
 
-    /* ═══════════════════════════ GAME MODALS ═══════════════════════════ */
+    
     .modal-overlay {
       display: none;
       position: fixed;
@@ -335,7 +335,7 @@
       transform: rotate(90deg);
     }
 
-    /* ═══════════════════════════ BUTTONS ═══════════════════════════ */
+    
     .btn {
       border: none;
       border-radius: 8px;
@@ -403,7 +403,7 @@
       transform: none;
     }
 
-    /* ═══════════════════════════ FORMS ═══════════════════════════ */
+    
     .form-group {
       margin-bottom: 16px;
     }
@@ -438,7 +438,7 @@
       box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
     }
 
-    /* ═══════════════════════════ TOAST NOTIFICATIONS ═══════════════════════════ */
+    
     .toast-container {
       position: fixed;
       bottom: 20px;
@@ -482,7 +482,7 @@
       }
     }
 
-    /* ═══════════════════════════ RESPONSIVE ═══════════════════════════ */
+    
     @media (max-width: 768px) {
       header {
         height: 50px;
@@ -528,7 +528,7 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+    
     <header>
       <div class="header-logo">💰 CASINO ROYALE</div>
       
@@ -550,9 +550,9 @@
       </div>
     </header>
 
-    <!-- ═══════════════════════════ MAIN CONTENT ═══════════════════════════ -->
+    
     <main>
-      <!-- Games Overview Section -->
+      
       <section class="content-section active" data-page="games">
         <div class="games-section">
           <div class="section-title">
@@ -563,7 +563,7 @@
         </div>
       </section>
 
-      <!-- Slots Section -->
+      
       <section class="content-section" data-page="slots">
         <div class="games-section">
           <div class="section-title">
@@ -575,7 +575,7 @@
         </div>
       </section>
 
-      <!-- Crash Section -->
+      
       <section class="content-section" data-page="crash">
         <div class="games-section">
           <div class="section-title">
@@ -587,7 +587,7 @@
         </div>
       </section>
 
-      <!-- Dice Section -->
+      
       <section class="content-section" data-page="dice">
         <div class="games-section">
           <div class="section-title">
@@ -599,7 +599,7 @@
         </div>
       </section>
 
-      <!-- Leaderboard Section -->
+      
       <section class="content-section" data-page="leaderboard">
         <div class="games-section">
           <div class="section-title">
@@ -612,7 +612,7 @@
         </div>
       </section>
 
-      <!-- Stats Section -->
+      
       <section class="content-section" data-page="stats">
         <div class="games-section">
           <div class="section-title">
@@ -637,7 +637,7 @@
       </section>
     </main>
 
-    <!-- ═══════════════════════════ MODALS ═══════════════════════════ -->
+    
     <div class="modal-overlay" id="modalOverlay">
       <div class="modal-content">
         <div class="modal-header">
@@ -648,7 +648,7 @@
       </div>
     </div>
 
-    <!-- Add Money Modal -->
+    
     <div class="modal-overlay" id="addMoneyModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -666,12 +666,12 @@
       </div>
     </div>
 
-    <!-- Toast Container -->
+    
     <div class="toast-container" id="toastContainer"></div>
   </div>
 
   <script>
-    // ═══════════════════════════ STATE MANAGEMENT ═══════════════════════════
+    
     const gameState = {
       balance: parseInt(localStorage.getItem('casino_balance')) || 1000,
       username: localStorage.getItem('casino_username') || 'Player',
@@ -682,7 +682,7 @@
       }
     };
 
-    // ═══════════════════════════ GAME DEFINITIONS ═══════════════════════════
+    
     const games = [
       { id: 'classic_slots', name: 'Classic Slots', icon: '🎰', category: 'slots', rtp: 96.5 },
       { id: 'mega_slots', name: 'Mega Slots', icon: '🎰', category: 'slots', rtp: 95.8 },
@@ -701,7 +701,7 @@
       { id: 'baccarat', name: 'Baccarat', icon: '🎴', category: 'other', rtp: 98.8 },
     ];
 
-    // ═══════════════════════════ DOM UPDATES ═══════════════════════════
+    
     function updateBalanceDisplay() {
       document.getElementById('balanceDisplay').textContent = `$${gameState.balance.toLocaleString()}`;
       localStorage.setItem('casino_balance', gameState.balance);
@@ -741,15 +741,15 @@
       `).join('');
     }
 
-    // ═══════════════════════════ NAVIGATION ═══════════════════════════
+    
     function switchSection(sectionId) {
-      // Update nav items
+      
       document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
       });
       event.target.classList.add('active');
 
-      // Update sections
+      
       document.querySelectorAll('[data-page]').forEach(section => {
         section.classList.remove('active');
       });
@@ -762,7 +762,7 @@
       });
     });
 
-    // ═══════════════════════════ MODALS ═══════════════════════════
+    
     function openGameModal(gameId) {
       const game = games.find(g => g.id === gameId);
       if (!game) return;
@@ -819,7 +819,7 @@
       showToast(`Added $${amount.toLocaleString()}!`, 'success');
     }
 
-    // ═══════════════════════════ GAME LOGIC ═══════════════════════════
+    
     function playGame(gameId) {
       const game = games.find(g => g.id === gameId);
       const betEl = document.getElementById('betAmount');
@@ -835,13 +835,13 @@
         return;
       }
 
-      // Deduct bet
+      
       gameState.balance -= bet;
       gameState.stats.wagered += bet;
       gameState.stats.gamesPlayed += 1;
       updateBalanceDisplay();
 
-      // Simulate game result
+      
       const result = Math.random();
       const win = result > 0.45;
       const multiplier = win ? (Math.random() * 2.5 + 1) : 0;
@@ -863,7 +863,7 @@
       closeModal();
     }
 
-    // ═══════════════════════════ TOAST NOTIFICATIONS ═══════════════════════════
+    
     function showToast(message, type = 'info') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
@@ -878,13 +878,13 @@
       }, 3000);
     }
 
-    // ═══════════════════════════ INITIALIZATION ═══════════════════════════
+    
     window.addEventListener('DOMContentLoaded', () => {
       updateBalanceDisplay();
       renderGames();
     });
 
-    // Keyboard shortcuts
+    
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeModal();

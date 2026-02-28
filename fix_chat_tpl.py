@@ -6,27 +6,21 @@ FILE = r'c:\Users\sebmo\Downloads\island\casino.html'
 with open(FILE, 'r', encoding='utf-8') as f:
     lines = f.readlines()
 
-# Find the corrupted lines around the chat rendering (around line 9769)
-# We need to replace lines 9769-9775 (1-indexed) with proper template literals
-# Line 9769: const adminDel = modIsStaff() ? \`... 
-# Through line 9775: </div>\`;
 
-# Find the exact lines
 for i, line in enumerate(lines):
     if "const adminDel = modIsStaff()" in line and "mod-chat-admin-btn" in line:
         print(f"Found corrupted adminDel at line {i+1}: {line.rstrip()[:80]}...")
-        
-        # Replace this line and the following template literal block
-        # Find the end of the template (line with `\`;`)
+
+
         end_idx = i
         for j in range(i, min(i+10, len(lines))):
             if "container.appendChild(el)" in lines[j]:
                 end_idx = j
                 break
-        
+
         print(f"Replacing lines {i+1} through {end_idx}")
-        
-        # Build the correct replacement
+
+
         new_lines = [
             '      const adminDel = modIsStaff() ? `<button class="mod-chat-admin-btn" onclick="modDeleteChatMsg(\'` + m.id + `\')" title="Delete message">\ud83d\uddd1</button>` : \'\';\n',
             '      const modBtn = (modIsStaff() && m.uid && m.uid !== window._currentPlayerId) ? ` <button style="font-size:9px;padding:1px 5px;background:rgba(255,50,50,.15);border:1px solid rgba(255,50,50,.3);border-radius:4px;color:#ff6644;cursor:pointer;margin-left:4px;" onclick="modOpenActionOnUser(\'` + m.uid + `\',\'` + escapeHtml(m.user||\'Guest\') + `\')">MOD</button>` : \'\';\n',
@@ -36,7 +30,7 @@ for i, line in enumerate(lines):
             '          <div class="chat-msg-text">${escapeHtml(m.text)}</div>\n',
             '        </div>`;\n',
         ]
-        
+
         lines[i:end_idx] = new_lines
         print(f"Replaced with {len(new_lines)} lines")
         break
@@ -44,7 +38,7 @@ for i, line in enumerate(lines):
 with open(FILE, 'w', encoding='utf-8') as f:
     f.writelines(lines)
 
-# Verify
+
 import re
 content = ''.join(lines)
 scripts = re.findall(r'<script[^>]*>(.*?)</script>', content, re.DOTALL)

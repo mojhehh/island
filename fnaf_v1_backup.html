@@ -26,7 +26,7 @@
 
         canvas { display: block; width: 100vw; height: 100vh; }
 
-        /* Custom Cursor */
+        
         #cursor {
             position: fixed;
             width: 20px; height: 20px;
@@ -52,7 +52,7 @@
             border-radius: 50%;
         }
 
-        /* ========== TITLE SCREEN ========== */
+        
         #titleScreen {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -188,7 +188,7 @@
             letter-spacing: 2px;
         }
 
-        /* Power warning flash */
+        
         @keyframes powerWarning {
             0%, 100% { opacity: 0; }
             50% { opacity: 1; }
@@ -202,7 +202,7 @@
             color: #ff0000 !important;
         }
 
-        /* Visual flash for actions */
+        
         .action-flash {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -221,7 +221,7 @@
             opacity: 1;
         }
 
-        /* ========== NIGHT START SCREEN ========== */
+        
         #nightStartScreen {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -260,7 +260,7 @@
             animation: nightFadeIn 2s ease forwards;
         }
 
-        /* ========== WIN/LOSE SCREENS ========== */
+        
         #winScreen, #loseScreen {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -273,7 +273,7 @@
         }
         #winScreen.active, #loseScreen.active { display: flex; }
 
-        /* ========== 6 AM SCREEN ========== */
+        
         .six-am-text {
             font-family: 'Creepster', cursive;
             font-size: 100px;
@@ -293,7 +293,7 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        /* ========== GAME OVER ========== */
+        
         .gameover-text {
             font-family: 'Creepster', cursive;
             font-size: 60px;
@@ -324,7 +324,7 @@
             box-shadow: 0 0 20px rgba(192,57,43,0.3);
         }
 
-        /* ========== HUD ========== */
+        
         #hud {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -382,7 +382,7 @@
             margin-bottom: 2px;
         }
 
-        /* ========== CAMERA VIEW ========== */
+        
         #cameraOverlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -440,7 +440,7 @@
             border: 1px solid rgba(255,255,255,0.06);
         }
 
-        /* Camera map panel */
+        
         #camMapPanel {
             position: absolute;
             bottom: 10px;
@@ -491,7 +491,7 @@
             color: #f1c40f;
         }
 
-        /* Camera toggle button */
+        
         #camToggle {
             position: absolute;
             bottom: 80px;
@@ -520,7 +520,7 @@
             transform: translateX(-50%) scale(0.95);
         }
 
-        /* ========== OFFICE VIEW ========== */
+        
         #officeUI {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -528,7 +528,7 @@
             z-index: 7;
         }
 
-        /* Door buttons */
+        
         .door-btn-area {
             position: absolute;
             top: 30%;
@@ -594,7 +594,7 @@
             transform: scale(0.9);
         }
 
-        /* ========== JUMPSCARE ========== */
+        
         #jumpscareOverlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -619,7 +619,7 @@
             100% { transform: translate(-3px, 2px) scale(1.1); }
         }
 
-        /* ========== STATIC NOISE ========== */
+        
         #staticOverlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -629,7 +629,7 @@
             transition: opacity 0.1s;
         }
 
-        /* ========== PHONE GUY ========== */
+        
         #phoneIcon {
             position: absolute;
             top: 60px;
@@ -668,7 +668,7 @@
             backdrop-filter: blur(4px);
         }
 
-        /* ========== VIGNETTE ========== */
+        
         #vignette {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -683,16 +683,16 @@
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
 
-        <!-- Vignette -->
+        
         <div id="vignette"></div>
 
-        <!-- Action flash overlays -->
+        
         <div id="actionFlash" class="action-flash"></div>
 
-        <!-- Static overlay -->
+        
         <canvas id="staticOverlay"></canvas>
 
-        <!-- HUD -->
+        
         <div id="hud">
             <div id="powerDisplay">
                 <div class="power-label">POWER LEFT</div>
@@ -705,7 +705,7 @@
             </div>
         </div>
 
-        <!-- Office UI (doors/lights) -->
+        
         <div id="officeUI">
             <div class="door-btn-area left">
                 <div class="door-label">LEFT DOOR</div>
@@ -719,10 +719,10 @@
             </div>
         </div>
 
-        <!-- Camera toggle -->
+        
         <div id="camToggle" onclick="toggleCamera()">CAMERAS</div>
 
-        <!-- Camera overlay -->
+        
         <div id="cameraOverlay">
             <div class="cam-static"></div>
             <div class="cam-border"></div>
@@ -733,7 +733,7 @@
                 <div class="cam-map-bg">
                     <div class="cam-map-title">MAP</div>
                     <svg viewBox="0 0 240 200" width="240" height="200">
-                        <!-- Room outlines -->
+                        
                         <rect x="80" y="5" width="80" height="35" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
                         <rect x="20" y="50" width="60" height="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
                         <rect x="90" y="50" width="55" height="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
@@ -745,7 +745,7 @@
                         <rect x="85" y="145" width="65" height="45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
                         <rect x="185" y="145" width="50" height="45" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/>
                     </svg>
-                    <!-- Camera buttons (positioned over the SVG) -->
+                    
                     <div style="position:relative; margin-top:-200px; width:240px; height:200px;">
                         <div class="cam-btn active" style="left:95px; top:12px" onclick="selectCam('1A')" id="cam-1A">1A</div>
                         <div class="cam-btn" style="left:28px; top:60px" onclick="selectCam('1B')" id="cam-1B">1B</div>
@@ -762,16 +762,16 @@
             </div>
         </div>
 
-        <!-- Phone icon -->
+        
         <div id="phoneIcon" onclick="togglePhone()">📞</div>
         <div id="phoneText"></div>
 
-        <!-- Jumpscare -->
+        
         <div id="jumpscareOverlay">
             <img id="jumpscareImg" src="">
         </div>
 
-        <!-- ========== TITLE SCREEN ========== -->
+        
         <div id="titleScreen">
             <canvas id="titleBg" width="800" height="600"></canvas>
             <div class="title-content">
@@ -794,21 +794,21 @@
             <div class="title-controls">Q/E: DOORS | A/D: LIGHTS | SPACE: CAMERAS | W/S: CYCLE CAMS | ESC: MENU</div>
         </div>
 
-        <!-- Night start -->
+        
         <div id="nightStartScreen">
             <div class="night-start-text" id="nightStartText">12 AM</div>
             <div class="night-start-number" id="nightStartNumber">1st Night</div>
             <div class="night-start-am" id="nightStartSub"></div>
         </div>
 
-        <!-- Win (6 AM) -->
+        
         <div id="winScreen">
             <div class="six-am-text">6 AM</div>
             <div class="six-am-sub" id="winNightText">NIGHT 1 COMPLETE</div>
             <div class="six-am-sub" style="margin-top:20px; color:#333; cursor:pointer;" onclick="proceedAfterWin()">▸ CONTINUE ◂</div>
         </div>
 
-        <!-- Lose -->
+        
         <div id="loseScreen">
             <div class="gameover-text">GAME OVER</div>
             <div class="gameover-sub" id="loseText">You were caught by Epstein</div>
@@ -818,9 +818,7 @@
     </div>
 
 <script>
-// ================================================================
-// FIVE NIGHTS AT EPSTEIN'S — FNAF 1 Style
-// ================================================================
+
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -836,17 +834,14 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-// Cursor
+
 document.addEventListener('mousemove', e => {
     const c = document.getElementById('cursor');
     c.style.left = (e.clientX - 10) + 'px';
     c.style.top = (e.clientY - 10) + 'px';
 });
 
-// ============== AUDIO ==============
-// Sound effects disabled — will be added later
 
-// ============== LOAD IMAGES ==============
 const images = {};
 const imageSources = {
     epstein: 'guard.webp',
@@ -856,7 +851,7 @@ const imageSources = {
     prince: 'guard6.jpg',
     ghislaine: 'guard5.jpg',
     player: 'player.jpg',
-    // Camera background photos
+    
     cam_stage: 'cam_stage.jpg',
     cam_dining: 'cam_dining.jpg',
     cam_pool: 'cam_pool.jpg',
@@ -877,7 +872,7 @@ Object.entries(imageSources).forEach(([key, src]) => {
     images[key] = img;
 });
 
-// ============== GAME CONSTANTS ==============
+
 const ROOMS = {
     '1A': { name: 'SHOW STAGE', x: 80, y: 5, w: 80, h: 35, desc: 'The main stage — where they all start' },
     '1B': { name: 'DINING AREA', x: 20, y: 50, w: 60, h: 40, desc: 'Tables and chairs... who dined here?' },
@@ -891,41 +886,41 @@ const ROOMS = {
     '4B': { name: 'E. HALL CORNER', x: 185, y: 145, w: 50, h: 45, desc: 'Right outside your right door' }
 };
 
-// Animatronics — named after the existing images
+
 const ANIMATRONICS_CONFIG = [
     { id: 'epstein', name: 'Epstein', imgKey: 'epstein', startRoom: '1A',
-      path: ['1A','1B','2A','2B'], // goes left
+      path: ['1A','1B','2A','2B'], 
       aggressionBase: 0, aggressionPerNight: 1.5, maxAggro: 20 },
     { id: 'clinton', name: 'Bill Clinton', imgKey: 'clinton', startRoom: '1A',
-      path: ['1A','1C','2A','3','2B'], // goes left through pirate cove
+      path: ['1A','1C','2A','3','2B'], 
       aggressionBase: -1, aggressionPerNight: 1.2, maxAggro: 18 },
     { id: 'prince', name: 'Prince Andrew', imgKey: 'prince', startRoom: '1A',
-      path: ['1A','5','4A','4B'], // goes right
+      path: ['1A','5','4A','4B'], 
       aggressionBase: -1, aggressionPerNight: 1.0, maxAggro: 16 },
     { id: 'ghislaine', name: 'Ghislaine', imgKey: 'ghislaine', startRoom: '1C',
-      path: ['1C','1B','7','2A','2B'], // starts at the dock
+      path: ['1C','1B','7','2A','2B'], 
       aggressionBase: -2, aggressionPerNight: 1.5, maxAggro: 20 },
     { id: 'hawking', name: 'Steven Hawking', imgKey: 'hawking', startRoom: '5',
-      path: ['5','4A','7','4B'], // backstage to right
+      path: ['5','4A','7','4B'], 
       aggressionBase: -2, aggressionPerNight: 0.8, maxAggro: 14 },
     { id: 'musk', name: 'Elon Musk', imgKey: 'musk', startRoom: '7',
-      path: ['7','1B','3','2A','4A','4B'], // wanders everywhere
+      path: ['7','1B','3','2A','4A','4B'], 
       aggressionBase: -3, aggressionPerNight: 1.0, maxAggro: 15 },
 ];
 
-// ============== GAME STATE ==============
-let gameState = 'title'; // title, nightstart, playing, jumpscare, win, lose, powerdown
+
+let gameState = 'title'; 
 let currentNight = 1;
 let maxNightUnlocked = parseInt(localStorage.getItem('fnae_maxNight')) || 1;
-let nightId = 0; // incremented each night to invalidate stale setTimeouts
-let nightTime = 0; // 0-5 representing 12AM-5AM, reaches 6 = 6AM = win
-let nightTimer = 0; // counts up, each hour is ~89 seconds (real FNAF timing)
-const HOUR_DURATION = 89; // seconds per in-game hour
+let nightId = 0; 
+let nightTime = 0; 
+let nightTimer = 0; 
+const HOUR_DURATION = 89; 
 let power = 100;
-let powerUsageRate = 1; // base usage per tick
+let powerUsageRate = 1; 
 let cameraOpen = false;
 let currentCam = '1A';
-let leftDoor = false; // false = open, true = closed
+let leftDoor = false; 
 let rightDoor = false;
 let leftLight = false;
 let rightLight = false;
@@ -934,15 +929,15 @@ let jumpscareTarget = null;
 let jumpscareTimer = 0;
 
 let powerDownTimer = 0;
-let powerDownPhase = 0; // 0=music box, 1=eyes, 2=jumpscare or survive
+let powerDownPhase = 0; 
 let musicBoxTimer = 0;
 let staticAmount = 0;
-let officeScroll = 0; // -1 to 1, for looking left/right in office
+let officeScroll = 0; 
 let phoneShown = false;
 let phoneActive = false;
 let frameCount = 0;
 
-// Phone guy messages per night
+
 const PHONE_MESSAGES = [
     "Hey! Welcome to your new job at the island. Uh, I'm just here to tell you a few things. Those, uh, figures you see on the cameras? They tend to... wander at night. Use your doors and lights wisely — you only have so much power. Check those cameras, close the doors if they get close. Good luck!",
     "Hey, welcome back! Night 2... so, they get a bit more active tonight. Keep an eye on the east hall and west hall corners — that's where they'll show up before entering your office. And, uh, Ghislaine in the Pirate Cove... if you don't check on her enough, she'll make a run for it. Stay safe!",
@@ -951,7 +946,7 @@ const PHONE_MESSAGES = [
     "Night 5... final night. This is it. Everyone is at maximum aggression. I don't have any more advice. Just survive until 6 AM. May the truth set you free."
 ];
 
-// ============== ANIMATRONIC CLASS ==============
+
 function createAnimatronic(config, night) {
     const aggression = Math.max(0, config.aggressionBase + config.aggressionPerNight * night);
     return {
@@ -963,16 +958,16 @@ function createAnimatronic(config, night) {
         pathIndex: 0,
         aggression: Math.min(aggression, config.maxAggro),
         moveTimer: 0,
-        moveInterval: 5, // seconds between move attempts
+        moveInterval: 5, 
         isFoxy: config.isFoxy || false,
-        foxyPhase: 0, // 0=behind curtain, 1=peeking, 2=out, 3=running
+        foxyPhase: 0, 
         foxyRunTimer: 0,
-        atDoor: null, // 'left' or 'right' or null
+        atDoor: null, 
         jumpscareReady: false
     };
 }
 
-// ============== INIT NIGHT ==============
+
 function initNight(night) {
     currentNight = night;
     nightTime = 0;
@@ -994,11 +989,11 @@ function initNight(night) {
     phoneActive = night <= 5;
     phoneShown = false;
     frameCount = 0;
-    nightId++; // invalidate any pending setTimeouts from previous nights
+    nightId++; 
 
     animatronics = ANIMATRONICS_CONFIG.map(c => createAnimatronic(c, night));
 
-    // UI reset
+    
     document.getElementById('leftDoorBtn').className = 'door-btn door';
     document.getElementById('rightDoorBtn').className = 'door-btn door';
     document.getElementById('leftLightBtn').className = 'door-btn light';
@@ -1022,16 +1017,16 @@ function initNight(night) {
     gameState = 'playing';
 }
 
-// ============== UPDATE ==============
+
 function update(dt) {
     if (gameState !== 'playing' && gameState !== 'powerdown') return;
     frameCount++;
 
-    // === POWER DOWN STATE ===
+    
     if (gameState === 'powerdown') {
         powerDownTimer += dt;
 
-        // Night timer CONTINUES during power down (can be saved by 6AM)
+        
         nightTimer += dt;
         if (nightTimer >= HOUR_DURATION) {
             nightTimer -= HOUR_DURATION;
@@ -1043,30 +1038,30 @@ function update(dt) {
         }
 
         if (powerDownPhase === 0) {
-            // Dark + music box for random 5-20 seconds
+            
             if (musicBoxTimer === 0) musicBoxTimer = 5 + Math.random() * 15;
             if (powerDownTimer > musicBoxTimer) {
                 powerDownPhase = 1;
                 powerDownTimer = 0;
-                musicBoxTimer = 0; // RESET so phase 1 can set its own timer
+                musicBoxTimer = 0; 
             }
         } else if (powerDownPhase === 1) {
-            // Freddy's eyes + wait random 2-10 seconds
+            
             if (musicBoxTimer === 0) musicBoxTimer = 2 + Math.random() * 8;
             if (powerDownTimer > musicBoxTimer) {
-                // Either jumpscare or survive (if close to 6AM)
+                
                 if (nightTime >= 5 && nightTimer > HOUR_DURATION * 0.5) {
-                    // Survive!
+                    
                     winNight();
                 } else {
-                    triggerJumpscare(animatronics[0]); // Epstein jumpscares on power out
+                    triggerJumpscare(animatronics[0]); 
                 }
             }
         }
         return;
     }
 
-    // === TIME ===
+    
     nightTimer += dt;
     if (nightTimer >= HOUR_DURATION) {
         nightTimer -= HOUR_DURATION;
@@ -1077,8 +1072,8 @@ function update(dt) {
         }
     }
 
-    // === POWER ===
-    let usage = 1; // base
+    
+    let usage = 1; 
     if (leftDoor) usage++;
     if (rightDoor) usage++;
     if (leftLight) usage++;
@@ -1086,10 +1081,10 @@ function update(dt) {
     if (cameraOpen) usage++;
     powerUsageRate = usage;
 
-    power -= (usage * 0.105 * dt); // ~9.5% per bar per minute; base usage drains ~100% in ~9.5 min
+    power -= (usage * 0.105 * dt); 
     if (power <= 0) {
         power = 0;
-        // Power out!
+        
         leftDoor = false; rightDoor = false;
         leftLight = false; rightLight = false;
         cameraOpen = false;
@@ -1107,30 +1102,29 @@ function update(dt) {
         return;
     }
 
-    // === ANIMATRONIC AI ===
+    
     animatronics.forEach(anim => {
         if (anim.jumpscareReady) return;
 
 
-
         anim.moveTimer += dt;
 
-        // Normal animatronic movement
+        
         if (anim.moveTimer >= anim.moveInterval) {
             anim.moveTimer = 0;
 
-            // Opportunity to move: random check against aggression
+            
             const moveChance = anim.aggression / 20;
             if (Math.random() < moveChance) {
                 moveAnimatronic(anim);
             }
         }
 
-        // Check if at door and door is open (only once per arrival)
+        
         checkDoorAttack(anim, dt);
     });
 
-    // === STATIC ===
+    
     if (cameraOpen) {
         staticAmount = 0.03 + Math.random() * 0.02;
     } else {
@@ -1142,12 +1136,12 @@ function moveAnimatronic(anim) {
     const currentIdx = anim.path.indexOf(anim.currentRoom);
     if (currentIdx < 0) return;
 
-    // Move forward along path
+    
     let nextIdx = currentIdx + 1;
 
-    // At end of path (at a door)
+    
     if (nextIdx >= anim.path.length) {
-        // At the door — determine which side
+        
         const lastRoom = anim.path[anim.path.length - 1];
         if (lastRoom === '2B') {
             anim.atDoor = 'left';
@@ -1159,32 +1153,32 @@ function moveAnimatronic(anim) {
 
     const nextRoom = anim.path[nextIdx];
 
-    // If being watched on camera, reduce chance to move
+    
     if (cameraOpen && currentCam === anim.currentRoom) {
-        if (Math.random() > 0.3) return; // 70% chance they don't move while watched
+        if (Math.random() > 0.3) return; 
     }
 
     anim.currentRoom = nextRoom;
     anim.pathIndex = nextIdx;
 
-    // Check if reached door
+    
     if (nextRoom === '2B') anim.atDoor = 'left';
     else if (nextRoom === '4B') anim.atDoor = 'right';
     else anim.atDoor = null;
 }
 
 function updateFoxy(anim, dt) {
-    // Ghislaine/Foxy: advances phases based on not being watched
-    // Phase 0: behind curtain, 1: peeking, 2: out, 3: RUNNING
+    
+    
 
     if (anim.foxyPhase < 3) {
         anim.moveTimer += dt * 0.5;
 
-        // If camera is on pirate cove, slow down
+        
         if (cameraOpen && currentCam === '1C') {
-            anim.moveTimer -= dt * 0.8; // looking at her slows her down
+            anim.moveTimer -= dt * 0.8; 
         }
-        // Prevent negative accumulation from prolonged watching
+        
         if (anim.moveTimer < 0) anim.moveTimer = 0;
 
         const advanceTime = (20 - anim.aggression) * 0.8 + 3;
@@ -1193,8 +1187,8 @@ function updateFoxy(anim, dt) {
             if (Math.random() < anim.aggression / 20) {
                 anim.foxyPhase++;
                 if (anim.foxyPhase === 3) {
-                    // RUNNING! Set timer
-                    anim.foxyRunTimer = 1.5; // seconds to reach the door
+                    
+                    anim.foxyRunTimer = 1.5; 
                     anim.currentRoom = 'RUNNING';
                 }
             }
@@ -1204,22 +1198,22 @@ function updateFoxy(anim, dt) {
     if (anim.foxyPhase === 3) {
         anim.foxyRunTimer -= dt;
         if (anim.foxyRunTimer <= 0) {
-            // Reached left door!
+            
             if (leftDoor) {
-                // Bonk! Drains power but she goes back
+                
                 power -= 5 + currentNight * 2;
-                flashScreen('door-flash'); // visual feedback for bonk
+                flashScreen('door-flash'); 
                 anim.foxyPhase = 0;
                 anim.currentRoom = '1C';
                 anim.moveTimer = 0;
             } else {
-                // JUMPSCARE!
+                
                 triggerJumpscare(anim);
             }
         }
     }
 
-    // Set current room display
+    
     if (anim.foxyPhase < 3 && anim.currentRoom !== 'RUNNING') {
         anim.currentRoom = '1C';
     }
@@ -1227,18 +1221,18 @@ function updateFoxy(anim, dt) {
 
 function checkDoorAttack(anim, dt) {
     if (!anim.atDoor) return;
-    // CRITICAL: only trigger the jumpscare timer ONCE (jumpscareReady guards re-entry)
+    
     if (anim.jumpscareReady) return;
 
-    const savedNightId = nightId; // capture for setTimeout closure
+    const savedNightId = nightId; 
 
     if (anim.atDoor === 'left') {
         if (!leftDoor) {
-            // Door open — schedule attack ONCE
+            
             anim.jumpscareReady = true;
             const delay = 2000 + Math.random() * 3000;
             setTimeout(() => {
-                if (nightId !== savedNightId) return; // stale timer from previous night
+                if (nightId !== savedNightId) return; 
                 if (gameState !== 'playing') return;
                 if (anim.jumpscareReady && !leftDoor) {
                     triggerJumpscare(anim);
@@ -1247,7 +1241,7 @@ function checkDoorAttack(anim, dt) {
                 }
             }, delay);
         } else {
-            // Door is closed — wait fixed duration, then go back
+            
             if (!anim.doorWaitThreshold) anim.doorWaitThreshold = 8 + Math.random() * 8;
             anim.doorWaitTimer = (anim.doorWaitTimer || 0) + dt;
             if (anim.doorWaitTimer > anim.doorWaitThreshold) {
@@ -1278,7 +1272,7 @@ function checkDoorAttack(anim, dt) {
 }
 
 function resetAnimatronic(anim) {
-    // Send back to an earlier room
+    
     const resetIdx = Math.max(0, Math.floor(anim.path.length / 2) - 1);
     anim.currentRoom = anim.path[resetIdx];
     anim.pathIndex = resetIdx;
@@ -1289,7 +1283,7 @@ function resetAnimatronic(anim) {
     anim.doorWaitThreshold = 0;
 }
 
-// ============== JUMPSCARE ==============
+
 function triggerJumpscare(anim) {
     if (gameState === 'jumpscare' || gameState === 'lose') return;
     gameState = 'jumpscare';
@@ -1299,7 +1293,7 @@ function triggerJumpscare(anim) {
     document.getElementById('jumpscareImg').src = img ? img.src : '';
     document.getElementById('jumpscareOverlay').classList.add('active');
 
-    // After jumpscare duration, show game over
+    
     setTimeout(() => {
         document.getElementById('jumpscareOverlay').classList.remove('active');
         document.getElementById('loseText').textContent = `You were caught by ${anim.name}`;
@@ -1315,7 +1309,7 @@ function triggerJumpscare(anim) {
     }, 1500);
 }
 
-// ============== WIN ==============
+
 function winNight() {
     gameState = 'win';
 
@@ -1340,36 +1334,36 @@ function winNight() {
 function proceedAfterWin() {
     document.getElementById('winScreen').classList.remove('active');
     if (currentNight >= 5) {
-        // Beat the game!
+        
         goToTitle();
     } else {
         showNightStart(currentNight + 1);
     }
 }
 
-// ============== VISUAL FEEDBACK ==============
+
 function flashScreen(type) {
     const el = document.getElementById('actionFlash');
     el.className = 'action-flash ' + type + ' active';
     setTimeout(() => { el.className = 'action-flash'; }, 80);
 }
 
-// ============== CONTROLS ==============
+
 function toggleDoor(side) {
     if (gameState !== 'playing') return;
-    if (cameraOpen) return; // can't use doors while in cameras
+    if (cameraOpen) return; 
     flashScreen('door-flash');
 
     if (side === 'left') {
         leftDoor = !leftDoor;
         document.getElementById('leftDoorBtn').className = 'door-btn door' + (leftDoor ? ' closed' : '');
 
-        // If door closed on animatronic, push them back
+        
         if (leftDoor) {
             animatronics.forEach(a => {
                 if (a.atDoor === 'left' && a.jumpscareReady) {
                     a.jumpscareReady = false;
-                    // They'll move back after a while
+                    
                 }
             });
         }
@@ -1413,7 +1407,7 @@ function toggleCamera() {
         document.getElementById('cameraOverlay').classList.add('active');
         document.getElementById('camToggle').textContent = 'CLOSE CAMERAS';
         document.getElementById('officeUI').style.display = 'none';
-        // Close phone when opening cameras
+        
         phoneShown = false;
         document.getElementById('phoneText').style.display = 'none';
         document.getElementById('phoneIcon').style.display = 'none';
@@ -1421,7 +1415,7 @@ function toggleCamera() {
         document.getElementById('cameraOverlay').classList.remove('active');
         document.getElementById('camToggle').textContent = 'CAMERAS';
         document.getElementById('officeUI').style.display = 'block';
-        // Restore phone icon if applicable
+        
         if (phoneActive && PHONE_MESSAGES[currentNight - 1]) {
             document.getElementById('phoneIcon').style.display = 'block';
         }
@@ -1454,9 +1448,9 @@ function togglePhone() {
     document.getElementById('phoneText').style.display = phoneShown ? 'block' : 'none';
 }
 
-// Keyboard shortcuts
+
 document.addEventListener('keydown', e => {
-    // Escape always goes to title if in a game state
+    
     if (e.code === 'Escape') {
         if (gameState === 'playing' || gameState === 'powerdown') {
             goToTitle();
@@ -1491,14 +1485,14 @@ document.addEventListener('keydown', e => {
     if (handled) e.preventDefault();
 });
 
-// Mouse movement for office scrolling
+
 document.addEventListener('mousemove', e => {
     if (gameState !== 'playing' || cameraOpen) return;
     const pct = e.clientX / window.innerWidth;
-    officeScroll = (0.5 - pct) * 2; // inverted: mouse right = look left (like turning your head)
+    officeScroll = (0.5 - pct) * 2; 
 });
 
-// ============== DRAW ==============
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1512,10 +1506,10 @@ function draw() {
         drawPowerDown();
     }
 
-    // Static
+    
     drawStatic();
 
-    // Update HUD
+    
     updateHUD();
 }
 
@@ -1523,11 +1517,11 @@ function drawOfficeView() {
     const w = canvas.width;
     const h = canvas.height;
 
-    // Office background (scrollable)
+    
     const scrollOffset = officeScroll * w * 0.2;
 
-    // Draw office room
-    // Back wall
+    
+    
     const wallGrad = ctx.createLinearGradient(0, 0, 0, h);
     wallGrad.addColorStop(0, '#1a1a1a');
     wallGrad.addColorStop(0.3, '#151515');
@@ -1535,11 +1529,11 @@ function drawOfficeView() {
     ctx.fillStyle = wallGrad;
     ctx.fillRect(0, 0, w, h);
 
-    // Floor
+    
     ctx.fillStyle = '#111';
     ctx.fillRect(0, h * 0.65, w, h * 0.35);
 
-    // Floor tiles
+    
     ctx.strokeStyle = 'rgba(255,255,255,0.02)';
     ctx.lineWidth = 1;
     for (let tx = -200 + (scrollOffset * 0.3); tx < w + 200; tx += 60) {
@@ -1549,14 +1543,14 @@ function drawOfficeView() {
         ctx.beginPath(); ctx.moveTo(0, ty); ctx.lineTo(w, ty); ctx.stroke();
     }
 
-    // Desk
+    
     const deskY = h * 0.55;
     ctx.fillStyle = '#1a1612';
     ctx.fillRect(w * 0.2 + scrollOffset * 0.5, deskY, w * 0.6, h * 0.12);
     ctx.fillStyle = '#211c16';
     ctx.fillRect(w * 0.2 + scrollOffset * 0.5, deskY, w * 0.6, 4);
 
-    // Fan on desk (animated)
+    
     const fanX = w * 0.55 + scrollOffset * 0.5;
     const fanY = deskY - 20;
     ctx.save();
@@ -1575,19 +1569,19 @@ function drawOfficeView() {
     ctx.fillStyle = '#555'; ctx.fill();
     ctx.restore();
 
-    // Monitor screens on desk
+    
     const monX = w * 0.38 + scrollOffset * 0.5;
     ctx.fillStyle = '#0a1520';
     ctx.fillRect(monX, deskY - 50, 80, 50);
     ctx.strokeStyle = '#222';
     ctx.strokeRect(monX, deskY - 50, 80, 50);
-    // Static on monitor
+    
     for (let i = 0; i < 20; i++) {
         ctx.fillStyle = `rgba(${Math.random()*60},${Math.random()*100},${Math.random()*60},0.3)`;
         ctx.fillRect(monX + Math.random()*76 + 2, deskY - 48 + Math.random()*46, 3, 2);
     }
 
-    // Papers scattered
+    
     ctx.fillStyle = 'rgba(200,190,170,0.1)';
     ctx.save();
     ctx.translate(w * 0.3 + scrollOffset * 0.5, deskY + 15);
@@ -1600,21 +1594,21 @@ function drawOfficeView() {
     ctx.fillRect(0, 0, 25, 35);
     ctx.restore();
 
-    // Left doorway
+    
     const ldx = w * 0.05 + scrollOffset;
     ctx.fillStyle = leftDoor ? '#1a1a1a' : '#080808';
     ctx.fillRect(ldx, h * 0.1, w * 0.1, h * 0.6);
 
-    // Door frame
+    
     ctx.strokeStyle = '#2a2a2a';
     ctx.lineWidth = 3;
     ctx.strokeRect(ldx, h * 0.1, w * 0.1, h * 0.6);
 
     if (leftDoor) {
-        // Draw closed door
+        
         ctx.fillStyle = '#1a1a1a';
         ctx.fillRect(ldx, h * 0.1, w * 0.1, h * 0.6);
-        // Door lines
+        
         ctx.strokeStyle = '#222';
         ctx.lineWidth = 1;
         for (let dy = h * 0.1; dy < h * 0.7; dy += 30) {
@@ -1622,7 +1616,7 @@ function drawOfficeView() {
         }
     }
 
-    // Right doorway
+    
     const rdx = w * 0.85 + scrollOffset;
     ctx.fillStyle = rightDoor ? '#1a1a1a' : '#080808';
     ctx.fillRect(rdx, h * 0.1, w * 0.1, h * 0.6);
@@ -1640,16 +1634,16 @@ function drawOfficeView() {
         }
     }
 
-    // Light buttons glow
+    
     if (leftLight) {
-        // Illuminate left hallway
+        
         const lightGrad = ctx.createRadialGradient(ldx + w*0.05, h*0.4, 10, ldx + w*0.05, h*0.4, 200);
         lightGrad.addColorStop(0, 'rgba(255,230,180,0.15)');
         lightGrad.addColorStop(1, 'transparent');
         ctx.fillStyle = lightGrad;
         ctx.fillRect(0, 0, w * 0.3, h);
 
-        // Show animatronic at left door — BEHIND the doorway, clipped to door frame
+        
         if (!leftDoor) {
             animatronics.forEach(a => {
                 if (a.atDoor === 'left' || (a.currentRoom === '2B')) {
@@ -1661,12 +1655,12 @@ function drawOfficeView() {
                         const imgH = doorH * 0.75;
                         const imgW = imgH * (img.naturalWidth / img.naturalHeight || 0.7);
                         ctx.save();
-                        // Clip to doorway so they appear INSIDE the hallway
+                        
                         ctx.beginPath();
                         ctx.rect(ldx, doorTop, doorW, doorH);
                         ctx.clip();
                         ctx.globalAlpha = 0.9;
-                        // Center in doorway
+                        
                         const dx = ldx + (doorW - imgW) / 2;
                         const dy = doorTop + doorH - imgH - 5;
                         ctx.drawImage(img, dx, dy, imgW, imgH);
@@ -1685,7 +1679,7 @@ function drawOfficeView() {
         ctx.fillStyle = lightGrad2;
         ctx.fillRect(w * 0.7, 0, w * 0.3, h);
 
-        // Show animatronic at right door — BEHIND the doorway, clipped to door frame
+        
         if (!rightDoor) {
             animatronics.forEach(a => {
                 if (a.atDoor === 'right' || (a.currentRoom === '4B')) {
@@ -1697,7 +1691,7 @@ function drawOfficeView() {
                         const imgH = doorH * 0.75;
                         const imgW = imgH * (img.naturalWidth / img.naturalHeight || 0.7);
                         ctx.save();
-                        // Clip to doorway
+                        
                         ctx.beginPath();
                         ctx.rect(rdx, doorTop, doorW, doorH);
                         ctx.clip();
@@ -1713,7 +1707,7 @@ function drawOfficeView() {
         }
     }
 
-    // Poster on wall
+    
     ctx.fillStyle = '#1a1814';
     ctx.fillRect(w * 0.45 + scrollOffset * 0.3, h * 0.15, 60, 80);
     ctx.strokeStyle = '#2a2620';
@@ -1727,13 +1721,13 @@ function drawOfficeView() {
     ctx.fillText('1. Don\'t talk', w * 0.45 + 30 + scrollOffset * 0.3, h * 0.15 + 35);
     ctx.fillText('2. DON\'T TALK', w * 0.45 + 30 + scrollOffset * 0.3, h * 0.15 + 45);
 
-    // Window above desk (dark)
+    
     ctx.fillStyle = '#060810';
     ctx.fillRect(w * 0.35 + scrollOffset * 0.3, h * 0.05, 120, 60);
     ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 2;
     ctx.strokeRect(w * 0.35 + scrollOffset * 0.3, h * 0.05, 120, 60);
-    // Stars through window
+    
     ctx.fillStyle = '#334';
     for (let s = 0; s < 5; s++) {
         ctx.beginPath();
@@ -1741,7 +1735,7 @@ function drawOfficeView() {
         ctx.fill();
     }
 
-    // Dark vignette
+    
     const vigGrad = ctx.createRadialGradient(w/2, h/2, h*0.3, w/2, h/2, h*0.9);
     vigGrad.addColorStop(0, 'transparent');
     vigGrad.addColorStop(1, 'rgba(0,0,0,0.5)');
@@ -1754,40 +1748,40 @@ function drawCameraView() {
     const h = canvas.height;
     const room = ROOMS[currentCam];
 
-    // Dark room background
+    
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
-    // Room-specific rendering
+    
     drawRoomBackground(currentCam, w, h);
 
-    // Draw any animatronics in this room (skip Foxy in her cove — handled separately)
+    
     const roomAnims = animatronics.filter(a => a.currentRoom === currentCam);
     roomAnims.forEach((a, idx) => {
         const img = images[a.imgKey];
         if (!img || !img.complete) return;
 
-        // Small shadowy figures in the scene
+        
         const imgAR = img.naturalWidth / img.naturalHeight || 0.7;
         const drawH = h * 0.28;
         const drawW = drawH * imgAR;
 
-        // Per-camera anchor point (where bottom-center of figure sits)
+        
         const camAnchors = {
-            '1A': { x: 0.50, y: 0.82 },  // stage — standing on ground
-            '1B': { x: 0.42, y: 0.80 },  // dining — among tables
-            '1C': { x: 0.50, y: 0.78 },  // cove — on dock (Foxy handled separately)
-            '5':  { x: 0.38, y: 0.80 },  // backstage — in bedroom
-            '3':  { x: 0.60, y: 0.82 },  // closet — by chair
-            '2A': { x: 0.45, y: 0.78 },  // west hall — on walkway
-            '4A': { x: 0.50, y: 0.75 },  // east hall — on stairs
-            '2B': { x: 0.45, y: 0.80 },  // w corner
-            '7':  { x: 0.50, y: 0.80 },  // restrooms
-            '4B': { x: 0.55, y: 0.80 }   // e corner
+            '1A': { x: 0.50, y: 0.82 },  
+            '1B': { x: 0.42, y: 0.80 },  
+            '1C': { x: 0.50, y: 0.78 },  
+            '5':  { x: 0.38, y: 0.80 },  
+            '3':  { x: 0.60, y: 0.82 },  
+            '2A': { x: 0.45, y: 0.78 },  
+            '4A': { x: 0.50, y: 0.75 },  
+            '2B': { x: 0.45, y: 0.80 },  
+            '7':  { x: 0.50, y: 0.80 },  
+            '4B': { x: 0.55, y: 0.80 }   
         };
         const anchor = camAnchors[currentCam] || { x: 0.5, y: 0.80 };
 
-        // Spread multiple animatronics horizontally
+        
         let cx;
         if (roomAnims.length === 1) {
             cx = w * anchor.x;
@@ -1801,22 +1795,22 @@ function drawCameraView() {
 
         ctx.save();
 
-        // Flicker
+        
         ctx.globalAlpha = 0.7 + Math.random() * 0.2;
 
-        // Use multiply blend to kill white backgrounds and blend into dark scene
+        
         ctx.globalCompositeOperation = 'luminosity';
 
-        // Distortion
+        
         const distort = Math.random() > 0.95 ? (Math.random() - 0.5) * 4 : 0;
 
         ctx.drawImage(img, xPos + distort, yPos, drawW, drawH);
 
-        // Reset blend mode and darken the figure edges
+        
         ctx.globalCompositeOperation = 'source-over';
         ctx.globalAlpha = 1;
 
-        // Vignette around the figure to blend edges into scene
+        
         const vigX = xPos + drawW / 2;
         const vigY = yPos + drawH / 2;
         const vigR = Math.max(drawW, drawH) * 0.6;
@@ -1831,8 +1825,7 @@ function drawCameraView() {
     });
 
 
-
-    // Camera noise grain
+    
     ctx.fillStyle = 'rgba(0,0,0,0.3)';
     for (let i = 0; i < 100; i++) {
         const gx = Math.random() * w;
@@ -1843,30 +1836,30 @@ function drawCameraView() {
     }
     ctx.globalAlpha = 1;
 
-    // Scan line
+    
     const scanY = (Date.now() / 10) % h;
     ctx.fillStyle = 'rgba(255,255,255,0.03)';
     ctx.fillRect(0, scanY, w, 3);
 
-    // Green tint
+    
     ctx.fillStyle = 'rgba(0,40,0,0.05)';
     ctx.fillRect(0, 0, w, h);
 
-    // Timestamp
+    
     ctx.font = '10px "Share Tech Mono", monospace';
     ctx.fillStyle = 'rgba(255,255,255,0.3)';
     ctx.textAlign = 'right';
     const timeStr = new Date().toLocaleTimeString();
     ctx.fillText(timeStr, w - 20, h - 20);
 
-    // Room description
+    
     ctx.textAlign = 'left';
     ctx.fillStyle = 'rgba(255,255,255,0.15)';
     ctx.font = '9px "Share Tech Mono", monospace';
     ctx.fillText(room.desc, 20, h - 20);
 }
 
-// Map camera IDs to photo image keys
+
 const CAM_PHOTO_MAP = {
     '1A': 'cam_stage',
     '1B': 'cam_dining',
@@ -1875,9 +1868,9 @@ const CAM_PHOTO_MAP = {
     '3':  'cam_closet',
     '2A': 'cam_westhall',
     '4A': 'cam_easthall',
-    '2B': 'cam_westhall',   // reuse west hall for W corner (no photo yet)
-    '7':  'cam_pool',       // restrooms uses pool photo
-    '4B': 'cam_easthall'    // reuse east hall for E corner (no photo yet)
+    '2B': 'cam_westhall',   
+    '7':  'cam_pool',       
+    '4B': 'cam_easthall'    
 };
 
 function drawRoomBackground(camId, w, h) {
@@ -1885,44 +1878,44 @@ function drawRoomBackground(camId, w, h) {
     const photo = photoKey ? images[photoKey] : null;
 
     if (photo && photo.complete && photo.naturalWidth > 0) {
-        // Draw real photo as background, cover-fit
+        
         const imgAR = photo.naturalWidth / photo.naturalHeight;
         const canvasAR = w / h;
         let sx = 0, sy = 0, sw = photo.naturalWidth, sh = photo.naturalHeight;
 
         if (imgAR > canvasAR) {
-            // Image wider than canvas — crop sides
+            
             sw = photo.naturalHeight * canvasAR;
             sx = (photo.naturalWidth - sw) / 2;
         } else {
-            // Image taller than canvas — crop top/bottom
+            
             sh = photo.naturalWidth / canvasAR;
             sy = (photo.naturalHeight - sh) / 2;
         }
 
         ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
 
-        // Darken the photo heavily for night-camera look
+        
         ctx.fillStyle = 'rgba(0,0,0,0.6)';
         ctx.fillRect(0, 0, w, h);
 
-        // Night-vision green tint
+        
         ctx.fillStyle = 'rgba(0,40,0,0.15)';
         ctx.fillRect(0, 0, w, h);
     } else {
-        // Fallback: drawn room (no photo available)
+        
         drawRoomBackgroundFallback(camId, w, h);
     }
 }
 
 function drawRoomBackgroundFallback(camId, w, h) {
-    // Original procedural room rendering
+    
 
-    // Floor
+    
     ctx.fillStyle = '#0d0d0d';
     ctx.fillRect(0, h * 0.6, w, h * 0.4);
 
-    // Back wall
+    
     const wallColor = {
         '1A': '#12100e', '1B': '#100e0c', '1C': '#0e0808',
         '5': '#0a0c0e', '3': '#0c0a08', '2A': '#0e0c0a',
@@ -1933,9 +1926,9 @@ function drawRoomBackgroundFallback(camId, w, h) {
     ctx.fillStyle = wallColor;
     ctx.fillRect(0, 0, w, h * 0.6);
 
-    // Room-specific elements
+    
     switch(camId) {
-        case '1A': // Show Stage
+        case '1A': 
             ctx.fillStyle = '#1a1510';
             ctx.fillRect(w*0.15, h*0.4, w*0.7, h*0.22);
             ctx.strokeStyle = '#2a2015';
@@ -1953,7 +1946,7 @@ function drawRoomBackgroundFallback(camId, w, h) {
                 ctx.fillRect(0, 0, w, h*0.6);
             }
             break;
-        case '1C': // Pirate Cove
+        case '1C': 
             ctx.fillStyle = '#3a0a1a';
             ctx.fillRect(w*0.2, 0, w*0.6, h*0.7);
             ctx.fillStyle = '#2a0515';
@@ -1965,7 +1958,7 @@ function drawRoomBackgroundFallback(camId, w, h) {
             ctx.textAlign = 'center';
             ctx.fillText('★ PIRATE COVE ★', w/2, h*0.75);
             break;
-        case '5': // Backstage
+        case '5': 
             ctx.fillStyle = '#151210';
             ctx.fillRect(0, h*0.15, w*0.15, h*0.5);
             ctx.fillRect(w*0.85, h*0.15, w*0.15, h*0.5);
@@ -1976,7 +1969,7 @@ function drawRoomBackgroundFallback(camId, w, h) {
                 ctx.beginPath(); ctx.moveTo(w*0.85, sy); ctx.lineTo(w, sy); ctx.stroke();
             }
             break;
-        case '7': // Restrooms
+        case '7': 
             ctx.fillStyle = '#12100e';
             for (let st = 0; st < 3; st++) {
                 ctx.fillRect(w*0.25 + st*w*0.18, h*0.15, w*0.14, h*0.45);
@@ -1995,7 +1988,7 @@ function drawRoomBackgroundFallback(camId, w, h) {
             break;
     }
 
-    // Checkered floor
+    
     ctx.globalAlpha = 0.04;
     for (let fx = 0; fx < w; fx += 40) {
         for (let fy = h*0.6; fy < h; fy += 40) {
@@ -2012,17 +2005,17 @@ function drawFoxyPhase(foxy, w, h) {
     const img = images[foxy.imgKey];
     if (!img || !img.complete) return;
 
-    // Position Foxy on the dock — feet on the dock platform
+    
     const foxyAR = img.naturalWidth / img.naturalHeight || 0.7;
-    const foxyH = h * 0.15;  // much smaller
+    const foxyH = h * 0.15;  
     const foxyW = foxyH * foxyAR;
-    const dockX = w * 0.45 - foxyW / 2;  // centered on dock structure
-    const dockY = h * 0.85 - foxyH;  // feet at 85% = on the dock planks
+    const dockX = w * 0.45 - foxyW / 2;  
+    const dockY = h * 0.85 - foxyH;  
 
     switch(foxy.foxyPhase) {
-        case 0: // Behind curtain — nothing visible, just the dock
+        case 0: 
             break;
-        case 1: // Peeking — partially visible on the dock
+        case 1: 
             ctx.save();
             ctx.globalAlpha = 0.5;
             ctx.globalCompositeOperation = 'luminosity';
@@ -2032,14 +2025,14 @@ function drawFoxyPhase(foxy, w, h) {
             ctx.drawImage(img, dockX, dockY, foxyW, foxyH);
             ctx.restore();
             break;
-        case 2: // Out — standing on the dock
+        case 2: 
             ctx.save();
             ctx.globalAlpha = 0.8;
             ctx.globalCompositeOperation = 'luminosity';
             ctx.drawImage(img, dockX, dockY, foxyW, foxyH);
             ctx.globalCompositeOperation = 'source-over';
             ctx.globalAlpha = 1;
-            // Blend edges
+            
             const vx = dockX + foxyW/2, vy = dockY + foxyH/2;
             const vr = Math.max(foxyW, foxyH) * 0.6;
             const fvig = ctx.createRadialGradient(vx, vy, vr*0.4, vx, vy, vr);
@@ -2054,7 +2047,7 @@ function drawFoxyPhase(foxy, w, h) {
             ctx.textAlign = 'center';
             ctx.fillText('⚠ SHE\'S OUT', w/2, h*0.90);
             break;
-        case 3: // Running — dock is empty
+        case 3: 
             ctx.font = '14px "Share Tech Mono", monospace';
             ctx.fillStyle = 'rgba(255,50,50,0.6)';
             ctx.textAlign = 'center';
@@ -2069,7 +2062,7 @@ function drawPowerDown() {
     ctx.fillRect(0, 0, w, h);
 
     if (powerDownPhase === 1) {
-        // Epstein's face in the dark — just eyes
+        
         const eyeY = h * 0.4;
         const eyeSpacing = 30;
         const blink = Math.sin(Date.now() / 200) > 0;
@@ -2078,7 +2071,7 @@ function drawPowerDown() {
             ctx.fillStyle = '#fff';
             ctx.beginPath(); ctx.arc(w/2 - eyeSpacing, eyeY, 4, 0, Math.PI*2); ctx.fill();
             ctx.beginPath(); ctx.arc(w/2 + eyeSpacing, eyeY, 4, 0, Math.PI*2); ctx.fill();
-            // Pupils
+            
             ctx.fillStyle = '#000';
             ctx.beginPath(); ctx.arc(w/2 - eyeSpacing, eyeY, 2, 0, Math.PI*2); ctx.fill();
             ctx.beginPath(); ctx.arc(w/2 + eyeSpacing, eyeY, 2, 0, Math.PI*2); ctx.fill();
@@ -2092,7 +2085,7 @@ function drawStatic() {
     if (staticAmount <= 0.01) return;
 
     const w = staticCanvas.width, h = staticCanvas.height;
-    if (w < 4 || h < 4) return; // prevent crash on minimized window
+    if (w < 4 || h < 4) return; 
     const imageData = staticCtx.createImageData(w / 4, h / 4);
     const data = imageData.data;
 
@@ -2108,7 +2101,7 @@ function drawStatic() {
     staticCtx.save();
     staticCtx.imageSmoothingEnabled = false;
     staticCtx.putImageData(imageData, 0, 0);
-    // Scale up
+    
     staticCtx.drawImage(staticCanvas, 0, 0, w/4, h/4, 0, 0, w, h);
     staticCtx.restore();
 
@@ -2119,12 +2112,12 @@ function drawStatic() {
 function updateHUD() {
     if (gameState !== 'playing' && gameState !== 'powerdown') return;
 
-    // Power
+    
     const pStr = Math.max(0, Math.ceil(power)) + '%';
     const pv = document.getElementById('powerValue');
     pv.textContent = pStr;
 
-    // Power warning states
+    
     if (power <= 10) {
         pv.className = 'power-value power-critical';
     } else if (power <= 25) {
@@ -2134,18 +2127,18 @@ function updateHUD() {
         pv.style.color = power < 40 ? '#f1c40f' : '#fff';
     }
 
-    // Usage bars
+    
     const usageBars = document.getElementById('usageBars');
     const barCount = powerUsageRate;
     usageBars.textContent = '▮'.repeat(barCount);
     usageBars.className = 'usage-bar' + (barCount >= 4 ? ' critical' : barCount >= 3 ? ' high' : '');
 
-    // Time
+    
     const hours = ['12 AM', '1 AM', '2 AM', '3 AM', '4 AM', '5 AM', '6 AM'];
     document.getElementById('timeValue').textContent = hours[Math.min(nightTime, 6)];
 }
 
-// ============== TITLE SCREEN BG ==============
+
 const titleBgCanvas = document.getElementById('titleBg');
 const titleBgCtx = titleBgCanvas.getContext('2d');
 let titleParticles = [];
@@ -2172,14 +2165,14 @@ function drawTitleBg() {
     titleBgCtx.fillStyle = '#000';
     titleBgCtx.fillRect(0, 0, tw, th);
 
-    // Ambient red glow bottom
+    
     const grad = titleBgCtx.createRadialGradient(tw/2, th*0.95, 0, tw/2, th*0.95, th*0.5);
     grad.addColorStop(0, 'rgba(60,10,10,0.4)');
     grad.addColorStop(1, 'transparent');
     titleBgCtx.fillStyle = grad;
     titleBgCtx.fillRect(0, 0, tw, th);
 
-    // Draw shadowy figures in background
+    
     const time = Date.now() / 1000;
     const figureImgs = [images.epstein, images.clinton, images.prince, images.ghislaine, images.hawking, images.musk];
     figureImgs.forEach((img, i) => {
@@ -2196,7 +2189,7 @@ function drawTitleBg() {
         titleBgCtx.restore();
     });
 
-    // Particles
+    
     titleParticles.forEach(p => {
         p.y -= p.speed;
         if (p.y < -10) { p.y = th + 10; p.x = Math.random() * tw; }
@@ -2206,7 +2199,7 @@ function drawTitleBg() {
         titleBgCtx.fill();
     });
 
-    // Subtle flicker
+    
     if (Math.random() > 0.98) {
         titleBgCtx.fillStyle = `rgba(192,57,43,${Math.random() * 0.03})`;
         titleBgCtx.fillRect(0, 0, tw, th);
@@ -2220,10 +2213,10 @@ function updateTitleStars() {
     });
 }
 
-// ============== SCREEN MANAGEMENT ==============
+
 function showNightStart(night) {
     currentNight = night;
-    gameState = 'nightstart'; // prevent title bg from drawing
+    gameState = 'nightstart'; 
     document.getElementById('nightStartScreen').classList.add('active');
 
     const ordinals = ['1st','2nd','3rd','4th','5th','6th','7th'];
@@ -2242,7 +2235,7 @@ function restartNight() {
 }
 
 function goToTitle() {
-    // Hide all game screens
+    
     ['winScreen','loseScreen','nightStartScreen'].forEach(id => {
         document.getElementById(id).classList.remove('active');
     });
@@ -2264,7 +2257,7 @@ function goToTitle() {
     document.getElementById('continueNight').textContent = maxNightUnlocked;
 }
 
-// ============== BUTTONS ==============
+
 document.getElementById('newGameBtn').addEventListener('click', () => {
     document.getElementById('titleScreen').style.display = 'none';
     showNightStart(1);
@@ -2275,17 +2268,17 @@ document.getElementById('continueBtn').addEventListener('click', () => {
     showNightStart(maxNightUnlocked);
 });
 
-// ============== MAIN LOOP ==============
+
 let lastTime = performance.now();
 
 function gameLoop(now) {
-    const dt = Math.min((now - lastTime) / 1000, 0.1); // delta in seconds, capped
+    const dt = Math.min((now - lastTime) / 1000, 0.1); 
     lastTime = now;
 
     if (gameState === 'title') {
         drawTitleBg();
     } else if (gameState === 'nightstart' || gameState === 'win' || gameState === 'lose') {
-        // These screens are handled by HTML overlays, no canvas drawing needed
+        
     } else {
         update(dt);
         draw();
@@ -2294,7 +2287,7 @@ function gameLoop(now) {
     requestAnimationFrame(gameLoop);
 }
 
-// Hide game UI elements on initial load (title screen)
+
 document.getElementById('officeUI').style.display = 'none';
 document.getElementById('camToggle').style.display = 'none';
 

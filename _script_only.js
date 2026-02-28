@@ -1,7 +1,7 @@
 
-// ============ GLOBAL STATE ============
-const MAX_BALANCE = 1e18; // $1 Quintillion hard cap
-const MIN_BALANCE = 0; // No debt allowed
+
+const MAX_BALANCE = 1e18; 
+const MIN_BALANCE = 0; 
 function safeNum(v) {
   if (typeof v !== 'number' || !isFinite(v)) return 0;
   return Math.max(MIN_BALANCE, Math.min(MAX_BALANCE, Math.round(v * 100) / 100));
@@ -31,10 +31,10 @@ function updateBalDisplay(){
   el.style.transition='transform .15s';
   el.style.transform='scale(1.15)';
   setTimeout(()=>{el.style.transform='scale(1)';},150);
-  // Pity system: auto-give $100 when player hits $0 or below (prevent debt)
+  
   if(balance<=0 && !window._pityOffered){
     window._pityOffered=true;
-    // Clamp balance to 0 (no debt allowed)
+    
     if(balance<0) balance=0;
     setTimeout(()=>{
       if(balance<=0){
@@ -50,24 +50,24 @@ function updateBalDisplay(){
 
 let _lastAddMoney=0;
 let _addMoneySessionTotal=0;
-const _ADD_MONEY_SESSION_CAP=5000; // max $5K free money per session
+const _ADD_MONEY_SESSION_CAP=5000; 
 function addMoney(amt){if(amt<=0||amt>1000)return;if(_addMoneySessionTotal>=_ADD_MONEY_SESSION_CAP){showToast('Free money limit reached for this session!',false);return;}if(balance>100){showToast('Pity money is only for broke players!',false);return;}if(Date.now()-_lastAddMoney<10000){showToast('Cooldown! Wait 10s',false);return;}_lastAddMoney=Date.now();const give=Math.min(amt,_ADD_MONEY_SESSION_CAP-_addMoneySessionTotal);balance+=give;_addMoneySessionTotal+=give;updateBalDisplay();firebaseSave();showToast('+$'+give+' (pity money)',true);}
 let _fbSaveTimer=null, _fbSaveDirty=false;
 function firebaseSave(){
   _fbSaveDirty=true;
-  if(_fbSaveTimer)return; // already scheduled
+  if(_fbSaveTimer)return; 
   _fbSaveTimer=setTimeout(()=>{
     _fbSaveTimer=null;
     if(_fbSaveDirty && window._firebaseSave){ _fbSaveDirty=false; window._firebaseSave(); }
   },5000);
 }
-function firebaseSaveNow(){ // immediate save for critical actions (logout, prestige, trade)
+function firebaseSaveNow(){ 
   if(_fbSaveTimer){clearTimeout(_fbSaveTimer);_fbSaveTimer=null;}
   _fbSaveDirty=false;
   if(window._firebaseSave) window._firebaseSave();
 }
 
-// ============ AUTH UI ============
+
 let authIsRegister = false;
 let isGuestMode = false;
 
@@ -78,7 +78,7 @@ function authGuestMode() {
     guestId = 'guest_' + Math.random().toString(36).substr(2, 8);
     localStorage.setItem('casino_guest_id', guestId);
   }
-  // Load from localStorage
+  
   const savedBal = localStorage.getItem('casino_guest_balance');
   if (savedBal != null) { balance = safeNum(parseFloat(savedBal)); }
   const savedStats = localStorage.getItem('casino_guest_stats');
@@ -91,13 +91,13 @@ function authGuestMode() {
   window._pylPlayerId = guestId;
   window._currentPylSessionId = guestId;
 
-  // Override save to use localStorage
+  
   window._firebaseSave = () => {
     localStorage.setItem('casino_guest_balance', balance.toString());
     localStorage.setItem('casino_guest_stats', JSON.stringify(playerStats));
     localStorage.setItem('casino_guest_gameStats', JSON.stringify(gameStats));
   };
-  // Guests don't write to leaderboards, chat, or market
+  
   window._recordGameResult = () => {};
   window._claimDailyBonus = async () => null;
   window._sendChatMsg = async () => {};
@@ -108,7 +108,7 @@ function authGuestMode() {
   window._onAuthReady('Guest', guestId);
 }
 
-// Login screen particles
+
 (function initLoginParticles() {
   const c = document.getElementById('loginParticles');
   if (!c) return;
@@ -158,11 +158,10 @@ function authLogout() {
   firebaseSaveNow();
   isGuestMode = false;
   if (window._authLogout) window._authLogout();
-  else window._onAuthLoggedOut(); // For guest mode (no Firebase auth to sign out of)
+  else window._onAuthLoggedOut(); 
 }
 
-// Auth state callbacks (called from module)
-// ============ PENDING REFUNDS CHECKER ============
+
 async function checkPendingRefunds() {
   if (!window._checkPendingRefunds) return;
   try {
@@ -193,7 +192,7 @@ async function checkPendingRefunds() {
       else if (reasons.includes('auction_won')) msg += ' (auction won)';
       showToast(msg, true);
     }
-  } catch(e) { /* silent */ }
+  } catch(e) {  }
 }
 
 window._onAuthReady = function(username, uid) {
@@ -202,39 +201,39 @@ window._onAuthReady = function(username, uid) {
   const uaInit = (username && username[0] || '?').toUpperCase();
   document.getElementById('userAvatar').innerHTML = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><linearGradient id="avG" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#6b2fd9"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#avG)"/><text x="50" y="58" font-family="Orbitron,Inter,sans-serif" font-weight="900" font-size="48" fill="#fff" text-anchor="middle">${uaInit}</text></svg>`;
   document.getElementById('userNameDisplay').textContent = username;
-  // Apply custom PFP if set
+  
   if (typeof applyPfp === 'function' && selectedPfp) applyPfp();
   updateBalDisplay();
   checkDailyBonus();
-  // Show chat button
+  
   document.getElementById('chatToggleBtn').style.display = 'flex';
-  // Auto-init chat
+  
   if (!chatInitialized && window._initChat) {
     window._initChat();
     chatInitialized = true;
   }
-  // Check for pending refunds (declined trades, outbid refunds, store payments)
+  
   checkPendingRefunds();
-  // Check refunds periodically (every 30s)
+  
   if (!window._refundInterval) {
     window._refundInterval = setInterval(checkPendingRefunds, 30000);
   }
-  // Listen for RR PvP challenges
+  
   if (typeof rrListenForChallenges === 'function') rrListenForChallenges();
 };
 
 window._onAuthLoggedOut = function() {
-  if (isGuestMode) return; // Don't show login if in guest mode
+  if (isGuestMode) return; 
   document.getElementById('loginScreen').style.display = '';
   document.getElementById('topNav').style.display = 'none';
   document.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
-  // Clear pending refund interval
+  
   if (window._refundInterval) { clearInterval(window._refundInterval); window._refundInterval = null; }
   if (window._onlineStatusInterval) { clearInterval(window._onlineStatusInterval); window._onlineStatusInterval = null; }
   if (window._chatPresenceInterval) { clearInterval(window._chatPresenceInterval); window._chatPresenceInterval = null; }
   if (window._presenceCountInterval) { clearInterval(window._presenceCountInterval); window._presenceCountInterval = null; }
   if (typeof stockTickInterval !== 'undefined' && stockTickInterval) { clearInterval(stockTickInterval); stockTickInterval = null; }
-  // Reset active game states to prevent cross-account leaks
+  
   try {
     if (typeof crashRunning !== 'undefined') crashRunning = false;
     if (typeof bjActive !== 'undefined') bjActive = false;
@@ -246,7 +245,7 @@ window._onAuthLoggedOut = function() {
     if (typeof rouletteSpinning !== 'undefined') rouletteSpinning = false;
     if (typeof limboRolling !== 'undefined') limboRolling = false;
     if (typeof pokerPhase !== 'undefined') pokerPhase = 'idle';
-    // Reset balance and inventory
+    
     if (typeof balance !== 'undefined') balance = 1000;
     if (typeof inventory !== 'undefined') inventory = [];
     if (typeof tradeHistory !== 'undefined') tradeHistory = [];
@@ -255,7 +254,7 @@ window._onAuthLoggedOut = function() {
   } catch(e) {}
 };
 
-// Enter key on login
+
 document.getElementById('authPassword').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') authSubmit();
 });
@@ -263,7 +262,7 @@ document.getElementById('authUsername').addEventListener('keydown', function(e) 
   if (e.key === 'Enter') document.getElementById('authPassword').focus();
 });
 
-// ============ STATS TRACKING ============
+
 let playerStats = { totalWagered: 0, totalWon: 0, totalProfit: 0, gamesPlayed: 0, biggestWin: 0 };
 let gameStats = {
   slots: { played: 0, won: 0, biggestWin: 0 },
@@ -292,7 +291,7 @@ let gameStats = {
 };
 let dailyBonusData = { lastClaimed: 0, streak: 0 };
 
-// Bet validation: max you can bet is what you have
+
 function checkMaxBet(bet, game) {
   if (bet > balance) { showToast('Max bet is your balance: $' + Math.floor(balance).toLocaleString(), false); return false; }
   return true;
@@ -320,7 +319,7 @@ function recordGame(game, wagered, won) {
   }
   if (window._recordGameResult) window._recordGameResult(game, wagered, won);
   firebaseSave();
-  // Check achievements after recording
+  
   checkCasinoAchievements(game, wagered, won);
 }
 
@@ -331,7 +330,7 @@ function addResultDot(containerId,label,isWin){
   c.appendChild(dot);if(c.children.length>20)c.removeChild(c.firstChild);
 }
 
-// ============ DAILY BONUS ============
+
 function checkDailyBonus() {
   const btn = document.getElementById('dailyBonusBtn');
   if (!btn) return;
@@ -369,7 +368,7 @@ async function claimDailyBonus() {
   }
 }
 
-// ============ GLOBAL LEADERBOARD ============
+
 let currentLBCategory = 'richest';
 
 function switchLB(category, btn) {
@@ -458,7 +457,6 @@ const fmtBig = (v) => {
 }
 
 
-// ============ NAV DROPDOWN HELPERS ============
 let navCatCloseTimer = null;
 function openCat(el){
   if(navCatCloseTimer) { clearTimeout(navCatCloseTimer); navCatCloseTimer = null; }
@@ -471,13 +469,13 @@ function closeCat(el){
     navCatCloseTimer = null;
   }, 120);
 }
-// Touch support: toggle nav categories on tap
+
 function toggleCat(el){el.classList.toggle('open');document.querySelectorAll('.nav-cat').forEach(c=>{if(c!==el)c.classList.remove('open');});}
-// Close dropdowns if clicking/tapping outside
+
 document.addEventListener('click',function(e){if(!e.target.closest('.nav-cat'))document.querySelectorAll('.nav-cat').forEach(c=>c.classList.remove('open'));});
 document.addEventListener('touchstart',function(e){if(!e.target.closest('.nav-cat'))document.querySelectorAll('.nav-cat').forEach(c=>c.classList.remove('open'));},{passive:true});
 
-// ============ GAMES MENU ============
+
 const gamesData = [
   { cat: '⭐ Classic', games: [
     { name: 'Plinko', icon: '⚡', id: 'plinko' },
@@ -534,12 +532,12 @@ function closeGamesMenu(){
   overlay.style.display = 'none';
 }
 
-// Close games menu on backdrop click
+
 document.getElementById('gamesMenuOverlay')?.addEventListener('click', (e) => {
   if(e.target.id === 'gamesMenuOverlay') closeGamesMenu();
 });
 
-// How-to-play toggle
+
 function htpToggle(el){el.closest('.htp-box').classList.toggle('open');}
 function showToast(msg,isWin=true){
   const t=document.getElementById('winToast');
@@ -548,16 +546,16 @@ function showToast(msg,isWin=true){
   setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// Big Win Celebration — triggered for wins >= threshold
+
 function showBigWin(amount) {
   if (amount < 500) return;
   
-  // Screen shake for big wins
+  
   const intensity = Math.min(amount / 1000, 8);
   document.body.style.animation = `screenShake ${0.3 + Math.min(amount/5000, 0.4)}s ease-out`;
   setTimeout(() => { document.body.style.animation = ''; }, 800);
   
-  // Mega win overlay for huge wins
+  
   if (amount >= 2000) {
     const overlay = document.createElement('div');
     overlay.style.cssText = `position:fixed;top:0;left:0;right:0;bottom:0;z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -577,7 +575,7 @@ function showBigWin(amount) {
     `;
     document.body.appendChild(overlay);
     
-    // Extra particles burst
+    
     for (let i = 0; i < 5; i++) {
       setTimeout(() => spawnParticles(
         Math.random() * window.innerWidth, 
@@ -594,7 +592,7 @@ function switchGame(game,btn){
   document.querySelectorAll('.game-panel').forEach(p=>p.classList.remove('active'));
   const targetPanel = document.getElementById(game+'Panel');
   if(targetPanel) targetPanel.classList.add('active'); else return;
-  // hide catalog when a game is selected
+  
   const catalog = document.getElementById('gameCatalog'); if(catalog) catalog.style.display = 'none';
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
@@ -617,19 +615,19 @@ function switchGame(game,btn){
   if(game==='luck'){
     let iframe=document.getElementById('pylIframe');
     if(!iframe){
-      // Create iframe dynamically so it doesn't interfere before needed
+      
       iframe=document.createElement('iframe');
       iframe.id='pylIframe';
       iframe.allow='autoplay';
       document.getElementById('luckPanel').insertBefore(iframe,document.getElementById('luckPanel').firstChild);
     }
     if(!iframe.src||!iframe.src.includes('push-your-luck')){
-      // Delay loading so iframe has real layout dimensions before Phaser inits
+      
       setTimeout(()=>{ iframe.src='push-your-luck/index.html'; }, 300);
     }
     pylLoadLeaderboard();
   }
-  // firebaseSave handled by debounce timer — no need to save on every switch
+  
 }
 
 function adjustBet(id,mult){
@@ -644,7 +642,7 @@ function betAll(id){
   playClickSound();
 }
 
-// ============ PARTICLES ============
+
 const pCanvas=document.getElementById('particles');
 const pCtx=pCanvas.getContext('2d');
 let particles=[];
@@ -652,7 +650,7 @@ function resizeParticles(){pCanvas.width=window.innerWidth;pCanvas.height=window
 resizeParticles();window.addEventListener('resize',resizeParticles);
 
 function spawnParticles(x,y,count=30,colors=['#ffd700','#ff8800','#00f0ff','#ff00e5','#00ff88']){
-  // Cap total particles to prevent freezing from spam
+  
   const MAX_PARTICLES = 200;
   if(particles.length >= MAX_PARTICLES) return;
   count = Math.min(count, MAX_PARTICLES - particles.length);
@@ -663,7 +661,7 @@ function spawnParticles(x,y,count=30,colors=['#ffd700','#ff8800','#00f0ff','#ff0
       life:1,decay:Math.random()*.015+.008,size:Math.random()*5+2,
       color:colors[Math.floor(Math.random()*colors.length)]});
   }
-  // Restart animation loop if it was idle
+  
   if(particles.length===count) requestAnimationFrame(updateParticles);
 }
 function updateParticles(){
@@ -681,7 +679,7 @@ function updateParticles(){
 }
 updateParticles();
 
-// ============ SOUND ============
+
 let soundMuted = false;
 function toggleMute() {
   soundMuted = !soundMuted;
@@ -706,7 +704,7 @@ function playWinSound(){playSound(523,'sine',.1,.12);setTimeout(()=>playSound(65
 function playLoseSound(){playSound(200,'sawtooth',.25,.06);setTimeout(()=>playSound(150,'sawtooth',.3,.05),100);}
 function playClickSound(){playSound(800,'sine',.04,.06);}
 let _achievementsCache = {};
-// Load from localStorage as fallback, Firebase is primary
+
 try { _achievementsCache = JSON.parse(localStorage.getItem('casino_achievements') || '{}'); } catch(e) { _achievementsCache = {}; }
 
 function getCasinoAch() {
@@ -715,16 +713,16 @@ function getCasinoAch() {
 function saveCasinoAch(id) {
   if (_achievementsCache[id]) return false;
   _achievementsCache[id] = Date.now();
-  // Fallback to localStorage
+  
   try { localStorage.setItem('casino_achievements', JSON.stringify(_achievementsCache)); } catch(e) {}
-  // Firebase sync happens via firebaseSave()
+  
   return true;
 }
-// Firebase persistence accessors for achievements
+
 window._getAchievements = () => _achievementsCache;
 window._loadAchievements = (data) => {
   if (data && typeof data === 'object') {
-    // Merge — keep whichever has more unlocked achievements
+    
     Object.keys(data).forEach(k => {
       if (!_achievementsCache[k]) _achievementsCache[k] = data[k];
     });
@@ -738,7 +736,7 @@ playSound = function(freq, type, dur, vol) {
   _origPlaySound(freq, type, dur, vol);
 };
 
-// ============ CASINO ACHIEVEMENTS ============
+
 const CASINO_ACHIEVEMENTS = [
   { id:'first_game', icon:'🎮', name:'FIRST SPIN', desc:'Play your first game' },
   { id:'first_win', icon:'🏆', name:'WINNER', desc:'Win your first bet' },
@@ -768,37 +766,37 @@ function checkCasinoAchievements(game, wagered, won) {
       if (a) { newAchs.push(a); showAchToast(a); }
     }
   }
-  // First game
+  
   tryAward('first_game');
-  // First win
+  
   if (won > 0) tryAward('first_win');
-  // Big wins
+  
   if (won >= 5000) tryAward('big_win');
   if (won >= 50000) tryAward('mega_win');
-  // Wagering milestones
+  
   if (playerStats.totalWagered >= 10000) tryAward('high_roller');
   if (playerStats.totalWagered >= 100000) tryAward('whale');
-  // Games played
+  
   if (playerStats.gamesPlayed >= 50) tryAward('games_50');
   if (playerStats.gamesPlayed >= 500) tryAward('games_500');
   if (playerStats.gamesPlayed >= 5000) tryAward('games_5000');
-  // Game-specific
+  
   if (gameStats.slots && gameStats.slots.won >= 50) tryAward('slots_pro');
   if (gameStats.crash && gameStats.crash.won >= 50) tryAward('crash_pro');
-  // Diversified
+  
   const gamesPlayed = Object.values(gameStats).filter(g => g.played > 0).length;
   if (gamesPlayed >= 5) tryAward('diversified');
-  // Broke
+  
   if (balance <= 0) tryAward('broke');
-  // Profit
+  
   if (playerStats.totalProfit >= 10000) tryAward('profit_10k');
-  // Collector
+  
   if (inventory.length >= 10) tryAward('collector');
-  // Inventory value
+  
   if (typeof getInventoryValue === 'function' && getInventoryValue() >= 10000) tryAward('inv_value');
-  // Daily streak
+  
   if (dailyBonusData.streak >= 7) tryAward('daily_7');
-  // Comeback
+  
   if (balance >= 10000 && (getCasinoAch()['broke'])) tryAward('comeback');
   return newAchs;
 }
@@ -806,7 +804,7 @@ function showAchToast(ach) {
   showToast(ach.icon + ' Achievement: ' + ach.name + ' — ' + ach.desc, true);
 }
 
-// Firebase persistence accessors for trade history
+
 window._getTradeHistory = () => tradeHistory.slice(0, 50);
 window._loadTradeHistory = (data) => {
   if (Array.isArray(data)) {
@@ -818,8 +816,7 @@ window._loadTradeHistory = (data) => {
   }
 };
 
-// ============ PROFILE RENDER ============
-// ============ CUSTOM PROFILE PICTURES ============
+
 const PFP_OPTIONS = [
   '👤','😎','🤑','🎰','🃏','👑','🔥','💎','⚡','🌟',
   '🐉','🦊','🐺','🦅','🐲','🦁','🐯','🦈','🐙','🦇',
@@ -837,7 +834,7 @@ function openPfpPicker() {
   const grid = document.getElementById('pfpGrid');
   grid.innerHTML = '';
   
-  // Upload custom button
+  
   const uploadDiv = document.createElement('div');
   uploadDiv.style.cssText = 'width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:20px;border-radius:10px;cursor:pointer;border:2px dashed var(--neon);background:rgba(0,240,255,.05);transition:all .15s;';
   uploadDiv.innerHTML = '📷';
@@ -847,7 +844,7 @@ function openPfpPicker() {
   uploadDiv.onclick = function(){ document.getElementById('pfpFileInput').click(); };
   grid.appendChild(uploadDiv);
   
-  // Show current custom pic if exists
+  
   if (customPfpUrl) {
     const customDiv = document.createElement('div');
     customDiv.style.cssText = 'width:48px;height:48px;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;border:2px solid ' + (!selectedPfp && customPfpUrl ? 'var(--gold)' : 'var(--border)') + ';background:var(--bg);transition:all .15s;overflow:hidden;';
@@ -873,7 +870,7 @@ function openPfpPicker() {
 function closePfpPicker() { document.getElementById('pfpPickerOverlay').style.display = 'none'; }
 function selectPfp(emoji) {
   selectedPfp = emoji;
-  customPfpUrl = ''; // clear custom pic when picking emoji
+  customPfpUrl = ''; 
   localStorage.setItem('casino_pfp', emoji);
   localStorage.removeItem('casino_pfp_url');
   if(window._firebaseSave) firebaseSave();
@@ -930,7 +927,7 @@ async function handlePfpUpload(input) {
     localStorage.setItem('casino_pfp_url', customPfpUrl);
     localStorage.setItem('casino_pfp', '');
     
-    // Save to Firebase player data
+    
     if (window._currentPlayerId) {
       await window._fbUpdate('casino/players/' + window._currentPlayerId, { profilePicUrl: customPfpUrl });
     }
@@ -942,7 +939,7 @@ async function handlePfpUpload(input) {
     showToast('❌ Upload failed: ' + err.message, false);
   }
   
-  input.value = ''; // reset file input
+  input.value = ''; 
 }
 function applyPfp() {
   const name = window._currentUsername || 'Guest';
@@ -974,7 +971,7 @@ function renderProfile() {
   if (typeof getInventoryValue === 'function') {
     document.getElementById('profInvValue').textContent = '$' + getInventoryValue().toFixed(2);
   }
-  // Achievements
+  
   const achs = getCasinoAch();
   const count = Object.keys(achs).length;
   document.getElementById('casinoAchCount').textContent = '(' + count + '/' + CASINO_ACHIEVEMENTS.length + ')';
@@ -987,7 +984,7 @@ function renderProfile() {
       ${done ? '<span style="color:var(--green)">✓</span>' : ''}
     </div>`;
   }).join('');
-  // Game stats
+  
   document.getElementById('profGameStats').innerHTML = Object.entries(gameStats).map(([name, s]) => {
     if (!s.played) return '';
     const wr = s.played > 0 ? Math.round((s.won / s.played) * 100) : 0;
@@ -997,9 +994,9 @@ function renderProfile() {
       <div style="font-size:10px;color:var(--green)">Best: $${(s.biggestWin||0).toFixed(0)}</div>
     </div>`;
   }).filter(Boolean).join('');
-  // Prestige
+  
   renderPrestige();
-  // Admin panel (mojheh + co-owners)
+  
   const adminPanel = document.getElementById('adminPanel');
   const lowerName = name.toLowerCase();
   if (lowerName === 'mojheh' || lowerName === 'terpez') {
@@ -1009,9 +1006,9 @@ function renderProfile() {
   }
 }
 
-// ============ PRESTIGE SYSTEM ============
+
 let prestigeLevel = 0;
-const PRESTIGE_REQS = [10000, 50000, 250000, 1000000, 10000000]; // Balance needed to prestige at each level
+const PRESTIGE_REQS = [10000, 50000, 250000, 1000000, 10000000]; 
 const PRESTIGE_NAMES = ['Bronze','Silver','Gold','Diamond','Legendary'];
 const PRESTIGE_COLORS = ['prestige-1','prestige-2','prestige-3','prestige-4','prestige-5'];
 
@@ -1026,7 +1023,7 @@ function getPrestigeReq() {
   return PRESTIGE_REQS[prestigeLevel];
 }
 
-// ============ ADMIN FUNCTIONS ============
+
 async function adminGiveMoney() {
   const _aName = (window._currentUsername||'').toLowerCase();
   if (_aName !== 'mojheh' && _aName !== 'terpez') {
@@ -1041,7 +1038,7 @@ async function adminGiveMoney() {
   }
   try {
     showToast('⏳ Processing...', true);
-    // Find user by username
+    
     const usersSnap = await window._fbGet('casino/usernames/' + username.toLowerCase());
     if (!usersSnap.exists()) {
       showToast('❌ User "' + username + '" not found!', false);
@@ -1050,7 +1047,7 @@ async function adminGiveMoney() {
     const userId = usersSnap.val();
     console.log('Found user:', userId);
     
-    // Get current balance
+    
     const playerSnap = await window._fbGet('casino/players/' + userId);
     const currentData = playerSnap.exists() ? playerSnap.val() : {};
     const currentBal = parseFloat(currentData.balance || 0);
@@ -1058,7 +1055,7 @@ async function adminGiveMoney() {
     
     console.log('Current balance:', currentBal, 'Adding:', amount, 'New balance:', newBal);
     
-    // Update balance using UPDATE to avoid overwriting concurrent changes
+    
     await window._fbUpdate('casino/players/' + userId, {
       balance: newBal,
       lastAdminGift: {
@@ -1094,7 +1091,7 @@ async function adminSetSelfBalance() {
     balance = amount;
     updateBalDisplay();
     
-    // Update with new balance
+    
     await window._fbUpdate('casino/players/' + window._currentPlayerId, {
       balance: amount,
       lastBalanceSet: Date.now()
@@ -1110,7 +1107,7 @@ async function adminSetSelfBalance() {
   }
 }
 
-// ============ MODERATION SYSTEM ============
+
 async function _checkBan(uid) {
   try {
     const snap = await window._fbGet('casino/bans/' + uid);
@@ -1291,7 +1288,7 @@ function prestigeConfirm() {
     showToast('Need $' + formatBalance(req) + ' to prestige! You have $' + formatBalance(currentBal), false); 
     return; 
   }
-  // Show confirmation overlay
+  
   const overlay = document.createElement('div');
   overlay.className = 'prestige-confirm-overlay';
   overlay.innerHTML = `<div class="prestige-confirm-box">
@@ -1325,7 +1322,7 @@ function prestigeExecute() {
     showToast('👑 PRESTIGE ' + prestigeLevel + '! Welcome to ' + (PRESTIGE_NAMES[Math.min(prestigeLevel, PRESTIGE_NAMES.length) - 1] || 'Legendary') + '!');
     playWinSound();
     spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 50);
-    // Update leaderboard
+    
     if (window._currentPlayerId && window._currentUsername) {
       window._fbSet('casino/leaderboards/prestige/' + window._currentPlayerId, {
         name: window._currentUsername,
@@ -1342,7 +1339,7 @@ function prestigeExecute() {
   }
 }
 
-// ============ COINFLIP DUELS ============
+
 let duelRoomUnsub = null;
 let duelLobbyUnsub = null;
 let currentDuelRoom = null;
@@ -1368,7 +1365,7 @@ async function duelCreate() {
       status: 'waiting',
       created: Date.now()
     });
-    // Auto-cleanup if host disconnects
+    
     window._fbOnDisconnect('casino/duelRooms/' + code).remove();
     showToast('Duel created! Waiting for opponent...', true);
     playClickSound();
@@ -1398,7 +1395,7 @@ async function duelJoin(code) {
       status: 'playing'
     });
     playClickSound();
-    // Both players watch for result
+    
     duelWatchGame(code, room.wager);
   } catch(e) {
     balance += room.wager; updateBalDisplay();
@@ -1413,7 +1410,7 @@ function duelPlayTick() { playSound(800, 'sine', .15, .04); }
 function duelPlayBoom() { playSound(100, 'sawtooth', .5, .15); setTimeout(() => playSound(80, 'square', .4, .2), 80); }
 function duelPlayDrum() { playSound(150, 'triangle', .3, .08); }
 function duelPlaySuspense(i) {
-  // Rising pitch tension ticks
+  
   const freq = 300 + i * 60;
   playSound(freq, 'sine', .12, .06);
 }
@@ -1446,21 +1443,21 @@ function duelWatchGame(code, wager) {
     if (room.status === 'playing' && !room.result && !_duelAnimating) {
       _duelAnimating = true;
       document.getElementById('duelStatusText').textContent = 'OPPONENT FOUND!';
-      // Host resolves after a delay to allow animation sync
+      
       if (room.host === window._currentPlayerId) {
         setTimeout(() => duelResolve(code), 7500);
       }
-      // Fallback: challenger also attempts resolve after 12s in case host disconnected
+      
       if (room.challenger === window._currentPlayerId) {
         setTimeout(() => duelResolve(code), 12000);
       }
-      // Absolute timeout: if still no result after 20s, force-resolve and refund
+      
       setTimeout(async () => {
         const checkSnap = await window._fbGet('casino/duelRooms/' + code);
         if (checkSnap.exists() && !checkSnap.val().result) {
-          // Try to resolve one more time
+          
           duelResolve(code);
-          // If still stuck after 3 more seconds, refund and close
+          
           setTimeout(async () => {
             const finalSnap = await window._fbGet('casino/duelRooms/' + code);
             if (finalSnap.exists() && !finalSnap.val().result) {
@@ -1473,7 +1470,7 @@ function duelWatchGame(code, wager) {
           }, 3000);
         }
       }, 20000);
-      // Start the dramatic sequence
+      
       duelDramaticSequence(room);
     }
     
@@ -1491,7 +1488,7 @@ function duelDramaticSequence(room) {
   const tensionBar = document.getElementById('duelTensionBar');
   const tensionFill = document.getElementById('duelTensionFill');
   
-  // Phase 1: Countdown 3... 2... 1...
+  
   countdownEl.style.display = 'block';
   let count = 3;
   countdownEl.textContent = count;
@@ -1515,20 +1512,20 @@ function duelDramaticSequence(room) {
       countdownEl.style.animation = 'duelCountPulse .5s ease-out';
       duelPlayBoom();
       
-      // Flash
+      
       const flash = document.getElementById('duelFlash');
       flash.style.background = 'white';
       flash.style.animation = 'duelFlashBang .4s ease-out forwards';
       setTimeout(() => { flash.style.animation = 'none'; }, 500);
       
-      // Phase 2: Coin spinning with pure visual drama
+      
       setTimeout(() => {
         countdownEl.style.display = 'none';
         coinEl.style.display = 'flex';
         coinEl.style.animation = 'duelCoinSpin .12s linear infinite';
         tensionBar.style.display = 'block';
         
-        // Create fog/atmosphere overlay
+        
         const gameOverlay = document.getElementById('duelGameOverlay');
         const fogTint = document.createElement('div');
         fogTint.style.position = 'absolute';
@@ -1543,7 +1540,7 @@ function duelDramaticSequence(room) {
         
         duelPlayDrum();
         
-        // Phase 3: Tension build — coin exponentially slows with visual atmosphere
+        
         let tensionStep = 0;
         const tensionTotal = 40;
         const tensionInterval = setInterval(() => {
@@ -1551,35 +1548,35 @@ function duelDramaticSequence(room) {
           const pct = Math.min((tensionStep / tensionTotal) * 100, 100);
           tensionFill.style.width = pct + '%';
           
-          // Exponential slowdown: easing formula for more dramatic pause
+          
           const eased = (tensionStep / tensionTotal);
-          const speed = 0.12 + eased * eased * 2.0; // Accelerates slowdown
+          const speed = 0.12 + eased * eased * 2.0; 
           coinEl.style.animation = 'duelCoinSpin ' + speed.toFixed(3) + 's linear infinite';
           
-          // Coin glow pulses with tension
+          
           const glowIntensity = 8 + Math.sin(tensionStep / 8) * 6;
           coinEl.style.filter = 'drop-shadow(0 0 ' + glowIntensity + 'px rgba(255, 200, 0, 0.7)) saturate(1.2)';
           
-          // Screen saturation pulses during tension (visual energy)
+          
           if (tensionStep < tensionTotal - 5) {
             const saturation = 0.9 + Math.sin(tensionStep / 4) * 0.15;
             gameOverlay.style.filter = 'saturate(' + saturation + ') brightness(1.05)';
           }
           
-          // Fog intensity builds toward end
+          
           fogTint.style.opacity = (pct / 100 * 0.6).toFixed(3);
           
-          // Suspense ticks get higher pitch
+          
           if (tensionStep % 3 === 0) duelPlaySuspense(tensionStep / 3);
           
-          // Final dramatic pause — ultra-slow spin
+          
           if (tensionStep >= tensionTotal - 7) {
             coinEl.style.animation = 'duelCoinSpin 3s linear infinite';
           }
           
           if (tensionStep >= tensionTotal) {
             clearInterval(tensionInterval);
-            // Hide tension bar and coin — result will be shown by duelShowResult
+            
             tensionBar.style.display = 'none';
             gameOverlay.style.filter = 'saturate(1) brightness(1)';
             fogTint.style.opacity = '0';
@@ -1597,9 +1594,9 @@ async function duelResolve(code) {
   const snap = await window._fbGet('casino/duelRooms/' + code);
   if (!snap.exists()) return;
   const room = snap.val();
-  if (room.result) return; // Already resolved
+  if (room.result) return; 
   
-  // Coinflip: 50/50
+  
   const flip = Math.random() < 0.5 ? 'heads' : 'tails';
   const winnerId = flip === 'heads' ? room.host : room.challenger;
   const winnerName = flip === 'heads' ? room.hostName : room.challengerName;
@@ -1628,21 +1625,21 @@ function duelShowResult(room) {
   const isWinner = room.winner === window._currentPlayerId;
   const isLoser = room.loserId === window._currentPlayerId;
   
-  // SLAM — screen shake + flash
+  
   duelPlayBoom();
   inner.classList.remove('duel-overlay-shake');
   void inner.offsetWidth;
   inner.classList.add('duel-overlay-shake');
   
-  // Flash the screen in winner's color
+  
   flash.style.background = isWinner ? '#00e676' : isLoser ? '#ff1744' : '#ffd700';
   flash.style.animation = 'duelFlashBang .6s ease-out forwards';
   setTimeout(() => { flash.style.animation = 'none'; }, 700);
   
-  // Reveal the coin — snap to result
+  
   coin.style.animation = room.result === 'heads' ? 'duelCoinRevealHeads .8s ease-out forwards' : 'duelCoinRevealTails .8s ease-out forwards';
   
-  // Show result text with dramatic slam animation
+  
   setTimeout(() => {
     resultEl.style.display = 'block';
     resultEl.className = 'duel-result duel-result-reveal';
@@ -1652,7 +1649,7 @@ function duelShowResult(room) {
       resultEl.textContent = '💰 YOU WIN! 💰';
       resultEl.style.color = '#00e676';
       resultEl.classList.add('duel-win-glow');
-      // Huge boom sound
+      
       setTimeout(() => {
         playSound(200, 'square', .4, .1);
         setTimeout(() => playSound(300, 'square', .4, .1), 100);
@@ -1660,7 +1657,7 @@ function duelShowResult(room) {
         setTimeout(() => playSound(600, 'square', .5, .15), 300);
         setTimeout(() => playSound(800, 'sine', .3, .2), 400);
       }, 100);
-      // Massive particles
+      
       balance += room.pot;
       updateBalDisplay();
       showBigWin(room.pot);
@@ -1669,7 +1666,7 @@ function duelShowResult(room) {
       setTimeout(() => spawnParticles(window.innerWidth * 2 / 3, window.innerHeight / 2, 30), 400);
       showToast('🎉 +$' + formatBalance(room.pot) + ' from duel!');
       recordGame('duels', room.wager, room.pot);
-      // Flash green multiple times
+      
       let flashCount = 0;
       const flashInterval = setInterval(() => {
         flash.style.background = '#00e676';
@@ -1688,23 +1685,23 @@ function duelShowResult(room) {
       resultEl.style.color = 'var(--gold)';
     }
     
-    // Show pot amount
+    
     document.getElementById('duelWagerText').textContent = room.winnerName + ' takes $' + formatBalance(room.pot) + '!';
   }, 400);
   
   document.getElementById('duelCloseBtn').style.display = '';
   
-  // Save to local history
+  
   duelHistory.unshift({ winner: room.winnerName, loser: room.loserName, pot: room.pot, time: Date.now() });
   if (duelHistory.length > 20) duelHistory.length = 20;
   localStorage.setItem('casino_duel_history', JSON.stringify(duelHistory));
   
-  // Broadcast big wins
+  
   if (isWinner && room.pot >= 500 && window._broadcastWin) {
     window._broadcastWin(window._currentUsername, 'Duel', room.pot);
   }
   
-  // Cleanup room after 10 seconds
+  
   if (room.host === window._currentPlayerId) {
     setTimeout(() => {
       window._fbRemove('casino/duelRooms/' + currentDuelRoom).catch(() => {});
@@ -1722,7 +1719,7 @@ function duelCloseOverlay() {
 }
 
 function duelLoadLobby() {
-  // Poll for open duels every 5s instead of real-time listener (saves bandwidth)
+  
   if (duelLobbyUnsub) { clearInterval(duelLobbyUnsub); duelLobbyUnsub = null; }
   async function _pollDuels() {
     try {
@@ -1762,7 +1759,7 @@ function duelLoadLobby() {
   _pollDuels();
   duelLobbyUnsub = setInterval(_pollDuels, 5000);
   
-  // Render local duel history
+  
   renderDuelHistory();
 }
 
@@ -1771,7 +1768,7 @@ async function duelCancel(code) {
   if (snap.exists()) {
     const room = snap.val();
     if (room.host === window._currentPlayerId && room.status === 'waiting') {
-      balance += room.wager; // Refund
+      balance += room.wager; 
       updateBalDisplay();
       await window._fbRemove('casino/duelRooms/' + code);
       showToast('Duel cancelled, wager refunded.', true);
@@ -1799,7 +1796,7 @@ function renderDuelHistory() {
   }).join('');
 }
 
-// ============ TRADING SYSTEM (Multi-Step) ============
+
 let tradeHistory = [];
 try { tradeHistory = JSON.parse(localStorage.getItem('casino_trade_history') || '[]'); } catch(e) { tradeHistory = []; }
 let _tradeRequestUnsub = null;
@@ -1816,7 +1813,7 @@ function closeTradeOverlay() {
   document.getElementById('tradeOverlay').style.display = 'none';
   if (_tradeRequestUnsub) { _tradeRequestUnsub(); _tradeRequestUnsub = null; }
 }
-// legacy aliases
+
 function showTradePanel() { openTradeOverlay(); }
 
 function openStoreOverlay() {
@@ -1843,7 +1840,7 @@ function tradeGoToStep(n) {
   }
 }
 
-// Username validation on input
+
 (function() {
   const inp = document.getElementById('tradeRecipient');
   if (!inp) return;
@@ -1859,7 +1856,7 @@ function tradeGoToStep(n) {
     debounce = setTimeout(async () => {
       if (!window._sendTradeRequest) { st.textContent = 'Login first'; st.style.color = 'var(--red)'; return; }
       try {
-        // Just check if user exists
+        
         const nameSnap = await window._checkUsernameExists(u);
         if (nameSnap) {
           st.innerHTML = '✅ <strong style="color:var(--neon);">' + u + '</strong> found';
@@ -1889,16 +1886,16 @@ async function tradeRequestSend() {
     _tradePartner = u;
     document.getElementById('tradeWaitingFor').textContent = u;
     tradeGoToStep(2);
-    // Animate waiting dots
+    
     let dots = 0;
     const dotsEl = document.getElementById('tradeWaitDots');
     const dotsI = setInterval(() => { dots = (dots + 1) % 4; dotsEl.textContent = '.'.repeat(dots + 1); }, 600);
-    // Listen for response
+    
     _tradeRequestUnsub = window._listenTradeRequestResponse(res.recipientUid, res.requestId,
-      async () => { // accepted
+      async () => { 
         clearInterval(dotsI);
         document.getElementById('tradePartnerName').textContent = u;
-        // Create live trade session
+        
         const tradeId = await window._createLiveTrade(res.recipientUid, u);
         if (tradeId) {
           _liveTradeId = tradeId;
@@ -1910,7 +1907,7 @@ async function tradeRequestSend() {
         }
         showToast('🤝 ' + u + ' accepted! Live trade started!', true);
       },
-      () => { // declined
+      () => { 
         clearInterval(dotsI);
         showToast('❌ ' + u + ' declined your trade request', false);
         tradeGoToStep(1);
@@ -1933,12 +1930,12 @@ function tradeCancelSession() {
   tradeGoToStep(1);
 }
 
-// ============ LIVE TRADE FUNCTIONS ============
+
 let _liveTradeId = null;
 let _liveTradeIsHost = false;
 let _liveTradePartner = '';
 let _liveTradeUnsub = null;
-let _liveTradeMyItems = []; // array of itemIds currently offered
+let _liveTradeMyItems = []; 
 let _liveTradeReady = false;
 
 function startLiveTradeListener(tradeId) {
@@ -1960,19 +1957,19 @@ function startLiveTradeListener(tradeId) {
     if (t.status === 'completed') {
       showToast('🤝 Trade completed successfully!', true);
       if (_liveTradeUnsub) { try { _liveTradeUnsub(); } catch(e) {} _liveTradeUnsub = null; }
-      // Refresh balance and inventory
+      
       if (typeof checkPendingRefunds === 'function') setTimeout(checkPendingRefunds, 1000);
       tradeGoToStep(1);
       return;
     }
     
-    // Update "their offer" display
+    
     const isHost = _liveTradeIsHost;
     const theirOffer = isHost ? t.guestOffer : t.hostOffer;
     const theirReady = isHost ? t.guestReady : t.hostReady;
     const myReady = isHost ? t.hostReady : t.guestReady;
     
-    // Their items
+    
     const theirItemsEl = document.getElementById('liveTradeTheirItems');
     const theirItems = (theirOffer?.items || '').split(',').filter(Boolean);
     if (theirItems.length === 0) {
@@ -1984,21 +1981,21 @@ function startLiveTradeListener(tradeId) {
       }).join('<br>');
     }
     
-    // Their cash
+    
     document.getElementById('liveTradeTheirCash').textContent = '$' + Math.floor(theirOffer?.cash || 0).toLocaleString();
     
-    // Their ready status
+    
     document.getElementById('liveTradeTheirReadyStatus').innerHTML = theirReady ? 
       '<span style="color:var(--green);">✅ LOCKED IN</span>' : 
       '<span style="color:var(--text2);">⏳ Not locked in</span>';
     
-    // Show confirm button if both ready
+    
     document.getElementById('liveTradeConfirmArea').style.display = (myReady && theirReady) ? 'block' : 'none';
   });
 }
 
 function liveTradeAddItem() {
-  if (_liveTradeReady) return; // Can't modify after lock-in
+  if (_liveTradeReady) return; 
   const sel = document.getElementById('tradeItemSelect');
   const invId = parseInt(sel.value);
   if (!invId) return;
@@ -2006,7 +2003,7 @@ function liveTradeAddItem() {
   const item = inventory.find(x => x.id === invId);
   if (!item) return;
   
-  // Check if already added
+  
   if (_liveTradeMyItems.includes(item.itemId)) {
     showToast('Item already in offer', false);
     return;
@@ -2079,14 +2076,14 @@ async function liveTradeExecute() {
   const statusEl = document.getElementById('tradeStatus');
   statusEl.textContent = '⏳ Executing trade...';
   
-  // Remove items from local inventory before executing
+  
   const myItemsCopy = [..._liveTradeMyItems];
   for (const itemId of myItemsCopy) {
     const idx = inventory.findIndex(x => x.itemId === itemId);
     if (idx >= 0) inventory.splice(idx, 1);
   }
   
-  // Deduct cash
+  
   const cash = Math.max(0, parseInt(document.getElementById('tradeCashAmount').value) || 0);
   if (cash > 0) { balance -= cash; updateBalDisplay(); }
   
@@ -2094,21 +2091,21 @@ async function liveTradeExecute() {
   if (res.error) {
     statusEl.textContent = '❌ ' + res.error;
     statusEl.style.color = 'var(--red)';
-    // Restore items on error
+    
     return;
   }
   
   statusEl.textContent = '✅ Trade completed!';
   statusEl.style.color = 'var(--green)';
   firebaseSave();
-  // Listener will handle cleanup via status=completed
+  
 }
 
 async function loadTradeRequests() {
   if (!window._loadTradeRequests) return;
   try {
     const reqs = await window._loadTradeRequests();
-    // Show as part of inbox
+    
     const div = document.getElementById('incomingTrades');
     if (reqs.length > 0) {
       const reqHtml = reqs.map((r, idx) => {
@@ -2127,7 +2124,7 @@ async function loadTradeRequests() {
           </div>
         </div>`;
       }).join('');
-      // Prepend to inbox
+      
       const existing = div.innerHTML;
       if (existing.includes('No pending')) div.innerHTML = reqHtml;
       else div.innerHTML = reqHtml + existing;
@@ -2148,12 +2145,12 @@ async function respondTradeRequest(reqId, fromName, fromUid, accepted) {
     showToast('✅ Accepted! Starting live trade with ' + fromName, true);
     _liveTradePartner = fromName;
     _liveTradeIsHost = false;
-    // The host will create the live trade — guest must poll for it
+    
     switchTradeTab('send', document.getElementById('tradeSendTab'));
     document.getElementById('tradePartnerName').textContent = fromName;
     tradeGoToStep(3);
     populateTradeSelect();
-    // Poll for the live trade ID that the host creates
+    
     let pollCount = 0;
     const pollForLive = setInterval(async () => {
       pollCount++;
@@ -2192,7 +2189,7 @@ function switchTradeTab(tab, btn) {
   if (tab === 'gift') { document.getElementById('giftUsername').focus(); }
 }
 
-// ============ GIFT SYSTEM UI ============
+
 function quickGiftAmount(amt) {
   document.getElementById('giftAmount').value = amt;
 }
@@ -2231,7 +2228,7 @@ async function sendGift() {
     usernameEl.value = '';
     amountEl.value = '';
     showToast('💝 Sent $' + Math.floor(amount) + ' to ' + username + '!', true);
-    // Update player balance display
+    
     balance = result.newBalance; updateBalDisplay(); firebaseSave();
     setTimeout(() => {
       statusEl.textContent = '';
@@ -2239,7 +2236,7 @@ async function sendGift() {
   }
 }
 
-// ============ LOAN SYSTEM (REMOVED) ============
+
 function openLoanOverlay() { showToast('Loans have been removed!', false); }
 function closeLoanOverlay() {}
 function switchLoanTab() {}
@@ -2301,7 +2298,7 @@ function updateTradeSummary() {
   summary.innerHTML = html;
 }
 
-// Attach live updates for trade summary
+
 setTimeout(() => {
   ['tradeCashAmount'].forEach(id => {
     const el = document.getElementById(id);
@@ -2335,7 +2332,7 @@ async function sendTrade() {
     status.style.color = 'var(--green)';
     showToast('📦 Trade sent to ' + _tradePartner, true);
     firebaseSave();
-    // Reset after 2s
+    
     setTimeout(() => { tradeGoToStep(1); }, 2000);
   } catch(e) { status.textContent = '❌ ' + (e.message || 'Failed'); status.style.color = 'var(--red)'; }
 }
@@ -2418,7 +2415,7 @@ function renderTradeHistory() {
   }).join('');
 }
 
-// ============ STORE / MARKETPLACE ============
+
 let storeListType = 'fixed';
 
 function switchStoreTab(tab, btn) {
@@ -2511,10 +2508,10 @@ async function loadStoreListings() {
   grid.innerHTML = '<div style="grid-column:1/-1;color:var(--text2);font-size:12px;text-align:center;padding:30px;">Loading...</div>';
   try {
     let listings = await window._storeGetListings();
-    // Filter
+    
     const rarFilter = document.getElementById('storeFilterRarity').value;
     if (rarFilter !== 'all') listings = listings.filter(l => l.rarity === rarFilter);
-    // Sort
+    
     const sort = document.getElementById('storeSortBy').value;
     if (sort === 'newest') listings.sort((a, b) => b.listedAt - a.listedAt);
     else if (sort === 'priceAsc') listings.sort((a, b) => (a.type === 'auction' ? a.currentBid : a.price) - (b.type === 'auction' ? b.currentBid : b.price));
@@ -2588,7 +2585,7 @@ async function storeBid(listingId) {
     const res = await window._storePlaceBid(listingId, amount);
     if (res.error) { showToast(res.error, false); return; }
     balance -= amount; updateBalDisplay();
-    // Refund old bid if it was us (shouldn't happen but safety)
+    
     if (res.oldBid > 0 && res.oldBidderUid === (window._currentPlayerId || '')) {
       balance += res.oldBid; updateBalDisplay();
     }
@@ -2605,14 +2602,14 @@ async function storeClaim(listingId) {
       addToInventory(res.item.itemId);
       showToast('No bids — item returned to inventory', true);
     } else {
-      // Credits are handled via pendingRefunds system for both buyer and seller
-      // Just show appropriate message
+      
+      
       if (res.item.sellerUid === (window._currentPlayerId || '')) {
         showToast('💰 Auction sold for $' + res.item.currentBid.toLocaleString() + '! Payment pending.', true);
       } else {
         showToast('🎉 Won auction: ' + (res.item.itemName || 'item') + '! Item pending.', true);
       }
-      // Trigger refund check immediately
+      
       checkPendingRefunds();
     }
     loadStoreListings(); renderInventory(); firebaseSave();
@@ -2673,7 +2670,7 @@ async function loadStoreSales() {
   } catch(e) { div.innerHTML = '<div style="color:var(--red);font-size:12px;text-align:center;padding:20px;">Error</div>'; }
 }
 
-// ============ FRIENDS SYSTEM ============
+
 let _dmUnsub = null;
 let _dmPartnerUid = '';
 let _dmPartnerName = '';
@@ -2683,7 +2680,7 @@ function showFriendsPanel() {
   document.getElementById('friendsOverlay').style.display = 'block';
   loadFriendsList();
   loadFriendRequests();
-  // Set online
+  
   if (window._setOnlineStatus) window._setOnlineStatus(true);
 }
 function hideFriendsPanel() {
@@ -2715,7 +2712,7 @@ async function loadFriendsList() {
     const friends = await window._loadFriendsList();
     if (countEl) countEl.textContent = '(' + friends.length + ')';
     if (friends.length === 0) { div.innerHTML = '<div style="color:var(--text2);font-size:12px;text-align:center;padding:20px;">No friends yet — add some!</div>'; return; }
-    // Get presence
+    
     const presences = await window._getPresenceBatch(friends.map(f => f.uid));
     div.innerHTML = friends.map(f => {
       const p = presences[f.uid] || { online: false, lastSeen: 0 };
@@ -2850,7 +2847,7 @@ async function friendUnblock(uid, name) {
   loadBlockedList();
 }
 
-// ===== DIRECT MESSAGES =====
+
 async function loadDMContacts() {
   const list = document.getElementById('dmContactList');
   const chatView = document.getElementById('dmChatView');
@@ -2877,21 +2874,21 @@ async function loadDMContacts() {
 function dmOpenChat(uid, name) {
   _dmPartnerUid = uid;
   _dmPartnerName = name;
-  // Switch to DM tab first (in case we're on Friends tab)
+  
   const dmTab = document.getElementById('frTabDM');
   if (dmTab) switchFriendsTab('dm', dmTab);
   document.getElementById('dmContactList').style.display = 'none';
   document.getElementById('dmChatView').style.display = 'block';
   document.getElementById('dmChatPartner').textContent = name;
   document.getElementById('dmMessages').innerHTML = '<div style="color:var(--text2);font-size:12px;text-align:center;">Loading...</div>';
-  // Check online status
+  
   if (window._getPresence) {
     window._getPresence(uid).then(p => {
       const online = p.online && (Date.now() - (p.lastSeen || 0) < 120000);
       document.getElementById('dmPartnerStatus').innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + (online ? '#00e676' : '#555') + ';margin-right:4px;"></span>' + (online ? 'Online' : 'Offline');
     });
   }
-  // Listen to messages
+  
   if (_dmUnsub) _dmUnsub();
   if (window._listenDirectMessages) {
     _dmUnsub = window._listenDirectMessages(uid, (msgs) => {
@@ -2909,7 +2906,7 @@ function dmOpenChat(uid, name) {
       div.scrollTop = div.scrollHeight;
     });
   }
-  // Enter key
+  
   const inp = document.getElementById('dmInput');
   inp.onkeydown = (e) => { if (e.key === 'Enter') dmSendMessage(); };
   inp.focus();
@@ -2934,7 +2931,7 @@ async function dmSendMessage() {
   } catch(e) { showToast('Message failed', false); }
 }
 
-// ===== PRIVACY SETTINGS =====
+
 async function loadPrivacySettings() {
   if (!window._loadPrivacySettings) return;
   try {
@@ -2963,12 +2960,11 @@ async function savePrivacySettings() {
   } catch(e) { st.textContent = '❌ Error saving'; st.style.color = 'var(--red)'; }
 }
 
-// Set online status on page load/unload
+
 window.addEventListener('load', () => { if (window._setOnlineStatus) window._setOnlineStatus(true); });
 window.addEventListener('beforeunload', () => { if (window._setOnlineStatus) window._setOnlineStatus(false); });
-// Removed redundant 60s presence heartbeat — _chatPresenceInterval handles it
 
-// ============ SLOTS ============
+
 const SYMBOLS=['🍒','🍋','🔔','💎','7️⃣','🍀','⭐','👑'];
 const SYMBOL_VALUES={'👑':100,'7️⃣':50,'💎':30,'⭐':20,'🔔':15,'🍀':10,'🍋':6,'🍒':4};
 const REEL_COUNT=5;
@@ -2977,20 +2973,20 @@ const VISIBLE=3;
 let slotsSpinning=false;
 
 function slotsJackpotAnimation(winAmount, symbol, bet) {
-  // Create a fullscreen jackpot overlay with epic animation
+  
   const overlay = document.createElement('div');
   overlay.id = 'slotsJackpotOverlay';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:auto;transition:background 0.5s;';
   document.body.appendChild(overlay);
   requestAnimationFrame(() => { overlay.style.background = 'rgba(4,8,20,.95)'; });
 
-  // Sound: epic win chord
-  playSound(523, 'sine', 0.5, 0.2); // C
-  setTimeout(() => playSound(659, 'sine', 0.5, 0.18), 150); // E
-  setTimeout(() => playSound(784, 'sine', 0.5, 0.15), 300); // G
-  setTimeout(() => playSound(1047, 'sine', 0.8, 0.2), 500); // C high
+  
+  playSound(523, 'sine', 0.5, 0.2); 
+  setTimeout(() => playSound(659, 'sine', 0.5, 0.18), 150); 
+  setTimeout(() => playSound(784, 'sine', 0.5, 0.15), 300); 
+  setTimeout(() => playSound(1047, 'sine', 0.8, 0.2), 500); 
 
-  // Phase 1: Giant symbol (0-1.5s)
+  
   const symEl = document.createElement('div');
   symEl.textContent = symbol;
   symEl.style.cssText = 'font-size:20px;opacity:0;transition:all 0.8s cubic-bezier(.2,1,.3,1);transform:scale(0.1);filter:blur(10px);';
@@ -3002,7 +2998,7 @@ function slotsJackpotAnimation(winAmount, symbol, bet) {
     symEl.style.filter = 'blur(0) drop-shadow(0 0 40px rgba(255,215,0,.8))';
   });
 
-  // Phase 2: "JACKPOT!" text (1s)
+  
   setTimeout(() => {
     const txt = document.createElement('div');
     txt.textContent = '★ JACKPOT ★';
@@ -3014,12 +3010,12 @@ function slotsJackpotAnimation(winAmount, symbol, bet) {
     });
   }, 1000);
 
-  // Phase 3: 1000x multiplier counter (1.5s)
+  
   setTimeout(() => {
     const multEl = document.createElement('div');
     multEl.style.cssText = 'font-family:Orbitron;font-size:36px;font-weight:900;color:#ff4444;margin-top:8px;';
     overlay.appendChild(multEl);
-    // Count up from 1x to 1000x
+    
     let count = 1;
     const target = 1000;
     const startT = Date.now();
@@ -3027,7 +3023,7 @@ function slotsJackpotAnimation(winAmount, symbol, bet) {
     function tick() {
       const elapsed = Date.now() - startT;
       const prog = Math.min(elapsed / dur, 1);
-      // Eased progress (ease-out)
+      
       const eased = 1 - Math.pow(1 - prog, 3);
       count = Math.max(1, Math.floor(eased * target));
       multEl.textContent = count + '× YOUR BET';
@@ -3036,7 +3032,7 @@ function slotsJackpotAnimation(winAmount, symbol, bet) {
         multEl.textContent = '1000× YOUR BET';
         multEl.style.color = '#ffd700';
         multEl.style.textShadow = '0 0 20px rgba(255,215,0,.6)';
-        // Play final boom sound
+        
         playSound(200, 'sawtooth', 0.4, 0.25);
         setTimeout(() => playSound(150, 'square', 0.3, 0.15), 100);
       }
@@ -3044,7 +3040,7 @@ function slotsJackpotAnimation(winAmount, symbol, bet) {
     tick();
   }, 1500);
 
-  // Phase 4: Win amount (3.5s)
+  
   setTimeout(() => {
     const winEl = document.createElement('div');
     winEl.style.cssText = 'font-family:Orbitron;font-size:42px;font-weight:900;color:var(--green);margin-top:16px;opacity:0;transform:scale(0.5);transition:all 0.5s cubic-bezier(.2,1,.3,1);';
@@ -3054,7 +3050,7 @@ function slotsJackpotAnimation(winAmount, symbol, bet) {
       winEl.style.opacity = '1';
       winEl.style.transform = 'scale(1)';
     });
-    // Particles burst
+    
     for (let i = 0; i < 8; i++) {
       setTimeout(() => {
         const x = window.innerWidth * (0.2 + Math.random() * 0.6);
@@ -3064,7 +3060,7 @@ function slotsJackpotAnimation(winAmount, symbol, bet) {
     }
   }, 3500);
 
-  // Phase 5: Close button (5s)
+  
   setTimeout(() => {
     const btn = document.createElement('button');
     btn.textContent = 'COLLECT WINNINGS';
@@ -3108,33 +3104,33 @@ function spinSlots(){
   if(!checkMaxBet(bet,'Slots'))return;
   if(bet>balance){showToast('Not enough balance!',false);return;}
   slotsSpinning=true;
-  // Shield potion: refund half on loss (applied at bet time, settled after result)
+  
   const slotsShielded = typeof isShieldActive==='function' && isShieldActive();
   balance-=bet;updateBalDisplay();
   document.getElementById('spinBtn').disabled=true;
   playClickSound();
 
-  // Determine results
+  
   const results=[];
   for(let r=0;r<REEL_COUNT;r++) results.push(SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)]);
 
   for(let r=0;r<REEL_COUNT;r++){
     const strip=document.getElementById('reel'+r);
     const children=strip.children;
-    // Randomize all symbols
+    
     for(let i=0;i<children.length;i++){
       children[i].textContent=SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
     }
-    // Place result at target position (center of view = index 1 of visible 3)
+    
     const targetIdx=42+r*2;
     children[targetIdx].textContent=results[r];
 
     setTimeout(()=>{
-      // Reset to top
+      
       strip.style.transition='none';
       strip.style.transform='translateY(0px)';
       void strip.offsetWidth;
-      // Animate to target
+      
       strip.style.transition='transform '+(1.2+r*0.25)+'s cubic-bezier(.15,.72,.12,1)';
       strip.style.transform='translateY(-'+((targetIdx-1)*SYM_H)+'px)';
       playSound(300+r*50,'square',.04,.03);
@@ -3143,7 +3139,7 @@ function spinSlots(){
 
   const totalDuration=1200+REEL_COUNT*250+300;
   setTimeout(()=>{
-    // Count matches
+    
     const counts={};
     results.forEach(s=>{counts[s]=(counts[s]||0)+1;});
     let maxCount=0,maxSym='';
@@ -3155,8 +3151,8 @@ function spinSlots(){
       const mult=SYMBOL_VALUES[maxSym]||4;
       if(maxCount===3)winAmount=bet*mult;
       else if(maxCount===4)winAmount=bet*mult*5;
-      else winAmount=bet*1000; // JACKPOT: 1000x bet for all 5 matching!
-      // Apply luck potion bonus
+      else winAmount=bet*1000; 
+      
       if(typeof getLuckBonus==='function') winAmount*=getLuckBonus();
       winAmount=Math.round(winAmount*100)/100;
     }
@@ -3173,7 +3169,7 @@ function spinSlots(){
         spawnParticles(rect.left+rect.width/2,rect.top+rect.height/2,40+winAmount/10);
       }
     }else{
-      // Shield potion: refund half of bet on loss
+      
       if(slotsShielded){ const refund=Math.floor(bet*0.5); balance+=refund; updateBalDisplay(); showToast('🛡️ Shield! -$'+(bet-refund).toFixed(2),false); }
       else{ showToast('-$'+bet.toFixed(2),false); }
       playLoseSound();
@@ -3184,7 +3180,7 @@ function spinSlots(){
     slotsSpinning=false;
     document.getElementById('spinBtn').disabled=false;
 
-    // Reset strips for next spin
+    
     setTimeout(()=>{
       for(let r=0;r<REEL_COUNT;r++){
         const strip=document.getElementById('reel'+r);
@@ -3198,7 +3194,7 @@ function spinSlots(){
   },totalDuration);
 }
 
-// ============ CRASH ============
+
 let crashRunning=false,crashBetAmount=0,crashCashedOut=false;
 let crashMultVal=1,crashPoint=0,crashStartTime=0,crashHistory=[];
 
@@ -3215,7 +3211,7 @@ function drawCrashGraph(){
   const w=c.width,h=c.height;
   ctx.clearRect(0,0,w,h);
 
-  // Grid lines
+  
   ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
   for(let i=1;i<10;i++){
     const y=h*(1-i/10);
@@ -3226,7 +3222,7 @@ function drawCrashGraph(){
 
   const maxMult=Math.max(...crashHistory.map(p=>p.m),2);
 
-  // Gradient fill
+  
   ctx.beginPath();
   crashHistory.forEach((p,i)=>{
     const x=(i/(crashHistory.length-1||1))*w;
@@ -3240,7 +3236,7 @@ function drawCrashGraph(){
   grad.addColorStop(0,'rgba('+col+',.2)');grad.addColorStop(1,'rgba('+col+',0)');
   ctx.fillStyle=grad;ctx.fill();
 
-  // Line
+  
   ctx.beginPath();
   const lineColor=crashRunning&&!crashCashedOut?'#00f0ff':(crashCashedOut?'#00ff88':'#ff3355');
   ctx.strokeStyle=lineColor;ctx.lineWidth=4;ctx.shadowColor=lineColor;ctx.shadowBlur=12;
@@ -3252,7 +3248,7 @@ function drawCrashGraph(){
   ctx.stroke();
   ctx.shadowBlur=0;
 
-  // Dot at end
+  
   if(crashHistory.length>1){
     const lp=crashHistory[crashHistory.length-1];
     const dx=(1)*w;
@@ -3275,11 +3271,11 @@ function startCrash(){
   window._crashCashoutReady=false;
   setTimeout(()=>{window._crashCashoutReady=true;},200);
   crashMultVal=1;crashHistory=[{t:0,m:1}];
-  // House edge ~8% — clamp random to avoid division by zero
+  
   let rnd = Math.random();
-  if (rnd >= 0.99999) rnd = 0.99999; // prevent Infinity
+  if (rnd >= 0.99999) rnd = 0.99999; 
   crashPoint=1+(0.92/(1-rnd))-0.92;
-  // Apply luck potion: nudge crash point slightly higher
+  
   if(typeof getLuckBonus==='function'){ const lb=getLuckBonus(); if(lb>1) crashPoint*=lb; }
   if(crashPoint<1.02)crashPoint=1.02;
   if(crashPoint>100)crashPoint=100;
@@ -3350,7 +3346,7 @@ function cashOut(){
   drawCrashGraph();
 }
 
-// ============ ROULETTE ============
+
 const ROUL_NUMS=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 const RED_NUMS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 let rouletteSpinning=false,rouletteAngle=0,selectedRoulBet=null,rouletteDrawn=false;
@@ -3379,7 +3375,7 @@ function drawRouletteWheel(angle){
     ctx.fill();
     ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1;ctx.stroke();
 
-    // Number
+    
     const ta=start+sliceAngle/2;
     const tx=cx+Math.cos(ta)*(r*0.78);const ty=cy+Math.sin(ta)*(r*0.78);
     ctx.save();ctx.translate(tx,ty);ctx.rotate(ta+Math.PI/2);
@@ -3387,14 +3383,14 @@ function drawRouletteWheel(angle){
     ctx.fillText(num.toString(),0,0);ctx.restore();
   });
 
-  // Inner ring
+  
   ctx.beginPath();ctx.arc(cx,cy,r*0.15,0,Math.PI*2);
   const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,r*0.15);
   cg.addColorStop(0,'#2a2a5e');cg.addColorStop(1,'#15153a');
   ctx.fillStyle=cg;ctx.fill();
   ctx.strokeStyle='rgba(255,215,0,.5)';ctx.lineWidth=2;ctx.stroke();
 
-  // Outer ring
+  
   ctx.beginPath();ctx.arc(cx,cy,r+3,0,Math.PI*2);
   ctx.strokeStyle='rgba(255,215,0,.25)';ctx.lineWidth=5;ctx.stroke();
   ctx.beginPath();ctx.arc(cx,cy,r-1,0,Math.PI*2);
@@ -3414,16 +3410,16 @@ function spinRoulette(){
   document.getElementById('rouletteResult').textContent='';
   playClickSound();
 
-  // Select random number THEN verify its actual color
+  
   const n=ROUL_NUMS.length;
   const winIdx=Math.floor(Math.random()*n);
   const winNum=ROUL_NUMS[winIdx];
-  // Verify color from RED_NUMS set (prevents any color mismatch)
+  
   const isActuallyRed=RED_NUMS.has(winNum);
   const isActuallyGreen=winNum===0;
   const sliceAngle=Math.PI*2/n;
 
-  // Target: winning slice at top (angle = -PI/2)
+  
   const targetCenter=winIdx*sliceAngle+sliceAngle/2;
   const targetAngle=-Math.PI/2-targetCenter+Math.PI*2*(6+Math.random()*3);
   const startAngle=rouletteAngle;
@@ -3438,7 +3434,7 @@ function spinRoulette(){
     const cur=startAngle+totalRot*eased;
     drawRouletteWheel(cur);
 
-    // Tick sound when passing slot boundaries
+    
     const angleDiff=Math.abs(cur-lastTickAngle);
     if(angleDiff>sliceAngle){
       lastTickAngle=cur;
@@ -3451,11 +3447,11 @@ function spinRoulette(){
       rouletteSpinning=false;
       document.getElementById('roulSpinBtn').disabled=false;
 
-      // Read back which slice the pointer (top, -PI/2) is actually over
+      
       const pointerAngle=((-Math.PI/2-rouletteAngle)%(Math.PI*2)+Math.PI*4)%(Math.PI*2);
       const visualIdx=Math.floor(pointerAngle/sliceAngle)%n;
       const visualNum=ROUL_NUMS[visualIdx];
-      // Use the visual number for display (should match winNum, but this guarantees it)
+      
       const fNum=visualNum;
       const fRed=RED_NUMS.has(fNum);
       const fGreen=fNum===0;
@@ -3476,7 +3472,7 @@ function spinRoulette(){
 
       if(won){
         let payout=selectedRoulBet==='green'?bet*36:bet*2;
-        // Apply luck potion bonus
+        
         if(typeof getLuckBonus==='function') payout=Math.round(payout*getLuckBonus()*100)/100;
         balance+=payout;updateBalDisplay();
         showBigWin(payout);
@@ -3496,7 +3492,7 @@ function spinRoulette(){
   requestAnimationFrame(animWheel);
 }
 
-// ============ CASES (CSGO-STYLE) ============
+
 const RARITY={
   consumer:  {label:'Consumer Grade', color:'#b0c3d9',cls:'rarity-consumer',  tier:0},
   industrial:{label:'Industrial Grade',color:'#5e98d9',cls:'rarity-industrial',tier:1},
@@ -3508,47 +3504,47 @@ const RARITY={
   mythic:    {label:'★★ Mythic',      color:'#ff4500',cls:'rarity-legendary', tier:7},
 };
 
-// Full item catalog — each item is a unique collectible
+
 const ITEM_CATALOG={
-  // Consumer Grade
+  
   rustedCoin:      {id:'rustedCoin',      name:'Rusted Coin',        icon:'🪙', rarity:'consumer',  baseValue:15},
   brokenCompass:   {id:'brokenCompass',   name:'Broken Compass',     icon:'🧭', rarity:'consumer',  baseValue:20},
   driftwood:       {id:'driftwood',       name:'Driftwood Charm',    icon:'🪵', rarity:'consumer',  baseValue:12},
   seaGlass:        {id:'seaGlass',        name:'Sea Glass',          icon:'💠', rarity:'consumer',  baseValue:18},
   coconutShell:    {id:'coconutShell',    name:'Coconut Shell',      icon:'🥥', rarity:'consumer',  baseValue:10},
-  // Industrial Grade
+  
   bronzeMedallion: {id:'bronzeMedallion', name:'Bronze Medallion',   icon:'🏅', rarity:'industrial',baseValue:60},
   pearlFragment:   {id:'pearlFragment',   name:'Pearl Fragment',     icon:'⚪', rarity:'industrial',baseValue:80},
   corkedBottle:    {id:'corkedBottle',    name:'Corked Bottle',      icon:'🍾', rarity:'industrial',baseValue:70},
   ancientMap:      {id:'ancientMap',      name:'Ancient Map',        icon:'🗺️', rarity:'industrial', baseValue:90},
-  // Mil-Spec Grade
+  
   silverDagger:    {id:'silverDagger',    name:'Silver Dagger',      icon:'🗡️', rarity:'milspec',   baseValue:200},
   crystalOrb:      {id:'crystalOrb',      name:'Crystal Orb',        icon:'🔮', rarity:'milspec',   baseValue:250},
   enchantedRing:   {id:'enchantedRing',   name:'Enchanted Ring',     icon:'💍', rarity:'milspec',   baseValue:300},
   stormLantern:    {id:'stormLantern',    name:'Storm Lantern',      icon:'🏮', rarity:'milspec',   baseValue:220},
-  // Restricted
+  
   goldenCompass:   {id:'goldenCompass',   name:'Golden Compass',     icon:'🧭', rarity:'restricted',baseValue:600},
   dragonScale:     {id:'dragonScale',     name:'Dragon Scale',       icon:'🐉', rarity:'restricted',baseValue:750},
   phoenixFeather:  {id:'phoenixFeather',  name:'Phoenix Feather',    icon:'🪶', rarity:'restricted',baseValue:700},
   moonstone:       {id:'moonstone',       name:'Moonstone Gem',      icon:'🌙', rarity:'restricted',baseValue:650},
-  // Classified
+  
   voidShard:       {id:'voidShard',       name:'Void Shard',         icon:'♠️', rarity:'classified',baseValue:1500},
   starforgedBlade: {id:'starforgedBlade', name:'Starforged Blade',   icon:'⚔️', rarity:'classified',baseValue:2000},
   abyssalPearl:    {id:'abyssalPearl',    name:'Abyssal Pearl',      icon:'⚫', rarity:'classified',baseValue:1800},
-  // Covert
+  
   dragonheart:     {id:'dragonheart',     name:'Dragonheart',        icon:'❤️‍🔥', rarity:'covert', baseValue:5000},
   etherealCrown:   {id:'etherealCrown',   name:'Ethereal Crown',     icon:'👑', rarity:'covert',    baseValue:6000},
   cosmicDust:      {id:'cosmicDust',      name:'Cosmic Dust',        icon:'✨', rarity:'covert',    baseValue:5500},
-  // Legendary
+  
   infinityGem:     {id:'infinityGem',     name:'Infinity Gem',       icon:'💎', rarity:'legendary', baseValue:15000},
   islandRelic:     {id:'islandRelic',     name:'Island Relic',       icon:'🏝️', rarity:'legendary', baseValue:25000},
   casinoChip:      {id:'casinoChip',      name:'Casino Royale Chip', icon:'🎰', rarity:'legendary', baseValue:30000},
-  // ----- NEW HIGH-VALUE ITEMS -----
-  // Mega tier items (for whale cases)
+  
+  
   obsidianCrown:   {id:'obsidianCrown',   name:'Obsidian Crown',     icon:'🖤', rarity:'legendary', baseValue:100000},
   solarFlare:      {id:'solarFlare',      name:'Solar Flare',        icon:'☀️', rarity:'legendary', baseValue:200000},
   voidEngine:      {id:'voidEngine',      name:'Void Engine',        icon:'⚙️', rarity:'legendary', baseValue:500000},
-  // Mythic tier (ultra rare, whale bait)
+  
   worldEater:      {id:'worldEater',      name:'World Eater',        icon:'🌍', rarity:'mythic',    baseValue:2000000},
   tidalForce:      {id:'tidalForce',      name:'Tidal Force',        icon:'🌊', rarity:'mythic',    baseValue:5000000},
   cosmicTear:      {id:'cosmicTear',      name:'Cosmic Tear',        icon:'💧', rarity:'mythic',    baseValue:15000000},
@@ -3557,8 +3553,7 @@ const ITEM_CATALOG={
   bigBang:         {id:'bigBang',         name:'Big Bang',           icon:'💥', rarity:'mythic',    baseValue:1000000000},
 };
 
-// Case definitions — each references items from ITEM_CATALOG
-// RTP target: ~90-95% per case
+
 const CASES = [
   { name:'Starter Crate', icon:'📦', price:50, items:[
     {id:'rustedCoin',w:20},{id:'brokenCompass',w:18},{id:'driftwood',w:18},{id:'seaGlass',w:16},
@@ -3605,7 +3600,7 @@ const CASES = [
   ]}
 ];
 
-// ============ INVENTORY ============
+
 let inventory = [];
 let invIdCounter = Date.now();
 
@@ -3615,10 +3610,10 @@ function addToInventory(itemId) {
   invIdCounter++;
   const item = { id: invIdCounter, itemId: itemId, acquiredPrice: getItemMarketValue(itemId), acquiredAt: Date.now() };
   inventory.push(item);
-  // Update local demand
+  
   const d = itemDemand[itemId];
   if (d) { d.supply = (d.supply || 0) + 1; d.mult = Math.max(0.3, d.mult - 0.01); }
-  // Update global market — item opened/acquired
+  
   if (window._updateGlobalMarketItem) window._updateGlobalMarketItem(itemId, 'opened', getItemMarketValue(itemId));
 }
 
@@ -3628,7 +3623,7 @@ function removeFromInventory(invId) {
   const item = inventory[idx];
   const d = itemDemand[item.itemId];
   if (d) { d.supply = Math.max(0, d.supply - 1); d.mult = Math.min(3, d.mult + 0.015); }
-  // Update global market — item sold/removed
+  
   const val = getItemMarketValue(item.itemId);
   if (window._updateGlobalMarketItem) window._updateGlobalMarketItem(item.itemId, 'sold', val);
   inventory.splice(idx, 1);
@@ -3638,7 +3633,7 @@ function getInventoryValue() {
   return inventory.reduce((s, x) => s + getItemMarketValue(x.itemId), 0);
 }
 
-// ============ MARKET / DEMAND ============
+
 let itemDemand = {};
 let globalMarketData = {};
 
@@ -3679,20 +3674,20 @@ function tickDemand() {
   const tick = Math.floor(Date.now() / 5000);
   Object.keys(itemDemand).forEach((id, idx) => {
     const d = itemDemand[id];
-    // Deterministic pseudo-random shift per item per tick
+    
     const seed = ((tick * 2654435761) ^ (idx * 340573321)) >>> 0;
-    const r = (seed % 1000) / 1000; // 0..1
-    const shift = (r - 0.5) * 0.02; // -1% to +1%
+    const r = (seed % 1000) / 1000; 
+    const shift = (r - 0.5) * 0.02; 
     d.velocity = d.velocity * 0.9 + shift * 0.1;
     d.mult += d.velocity;
-    // Mean-revert toward 1.0
+    
     d.mult += (1 - d.mult) * 0.005;
     d.mult = Math.max(0.3, Math.min(3, d.mult));
   });
 }
 setInterval(tickDemand, 5000);
 
-// ============ CASES SYSTEM ============
+
 let caseStreak = 0, caseOpenTotal = 0, caseBestTier = -1, caseBestName = '—';
 let caseRecentUnboxes = [];
 let selectedCase = 0, caseOpening = false;
@@ -3735,7 +3730,7 @@ function pickWeightedWithStreak(items) {
 
 function updateCaseStats(winCat, winRarity) {
   caseOpenTotal++;
-  // Reset streak on low-tier items (consumer/industrial = tier 0-1)
+  
   if (winRarity.tier <= 1) { caseStreak = 0; } else { caseStreak++; }
   const countEl = document.getElementById('caseOpenCount');
   if (countEl) countEl.textContent = caseOpenTotal;
@@ -3925,7 +3920,7 @@ function quickOpenCase() {
   setTimeout(() => { caseOpening = false; }, 50);
 }
 
-// ============ INVENTORY ============
+
 function showInventory(){playClickSound();document.getElementById('inventoryOverlay').classList.add('show');renderInventory();}
 function hideInventory(){document.getElementById('inventoryOverlay').classList.remove('show');}
 let invFilter='all';
@@ -3944,7 +3939,7 @@ function renderInventory(){
   document.getElementById('invTotalValue').textContent=totalVal.toLocaleString();
   document.getElementById('invCount').textContent=inventory.length;
 
-  // Find rarest
+  
   let rarestTier=-1,rarestName='—';
   inventory.forEach(x=>{
     const cat=ITEM_CATALOG[x.itemId];
@@ -3956,7 +3951,7 @@ function renderInventory(){
   });
   document.getElementById('invRarest').textContent=rarestName;
 
-  // Market trend
+  
   const trends=Object.values(itemDemand).map(d=>d.velocity);
   const avg=trends.length?trends.reduce((a,b)=>a+b,0)/trends.length:0;
   document.getElementById('invTrend').innerHTML=avg>0.005?'<span style="color:var(--green)">📈 Bullish</span>'
@@ -3967,7 +3962,7 @@ function renderInventory(){
     filtered=inventory.filter(x=>{const c=ITEM_CATALOG[x.itemId];return c&&c.rarity===invFilter;});
   }
 
-  // Sort by rarity desc then value desc
+  
   filtered.sort((a,b)=>{
     const catA=ITEM_CATALOG[a.itemId], catB=ITEM_CATALOG[b.itemId];
     const ra=catA&&RARITY[catA.rarity]?RARITY[catA.rarity].tier:0;
@@ -3983,7 +3978,7 @@ function renderInventory(){
 
   filtered.forEach(inv=>{
     const cat=ITEM_CATALOG[inv.itemId];
-    if(!cat)return; // skip unknown items
+    if(!cat)return; 
     const rar=RARITY[cat.rarity];
     if(!rar)return;
     const val=getItemMarketValue(inv.itemId);
@@ -4003,7 +3998,7 @@ function renderInventory(){
     grid.appendChild(el);
   });
 
-  // Attach sell handlers
+  
   grid.querySelectorAll('.inv-sell-btn').forEach(btn=>{
     btn.onclick=(e)=>{
       e.stopPropagation();
@@ -4021,13 +4016,13 @@ function renderInventory(){
   });
 }
 
-// Inventory / Demand data persistence accessors
+
 window._getInventoryData=()=>inventory;
 window._loadInventory=(data)=>{if(Array.isArray(data)){inventory=data;invIdCounter=inventory.reduce((m,x)=>Math.max(m,x.id||0),Date.now());}};
 window._getDemandData=()=>itemDemand;
 window._loadDemand=(data)=>{if(data&&typeof data==='object'){Object.assign(itemDemand,data);}};
 
-// ============ PLINKO ============
+
 const PLINKO_PAYOUTS={
   8:{LOW:[5.6,2.1,1.1,1,.5,1,1.1,2.1,5.6],MEDIUM:[13,3,1.3,.7,.4,.7,1.3,3,13],HIGH:[29,4,1.5,.3,.2,.3,1.5,4,29]},
   9:{LOW:[5.6,2,1.6,1,.7,.7,1,1.6,2,5.6],MEDIUM:[18,4,1.7,.9,.5,.5,.9,1.7,4,18],HIGH:[43,7,2,.6,.2,.2,.6,2,7,43]},
@@ -4044,9 +4039,9 @@ const BALL_FRICTIONS={8:.0395,9:.041,10:.038,11:.0355,12:.0414,13:.0437,14:.0401
 let plinkoInitialized=false,plinkoMatterEngine=null,plinkoMatterRender=null,plinkoMatterRunner=null;
 let plinkoPins=[],plinkoWalls=[],plinkoSensor=null,plinkoBallBets={};
 let plinkoDropCount=0,plinkoTotalProfit=0,plinkoLastWinsList=[];
-let plinkoProfitHistory=[0]; // store cumulative profit history (starts with 0 like source)
-let plinkoProfitChartInstance = null; // Chart.js instance for Plinko profit chart
-let plinkoWinCount=0, plinkoLossCount=0; // win/loss counters
+let plinkoProfitHistory=[0]; 
+let plinkoProfitChartInstance = null; 
+let plinkoWinCount=0, plinkoLossCount=0; 
 let autoDropInterval=null,autoDropping=false,plinkoDropLock=false;
 let plinkoRowCount=16,plinkoRiskLevel='MEDIUM';
 let plinkoLastRowXCoords=[];
@@ -4075,7 +4070,7 @@ function initPlinko(){
     });
   });
 
-  // Pin collision glow + sound
+  
   Matter.Events.on(engine,'collisionStart',({pairs})=>{
     pairs.forEach(({bodyA,bodyB})=>{
       const pin=(bodyA.collisionFilter.category===PIN_CAT)?bodyA:
@@ -4093,10 +4088,10 @@ function initPlinko(){
   updatePlinkoBins();
   Matter.Render.run(render);
   Matter.Runner.run(runner,engine);
-  // ensure canvas scales to wrapper (visual only)
+  
   if(render && render.canvas){ render.canvas.style.width = document.querySelector('.plinko-canvas-wrap').clientWidth + 'px'; render.canvas.style.height = document.querySelector('.plinko-canvas-wrap').clientHeight + 'px'; }
 
-  // Ball glow trail
+  
   Matter.Events.on(render,'afterRender',()=>{
     const ctx=render.context;
     Matter.Composite.allBodies(engine.world).forEach(body=>{
@@ -4111,7 +4106,7 @@ function initPlinko(){
     });
   });
 
-  // Cleanup balls that fall off-screen or get stuck
+  
   setInterval(()=>{
     Matter.Composite.allBodies(engine.world).forEach(body=>{
       if(body.collisionFilter.category===BALL_CAT&&(body.position.y>PH+60||body.position.x<-20||body.position.x>PW+20)){
@@ -4122,7 +4117,7 @@ function initPlinko(){
   },2000);
 
   document.getElementById('plinkoRows').addEventListener('change',e=>{
-    // Refund in-flight balls before changing rows
+    
     const activeBalls=Object.keys(plinkoBallBets);
     if(activeBalls.length>0){
       let refundTotal=0;
@@ -4163,7 +4158,7 @@ function placePlinkoPins(){
   }
   Matter.Composite.add(plinkoMatterEngine.world,plinkoPins);
 
-  // Walls
+  
   if(plinkoLastRowXCoords.length>1){
     const firstPinX=plinkoPins[0].position.x;
     const wallAngle=Math.atan2(firstPinX-plinkoLastRowXCoords[0],PH-PPT-PPB);
@@ -4182,12 +4177,12 @@ function updatePlinkoBins(){
   const count=payouts.length;
   binsEl.innerHTML='';
 
-  // Reference colors: edges rgb(255,0,63) → center rgb(255,192,0)
-  // Shadow:           edges rgb(166,0,4)  → center rgb(171,121,0)
+  
+  
   const half=Math.ceil(count/2);
   function lerpC(a,b,t){return Math.round(a+(b-a)*t);}
   function binBg(i){
-    const t2=Math.abs(i-(count-1)/2)/((count-1)/2);// 0=center 1=edge
+    const t2=Math.abs(i-(count-1)/2)/((count-1)/2);
     return'rgb('+lerpC(255,255,t2)+','+lerpC(192,0,t2)+','+lerpC(0,63,t2)+')';
   }
   function binSh(i){
@@ -4213,14 +4208,14 @@ function updatePlinkoBins(){
 function handlePlinkoHit(ball){
   if(!plinkoLastRowXCoords.length)return;
   const coords=plinkoLastRowXCoords;
-  const ballX=ball.position.x;// capture before removal
-  // Find which bin the ball landed in
+  const ballX=ball.position.x;
+  
   let binIndex=-1;
   for(let i=coords.length-1;i>=0;i--){
     if(coords[i]<ballX){binIndex=i;break;}
   }
 
-  // Clean up ball
+  
   Matter.Composite.remove(plinkoMatterEngine.world,ball);
   const ballData=plinkoBallBets[ball.id]||{bet:0,risk:plinkoRiskLevel,rows:plinkoRowCount};
   const betAmt=typeof ballData==='object'?ballData.bet:ballData;
@@ -4230,8 +4225,8 @@ function handlePlinkoHit(ball){
 
   if(binIndex<0){binIndex=0;}
   if(binIndex>=coords.length-1){binIndex=coords.length-2;}
-  if(binIndex<0){return;} // safety: no valid bins
-  // Landing thud sound
+  if(binIndex<0){return;} 
+  
   playSound(180+(binIndex/(coords.length-1))*120,'triangle',.06,.04);
 
   const payouts=PLINKO_PAYOUTS[ballRows][ballRisk];
@@ -4242,34 +4237,34 @@ function handlePlinkoHit(ball){
 
   balance+=payout;
   plinkoTotalProfit+=profit;
-  // track wins/losses
+  
   if(profit>=0) plinkoWinCount++; else plinkoLossCount++;
-  // record cumulative profit history for graph
+  
   plinkoProfitHistory.push(plinkoTotalProfit); if(plinkoProfitHistory.length>500)plinkoProfitHistory.shift();
-  // update profit chart
+  
   try{ updatePlinkoProfitChart(); }catch(e){}
   plinkoDropCount++;
   updateBalDisplay();
 
   document.getElementById('plinkoDropCount').textContent=plinkoDropCount;
-  // Update profit display
+  
   const profitEl=document.getElementById('plinkoProfit');
   profitEl.textContent=(plinkoTotalProfit>=0?'+':'')+('$'+Math.abs(plinkoTotalProfit).toFixed(2));
   profitEl.style.color=plinkoTotalProfit>=0?'#4ade80':'#f87171';
-  // Update wins/losses
+  
   document.getElementById('plinkoWins').textContent=plinkoWinCount.toLocaleString();
   document.getElementById('plinkoLosses').textContent=plinkoLossCount.toLocaleString();
 
-  // Bin bounce
+  
   const binEl=document.getElementById('plinkoBin'+binIndex);
   if(binEl){binEl.classList.remove('bounce');void binEl.offsetWidth;binEl.classList.add('bounce');}
 
-  // Last wins display
+  
   plinkoLastWinsList.push({multiplier,binIndex});
   if(plinkoLastWinsList.length>4)plinkoLastWinsList.shift();
   renderPlinkoLastWins();
 
-  // Effects
+  
   if(multiplier>=10){
     playWinSound();
     const rect=document.getElementById('plinkoCanvas').getBoundingClientRect();
@@ -4300,7 +4295,7 @@ function renderPlinkoLastWins(){
   });
 }
 
-// ---- Plinko Profit Chart (matches plinko-game-online.github.io ProfitHistoryChart) ----
+
 const PLINKO_WIN_COLOR='rgb(74,222,128)', PLINKO_WIN_FILL='rgba(74,222,128,0.3)';
 const PLINKO_LOSS_COLOR='rgb(248,113,113)', PLINKO_LOSS_FILL='rgba(248,113,113,0.3)';
 const PLINKO_X_AXIS_COLOR='#1e293b', PLINKO_HOVER_COLOR='#fff';
@@ -4352,7 +4347,7 @@ function updatePlinkoProfitChart(){
       }
     }
   });
-  // Clear hover value on mouse leave
+  
   canvas.addEventListener('mouseleave',()=>{
     const hv=document.getElementById('plinkoHoverValue'); if(hv) hv.textContent='';
   });
@@ -4361,16 +4356,16 @@ function updatePlinkoProfitChart(){
 function resetPlinkoStats(){
   plinkoDropCount=0; plinkoTotalProfit=0; plinkoWinCount=0; plinkoLossCount=0;
   plinkoProfitHistory=[0]; plinkoLastWinsList=[];
-  // Destroy chart so it's recreated fresh
+  
   if(plinkoProfitChartInstance){plinkoProfitChartInstance.destroy();plinkoProfitChartInstance=null;}
-  // Reset UI
+  
   document.getElementById('plinkoDropCount').textContent='0';
   const pe=document.getElementById('plinkoProfit'); pe.textContent='$0.00'; pe.style.color='#4ade80';
   document.getElementById('plinkoWins').textContent='0';
   document.getElementById('plinkoLosses').textContent='0';
   const hv=document.getElementById('plinkoHoverValue'); if(hv) hv.textContent='';
   renderPlinkoLastWins();
-  // Recreate chart with empty data
+  
   updatePlinkoProfitChart();
 }
 
@@ -4420,7 +4415,7 @@ function toggleAutoDrop(){
     autoDropInterval=setInterval(()=>{
       const bet=parseFloat(document.getElementById('plinkoBet').value)||10;
       if(bet>balance){toggleAutoDrop();return;}
-      // Limit max simultaneous balls to prevent performance issues
+      
       const activeBallCount=Object.keys(plinkoBallBets).length;
       if(activeBallCount>=50)return;
       dropPlinkoBall();
@@ -4428,38 +4423,38 @@ function toggleAutoDrop(){
   }
 }
 
-// ============ PUSH YOUR LUCK (Multiplayer Modes) ============
-let pylCurrentMode = null; // 'solo','1v1','highstakes','tournament'
+
+let pylCurrentMode = null; 
 let pylRoomCode = null;
-let pylRoomUnsub = null; // Firebase listener cleanup
+let pylRoomUnsub = null; 
 let pylWagerAmount = 0;
-let pylWagerEscrowed = false; // true when wager deducted at room creation
+let pylWagerEscrowed = false; 
 let pylHSTarget = 500;
 let pylHSMultiplier = 2;
 let pylGameActive = false;
-let pylOpponentId = null; // Track opponent session ID for 1v1 choice relay
+let pylOpponentId = null; 
 
-// Listen for score messages from the PYL iframe
+
 window.addEventListener('message', function(evt) {
   if (evt.data && evt.data.type === 'pylScore' && pylGameActive) {
     const score = evt.data.score || 0;
     document.getElementById('pylScoreDisplay').textContent = 'Score: ' + score;
     document.getElementById('pylScoreInput').value = score;
-    // Auto-submit for all modes
+    
     pylSubmitScore();
   }
-  // 1v1 choice relay: player made a choice in the iframe — write to Firebase and listen for opponent
+  
   if (evt.data && evt.data.type === 'pylChoice' && pylCurrentMode === '1v1' && pylRoomCode && pylOpponentId) {
     const round = evt.data.round;
     const choice = evt.data.choice;
-    // Write our choice to Firebase
+    
     if (window._pylWriteChoice) {
       window._pylWriteChoice(pylRoomCode, round, choice);
     }
-    // Listen for opponent's choice for this round
+    
     if (window._pylListenChoice) {
       window._pylListenChoice(pylRoomCode, round, pylOpponentId, function(opChoice) {
-        // Relay opponent's choice back to the iframe
+        
         const iframe = document.getElementById('pylIframe');
         if (iframe && iframe.contentWindow) {
           iframe.contentWindow.postMessage({ type: 'pylOpponentChoice', choice: opChoice, round: round }, '*');
@@ -4489,7 +4484,7 @@ function pylShowWager(mode) {
   playClickSound();
   pylCurrentMode = mode;
 
-  // Hide mode cards
+  
   document.querySelector('.pyl-modes').style.display = 'none';
   document.getElementById('pylLeaderboard').style.display = 'none';
 
@@ -4506,21 +4501,21 @@ function pylShowWager(mode) {
 
 function pylBackToLobby() {
   playClickSound();
-  // Refund escrowed wager if game never started
+  
   if (pylWagerEscrowed && pylWagerAmount > 0) {
     balance += pylWagerAmount;
     updateBalDisplay();
     showToast('Wager refunded ($' + pylWagerAmount + ')');
     pylWagerEscrowed = false;
   }
-  // Clean up any room listener
+  
   if (pylRoomUnsub) { pylRoomUnsub(); pylRoomUnsub = null; }
   if (pylRoomCode && pylCurrentMode === '1v1') {
-    // Cancel our onDisconnect handlers since we're leaving cleanly
+    
     if (window._pylCancelDisconnect) window._pylCancelDisconnect(pylRoomCode);
-    // Mark ourselves offline and delete room
+    
     if (window._pylDeleteRoom) window._pylDeleteRoom(pylRoomCode);
-    // Reset iframe so next game doesn't carry stale 1v1 config
+    
     const iframe = document.getElementById('pylIframe');
     if (iframe) iframe.src = '';
   }
@@ -4530,7 +4525,7 @@ function pylBackToLobby() {
   pylOpponentId = null;
   _pylDisconnectHandled = false;
 
-  // Show lobby, hide everything else
+  
   document.querySelector('.pyl-modes').style.display = '';
   document.getElementById('pylRoomUI').style.display = 'none';
   document.getElementById('pylHighStakesUI').style.display = 'none';
@@ -4542,7 +4537,7 @@ function pylBackToLobby() {
 
 function pylHideLobby(opponentName, roomCode) {
   document.getElementById('pylLobby').style.display = 'none';
-  // Ensure the game iframe exists and is loaded
+  
   let iframe = document.getElementById('pylIframe');
   if (!iframe) {
     iframe = document.createElement('iframe');
@@ -4551,12 +4546,12 @@ function pylHideLobby(opponentName, roomCode) {
     const panel = document.getElementById('luckPanel');
     panel.insertBefore(iframe, panel.firstChild);
   }
-  // Build URL with 1v1 hash if opponent name provided
+  
   let url = 'push-your-luck/index.html';
   if (opponentName) {
     url += '?t=' + Date.now() + '#1v1=' + encodeURIComponent(opponentName) + '&room=' + (roomCode || 'default');
   }
-  // Always force reload for 1v1 so PYL_1V1 is picked up fresh; also reload for non-1v1 if coming from a 1v1 game
+  
   if (opponentName || !iframe.src || !iframe.src.includes('push-your-luck') || iframe.src.includes('#1v1=')) {
     iframe.src = url;
   }
@@ -4579,7 +4574,7 @@ function pylShowOverlay(label, wager) {
   document.getElementById('pylOpponentCard').style.display = 'none';
 }
 
-// ---- 1v1 ROOM ----
+
 function generateRoomCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
@@ -4595,7 +4590,7 @@ function pylCreateRoom() {
   pylRoomCode = generateRoomCode();
   playClickSound();
 
-  // Escrow wager immediately to prevent spending it on other games
+  
   balance -= pylWagerAmount;
   updateBalDisplay();
   pylWagerEscrowed = true;
@@ -4607,10 +4602,10 @@ function pylCreateRoom() {
     '<div style="color:var(--green);margin:4px 0;">✓ You (host) — $' + wager + ' wager</div>' +
     '<div style="color:var(--text2);margin:4px 0;">⏳ Waiting for opponent...</div>';
 
-  // Create room in Firebase
+  
   if (window._pylCreateRoom) {
     window._pylCreateRoom(pylRoomCode, wager).then(() => {
-      // Listen for opponent joining
+      
       let pylGameStarted = false;
       pylRoomUnsub = window._pylListenRoom(pylRoomCode, (data) => {
         if (!data || pylGameStarted) return;
@@ -4619,10 +4614,10 @@ function pylCreateRoom() {
 
         if (playerKeys.length >= 2) {
           pylGameStarted = true;
-          pylWagerEscrowed = false; // game started, escrow consumed
+          pylWagerEscrowed = false; 
           showToast('⚔️ Opponent joined! Game on!');
           playWinSound();
-          // Wager already escrowed at room creation
+          
           const opId = playerKeys.find(k => k !== window._pylPlayerId);
           const opData = opId ? players[opId] : null;
           const opName = opData && opData.name ? opData.name : (opId ? opId.slice(-5) : 'Opponent');
@@ -4636,10 +4631,10 @@ function pylCreateRoom() {
           document.getElementById('pylOpponentScore').textContent = 'Playing...';
           pylGameActive = true;
 
-          // Listen for opponent score + disconnect
+          
           pylRoomUnsub = window._pylListenRoom(pylRoomCode, (roomData) => {
             if (!roomData) {
-              // Room was deleted — opponent disconnected
+              
               pylHandleOpponentDisconnect();
               return;
             }
@@ -4667,7 +4662,7 @@ function pylJoinRoom() {
   document.getElementById('pylRoomStatus').textContent = 'Checking room...';
 
   if (window._pylJoinRoom) {
-    // PRE-CHECK: read room data first to validate balance BEFORE joining on Firebase
+    
     window._pylPeekRoom(code).then(data => {
       if (!data) {
         showToast('Room not found or already started!', false);
@@ -4680,11 +4675,11 @@ function pylJoinRoom() {
         document.getElementById('pylRoomStatus').textContent = 'Insufficient balance ($' + wager + ' needed).';
         return;
       }
-      // Balance OK — now actually join on Firebase
+      
       document.getElementById('pylRoomStatus').textContent = 'Joining...';
       return window._pylJoinRoom(code);
     }).then(data => {
-      if (!data) return; // already handled above
+      if (!data) return; 
 
       pylRoomCode = code;
       pylWagerAmount = data.wager || 100;
@@ -4708,10 +4703,10 @@ function pylJoinRoom() {
       document.getElementById('pylOpponentScore').textContent = 'Playing...';
       pylGameActive = true;
 
-      // Listen for opponent score + disconnect
+      
       pylRoomUnsub = window._pylListenRoom(pylRoomCode, (roomData) => {
         if (!roomData) {
-          // Room was deleted — opponent disconnected
+          
           pylHandleOpponentDisconnect();
           return;
         }
@@ -4729,7 +4724,7 @@ function pylJoinRoom() {
   }
 }
 
-// ---- HIGH STAKES ----
+
 function pylStartHighStakes() {
   const wager = parseFloat(document.getElementById('pylHSWager').value) || 500;
   if (wager > balance) { showToast('Not enough balance!', false); return; }
@@ -4752,7 +4747,7 @@ function pylStartHighStakes() {
   showToast('💀 Hit ' + pylHSTarget + ' pts to win $' + (wager * pylHSMultiplier).toLocaleString() + '!');
 }
 
-// ---- SCORE SUBMISSION ----
+
 function pylSubmitScore() {
   const scoreInput = document.getElementById('pylScoreInput');
   const score = parseInt(scoreInput.value);
@@ -4763,7 +4758,7 @@ function pylSubmitScore() {
   scoreInput.value = '';
   pylGameActive = false;
 
-  // Track PYL stats
+  
   if (gameStats.pyl) {
     gameStats.pyl.played = (gameStats.pyl.played || 0) + 1;
     if (score > (gameStats.pyl.highScore || 0)) gameStats.pyl.highScore = score;
@@ -4775,17 +4770,17 @@ function pylSubmitScore() {
   }
 
   else if (pylCurrentMode === '1v1') {
-    // Submit score to Firebase
+    
     if (window._pylSubmitRoomScore && pylRoomCode) {
       window._pylSubmitRoomScore(pylRoomCode, score).then(() => {
         document.getElementById('pylScoreDisplay').textContent = 'Your Score: ' + score + ' — Waiting for opponent...';
 
-        // Check if opponent already submitted
+        
         const checkResult = () => {
           if (pylRoomUnsub) pylRoomUnsub();
           pylRoomUnsub = window._pylListenRoom(pylRoomCode, (data) => {
             if (!data) {
-              // Room deleted — opponent disconnected while we were waiting
+              
               if (!_pylDisconnectHandled) {
                 _pylDisconnectHandled = true;
                 pylGameActive = false;
@@ -4807,7 +4802,7 @@ function pylSubmitScore() {
             const myScore = score;
             const opId = Object.keys(ps).find(k => k !== window._pylPlayerId);
 
-            // Check if opponent disconnected
+            
             if (opId && ps[opId] && ps[opId].online === false && ps[opId].score == null) {
               if (!_pylDisconnectHandled) {
                 _pylDisconnectHandled = true;
@@ -4848,14 +4843,14 @@ function pylSubmitScore() {
                 document.getElementById('pylScoreDisplay').innerHTML =
                   '<span style="color:var(--red);">💀 YOU LOSE</span> ' + myScore + ' vs ' + opScore;
               } else {
-                balance += pylWagerAmount; // refund on tie
+                balance += pylWagerAmount; 
                 updateBalDisplay();
                 showToast('🤝 Tie! Wager refunded.');
                 document.getElementById('pylScoreDisplay').innerHTML =
                   '<span style="color:var(--gold);">🤝 TIE</span> ' + myScore + ' vs ' + opScore + ' — Refunded';
               }
 
-              // Clean up room after a delay
+              
               setTimeout(() => { if (window._pylDeleteRoom) window._pylDeleteRoom(pylRoomCode); pylRoomCode = null; }, 5000);
               firebaseSave();
             }
@@ -4904,7 +4899,7 @@ function pylHandleOpponentDisconnect() {
   if (_pylDisconnectHandled || !pylGameActive) return;
   _pylDisconnectHandled = true;
 
-  // Opponent disconnected — refund wager, auto-win
+  
   if (pylRoomUnsub) { pylRoomUnsub(); pylRoomUnsub = null; }
   pylGameActive = false;
 
@@ -4921,12 +4916,12 @@ function pylHandleOpponentDisconnect() {
     '<span style="color:var(--green);">⚔️ OPPONENT DISCONNECTED</span> — You win $' + pot.toLocaleString() + '!';
   document.getElementById('pylOpponentScore').textContent = 'DISCONNECTED';
 
-  // Clean up the room
+  
   if (pylRoomCode && window._pylDeleteRoom) {
     window._pylDeleteRoom(pylRoomCode);
   }
 
-  // Auto return to lobby after 4 seconds
+  
   setTimeout(() => {
     pylBackToLobby();
   }, 4000);
@@ -4935,12 +4930,12 @@ function pylHandleOpponentDisconnect() {
 function pylEndGame() {
   playClickSound();
 
-  // If 1v1 with no score submitted, forfeit
+  
   if (pylCurrentMode === '1v1' && pylGameActive && pylRoomCode) {
     showToast('Forfeited wager: -$' + pylWagerAmount, false);
     playLoseSound();
     if (window._pylSubmitRoomScore) window._pylSubmitRoomScore(pylRoomCode, 0);
-    // Mark ourselves offline so opponent detects the disconnect
+    
     if (window._pylMarkOffline) window._pylMarkOffline(pylRoomCode);
   }
 
@@ -4950,7 +4945,7 @@ function pylEndGame() {
   pylBackToLobby();
 }
 
-// ---- LEADERBOARD ----
+
 function pylLoadLeaderboard() {
   const container = document.getElementById('pylLBRows');
   if (!container) return;
@@ -4976,12 +4971,7 @@ function pylLoadLeaderboard() {
   }
 }
 
-// ============ STOCKS (Deterministic Time-Based Market) ============
-// Prices are deterministic based on real time — every 3-second "tick" since
-// epoch produces the same price no matter when you compute it. The market
-// truly runs 24/7 whether the page is open or not.
 
-// -- Seeded PRNG (Mulberry32) --
 function mulberry32(seed) {
   let t = (seed >>> 0) + 0x6D2B79F5;
   t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -5002,63 +4992,63 @@ const STOCK_DEFS = [
   { ticker: 'MOON', name: 'Moonshot AI', basePrice: 500, volatility: 0.03, drift: 0.00025 },
 ];
 
-// Tick epoch: Jan 1 2025 00:00 UTC — all ticks counted from here
+
 const TICK_EPOCH = new Date('2025-01-01T00:00:00Z').getTime();
-const TICK_MS = 3000; // 3 seconds per tick
+const TICK_MS = 3000; 
 
 function getCurrentTick() {
   return Math.floor((Date.now() - TICK_EPOCH) / TICK_MS);
 }
 
-// Get deterministic price change for a stock at a specific tick
+
 function getTickRandom(tickerHash, tickNum) {
   return mulberry32(tickerHash ^ (tickNum * 2654435761));
 }
 
-let stockPrices = {};       // ticker -> current price
-let stockHoldings = {};     // ticker -> { shares, totalCost }
-let stockPriceHistory = {}; // ticker -> [last 100 prices]
+let stockPrices = {};       
+let stockHoldings = {};     
+let stockPriceHistory = {}; 
 let stocksInitialized = false;
 let stockTickInterval = null;
-let lastComputedTick = 0;   // global: the tick number we've computed up to
+let lastComputedTick = 0;   
 
 function initStocks() {
   if (stocksInitialized) return;
   stocksInitialized = true;
 
-  // Set initial prices = base prices at tick 0
+  
   STOCK_DEFS.forEach(s => {
     if (!stockPrices[s.ticker]) stockPrices[s.ticker] = s.basePrice;
     if (!stockPriceHistory[s.ticker]) stockPriceHistory[s.ticker] = [];
   });
 
-  // If no saved state, compute from tick 0 to now
+  
   if (lastComputedTick === 0) {
-    // For fresh start, begin from 200 ticks ago so chart has data
+    
     const now = getCurrentTick();
     lastComputedTick = Math.max(0, now - 500);
-    // Reset to base prices for a clean computation
+    
     STOCK_DEFS.forEach(s => { stockPrices[s.ticker] = s.basePrice; });
     advanceToTick(now);
   } else {
-    // Advance from saved state to current time
+    
     advanceToTick(getCurrentTick());
   }
 
-  // Live tick every 3 seconds
+  
   startStockTicker();
 }
 
 function advanceToTick(targetTick) {
   if (targetTick <= lastComputedTick) return;
 
-  // Cap catchup to prevent UI freeze (max 5000 ticks = ~4.2 hours)
+  
   const MAX_CATCHUP_TICKS = 5000;
-  const MAX_COMPUTE_TICKS = 20000; // absolute max ticks to compute
+  const MAX_COMPUTE_TICKS = 20000; 
   const gap = targetTick - lastComputedTick;
   if (gap > MAX_CATCHUP_TICKS) {
-    // Fast-forward the skipped ticks deterministically using a step size
-    // that keeps total computation under MAX_COMPUTE_TICKS iterations
+    
+    
     const skipTo = targetTick - MAX_CATCHUP_TICKS;
     const skipGap = skipTo - lastComputedTick;
     const step = Math.max(1, Math.ceil(skipGap / MAX_COMPUTE_TICKS));
@@ -5080,24 +5070,24 @@ function advanceToTick(targetTick) {
   }
 
   const startTick = lastComputedTick;
-  // Record old prices for offline message
+  
   const oldPrices = {};
   STOCK_DEFS.forEach(s => { oldPrices[s.ticker] = stockPrices[s.ticker]; });
 
   for (let t = startTick + 1; t <= targetTick; t++) {
     STOCK_DEFS.forEach(s => {
       const h = hashTicker(s.ticker);
-      const r = getTickRandom(h, t); // deterministic 0..1
+      const r = getTickRandom(h, t); 
       const price = stockPrices[s.ticker];
       const change = price * s.volatility * (r * 2 - 1);
       const reversion = (s.basePrice - price) * 0.0015;
       const driftAmt = price * s.drift;
       let newPrice = price + change + reversion + driftAmt;
-      newPrice = Math.max(s.basePrice * 0.05, newPrice); // floor at 5% of base
+      newPrice = Math.max(s.basePrice * 0.05, newPrice); 
       stockPrices[s.ticker] = Math.round(newPrice * 10000) / 10000;
     });
 
-    // Record history every ~5 ticks (or always for last 500)
+    
     const remaining = targetTick - t;
     if (remaining < 500 || t % 5 === 0) {
       STOCK_DEFS.forEach(s => {
@@ -5111,7 +5101,7 @@ function advanceToTick(targetTick) {
   const ticksAdvanced = targetTick - startTick;
   lastComputedTick = targetTick;
 
-  // Show offline catchup message if significant
+  
   if (ticksAdvanced > 10) {
     const elapsed = ticksAdvanced * TICK_MS;
     const mins = Math.floor(elapsed / 60000);
@@ -5122,7 +5112,7 @@ function advanceToTick(targetTick) {
     else if (hours > 0) timeStr = hours + 'h ' + (mins % 60) + 'm';
     else timeStr = mins + 'm';
 
-    // Show price changes
+    
     let biggestMove = '', biggestPct = 0;
     STOCK_DEFS.forEach(s => {
       const pct = Math.abs((stockPrices[s.ticker] - oldPrices[s.ticker]) / oldPrices[s.ticker] * 100);
@@ -5142,9 +5132,9 @@ function startStockTicker() {
     if (now > lastComputedTick) {
       advanceToTick(now);
       if (document.querySelector('#stocksPanel.active')) renderStocks();
-      // Auto-save periodically to keep tick state fresh
+      
     }
-  }, 1000); // check every second for smoother updates
+  }, 1000); 
 }
 
 function buyStock(ticker) {
@@ -5205,7 +5195,7 @@ function selectStock(ticker) {
 function renderStocks() {
   if (!stocksInitialized) initStocks();
 
-  // Render ticker bar
+  
   const tickerBar = document.getElementById('stockTickerBar');
   if (tickerBar) {
     tickerBar.innerHTML = STOCK_DEFS.map(s => {
@@ -5237,7 +5227,7 @@ function renderStocks() {
   const holding = stockHoldings[s.ticker];
   const hasHolding = holding && holding.shares > 0;
 
-  // Update hero
+  
   document.getElementById('stockTickerLabel').textContent = '$' + s.ticker;
   document.getElementById('stockNameLabel').textContent = s.name;
   document.getElementById('stockPriceDisplay').textContent = '$' + formatStockPrice(price);
@@ -5249,7 +5239,7 @@ function renderStocks() {
     (price >= firstPrice ? '▲' : '▼') + ' ' + totalChangePct + '% <span style="color:#8b949e;font-size:12px;">session</span>';
   changeEl.className = 'sh-change ' + (isUp ? 'up' : 'down');
 
-  // Update bottom bar
+  
   if (hasHolding) {
     const curVal = holding.shares * price;
     const pnl = curVal - holding.totalCost;
@@ -5267,10 +5257,10 @@ function renderStocks() {
   }
   document.getElementById('stockSellBtn').disabled = !hasHolding;
 
-  // Draw the BIG chart
+  
   drawStockChart(hist);
 
-  // Render portfolio overview for all holdings
+  
   const overviewDiv = document.getElementById('stockPortfolioOverview');
   if (overviewDiv) {
     const activePositions = STOCK_DEFS.filter(sd => stockHoldings[sd.ticker] && stockHoldings[sd.ticker].shares > 0);
@@ -5329,7 +5319,7 @@ function drawStockChart(hist) {
   const cW = W - pad.left - pad.right;
   const cH = H - pad.top - pad.bottom;
 
-  // Grid lines + price labels
+  
   const gridLines = 4;
   ctx.strokeStyle = '#1e2933';
   ctx.lineWidth = 1;
@@ -5346,7 +5336,7 @@ function drawStockChart(hist) {
     ctx.fillText('$' + formatStockPrice(priceAtLine), pad.left - 6, y + 4);
   }
 
-  // Build points
+  
   const points = [];
   for (let i = 0; i < hist.length; i++) {
     const x = pad.left + (i / (hist.length - 1)) * cW;
@@ -5358,7 +5348,7 @@ function drawStockChart(hist) {
   const lineColor = isUpOverall ? '#3fb950' : '#f85149';
   const fillColor = isUpOverall ? 'rgba(63,185,80,' : 'rgba(248,81,73,';
 
-  // Gradient fill under line
+  
   const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
   grad.addColorStop(0, fillColor + '0.35)');
   grad.addColorStop(1, fillColor + '0.0)');
@@ -5371,7 +5361,7 @@ function drawStockChart(hist) {
   ctx.fillStyle = grad;
   ctx.fill();
 
-  // Line
+  
   ctx.beginPath();
   points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
   ctx.strokeStyle = lineColor;
@@ -5379,7 +5369,7 @@ function drawStockChart(hist) {
   ctx.lineJoin = 'round';
   ctx.stroke();
 
-  // Current price dot (pulsing)
+  
   const last = points[points.length - 1];
   ctx.beginPath();
   ctx.arc(last.x, last.y, 5, 0, Math.PI * 2);
@@ -5400,20 +5390,20 @@ function formatStockPrice(p) {
   return p.toFixed(4);
 }
 
-// Save/Load stocks to/from Firebase
+
 window._getStocksData = () => {
   if (!stocksInitialized && Object.keys(stockHoldings).length === 0) return null;
   return {
     prices: stockPrices,
     holdings: stockHoldings,
-    lastTick: lastComputedTick // save the tick NUMBER, not timestamp
+    lastTick: lastComputedTick 
   };
 };
 
 window._loadStocks = (data) => {
   if (!data) return;
 
-  // Restore prices from saved state
+  
   if (data.prices) {
     stockPrices = data.prices;
     STOCK_DEFS.forEach(s => {
@@ -5422,25 +5412,25 @@ window._loadStocks = (data) => {
     });
   }
 
-  // Restore holdings
+  
   if (data.holdings) stockHoldings = data.holdings;
 
-  // Restore tick position — then advanceToTick will deterministically
-  // compute all ticks that happened while offline
+  
+  
   if (data.lastTick) {
     lastComputedTick = data.lastTick;
   }
 
   stocksInitialized = true;
 
-  // Advance to current real time (deterministic catchup)
+  
   advanceToTick(getCurrentTick());
 
-  // Start live ticker
+  
   startStockTicker();
 };
 
-// ============ CARD UTILS ============
+
 const CARD_SUITS=['♠','♥','♦','♣'];const CARD_RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 function newDeck(){let d=[];CARD_SUITS.forEach(s=>CARD_RANKS.forEach(r=>d.push({r,s})));for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
 function cardNumVal(c){if(c.r==='A')return 11;if('KQJ'.includes(c.r))return 10;return parseInt(c.r);}
@@ -5448,7 +5438,7 @@ function cardIsRed(c){return c.s==='♥'||c.s==='♦';}
 function renderCard(c,hidden){if(hidden)return'<div class="bj-card hidden">?</div>';return'<div class="bj-card'+(cardIsRed(c)?' red':'')+'">'+c.r+'<br>'+c.s+'</div>';}
 function cardRankIdx(c){return CARD_RANKS.indexOf(c.r);}
 
-// ============ BLACKJACK ============
+
 let bjDeck=[],bjPlayer=[],bjDealer=[],bjBetAmt=0,bjActive=false;
 function bjDrawCard(){if(bjDeck.length<10)bjDeck=bjDeck.concat(newDeck());return bjDeck.pop();}
 function bjHandVal(h){let v=0,a=0;h.forEach(c=>{v+=cardNumVal(c);if(c.r==='A')a++;});while(v>21&&a>0){v-=10;a--;}return v;}
@@ -5477,7 +5467,7 @@ function bjFinish(){
 }
 function bjRender(){const s=!bjActive;document.getElementById('bjDealerCards').innerHTML=bjDealer.map((c,i)=>renderCard(c,!s&&i===1)).join('');document.getElementById('bjPlayerCards').innerHTML=bjPlayer.map(c=>renderCard(c)).join('');document.getElementById('bjDealerScore').textContent=s?bjHandVal(bjDealer):'?';document.getElementById('bjPlayerScore').textContent=bjHandVal(bjPlayer);document.getElementById('bjHitBtn').disabled=!bjActive;document.getElementById('bjStandBtn').disabled=!bjActive;document.getElementById('bjDoubleBtn').disabled=!bjActive||bjPlayer.length!==2;document.getElementById('bjDealBtn').disabled=bjActive;}
 
-// ============ MINES ============
+
 let minesBoard=[],minesRevealed=0,minesBetAmt=0,minesActive=false,minesCount=3;
 function minesMultiplier(){const t=25,m=minesCount,r=minesRevealed;if(r===0)return 1;let mult=1;for(let i=0;i<r;i++)mult*=(t-m-i)>0?(t-i)/(t-m-i):t;return Math.round(mult*97)/100;}
 function minesStart(){
@@ -5508,7 +5498,7 @@ function minesClick(i){if(!minesActive)return;const cells=document.querySelector
 function minesRevealAll(){const cells=document.querySelectorAll('.mine-cell');minesBoard.forEach((isMine,i)=>{if(!cells[i].classList.contains('revealed')){cells[i].classList.add('revealed',isMine?'mine':'safe');cells[i].textContent=isMine?'💣':'💎';}});}
 function minesRenderGrid(){const g=document.getElementById('minesGrid');g.innerHTML='';for(let i=0;i<25;i++){const c=document.createElement('div');c.className='mine-cell';c.onclick=(()=>{const idx=i;return()=>minesClick(idx);})();g.appendChild(c);}}
 
-// ============ DICE ============
+
 let diceMode='over';
 function diceSetMode(m){diceMode=m;document.getElementById('diceOverBtn').className='dice-mode-btn'+(m==='over'?' active':'');document.getElementById('diceUnderBtn').className='dice-mode-btn'+(m==='under'?' active':'');diceUpdateSlider();}
 function diceUpdateSlider(){const v=Math.max(2,Math.min(98,parseFloat(document.getElementById('diceSlider').value)));const chance=diceMode==='over'?(100-v):v;const payout=chance>0?Math.min(Math.floor(99/chance*100)/100,9900):0;document.getElementById('diceTarget').textContent=v.toFixed(2);document.getElementById('diceChance').textContent=chance.toFixed(2)+'%';document.getElementById('dicePayout').textContent=payout.toFixed(2)+'×';
@@ -5522,7 +5512,7 @@ function diceRoll(){const bet=parseFloat(document.getElementById('diceBet').valu
   else{showToast('-$'+bet.toFixed(2),false);playLoseSound();recordGame('dice',bet,0);}playClickSound();
 }
 
-// ============ TOWER ============
+
 let towerBoard=[],towerRow=0,towerBetAmt=0,towerActive=false,towerCols=3,towerRows=8,towerSafePerRow=2;
 function towerMultiplier(){if(towerRow===0)return 1;let m=1;for(let i=0;i<towerRow;i++)m*=towerCols/towerSafePerRow;return Math.round(m*97)/100;}
 function towerStart(){
@@ -5555,7 +5545,7 @@ function towerClick(r,c){if(!towerActive||r!==towerRow)return;
 function towerRevealAll(){document.querySelectorAll('.tower-row').forEach((row,ri)=>{const actualRow=towerRows-1-ri;[...row.children].forEach((c,ci)=>{if(!c.classList.contains('revealed')){c.classList.add('revealed',towerBoard[actualRow][ci]?'safe':'trap');c.textContent=towerBoard[actualRow][ci]?'✅':'💀';}});});}
 function towerRender(){const g=document.getElementById('towerGrid');g.innerHTML='';for(let r=towerRows-1;r>=0;r--){const row=document.createElement('div');row.className='tower-row';for(let c=0;c<towerCols;c++){const cell=document.createElement('div');cell.className='tower-cell';if(r===towerRow&&towerActive)cell.classList.add('current-row');else if(r>towerRow)cell.classList.add('locked');cell.onclick=(()=>{const rr=r,cc=c;return()=>towerClick(rr,cc);})();row.appendChild(cell);}g.appendChild(row);}}
 
-// ============ COIN FLIP ============
+
 let coinChoice='heads',coinFlipping=false;
 function coinSelect(c){coinChoice=c;document.getElementById('coinHeads').className='coin-choice'+(c==='heads'?' selected':'');document.getElementById('coinTails').className='coin-choice'+(c==='tails'?' selected':'');playClickSound();}
 function coinFlip(){if(coinFlipping)return;const bet=parseFloat(document.getElementById('coinBet').value)||10;if(bet<=0)return;if(bet>balance){showToast('Not enough!',false);return;}
@@ -5570,7 +5560,7 @@ function coinFlip(){if(coinFlipping)return;const bet=parseFloat(document.getElem
     coinFlipping=false;document.getElementById('coinFlipBtn').disabled=false;},800);
 }
 
-// ============ KENO ============
+
 let kenoSelected=new Set(),kenoPlaying=false;
 const KENO_PAYOUTS={1:[0,2.5],2:[0,1,5],3:[0,0,2,25],4:[0,0,1,5,50],5:[0,0,.5,3,15,100],6:[0,0,0,2,5,30,200],7:[0,0,0,1,3,10,50,400],8:[0,0,0,.5,2,8,25,100,500],9:[0,0,0,0,1,5,15,50,200,1000],10:[0,0,0,0,.5,3,10,25,100,500,2000]};
 function kenoInit(){const g=document.getElementById('kenoGrid');if(!g)return;g.innerHTML='';for(let i=1;i<=40;i++){const c=document.createElement('div');c.className='keno-num';c.textContent=i;c.onclick=(()=>{const n=i;return()=>kenoToggle(n);})();g.appendChild(c);}}
@@ -5592,7 +5582,7 @@ function kenoDraw(){if(kenoPlaying||kenoSelected.size===0)return;const bet=parse
   },200);
 }
 
-// ============ LIMBO ============
+
 let limboRolling=false;
 function limboUpdateInfo(){const t=parseFloat(document.getElementById('limboTarget').value)||2;const chance=Math.min(99,(99/t));document.getElementById('limboPayout').textContent='Win chance: '+chance.toFixed(2)+'% — Payout: '+t.toFixed(2)+'×';}
 function limboGo(){if(limboRolling)return;const bet=parseFloat(document.getElementById('limboBet').value)||10;if(bet<=0)return;let target=parseFloat(document.getElementById('limboTarget').value)||2;target=Math.max(1.01,Math.min(1000,target));
@@ -5611,7 +5601,7 @@ function limboGo(){if(limboRolling)return;const bet=parseFloat(document.getEleme
   else{display.textContent=cur.toFixed(2)+'×';display.style.color='var(--neon)';if(limboBar){const pct=Math.min(100,(cur/Math.max(target,2))*100);limboBar.style.width=pct+'%';limboBar.style.background=cur>=target?'var(--green)':'var(--neon)';limboBar.style.transition='width 0.05s';}playSound(400+cur*30,'sine',.02,.015);}},50);
 }
 
-// ============ VIDEO POKER ============
+
 let pokerDeckArr=[],pokerHandArr=[],pokerHeld=[],pokerBetAmt=0,pokerPhase='idle';
 function pokerDeal(){
   if(pokerPhase==='hold'){pokerDrawCards();return;}
@@ -5643,19 +5633,19 @@ function pokerEvaluate(){const h=pokerHandArr;const ranks=h.map(c=>cardRankIdx(c
 }
 function scratchRevealAll(){if(!scratchActive)return;const cells=document.querySelectorAll('.scratch-cell');let delay=0;cells.forEach((c,i)=>{if(!c.classList.contains('revealed')){setTimeout(()=>scratchReveal(i),delay);delay+=80;}});}
 
-// ============ HORSE RACING ============
+
 const HORSES=[{name:'Thunder',emoji:'🐎',color:'#ff4444'},{name:'Lightning',emoji:'🏇',color:'#ffaa00'},{name:'Shadow',emoji:'🐴',color:'#8844ff'},{name:'Spirit',emoji:'🦄',color:'#44aaff'},{name:'Blaze',emoji:'🐎',color:'#44ff44'}];
 let horseSelected=-1,horseRacing=false;
 function horseInit(){const t=document.getElementById('horseTrack');const b=document.getElementById('horseBets');if(!t||!b)return;t.innerHTML='';b.innerHTML='';
   HORSES.forEach((h,i)=>{t.innerHTML+='<div class="horse-lane"><div class="horse-name" style="color:'+h.color+'">'+h.emoji+' '+h.name+'</div><div class="horse-bar"><div class="horse-progress" id="hp'+i+'" style="width:0%;background:'+h.color+';opacity:.6;"></div><div class="horse-emoji" id="he'+i+'" style="left:0%;">'+h.emoji+'</div></div><div class="horse-odds" id="ho'+i+'"></div></div>';
     b.innerHTML+='<button class="horse-bet" onclick="horseSelect('+i+',this)">'+h.emoji+' '+h.name+'</button>';});horseSetOdds();}
 function horseSetOdds(){
-  // Generate odds display only (speeds are regenerated fresh each race)
+  
   const demoWeights=HORSES.map(()=>1+Math.random()*3);
   const totalW=demoWeights.reduce((s,w)=>s+w,0);
   HORSES.forEach((_,i)=>{
     const winProb=demoWeights[i]/totalW;
-    const odds=Math.max(1.2,(0.95/winProb)).toFixed(1); // ~95% RTP
+    const odds=Math.max(1.2,(0.95/winProb)).toFixed(1); 
     document.getElementById('ho'+i).textContent=odds+'×';
     document.getElementById('ho'+i).dataset.odds=odds;
   });
@@ -5681,7 +5671,7 @@ function horseRace(){if(horseRacing||horseSelected<0){if(horseSelected<0)showToa
   },60);
 }
 
-// ============ SCRATCH CARDS ============
+
 const SCRATCH_TIERS=[{name:'Basic',price:5,symbols:['🍒','🍋','🔔','💎','7️⃣','⭐'],maxWin:50},{name:'Silver',price:25,symbols:['💎','7️⃣','⭐','👑','💰','🏆'],maxWin:500},{name:'Gold',price:100,symbols:['👑','💰','🏆','💎','🔥','🌟'],maxWin:5000},{name:'Diamond',price:500,symbols:['💎','👑','🔥','🌟','💀','🌀'],maxWin:50000}];
 let scratchTier=0,scratchCells=[],scratchRevealed=0,scratchActive=false;
 function scratchSelectTier(t,btn){scratchTier=t;document.querySelectorAll('.scratch-tier').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');document.getElementById('scratchBuyBtn').textContent='BUY CARD — $'+SCRATCH_TIERS[t].price;playClickSound();}
@@ -5693,11 +5683,11 @@ function scratchBuy(){if(scratchActive)return;const tier=SCRATCH_TIERS[scratchTi
     const winSym=tier.symbols[Math.floor(Math.random()*tier.symbols.length)];
     const others=tier.symbols.filter(s=>s!==winSym);
     for(let i=0;i<9;i++){if(i<winCount)scratchCells.push(winSym);else{
-      // Fill remaining with random others, but cap each other symbol at 2 to prevent accidental 3-match
+      
       let pick;do{pick=others[Math.floor(Math.random()*others.length)];}while(scratchCells.filter(s=>s===pick).length>=2);scratchCells.push(pick);
     }}
   } else {
-    // No win: fill 9 cells ensuring no symbol appears 3+ times
+    
     const syms=tier.symbols.slice();
     for(let i=0;i<9;i++){
       const valid=syms.filter(s=>scratchCells.filter(c=>c===s).length<2);
@@ -5719,7 +5709,7 @@ function scratchReveal(i){if(!scratchActive)return;const cells=document.querySel
   }
 }
 
-// ============ WHEEL OF FORTUNE ============
+
 const WHEEL_SEGMENTS=[{label:'0×',mult:0,color:'#333',weight:5},{label:'0.5×',mult:0.5,color:'#444',weight:7},{label:'1×',mult:1,color:'#555',weight:6},{label:'1.5×',mult:1.5,color:'#1a5a1a',weight:4},{label:'2×',mult:2,color:'#2a7a2a',weight:3},{label:'3×',mult:3,color:'#1a1a8e',weight:1.5},{label:'5×',mult:5,color:'#6b2fd9',weight:0.8},{label:'10×',mult:10,color:'#cc2233',weight:0.25},{label:'50×',mult:50,color:'#ffd700',weight:0.04}];
 let wheelAngle=0,wheelSpinning=false,wheelDrawn=false;
 function drawWheel(angle){wheelDrawn=true;const c=document.getElementById('wheelCanvas');if(!c)return;const ctx=c.getContext('2d');const cx=c.width/2,cy=c.height/2,r=c.width/2-8;ctx.clearRect(0,0,c.width,c.height);
@@ -5742,7 +5732,7 @@ function wheelSpin(){if(wheelSpinning)return;const bet=parseFloat(document.getEl
     if(Math.abs(cur-lastTickAngle)>tickSize){lastTickAngle=cur;playSound(600+Math.random()*200,'sine',.015,.01);}
     if(prog<1)requestAnimationFrame(anim);
     else{wheelAngle=cur%(Math.PI*2);wheelSpinning=false;document.getElementById('wheelSpinBtn').disabled=false;
-      /* visual readback — find which segment the top pointer actually sits on */
+      
       const twTotal=WHEEL_SEGMENTS.reduce((s,sg)=>s+sg.weight,0);
       const pointerAng=((-Math.PI/2-wheelAngle)%(Math.PI*2)+Math.PI*4)%(Math.PI*2);
       let acc=0,visSeg=WHEEL_SEGMENTS[0];
@@ -5756,7 +5746,7 @@ function wheelSpin(){if(wheelSpinning)return;const bet=parseFloat(document.getEl
   }requestAnimationFrame(anim);
 }
 
-// ============ BACCARAT ============
+
 let baccBetType=null;
 function baccSelect(type,btn){baccBetType=type;document.querySelectorAll('.bacc-bet').forEach(b=>b.classList.remove('selected'));if(btn)btn.classList.add('selected');playClickSound();}
 function baccCardVal(c){const v=cardNumVal(c);return v===11?1:v>=10?0:v;}
@@ -5814,14 +5804,14 @@ function baccDeal(){if(!baccBetType){showToast('Select bet!',false);return;}cons
   playClickSound();
 }
 
-// ============ HILO ============
+
 let hiloDeck=[],hiloCard=null,hiloStreakCount=0,hiloBetAmt=0,hiloActive=false,hiloSkipCount=0;
-const HILO_MAX_MULT=500; // cap multiplier at 500×
-const HILO_SKIP_PENALTY=0.10; // each skip reduces payout by 10%
+const HILO_MAX_MULT=500; 
+const HILO_SKIP_PENALTY=0.10; 
 function hiloMultiplier(){
   if(hiloStreakCount===0)return 1;
   let m=1;for(let i=0;i<hiloStreakCount;i++)m*=1.55;
-  // Apply skip penalties (each skip ×0.90)
+  
   for(let i=0;i<hiloSkipCount;i++)m*=(1-HILO_SKIP_PENALTY);
   m=Math.round(m*100)/100;
   return Math.min(m,HILO_MAX_MULT);
@@ -5843,7 +5833,7 @@ function hiloGuess(guess){if(!hiloActive)return;if(hiloDeck.length<2)hiloDeck=ne
     showToast('Skipped! (-10% payout penalty)',false);return;}
   let correct=false;
   const tied = nextRank===curRank;
-  // Ties (equal rank) = push — card redrawn, no streak change
+  
   if(guess==='higher')correct=nextRank>curRank;else if(guess==='lower')correct=nextRank<curRank;
   hiloCard=next;
   if(tied){hiloRender();playSound(400,'sine',.06,.05);
@@ -5861,7 +5851,7 @@ function hiloRender(){const c=hiloCard;document.getElementById('hiloCard').class
     document.getElementById('hiloCashout').textContent=hiloStreakCount>0?'Cash out: $'+(hiloBetAmt*m).toFixed(2):'';}
 }
 
-// ============ GLOBAL CHAT (Client) ============
+
 let chatOpen = false;
 let chatUnread = 0;
 let chatInitialized = false;
@@ -5879,7 +5869,7 @@ function toggleChat() {
     }
     const input = document.getElementById('chatInput');
     setTimeout(() => input.focus(), 100);
-    // Scroll to bottom
+    
     const msgs = document.getElementById('chatMessages');
     msgs.scrollTop = msgs.scrollHeight;
   }
@@ -5954,7 +5944,7 @@ async function sendChatMessage() {
   let text = input.value.trim();
   if (!text) return;
   if (isGuestMode) { showToast('Sign in to chat', false); return; }
-  // Mute check
+  
   if (window._currentPlayerId && typeof _checkMute === 'function') {
     try {
       const mute = await _checkMute(window._currentPlayerId);
@@ -5965,11 +5955,11 @@ async function sendChatMessage() {
       }
     } catch(e) {}
   }
-  if (text.length > 200) text = text.slice(0, 200); // enforce length limit
+  if (text.length > 200) text = text.slice(0, 200); 
   const username = window._currentUsername || 'Guest';
   if (window._sendChatMsg) {
     window._sendChatMsg(text, username, 'msg').then(()=>{
-      // Scroll to bottom so user sees their message
+      
       const msgs = document.getElementById('chatMessages');
       if(msgs) msgs.scrollTop = msgs.scrollHeight;
     }).catch((e)=>{ showToast('Message failed to send', false); console.error('Chat error:', e); });
@@ -5979,7 +5969,7 @@ async function sendChatMessage() {
   input.value = '';
 }
 
-// Enter key to send
+
 document.getElementById('chatInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -5987,12 +5977,12 @@ document.getElementById('chatInput').addEventListener('keydown', function(e) {
   }
 });
 
-// Broadcast big wins to chat (throttled to prevent spam)
+
 let _lastBroadcast = 0;
 const _origRecordGame = recordGame;
 recordGame = function(game, wagered, won) {
   _origRecordGame(game, wagered, won);
-  // Only broadcast wins over $5000, max once per 15 seconds
+  
   const now = Date.now();
   if (won >= 5000 && window._broadcastWin && (now - _lastBroadcast > 15000)) {
     _lastBroadcast = now;
@@ -6005,7 +5995,7 @@ recordGame = function(game, wagered, won) {
   }
 };
 
-// ============ INIT ============
+
 window.addEventListener('load',()=>{
   initSlots();
   initCases();
@@ -6016,7 +6006,7 @@ window.addEventListener('load',()=>{
   kenoInit();
   horseInit();
   drawWheel(0);
-  // Initialize Plinko profit chart on first load if panel visible
+  
   try{ updatePlinkoProfitChart(); }catch(e){}
   document.getElementById('limboTarget').addEventListener('input',limboUpdateInfo);
   window.addEventListener('resize',()=>{resizeCrashCanvas();resizeParticles();
@@ -6025,10 +6015,10 @@ window.addEventListener('load',()=>{
   if(document.querySelector('#stocksPanel.active')&&typeof renderStocks==='function'){try{renderStocks();}catch(e){}}
   if(document.querySelector('#wheelPanel.active')&&typeof drawWheel==='function'){try{drawWheel(wheelAngle||0);}catch(e){}}
 });
-  // iPad Safari: set --vh initially and on visual viewport resize (address bar show/hide)
+  
   if(window.visualViewport){document.documentElement.style.setProperty('--vh',window.visualViewport.height+'px');window.visualViewport.addEventListener('resize',()=>{document.documentElement.style.setProperty('--vh',window.visualViewport.height+'px');});}
   setInterval(firebaseSave,30000);
-  // Poll for incoming trade requests every 10s and notify
+  
   let _lastTradeReqCount = 0;
   setInterval(async ()=>{
     if(!window._loadTradeRequests || !window._currentPlayerId) return;
@@ -6040,18 +6030,18 @@ window.addEventListener('load',()=>{
       _lastTradeReqCount = reqs.length;
     } catch(e){}
   }, 10000);
-  // Logo should show the catalog
+  
   const logo = document.querySelector('.logo'); if(logo){ logo.addEventListener('click',()=>{ const catalog=document.getElementById('gameCatalog'); if(catalog) catalog.style.display='flex'; document.querySelectorAll('.game-panel').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); }); }
 });
 
-// Save on page close/refresh
+
 window.addEventListener('beforeunload',()=>{ if(window._flushStatsNow) window._flushStatsNow(); firebaseSaveNow(); });
 window.addEventListener('visibilitychange',()=>{ if(document.hidden) firebaseSave(); });
 
-// Handle keyboard shortcuts
+
 document.addEventListener('keydown',e=>{
   if(e.code==='Space'){
-    // Don't fire shortcuts when typing in inputs
+    
     const tag = (e.target.tagName||'').toUpperCase();
     if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||e.target.isContentEditable) return;
     e.preventDefault();
@@ -6077,9 +6067,9 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-// ============ BUCKSHOT ROULETTE ============
+
 let bsrState = null;
-let bsrDifficulty = 'normal'; // 'easy', 'normal', 'hard'
+let bsrDifficulty = 'normal'; 
 const BSR_DIFF = {
   easy:   { rounds:2, hp:5, items:4, mult:2.5, dealerHpScale:1, label:'EASY',   icon:'😎' },
   normal: { rounds:3, hp:4, items:3, mult:4,   dealerHpScale:1, label:'NORMAL', icon:'💀' },
@@ -6090,7 +6080,7 @@ const BSR_ITEM_NAMES = { handcuffs:'Handcuffs', cigarettes:'Cigarettes', gummy:'
 const BSR_ITEM_DESCS = { handcuffs:'Dealer skips next turn', cigarettes:'Heal +1 HP', gummy:'40% +2HP / 60% −1HP', saw:'Next live = 2 dmg', phone:'Reveal random shell', magnifying:'See current shell' };
 const BSR_ALL_ITEMS = ['handcuffs','cigarettes','gummy','saw','phone','magnifying'];
 
-// Stats persisted in localStorage
+
 let bsrStats = JSON.parse(localStorage.getItem('bsr_stats')) || { wins:0, losses:0, biggestWin:0, streak:0, bestStreak:0 };
 function bsrSaveStats(){ localStorage.setItem('bsr_stats', JSON.stringify(bsrStats)); }
 
@@ -6123,7 +6113,7 @@ function bsrUpdateStats() {
   if(el3) el3.textContent = bsrStats.streak;
 }
 
-/* ─── START GAME ─── */
+
 function bsrStartGame() {
   const bet = parseFloat(document.getElementById('bsrBet').value) || 100;
   if (bet <= 0) { showToast('Bet must be positive!', false); return; }
@@ -6147,15 +6137,15 @@ function bsrStartGame() {
     shellIndex: 0,
     turn: 'player',
     sawActive: false,
-    handcuffs: 0,       // dealer skip count
-    playerHandcuffed: 0,// player skip count
+    handcuffs: 0,       
+    playerHandcuffed: 0,
     maxItems: diff.items,
     items: [],
     dealerItems: [],
     log: [],
     animating: false,
     _dealerKnowsCurrent: null,
-    _revealedShells: {},  // index => type, for phone reveals
+    _revealedShells: {},  
   };
 
   document.getElementById('bsrLobby').style.display = 'none';
@@ -6166,7 +6156,7 @@ function bsrStartGame() {
   bsrShowRoundSplash(1, () => bsrNewRound());
 }
 
-/* ─── ROUND SPLASH ─── */
+
 function bsrShowRoundSplash(roundNum, callback) {
   const splash = document.getElementById('bsrRoundSplash');
   const txt = document.getElementById('bsrRoundSplashText');
@@ -6187,7 +6177,7 @@ function bsrShowRoundSplash(roundNum, callback) {
   }, 1600);
 }
 
-/* ─── NEW ROUND ─── */
+
 function bsrNewRound() {
   const s = bsrState;
   if(!s) return;
@@ -6195,15 +6185,15 @@ function bsrNewRound() {
   s._dealerKnowsCurrent = null;
   s._revealedShells = {};
 
-  // Shell loading: 3–8 shells, at least 1 live and 1 blank
-  const totalShells = Math.floor(Math.random() * 4) + 4; // 4-7
+  
+  const totalShells = Math.floor(Math.random() * 4) + 4; 
   let liveCount = Math.max(1, Math.floor(Math.random() * (totalShells - 1)) + 1);
-  if(liveCount >= totalShells) liveCount = totalShells - 1; // ensure ≥1 blank
+  if(liveCount >= totalShells) liveCount = totalShells - 1; 
   const blankCount = totalShells - liveCount;
   s.shells = [];
   for(let i = 0; i < liveCount; i++) s.shells.push('live');
   for(let i = 0; i < blankCount; i++) s.shells.push('blank');
-  // Fisher-Yates shuffle
+  
   for(let i = s.shells.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [s.shells[i], s.shells[j]] = [s.shells[j], s.shells[i]];
@@ -6213,7 +6203,7 @@ function bsrNewRound() {
   s.handcuffs = 0;
   s.playerHandcuffed = 0;
 
-  // Distribute items
+  
   s.items = [];
   s.dealerItems = [];
   for(let i = 0; i < s.maxItems; i++) {
@@ -6221,7 +6211,7 @@ function bsrNewRound() {
     s.dealerItems.push(BSR_ALL_ITEMS[Math.floor(Math.random() * BSR_ALL_ITEMS.length)]);
   }
 
-  // Who goes first (alternate or random)
+  
   s.turn = s.round % 2 === 1 ? 'player' : 'dealer';
 
   bsrLog(`⚡ ROUND ${s.round} — Shotgun loaded: ${liveCount} LIVE 🔴, ${blankCount} BLANK 🔵`);
@@ -6236,7 +6226,7 @@ function bsrNewRound() {
   }
 }
 
-/* ─── LOGGING ─── */
+
 function bsrLog(msg) {
   if(!bsrState) return;
   bsrState.log.push(msg);
@@ -6246,29 +6236,29 @@ function bsrLog(msg) {
   el.scrollTop = el.scrollHeight;
 }
 
-/* ─── RENDER ─── */
+
 function bsrRender() {
   const s = bsrState;
   if(!s) return;
 
-  // Round & multiplier
+  
   document.getElementById('bsrRoundInfo').textContent = `ROUND ${s.round}/${s.maxRounds}`;
   document.getElementById('bsrMultiplier').textContent = `${s.mult}× PAYOUT`;
 
-  // Shell info
+  
   const remaining = s.shells.length - s.shellIndex;
   const livesLeft = s.shells.slice(s.shellIndex).filter(x => x === 'live').length;
   const blanksLeft = remaining - livesLeft;
   document.getElementById('bsrShellInfo').innerHTML = `<span style="color:#ff4444;">${livesLeft} live</span> / <span style="color:#4488ff;">${blanksLeft} blank</span>`;
 
-  // Shell rack
+  
   const rack = document.getElementById('bsrShellRack');
   rack.innerHTML = s.shells.map((sh, i) => {
     let cls = 'bsr-shell';
     if(i < s.shellIndex) cls += ' used' + (sh === 'live' ? ' was-live' : ' was-blank');
     else if(i === s.shellIndex) cls += ' current';
     else cls += ' unknown';
-    // If phone revealed this shell, show it
+    
     if(i >= s.shellIndex && s._revealedShells[i]) {
       cls += s._revealedShells[i] === 'live' ? ' reveal-live' : ' reveal-blank';
     }
@@ -6276,7 +6266,7 @@ function bsrRender() {
     return `<div class="${cls}">${label}</div>`;
   }).join('');
 
-  // HP bars + hearts
+  
   const pPct = Math.max(0, s.playerHP / s.playerMaxHP * 100);
   const dPct = Math.max(0, s.dealerHP / s.dealerMaxHP * 100);
   const pHP = Math.max(0, s.playerHP);
@@ -6288,13 +6278,13 @@ function bsrRender() {
   document.getElementById('bsrDealerHPBar').style.width = dPct + '%';
   document.getElementById('bsrDealerHearts').textContent = '❤️'.repeat(dHP) + '🖤'.repeat(Math.max(0, s.dealerMaxHP - dHP));
 
-  // Color HP bar by health percentage
+  
   const pBar = document.getElementById('bsrPlayerHPBar');
   pBar.style.background = pPct > 50 ? 'linear-gradient(90deg,var(--green),#66ff99)' : pPct > 25 ? 'linear-gradient(90deg,#ff8800,#ffbb00)' : 'linear-gradient(90deg,#ff4444,#ff6666)';
   const dBar = document.getElementById('bsrDealerHPBar');
   dBar.style.background = dPct > 50 ? 'linear-gradient(90deg,#ff4444,#ff8888)' : dPct > 25 ? 'linear-gradient(90deg,#ff8800,#ffbb00)' : 'linear-gradient(90deg,#ff4444,#880000)';
 
-  // Player items
+  
   const itemsEl = document.getElementById('bsrItems');
   const canUse = s.turn === 'player' && !s.animating;
   itemsEl.innerHTML = s.items.map((it, i) =>
@@ -6304,19 +6294,19 @@ function bsrRender() {
     `</button>`
   ).join('');
 
-  // Dealer items (visible but not clickable)
+  
   const dealerItemsEl = document.getElementById('bsrDealerItemsDisplay');
   dealerItemsEl.innerHTML = s.dealerItems.map(it =>
     `<span style="display:inline-block;padding:3px 7px;border-radius:6px;background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.15);font-size:11px;color:rgba(255,68,68,.6);">${BSR_ITEM_ICONS[it]}</span>`
   ).join(' ');
 
-  // Saw indicator on shotgun
+  
   const shotgunEl = document.getElementById('bsrShotgun');
   shotgunEl.textContent = s.sawActive ? '🪚🔫' : '🔫';
   if(s.sawActive) shotgunEl.style.filter = 'drop-shadow(0 0 8px rgba(255,136,0,.6))';
   else shotgunEl.style.filter = '';
 
-  // Action buttons
+  
   if(canUse) bsrEnableActions(); else bsrDisableActions();
 }
 
@@ -6337,16 +6327,16 @@ function bsrSetStatus(msg) {
   if(el) el.textContent = msg;
 }
 
-/* ─── SHOTGUN ANIMATION ─── */
+
 function bsrAnimateShotgun(direction, isLive) {
-  // direction: 'left' (shoot dealer) or 'right' (shoot self)
+  
   const gun = document.getElementById('bsrShotgun');
   if(!gun) return;
   gun.classList.add('shake');
   setTimeout(() => {
     gun.classList.remove('shake');
     gun.classList.add(direction === 'left' ? 'recoil-left' : 'recoil-right');
-    // Flash the current shell
+    
     const shells = document.querySelectorAll('.bsr-shell.current');
     if(shells.length) {
       shells[0].classList.add(isLive ? 'reveal-live' : 'reveal-blank');
@@ -6358,14 +6348,14 @@ function bsrAnimateShotgun(direction, isLive) {
 }
 
 function bsrAnimateHit(who) {
-  // who: 'player' or 'dealer'
+  
   const card = document.getElementById(who === 'player' ? 'bsrPlayerCard' : 'bsrDealerCard');
   if(!card) return;
   card.classList.add('hit');
   setTimeout(() => card.classList.remove('hit'), 500);
 }
 
-/* ─── USE ITEM (PLAYER) ─── */
+
 function bsrUseItem(index) {
   const s = bsrState;
   if(!s || !s.active || s.turn !== 'player' || s.animating) return;
@@ -6377,7 +6367,7 @@ function bsrUseItem(index) {
 
   switch(item) {
     case 'handcuffs':
-      s.handcuffs = Math.max(s.handcuffs, 1); // doesn't stack, just ensures 1 skip
+      s.handcuffs = Math.max(s.handcuffs, 1); 
       bsrLog('🔗 You used Handcuffs! Dealer skips their next turn.');
       bsrSetStatus('Dealer is handcuffed!');
       break;
@@ -6393,7 +6383,7 @@ function bsrUseItem(index) {
       break;
     case 'gummy':
       if(Math.random() < 0.4) {
-        const heal = Math.min(2, s.playerMaxHP + 1 - s.playerHP); // can overheal by 1
+        const heal = Math.min(2, s.playerMaxHP + 1 - s.playerHP); 
         s.playerHP += heal;
         bsrLog('🍬 Rotten Gummy worked! +' + heal + ' HP! (' + s.playerHP + ')');
         bsrSetStatus('Lucky! +' + heal + ' HP!');
@@ -6417,7 +6407,7 @@ function bsrUseItem(index) {
     case 'phone': {
       const rem = s.shells.slice(s.shellIndex);
       if(rem.length > 1) {
-        // Pick a random future shell (not current)
+        
         const futureIdx = Math.floor(Math.random() * (rem.length - 1)) + 1;
         const absIdx = s.shellIndex + futureIdx;
         const shellType = rem[futureIdx];
@@ -6440,7 +6430,7 @@ function bsrUseItem(index) {
   bsrRender();
 }
 
-/* ─── SHOOT (PLAYER) ─── */
+
 function bsrShoot(target) {
   const s = bsrState;
   if(!s || !s.active || s.animating || s.turn !== 'player') return;
@@ -6450,13 +6440,13 @@ function bsrShoot(target) {
   const shell = s.shells[s.shellIndex];
   s.shellIndex++;
   const damage = shell === 'live' ? (s.sawActive ? 2 : 1) : 0;
-  if(shell === 'live') s.sawActive = false; // saw only consumed when it fires (live shell)
+  if(shell === 'live') s.sawActive = false; 
 
-  // Animate shotgun
+  
   bsrAnimateShotgun(target === 'dealer' ? 'left' : 'right', shell === 'live');
   bsrSetStatus('💥 ...');
 
-  // Sound: loud bang for live, click for blank
+  
   if(shell === 'live') {
     playSound(120, 'sawtooth', 0.35, 0.2);
     setTimeout(() => playSound(80, 'square', 0.2, 0.1), 100);
@@ -6464,7 +6454,7 @@ function bsrShoot(target) {
     playSound(600, 'sine', 0.08, 0.06);
   }
 
-  // Resolve after animation
+  
   setTimeout(() => {
     if(target === 'dealer') {
       if(shell === 'live') {
@@ -6476,7 +6466,7 @@ function bsrShoot(target) {
         bsrLog('🔫 You shot the Dealer — BLANK. No damage.');
         bsrSetStatus('*click* — BLANK. No damage.');
       }
-      s.turn = 'dealer'; // always pass turn
+      s.turn = 'dealer'; 
     } else {
       if(shell === 'live') {
         s.playerHP -= damage;
@@ -6487,14 +6477,14 @@ function bsrShoot(target) {
       } else {
         bsrLog('🫵 You shot yourself — BLANK! Free extra turn!');
         bsrSetStatus('*click* — BLANK! You get another turn!');
-        s.turn = 'player'; // keep turn on blank self-shot
+        s.turn = 'player'; 
       }
     }
 
     s.animating = false;
     bsrRender();
 
-    // Check death / round win / shells exhausted
+    
     if(s.dealerHP <= 0) {
       setTimeout(() => bsrRoundWin(), 1200);
       return;
@@ -6511,17 +6501,17 @@ function bsrShoot(target) {
       return;
     }
 
-    // A blank self-shot grants an immediate bonus shot (not a new "turn"),
-    // so handcuffs should NOT consume the skip for that free shot.
+    
+    
     if(target === 'self' && shell === 'blank') {
-      bsrRender(); // just stay in player's turn
+      bsrRender(); 
     } else {
       bsrResolveTurn();
     }
   }, 1100);
 }
 
-/* ─── TURN RESOLUTION (handles handcuffs for both sides) ─── */
+
 function bsrResolveTurn() {
   const s = bsrState;
   if(!s || !s.active) return;
@@ -6533,7 +6523,7 @@ function bsrResolveTurn() {
       bsrSetStatus('Dealer is chained! Skipping...');
       s.turn = 'player';
       setTimeout(() => {
-        // Player may also be cuffed
+        
         if(s.playerHandcuffed > 0) {
           s.playerHandcuffed--;
           bsrLog('🔗 You are also handcuffed! Skipping turn.');
@@ -6548,7 +6538,7 @@ function bsrResolveTurn() {
     } else {
       setTimeout(() => bsrDealerTurn(), 1800);
     }
-  } else { // player turn
+  } else { 
     if(s.playerHandcuffed > 0) {
       s.playerHandcuffed--;
       bsrLog('🔗 You are handcuffed! Skipping turn.');
@@ -6566,16 +6556,16 @@ function bsrResolveTurn() {
         }
       }, 1800);
     } else {
-      bsrRender(); // player's turn, enable actions
+      bsrRender(); 
     }
   }
 }
 
-/* ─── DEALER AI ─── */
+
 function bsrDealerTurn() {
   const s = bsrState;
   if(!s || !s.active) return;
-  // Guard: if shells exhausted mid-turn
+  
   if(s.shellIndex >= s.shells.length) {
     bsrLog('📦 All shells spent! Reloading...');
     setTimeout(() => bsrShowRoundSplash(s.round, () => bsrNewRound()), 1000);
@@ -6587,7 +6577,7 @@ function bsrDealerTurn() {
   bsrDisableActions();
   bsrRender();
 
-  // Dealer uses items one at a time with delays
+  
   setTimeout(() => bsrDealerItemLoop(() => bsrDealerShoot()), 1200);
 }
 
@@ -6595,10 +6585,10 @@ function bsrDealerItemLoop(callback) {
   const s = bsrState;
   if(!s || !s.active || !s.dealerItems.length) { callback(); return; }
 
-  // Priority: magnifying > saw (if know live) > cigarettes (if hurt) > handcuffs > phone
+  
   let used = false;
 
-  // 1. Magnifying glass — always use if available
+  
   const mgIdx = s.dealerItems.indexOf('magnifying');
   if(mgIdx !== -1) {
     s.dealerItems.splice(mgIdx, 1);
@@ -6610,7 +6600,7 @@ function bsrDealerItemLoop(callback) {
     return;
   }
 
-  // 2. Saw — use if dealer knows current is live
+  
   const sawIdx = s.dealerItems.indexOf('saw');
   if(sawIdx !== -1 && s._dealerKnowsCurrent === 'live') {
     s.dealerItems.splice(sawIdx, 1);
@@ -6622,7 +6612,7 @@ function bsrDealerItemLoop(callback) {
     return;
   }
 
-  // 3. Cigarettes — use if HP below max
+  
   const cigIdx = s.dealerItems.indexOf('cigarettes');
   if(cigIdx !== -1 && s.dealerHP < s.dealerMaxHP) {
     s.dealerItems.splice(cigIdx, 1);
@@ -6634,7 +6624,7 @@ function bsrDealerItemLoop(callback) {
     return;
   }
 
-  // 4. Handcuffs — use ~50% of the time
+  
   const hcIdx = s.dealerItems.indexOf('handcuffs');
   if(hcIdx !== -1 && s.playerHandcuffed <= 0 && Math.random() < 0.5) {
     s.dealerItems.splice(hcIdx, 1);
@@ -6647,16 +6637,16 @@ function bsrDealerItemLoop(callback) {
     return;
   }
 
-  // 5. Phone — use ~40% of the time
+  
   const phoneIdx = s.dealerItems.indexOf('phone');
   if(phoneIdx !== -1 && Math.random() < 0.4) {
     s.dealerItems.splice(phoneIdx, 1);
     bsrLog('🤖📱 Dealer makes a phone call... (intel hidden)');
-    // Actually give dealer info about a random future shell
+    
     const rem = s.shells.slice(s.shellIndex);
     if(rem.length > 1) {
       const fi = Math.floor(Math.random() * (rem.length - 1)) + 1;
-      // Dealer doesn't share this info with player
+      
     }
     bsrRender();
     used = true;
@@ -6664,7 +6654,7 @@ function bsrDealerItemLoop(callback) {
     return;
   }
 
-  // 6. Gummy — use if HP below max, 30% chance
+  
   const gummyIdx = s.dealerItems.indexOf('gummy');
   if(gummyIdx !== -1 && s.dealerHP < s.dealerMaxHP && Math.random() < 0.3) {
     s.dealerItems.splice(gummyIdx, 1);
@@ -6687,14 +6677,14 @@ function bsrDealerItemLoop(callback) {
     return;
   }
 
-  // No more items to use
+  
   callback();
 }
 
 function bsrDealerShoot() {
   const s = bsrState;
   if(!s || !s.active) return;
-  // Guard: shells might be exhausted
+  
   if(s.shellIndex >= s.shells.length) {
     bsrLog('📦 All shells spent! Reloading...');
     s.animating = false;
@@ -6706,28 +6696,28 @@ function bsrDealerShoot() {
   s.shellIndex++;
   s.animating = true;
 
-  // Dealer decides target
+  
   let target = 'player';
   if(s._dealerKnowsCurrent === 'blank') {
     target = 'self';
   } else if(s._dealerKnowsCurrent === 'live') {
     target = 'player';
   } else {
-    // Heuristic: count live/blank ratio in remaining shells (before this shot)
-    const allRemaining = s.shells.slice(s.shellIndex - 1); // include current
+    
+    const allRemaining = s.shells.slice(s.shellIndex - 1); 
     const liveR = allRemaining.filter(x => x === 'live').length / allRemaining.length;
     target = liveR < 0.4 ? 'self' : 'player';
   }
   s._dealerKnowsCurrent = null;
 
   const damage = shell === 'live' ? (s.sawActive ? 2 : 1) : 0;
-  if(shell === 'live') s.sawActive = false; // saw only consumed when it fires (live shell)
+  if(shell === 'live') s.sawActive = false; 
 
   bsrSetStatus('🤖 Dealer aims at ' + (target === 'player' ? 'YOU' : 'ITSELF') + '...');
 
-  // Dramatic pause
+  
   setTimeout(() => {
-    // Animate
+    
     bsrAnimateShotgun(target === 'player' ? 'left' : 'right', shell === 'live');
     if(shell === 'live') {
       playSound(120, 'sawtooth', 0.35, 0.18);
@@ -6778,21 +6768,21 @@ function bsrDealerShoot() {
   }, 800);
 }
 
-/* ─── ROUND WIN ─── */
+
 function bsrRoundWin() {
   const s = bsrState;
-  if(!s || !s.active) return; // guard against double-calls
+  if(!s || !s.active) return; 
   if(s.round >= s.maxRounds) {
     bsrEndGame(true);
     return;
   }
   bsrLog(`✅ ROUND ${s.round} WON! The Dealer is down.`);
   s.round++;
-  // Scale dealer HP each round (+1 per round past first)
+  
   const diff = BSR_DIFF[s.diff];
   s.dealerHP = diff.hp + (s.round - 1);
   s.dealerMaxHP = diff.hp + (s.round - 1);
-  // Heal player a bit (2 HP, capped at max)
+  
   s.playerHP = Math.min(s.playerHP + 2, s.playerMaxHP);
 
   bsrSetStatus('Round won! Advancing...');
@@ -6803,10 +6793,10 @@ function bsrRoundWin() {
   }, 1200);
 }
 
-/* ─── END GAME ─── */
+
 function bsrEndGame(won) {
   const s = bsrState;
-  if(!s || !s.active) return; // guard against double-calls from async paths
+  if(!s || !s.active) return; 
   s.active = false;
 
   const overlay = document.getElementById('bsrGameOver');
@@ -6818,7 +6808,7 @@ function bsrEndGame(won) {
     updateBalDisplay();
     recordGame('rusroulette', s.bet, winnings);
 
-    // Update stats
+    
     bsrStats.wins++;
     bsrStats.streak++;
     if(bsrStats.streak > bsrStats.bestStreak) bsrStats.bestStreak = bsrStats.streak;
@@ -6859,7 +6849,7 @@ function bsrCloseGameOver() {
   bsrUpdateStats();
 }
 
-// ============ RUSSIAN ROULETTE ============
+
 let rrState = null;
 const RR_DIFF = {
   easy:   { rounds: 3, mult: 2, label: 'EASY',   icon: '😎' },
@@ -6894,7 +6884,7 @@ function initRussianRoulette() {
 }
 
 function rrUpdateStats() {
-  // stats are tracked via gameStats.russianr
+  
 }
 
 function rrLog(msg, color) {
@@ -6906,9 +6896,9 @@ function rrLog(msg, color) {
   log.prepend(d);
 }
 
-// ---- Chamber mechanics ----
+
 function rrNewCylinder() {
-  // Place 1 bullet randomly in 6 chambers
+  
   const chambers = [0, 0, 0, 0, 0, 0];
   chambers[Math.floor(Math.random() * 6)] = 1;
   return { chambers, pos: 0, remaining: 6 };
@@ -6922,30 +6912,30 @@ function rrPullChamber(cyl) {
 }
 
 function rrSpinCylinderMech(cyl) {
-  // Re-randomize
+  
   cyl.chambers = [0, 0, 0, 0, 0, 0];
   cyl.chambers[Math.floor(Math.random() * 6)] = 1;
   cyl.pos = 0;
   cyl.remaining = 6;
 }
 
-// ---- Bot AI ----
+
 function rrBotDecision(cyl, roundNum, totalRounds) {
-  // Bot weighs risk: if remaining chambers are few and bullet hasn't fired, more likely to spin
+  
   const hitChance = 1 / Math.max(1, cyl.remaining);
-  // Easy bot: plays dumber (less likely to spin)
-  // Hard bot: smarter (spins when risk > 40%)
+  
+  
   let spinThreshold;
   if (rrDiff === 'easy') spinThreshold = 0.65;
   else if (rrDiff === 'normal') spinThreshold = 0.45;
   else spinThreshold = 0.35;
   
-  // Random factor
+  
   if (hitChance >= spinThreshold && Math.random() < 0.6) return 'spin';
   return 'pull';
 }
 
-// ---- BOT START ----
+
 function rrStartBot() {
   const betEl = document.getElementById('rrBet');
   const bet = parseInt(betEl.value);
@@ -6964,7 +6954,7 @@ function rrStartBot() {
     playerTurn: Math.random() < 0.5,
     playerAlive: true,
     dealerAlive: true,
-    roundKills: 0,      // track kills across rounds
+    roundKills: 0,      
     gameOver: false,
     paused: false
   };
@@ -7000,22 +6990,22 @@ function rrUpdateUI() {
   document.getElementById('rrRoundInfo').textContent = `ROUND ${s.currentRound} / ${s.totalRounds}`;
   document.getElementById('rrMultInfo').textContent = `🏆 ${s.mult}× ($${Math.floor(s.bet * s.mult).toLocaleString()})`;
   
-  // Chamber info
+  
   const chamberDots = [];
   for (let i = 0; i < 6; i++) {
-    if (i < s.cylinder.pos) chamberDots.push('⚫'); // already fired (empty)
-    else chamberDots.push('🔴'); // unknown
+    if (i < s.cylinder.pos) chamberDots.push('⚫'); 
+    else chamberDots.push('🔴'); 
   }
   document.getElementById('rrChamberInfo').textContent = chamberDots.join(' ') + ` (${s.cylinder.remaining} left)`;
   
-  // Player status
+  
   document.getElementById('rrPlayerStatus').textContent = s.playerAlive ? (s.playerTurn ? '😰' : '😐') : '💀';
   document.getElementById('rrPlayerAlive').textContent = s.playerAlive ? 'ALIVE' : 'DEAD';
   document.getElementById('rrPlayerAlive').style.color = s.playerAlive ? 'var(--green)' : 'var(--red)';
   document.getElementById('rrPlayerCard').style.borderColor = s.playerTurn && !s.gameOver ? 'var(--neon)' : 'var(--border)';
   document.getElementById('rrPlayerCard').style.boxShadow = s.playerTurn && !s.gameOver ? '0 0 20px rgba(0,240,255,.2)' : 'none';
   
-  // Dealer status
+  
   document.getElementById('rrDealerStatus').textContent = s.dealerAlive ? (!s.playerTurn ? '😈' : '😐') : '💀';
   document.getElementById('rrDealerAlive').textContent = s.dealerAlive ? 'ALIVE' : 'DEAD';
   document.getElementById('rrDealerAlive').style.color = s.dealerAlive ? 'var(--green)' : 'var(--red)';
@@ -7062,7 +7052,7 @@ function rrShakeScreen() {
   area.style.animation = 'bsr-shake .5s ease-out';
 }
 
-// ---- Player actions ----
+
 function rrPullTrigger() {
   if (!rrState || rrState.gameOver || !rrState.playerTurn || rrState.paused) return;
   rrDisableActions();
@@ -7075,7 +7065,7 @@ function rrPullTrigger() {
     rrAnimateShot(hit);
     
     if (hit) {
-      // BANG!
+      
       playSound(80, 'sawtooth', 0.4, 0.7);
       rrShakeScreen();
       rrState.playerAlive = false;
@@ -7084,13 +7074,13 @@ function rrPullTrigger() {
       rrUpdateUI();
       setTimeout(() => rrEndRound('dealer'), 1200);
     } else {
-      // Click...
+      
       playSound(600, 'sine', 0.08, 0.4);
       rrLog('🔘 *click* — Empty chamber. You survive!', 'var(--green)');
       rrState.playerTurn = false;
       rrUpdateUI();
       rrState.paused = false;
-      // Dealer's turn
+      
       setTimeout(() => rrBotTurn(), 1200);
     }
   }, 800);
@@ -7110,12 +7100,12 @@ function rrSpinCylinder() {
     rrUpdateUI();
     rrState.playerTurn = false;
     rrState.paused = false;
-    // Dealer's turn
+    
     setTimeout(() => rrBotTurn(), 1200);
   }, 800);
 }
 
-// ---- Bot turn ----
+
 function rrBotTurn() {
   if (!rrState || rrState.gameOver) return;
   rrDisableActions();
@@ -7164,7 +7154,7 @@ function rrBotTurn() {
   }
 }
 
-// ---- Round/game end ----
+
 function rrEndRound(winner) {
   if (!rrState) return;
   const s = rrState;
@@ -7176,15 +7166,15 @@ function rrEndRound(winner) {
     return;
   }
   
-  // If player died, game over
+  
   if (!s.playerAlive) {
     rrEndGame('dealer');
     return;
   }
   
-  // If dealer died, check if more rounds
+  
   if (!s.dealerAlive) {
-    // Continue to next round
+    
     s.currentRound++;
     s.dealerAlive = true;
     s.playerAlive = true;
@@ -7208,7 +7198,7 @@ function rrEndRound(winner) {
     return;
   }
   
-  // Player died
+  
   rrEndGame('dealer');
 }
 
@@ -7266,7 +7256,7 @@ function rrCloseGameOver() {
   document.getElementById('rrGameArea').style.display = 'none';
 }
 
-// ============ RUSSIAN ROULETTE PVP ============
+
 let rrPvpListener = null;
 let rrPvpUnsubscribe = null;
 
@@ -7562,19 +7552,19 @@ function mpbsrStartChallengeListener() {
 }
 
 function mpbsrGenerateRound(roundNum) {
-  // Generate shells and items for a round
+  
   const shellCount = 4 + roundNum;
   const liveCount = 1 + Math.floor(Math.random() * Math.min(shellCount - 1, roundNum + 2));
   const blankCount = shellCount - liveCount;
   const shells = [];
   for (let i = 0; i < liveCount; i++) shells.push('live');
   for (let i = 0; i < blankCount; i++) shells.push('blank');
-  // Shuffle
+  
   for (let i = shells.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shells[i], shells[j]] = [shells[j], shells[i]];
   }
-  // Items per player: 2-4
+  
   const itemCount = Math.min(2 + roundNum, 4);
   function randItems(n) {
     const items = [];
@@ -7713,12 +7703,12 @@ function mpbsrJoinGame(gameId) {
     const shells = g.shells ? g.shells.split(',') : [];
     const shellIdx = g.shellIdx || 0;
     
-    // Update UI
+    
     document.getElementById('mpbsrRoundInfo').textContent = 'ROUND ' + (g.round || 1);
     document.getElementById('mpbsrPotInfo').textContent = 'POT: $' + (g.bet * 2).toLocaleString();
     document.getElementById('mpbsrShellInfo').textContent = (shells.length - shellIdx) + ' shells left';
     
-    // Shell rack
+    
     const rack = document.getElementById('mpbsrShellRack');
     rack.innerHTML = '';
     const rLive = shells.slice(shellIdx).filter(s => s === 'live').length;
@@ -7736,11 +7726,11 @@ function mpbsrJoinGame(gameId) {
       rack.appendChild(d);
     }
     
-    // HP
+    
     document.getElementById('mpbsrMyHP').innerHTML = '❤️'.repeat(Math.max(0, myHP)) + '🖤'.repeat(Math.max(0, 4 - myHP));
     document.getElementById('mpbsrOpHP').innerHTML = '❤️'.repeat(Math.max(0, opHP)) + '🖤'.repeat(Math.max(0, 4 - opHP));
     
-    // Items
+    
     function renderItems(itemStr, containerId, usable) {
       const el = document.getElementById(containerId);
       el.innerHTML = '';
@@ -7764,21 +7754,21 @@ function mpbsrJoinGame(gameId) {
     renderItems(myItems, 'mpbsrMyItems', myTurn && g.status === 'active');
     renderItems(opItems, 'mpbsrOpItems', false);
     
-    // Status
+    
     const statusEl = document.getElementById('mpbsrStatusMsg');
     if (g.status === 'active') {
       statusEl.textContent = myTurn ? '🎯 YOUR TURN — Shoot or use an item!' : '⏳ Waiting for opponent...';
       statusEl.style.color = myTurn ? 'var(--gold)' : 'var(--text2)';
     }
     
-    // Actions
+    
     const canAct = myTurn && g.status === 'active' && myHP > 0 && opHP > 0;
     document.getElementById('mpbsrShootOp').disabled = !canAct;
     document.getElementById('mpbsrShootSelf').disabled = !canAct;
     document.getElementById('mpbsrShootOp').style.opacity = canAct ? '1' : '0.4';
     document.getElementById('mpbsrShootSelf').style.opacity = canAct ? '1' : '0.4';
     
-    // Log
+    
     if (g.log) {
       const logEl = document.getElementById('mpbsrLog');
       logEl.innerHTML = '';
@@ -7792,7 +7782,7 @@ function mpbsrJoinGame(gameId) {
       });
     }
     
-    // Game over
+    
     if (g.status === 'finished' && g.winner && !endHandled) {
       endHandled = true;
       const iWon = (g.winner === 'host' && isHost) || (g.winner === 'guest' && !isHost);
@@ -7842,7 +7832,7 @@ async function mpbsrShoot(target) {
   
   const shells = g.shells.split(',');
   const idx = g.shellIdx || 0;
-  if (idx >= shells.length) return; // No shells left (shouldn't happen)
+  if (idx >= shells.length) return; 
   
   const shell = shells[idx];
   const isLive = shell === 'live';
@@ -7871,10 +7861,10 @@ async function mpbsrShoot(target) {
           msg: `☠️ ${opName} has been eliminated!`, color: '#ff4444'
         });
       } else {
-        // Turn passes (or cuff skip)
+        
         if (g.cuffActive) {
           updates.cuffActive = false;
-          updates.currentTurn = g.currentTurn; // Same person goes again
+          updates.currentTurn = g.currentTurn; 
           const lk3 = lk + 'c';
           await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk3, {
             msg: `🔗 ${opName} is handcuffed — skips their turn!`, color: 'var(--neon)'
@@ -7895,7 +7885,7 @@ async function mpbsrShoot(target) {
       }
     }
   } else {
-    // Shoot self
+    
     if (isLive) {
       const hpKey = isHost ? 'hostHP' : 'guestHP';
       const newHP = Math.max(0, (isHost ? g.hostHP : g.guestHP) - dmg);
@@ -7918,12 +7908,12 @@ async function mpbsrShoot(target) {
       await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
         msg: `🤕 ${myName} shoots self — 🔵 BLANK! Bonus turn!`, color: 'var(--green)'
       });
-      // Keep same turn
+      
       updates.currentTurn = g.currentTurn;
     }
   }
   
-  // Check if shells exhausted → new round
+  
   if (!updates.status && updates.shellIdx >= shells.length) {
     const newRound = (g.round || 1) + 1;
     const rd = mpbsrGenerateRound(newRound);
@@ -7968,7 +7958,7 @@ async function mpbsrUseItem(itemIndex) {
   const opName = isHost ? g.guestName : g.hostName;
   const lk = Date.now().toString(36) + Math.random().toString(36).slice(2, 4);
   
-  // Remove item
+  
   items.splice(itemIndex, 1);
   const updates = { [itemsKey]: items.join(',') };
   
@@ -7985,7 +7975,7 @@ async function mpbsrUseItem(itemIndex) {
       await window._fbSet('casino/bsrGames/' + gid + '/log/' + lk, {
         msg: `🔍 ${myName} uses Magnifying Glass...`, color: 'var(--neon)'
       });
-      // Only show the result to the user (via toast)
+      
       showToast(`Current shell: ${cur === 'live' ? '🔴 LIVE' : '🔵 BLANK'}`, cur === 'live' ? false : true);
       break;
     }
@@ -8022,7 +8012,7 @@ async function mpbsrUseItem(itemIndex) {
   await window._fbUpdate('casino/bsrGames/' + gid, updates);
 }
 
-// PvP overrides for buttons
+
 document.getElementById('rrPullBtn').addEventListener('click', function(e) {
   if (rrState && rrState.mode === 'pvp') { e.stopImmediatePropagation(); rrPvPAction('pull'); }
 });
@@ -8037,7 +8027,7 @@ function rrCleanupPvP() {
   rrPvpUnsubscribe = null;
 }
 
-// Listen for incoming RR challenges via polling
+
 let rrChallengeInterval = null;
 function rrListenForChallenges() {
   if (!window._currentPlayerId) return;
@@ -8073,7 +8063,7 @@ function rrDeclinePvPChallenge(gameId) {
   window._fbUpdate('casino/rrGames/' + gameId, { status: 'declined' });
 }
 
-// ============ SETTINGS ============
+
 let casinoSettings = JSON.parse(localStorage.getItem('casino_settings')) || {
   sound: true,
   particles: true,
@@ -8083,14 +8073,14 @@ let casinoSettings = JSON.parse(localStorage.getItem('casino_settings')) || {
 
 function openSettingsPanel() {
   document.getElementById('settingsOverlay').style.display = 'block';
-  // Sync toggles
+  
   const snd = document.getElementById('settingSound');
   const part = document.getElementById('settingParticles');
   const ra = document.getElementById('settingReducedAnim');
   if (snd) { snd.checked = casinoSettings.sound; updateToggleVisual('settingSound', casinoSettings.sound); }
   if (part) { part.checked = casinoSettings.particles; updateToggleVisual('settingParticles', casinoSettings.particles); }
   if (ra) { ra.checked = casinoSettings.reducedAnim; updateToggleVisual('settingReducedAnim', casinoSettings.reducedAnim); }
-  // Highlight active theme
+  
   document.querySelectorAll('.theme-btn').forEach(b => {
     b.style.borderColor = b.dataset.theme === casinoSettings.theme ? 'var(--neon)' : 'var(--border)';
   });
@@ -8113,7 +8103,7 @@ function settingToggle(key, val) {
   localStorage.setItem('casino_settings', JSON.stringify(casinoSettings));
   updateToggleVisual('setting' + key.charAt(0).toUpperCase() + key.slice(1), val);
 
-  // Apply settings
+  
   if (key === 'sound') {
     soundMuted = !val;
     const mb = document.getElementById('muteBtn');
@@ -8147,13 +8137,13 @@ function setTheme(name) {
   Object.entries(t).forEach(([k, v]) => {
     root.style.setProperty('--' + k.replace(/([A-Z])/g, m => '-' + m.toLowerCase()), v);
   });
-  // Highlight active
+  
   document.querySelectorAll('.theme-btn').forEach(b => {
     b.style.borderColor = b.dataset.theme === name ? 'var(--neon)' : 'var(--border)';
   });
 }
 
-// Apply saved settings on load
+
 (function applySavedSettings() {
   if (!casinoSettings.sound) {
     soundMuted = true;
@@ -8174,9 +8164,9 @@ function setTheme(name) {
   }
 })();
 
-// ============ SHOP / POTIONS ============
+
 let activePotions = JSON.parse(localStorage.getItem('casino_potions')) || {};
-// { luck: { stacks: 0, expires: 0 }, speed: { active: false, expires: 0 }, shield: {...}, xp: {...} }
+
 
 function openShopOverlay() {
   document.getElementById('shopOverlay').style.display = 'block';
@@ -8189,24 +8179,24 @@ function closeShopOverlay() {
 
 function shopRefresh() {
   document.getElementById('shopBalText').textContent = (typeof balance !== 'undefined' ? balance : 0).toLocaleString();
-  // Luck
+  
   const lp = activePotions.luck || { stacks: 0, expires: 0 };
   const luckActive = lp.stacks > 0 && lp.expires > Date.now();
   document.getElementById('shopLuckCount').textContent = luckActive ? lp.stacks : '0';
-  // Speed
+  
   const sp = activePotions.speed || { active: false, expires: 0 };
   document.getElementById('shopSpeedActive').textContent = sp.active && sp.expires > Date.now() ? 'ON' : 'OFF';
   document.getElementById('shopSpeedActive').style.color = sp.active && sp.expires > Date.now() ? 'var(--green)' : 'var(--text2)';
-  // Shield
+  
   const sh = activePotions.shield || { active: false, expires: 0 };
   document.getElementById('shopShieldActive').textContent = sh.active && sh.expires > Date.now() ? 'ON' : 'OFF';
   document.getElementById('shopShieldActive').style.color = sh.active && sh.expires > Date.now() ? 'var(--green)' : 'var(--text2)';
-  // XP
+  
   const xp = activePotions.xp || { active: false, expires: 0 };
   document.getElementById('shopXPActive').textContent = xp.active && xp.expires > Date.now() ? 'ON' : 'OFF';
   document.getElementById('shopXPActive').style.color = xp.active && xp.expires > Date.now() ? 'var(--green)' : 'var(--text2)';
 
-  // Active effects panel
+  
   const eff = [];
   if (luckActive) { const rem = Math.ceil((lp.expires - Date.now()) / 60000); eff.push(`<div style="padding:6px;border-radius:6px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);"><span style="font-size:14px;">🍀</span> Luck ×${lp.stacks} — ${rem}m left</div>`); }
   if (sp.active && sp.expires > Date.now()) { const rem = Math.ceil((sp.expires - Date.now()) / 60000); eff.push(`<div style="padding:6px;border-radius:6px;background:rgba(0,240,255,.1);border:1px solid rgba(0,240,255,.2);"><span style="font-size:14px;">⚡</span> Speed 2× — ${rem}m left</div>`); }
@@ -8232,7 +8222,7 @@ function shopBuyPotion(type) {
       balance += price; updateBalDisplay(); return;
     }
     activePotions.luck.stacks = Math.min(5, (activePotions.luck.stacks || 0) + 1);
-    activePotions.luck.expires = Date.now() + 10 * 60 * 1000; // 10 min
+    activePotions.luck.expires = Date.now() + 10 * 60 * 1000; 
     showToast('🍀 Luck Potion active! Stack: ' + activePotions.luck.stacks + '/5', true);
   } else if (type === 'speed') {
     activePotions.speed = { active: true, expires: Date.now() + 15 * 60 * 1000 };
@@ -8250,60 +8240,60 @@ function shopBuyPotion(type) {
   shopRefresh();
 }
 
-// Helper: get current luck bonus multiplier
+
 function getLuckBonus() {
   const lp = activePotions.luck || { stacks: 0, expires: 0 };
   if (lp.stacks > 0 && lp.expires > Date.now()) return 1 + (lp.stacks * 0.05);
   return 1;
 }
 
-// Helper: check speed potion
+
 function isSpeedActive() {
   const sp = activePotions.speed || { active: false, expires: 0 };
   return sp.active && sp.expires > Date.now();
 }
 
-// Helper: check shield
+
 function isShieldActive() {
   const sh = activePotions.shield || { active: false, expires: 0 };
   return sh.active && sh.expires > Date.now();
 }
 
-// ============ SERIAL NUMBERED ITEMS ============
+
 let serialCounter = parseInt(localStorage.getItem('casino_serial_counter')) || 100000;
 
 function generateSerial() {
   serialCounter++;
   localStorage.setItem('casino_serial_counter', serialCounter);
-  // Format: SN-XXXXX-XXXX
+  
   const hex = serialCounter.toString(16).toUpperCase().padStart(9, '0');
   return 'SN-' + hex.slice(0, 5) + '-' + hex.slice(5);
 }
 
-// Patch addToInventory to include serial numbers
+
 const _origAddToInventory = addToInventory;
 addToInventory = function(itemId) {
   _origAddToInventory(itemId);
-  // Attach serial number to the most recently added item
+  
   if (inventory.length > 0) {
     const lastItem = inventory[inventory.length - 1];
     if (!lastItem.serial) lastItem.serial = generateSerial();
   }
 };
 
-// ============ SPECIAL LIMITED CASES ============
+
 let limitedCases = [];
 let limitedCaseTimer = null;
 
 function initLimitedCases() {
-  // Generate a new limited case every 30 minutes if none exists
+  
   const saved = JSON.parse(localStorage.getItem('casino_limited_cases')) || [];
   limitedCases = saved.filter(c => c.expires > Date.now());
   if (limitedCases.length === 0) {
     spawnLimitedCase();
   }
   renderLimitedCases();
-  // Check every minute
+  
   if (limitedCaseTimer) clearInterval(limitedCaseTimer);
   limitedCaseTimer = setInterval(() => {
     limitedCases = limitedCases.filter(c => c.expires > Date.now());
@@ -8317,12 +8307,12 @@ function spawnLimitedCase() {
   const names = ['Neon Surge', 'Void Eclipse', 'Golden Rush', 'Crimson Tide', 'Frost Bite', 'Shadow Drop', 'Star Burst'];
   const icons = ['⚡', '🌑', '🌟', '🔥', '❄️', '🖤', '💫'];
   const idx = Math.floor(Math.random() * names.length);
-  const multiplier = 1.5 + Math.random() * 2; // 1.5x - 3.5x value multiplier
+  const multiplier = 1.5 + Math.random() * 2; 
   const price = Math.floor((Math.random() * 9000 + 1000) / 100) * 100;
-  const qty = Math.floor(Math.random() * 20) + 5; // 5-24 available
-  const duration = (Math.random() * 20 + 10) * 60 * 1000; // 10-30 min
+  const qty = Math.floor(Math.random() * 20) + 5; 
+  const duration = (Math.random() * 20 + 10) * 60 * 1000; 
 
-  // Pick items with boosted rare odds
+  
   const possibleItems = Object.keys(ITEM_CATALOG);
   const items = [];
   for (let i = 0; i < 10; i++) {
@@ -8376,12 +8366,12 @@ function openLimitedCase(lcId) {
   lc.remaining--;
   localStorage.setItem('casino_limited_cases', JSON.stringify(limitedCases));
 
-  // Pick a random item with luck bonus
+  
   const lucky = getLuckBonus();
   let totalW = lc.items.reduce((s, it) => {
     const cat = ITEM_CATALOG[it.id];
     const rar = RARITY[cat.rarity];
-    // Luck bonus slightly increases rare item weights
+    
     return s + it.w * (rar.tier >= 3 ? lucky : 1);
   }, 0);
   let rng = Math.random() * totalW;
@@ -8404,9 +8394,9 @@ function openLimitedCase(lcId) {
   window._firebaseSave && firebaseSave();
 }
 
-// ============ CRYPTO / BITCOIN TRADING ============
+
 let cryptoPortfolio = JSON.parse(localStorage.getItem('casino_crypto')) || {};
-// { BTC: { amount: 0, avgBuy: 0 }, ETH: {...}, ... }
+
 let cryptoPrices = {};
 let cryptoHistory = {};
 let cryptoInterval = null;
@@ -8422,14 +8412,14 @@ const CRYPTO_COINS = [
 
 function initCrypto() {
   if (!cryptoInterval) {
-    // Initialize prices
+    
     CRYPTO_COINS.forEach(c => {
       if (!cryptoPrices[c.id]) {
         cryptoPrices[c.id] = c.basePrice * (0.8 + Math.random() * 0.4);
       }
       if (!cryptoHistory[c.id]) {
         cryptoHistory[c.id] = [];
-        // Generate some history
+        
         let p = cryptoPrices[c.id];
         for (let i = 0; i < 30; i++) {
           p *= (1 + (Math.random() - 0.5) * c.volatility);
@@ -8441,7 +8431,7 @@ function initCrypto() {
       }
     });
 
-    // Tick every 3 seconds
+    
     cryptoInterval = setInterval(cryptoTick, 3000);
   }
   renderCrypto();
@@ -8449,13 +8439,13 @@ function initCrypto() {
 
 function cryptoTick() {
   CRYPTO_COINS.forEach(c => {
-    const change = (Math.random() - 0.48) * c.volatility; // slight upward bias
+    const change = (Math.random() - 0.48) * c.volatility; 
     cryptoPrices[c.id] *= (1 + change);
-    cryptoPrices[c.id] = Math.max(c.basePrice * 0.01, cryptoPrices[c.id]); // floor
+    cryptoPrices[c.id] = Math.max(c.basePrice * 0.01, cryptoPrices[c.id]); 
     cryptoHistory[c.id].push(cryptoPrices[c.id]);
     if (cryptoHistory[c.id].length > 60) cryptoHistory[c.id].shift();
   });
-  // Re-render if crypto panel is active
+  
   if (document.querySelector('#cryptoPanel.active')) renderCrypto();
 }
 
@@ -8473,7 +8463,7 @@ function renderCrypto() {
     const holdings = port.amount * price;
     const pnl = port.amount > 0 ? holdings - port.totalInvested : 0;
 
-    // Mini sparkline
+    
     const sparkline = cryptoSparkline(hist);
 
     return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;">
@@ -8600,5 +8590,5 @@ function cryptoSellAll(coinId) {
   window._firebaseSave && firebaseSave();
 }
 
-// Init limited cases on load
+
 setTimeout(initLimitedCases, 1000);

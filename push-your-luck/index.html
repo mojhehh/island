@@ -25,9 +25,9 @@
 
     <link rel="stylesheet" href="css/app.css" type="text/css" />
 
-    <!-- Patch: Defer Phaser init until container has real dimensions -->
+    
     <script>
-    /* 1v1 MODE: Read opponent name and room code from URL hash */
+    
     (function() {
       var hash = window.location.hash;
       if (hash && hash.indexOf('#1v1=') === 0) {
@@ -60,8 +60,8 @@
         setTimeout(tryLaunch, 50);
       });
 
-      // Patch Phaser BitmapData.resize and Debug.resize after scripts load
-      // to guard against Infinity/NaN dimensions (causes getImageData crash)
+      
+      
       window.addEventListener('DOMContentLoaded', function() {
         if (typeof Phaser === 'undefined') return;
 
@@ -83,11 +83,11 @@
           };
         }
 
-        // iPad fix: Disable forced landscape orientation since the game
-        // runs inside an iframe that may be portrait-shaped on iPad.
-        // No-op forceOrientation so Phaser never sets incorrectOrientation=true.
+        
+        
+        
         Phaser.ScaleManager.prototype.forceOrientation = function() {};
-        // Also force incorrectOrientation to always be false so resize always works
+        
         Object.defineProperty(Phaser.ScaleManager.prototype, 'incorrectOrientation', {
           get: function() { return false; },
           set: function() {},
@@ -97,8 +97,8 @@
     })();
     </script>
 
-    <!-- Game scripts -->
-    <!-- <script src="js/es6-promise.auto.min.js"></script> -->
+    
+    
     <script src="js/phaser.min.js"></script>
     <script src="js/pushyourluck.js"></script>
 </head>

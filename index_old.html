@@ -208,13 +208,13 @@
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
 
-    // Base game dimensions (the map is designed for this)
+    
     const BASE_W = 900;
     const BASE_H = 600;
     const W = BASE_W;
     const H = BASE_H;
 
-    // Set canvas internal resolution and scale to fill screen
+    
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -222,12 +222,12 @@
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Tile size
+    
     const T = 30;
-    const COLS = W / T; // 30
-    const ROWS = H / T; // 20
+    const COLS = W / T; 
+    const ROWS = H / T; 
 
-    // Map legend: 0=grass, 1=water, 2=sand, 3=tree/palm, 4=building, 5=wall, 6=dock, 7=temple, 8=helipad, 9=pool, 10=path, 11=sundial
+    
     const MAP = [
         [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -251,10 +251,10 @@
         [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
     ];
 
-    // Game state
+    
     let player, guards, files, boat, keys, gameState, startTime, stamina, health, particles, messages, killedBy;
 
-    // Guard images
+    
     const guardImg1 = new Image();
     guardImg1.src = 'guard.webp';
     const guardImg2 = new Image();
@@ -265,7 +265,7 @@
     guardImg4.src = 'guard4.webp';
     const guardImages = [guardImg1, guardImg2, guardImg3, guardImg4];
 
-    // Player image
+    
     const playerImg = new Image();
     playerImg.src = 'player.jpg';
 
@@ -287,7 +287,7 @@
 
         player = { x: 3 * T + T/2, y: 11 * T + T/2, speed: 3.0, size: 10, dir: 0 };
 
-        // Place files in actual island locations
+        
         files = [
             { x: 6 * T, y: 6 * T, collected: false, label: "Temple File" },
             { x: 21.5 * T, y: 11 * T, collected: false, label: "Mansion File" },
@@ -298,10 +298,10 @@
             { x: 10 * T, y: 16 * T, collected: false, label: "Beach File" },
         ];
 
-        // Boat escape point (at the dock)
+        
         boat = { x: 2 * T, y: 10.5 * T };
 
-        // Guards with patrol routes along paths
+        
         guards = [
             { name: 'Epstein', x: 10*T, y: 5*T, speed: 0.9, patrolPoints: [{x:10*T,y:4*T},{x:10*T,y:10*T}], patrolIdx: 0, alertTimer: 0, size: 14, mansionTimer: 600, goingToMansion: false, speechTimer: 0, stopped: false },
             { name: 'Steven Hawking', x: 17*T, y: 10*T, speed: 0.85, patrolPoints: [{x:17*T,y:5*T},{x:17*T,y:12*T},{x:10*T,y:12*T}], patrolIdx: 0, alertTimer: 0, size: 14 },
@@ -333,13 +333,13 @@
         const collected = files.filter(f => f.collected).length;
         document.getElementById('filesCount').textContent = `FILES: ${collected} / ${files.length}`;
 
-        // Health bar
+        
         const hpBars = Math.round(health / 5);
         const hpStr = '█'.repeat(hpBars) + '░'.repeat(20 - hpBars);
         const hpColor = health > 50 ? '#ff4444' : health > 25 ? '#ff6600' : '#ff0000';
         document.getElementById('hpBar').innerHTML = `HEALTH:  <span style="color:${hpColor}">${hpStr}</span>`;
 
-        // Stamina bar
+        
         const stBars = Math.round(stamina / 3);
         const stStr = '█'.repeat(stBars) + '░'.repeat(20 - stBars);
         const stColor = stamina > 30 ? '#44aaff' : stamina > 15 ? '#ffcc00' : '#ff4444';
@@ -373,7 +373,7 @@
     function update() {
         if (gameState !== 'playing') return;
 
-        // Player movement
+        
         let dx = 0, dy = 0;
         if (keys['ArrowLeft'] || keys['KeyA']) dx -= 1;
         if (keys['ArrowRight'] || keys['KeyD']) dx += 1;
@@ -389,7 +389,7 @@
             stamina = Math.min(60, stamina + 0.15);
         }
 
-        // Can't sprint if no stamina
+        
         if (stamina <= 0) {
             speed = player.speed * 0.7;
         }
@@ -406,7 +406,7 @@
         const newX = player.x + dx * speed;
         const newY = player.y + dy * speed;
 
-        // Collision check
+        
         const margin = player.size * 0.7;
         const colX = Math.floor(newX / T);
         const colY = Math.floor(player.y / T);
@@ -426,7 +426,7 @@
             player.y = newY;
         }
 
-        // Collect files
+        
         files.forEach(f => {
             if (!f.collected && dist(player, f) < 22) {
                 f.collected = true;
@@ -436,13 +436,13 @@
             }
         });
 
-        // Guard AI
+        
         guards.forEach(g => {
             const playerDist = dist(player, g);
             const detectRange = 100;
             const chaseRange = 150;
 
-            // Epstein mansion visit behavior
+            
             if (g.mansionTimer !== undefined) {
                 if (g.stopped) {
                     g.speechTimer--;
@@ -450,22 +450,22 @@
                         g.stopped = false;
                         g.goingToMansion = false;
                     }
-                    // Jitter up and down while stopped
+                    
                     g.y += Math.sin(Date.now() * 0.01) * 0.3;
                 } else if (g.goingToMansion) {
-                    // Walk to mansion center (col 21.5, row 9.5)
+                    
                     const mansionX = 21.5 * T;
                     const mansionY = 9.5 * T;
                     if (moveToward(g, mansionX, mansionY, g.speed * 0.8)) {
-                        // Arrived at mansion center
+                        
                         g.stopped = true;
-                        g.speechTimer = 600; // 10 seconds at 60fps
+                        g.speechTimer = 600; 
                     }
                 } else if (playerDist < detectRange) {
                     g.alertTimer = 120;
                     const chaseSpeed = g.speed * 1.2;
                     moveToward(g, player.x, player.y, chaseSpeed);
-                    g.mansionTimer = 900; // reset mansion timer after chase
+                    g.mansionTimer = 900; 
                 } else if (g.alertTimer > 0) {
                     g.alertTimer--;
                     moveToward(g, player.x, player.y, g.speed);
@@ -473,7 +473,7 @@
                     g.mansionTimer--;
                     if (g.mansionTimer <= 0) {
                         g.goingToMansion = true;
-                        g.mansionTimer = 900; // ~15 seconds between visits
+                        g.mansionTimer = 900; 
                     } else {
                         const target = g.patrolPoints[g.patrolIdx];
                         if (moveToward(g, target.x, target.y, g.speed)) {
@@ -482,7 +482,7 @@
                     }
                 }
             } else if (playerDist < detectRange) {
-                // Chase player
+                
                 g.alertTimer = 120;
                 const chaseSpeed = g.speed * 1.2;
                 moveToward(g, player.x, player.y, chaseSpeed);
@@ -491,26 +491,26 @@
                 const chaseSpeed = g.speed * 1.0;
                 moveToward(g, player.x, player.y, chaseSpeed);
             } else {
-                // Patrol
+                
                 const target = g.patrolPoints[g.patrolIdx];
                 if (moveToward(g, target.x, target.y, g.speed)) {
                     g.patrolIdx = (g.patrolIdx + 1) % g.patrolPoints.length;
                 }
             }
 
-            // Guard collision with player
+            
             if (playerDist < 18) {
                 health -= 1.2;
                 killedBy = g.name;
                 addParticles(player.x, player.y, '#ff4444', 2);
-                // Push player away
+                
                 const angle = Math.atan2(player.y - g.y, player.x - g.x);
                 player.x += Math.cos(angle) * 3;
                 player.y += Math.sin(angle) * 3;
             }
         });
 
-        // Update particles
+        
         particles = particles.filter(p => {
             p.x += p.vx;
             p.y += p.vy;
@@ -520,17 +520,17 @@
             return p.life > 0;
         });
 
-        // Remove old messages
+        
         messages = messages.filter(m => Date.now() - m.time < m.duration);
 
-        // Check health death
+        
         if (health <= 0) {
             gameState = 'lost';
             document.getElementById('killerName').textContent = killedBy || 'a guard';
             document.getElementById('loseScreen').style.display = 'flex';
         }
 
-        // Check boat escape
+        
         const allCollected = files.every(f => f.collected);
         if (allCollected && dist(player, boat) < 25) {
             gameState = 'won';
@@ -548,25 +548,25 @@
         const tile = MAP[row][col];
 
         switch(tile) {
-            case 0: // grass
+            case 0: 
                 ctx.fillStyle = '#2d5a1e';
                 ctx.fillRect(x, y, T, T);
-                // Grass detail
+                
                 ctx.fillStyle = '#3a6b28';
                 if ((col + row) % 3 === 0) {
                     ctx.fillRect(x+5, y+5, 3, 8);
                     ctx.fillRect(x+18, y+15, 3, 8);
                 }
                 break;
-            case 1: // water
+            case 1: 
                 ctx.fillStyle = '#1a3a5c';
                 ctx.fillRect(x, y, T, T);
-                // Wave effect
+                
                 const waveOff = Math.sin(Date.now() / 800 + col * 0.5 + row * 0.3) * 3;
                 ctx.fillStyle = '#2a4a6c';
                 ctx.fillRect(x, y + 12 + waveOff, T, 4);
                 break;
-            case 2: // sand
+            case 2: 
                 ctx.fillStyle = '#c2a644';
                 ctx.fillRect(x, y, T, T);
                 ctx.fillStyle = '#b89a3a';
@@ -574,13 +574,13 @@
                     ctx.fillRect(x+8, y+8, 4, 4);
                 }
                 break;
-            case 3: // tree
+            case 3: 
                 ctx.fillStyle = '#2d5a1e';
                 ctx.fillRect(x, y, T, T);
-                // Trunk
+                
                 ctx.fillStyle = '#5a3a1a';
                 ctx.fillRect(x+12, y+18, 6, 12);
-                // Canopy
+                
                 ctx.fillStyle = '#1a7a1a';
                 ctx.beginPath();
                 ctx.arc(x+15, y+13, 10, 0, Math.PI*2);
@@ -590,13 +590,13 @@
                 ctx.arc(x+13, y+11, 7, 0, Math.PI*2);
                 ctx.fill();
                 break;
-            case 4: // building interior
+            case 4: 
                 ctx.fillStyle = '#555555';
                 ctx.fillRect(x, y, T, T);
                 ctx.fillStyle = '#4a4a4a';
                 ctx.fillRect(x+1, y+1, T-2, T-2);
                 break;
-            case 5: // wall
+            case 5: 
                 ctx.fillStyle = '#888888';
                 ctx.fillRect(x, y, T, T);
                 ctx.fillStyle = '#777777';
@@ -604,7 +604,7 @@
                 ctx.strokeStyle = '#999';
                 ctx.strokeRect(x+1, y+1, T-2, T-2);
                 break;
-            case 6: // dock
+            case 6: 
                 ctx.fillStyle = '#1a3a5c';
                 ctx.fillRect(x, y, T, T);
                 ctx.fillStyle = '#6a4a2a';
@@ -614,64 +614,64 @@
                 ctx.fillRect(x+4, y+14, T-8, 4);
                 ctx.fillRect(x+4, y+26, T-8, 4);
                 break;
-            case 7: // temple (blue and white striped)
+            case 7: 
                 ctx.fillStyle = '#2d5a1e';
                 ctx.fillRect(x, y, T, T);
-                // Temple base
+                
                 ctx.fillStyle = '#ddd8c4';
                 ctx.fillRect(x+2, y+2, T-4, T-4);
-                // Blue and white stripes
+                
                 for (let s = 0; s < 4; s++) {
                     ctx.fillStyle = s % 2 === 0 ? '#4488cc' : '#ffffff';
                     ctx.fillRect(x+3, y+3 + s*6, T-6, 6);
                 }
-                // Gold dome top accent
+                
                 ctx.fillStyle = '#daa520';
                 ctx.fillRect(x+10, y+1, 10, 3);
                 break;
-            case 8: // helipad
+            case 8: 
                 ctx.fillStyle = '#555555';
                 ctx.fillRect(x, y, T, T);
                 ctx.fillStyle = '#444444';
                 ctx.fillRect(x+1, y+1, T-2, T-2);
-                // H marking
+                
                 ctx.fillStyle = '#ffcc00';
                 ctx.fillRect(x+8, y+6, 3, 18);
                 ctx.fillRect(x+19, y+6, 3, 18);
                 ctx.fillRect(x+8, y+13, 14, 3);
                 break;
-            case 9: // pool
+            case 9: 
                 ctx.fillStyle = '#2d5a1e';
                 ctx.fillRect(x, y, T, T);
-                // Pool tiles
+                
                 ctx.fillStyle = '#88cccc';
                 ctx.fillRect(x+1, y+1, T-2, T-2);
                 ctx.fillStyle = '#66bbdd';
                 ctx.fillRect(x+3, y+3, T-6, T-6);
-                // Water shimmer
+                
                 const shimmer = Math.sin(Date.now()/500 + col + row) * 0.15 + 0.85;
                 ctx.fillStyle = `rgba(150,220,255,${shimmer})`;
                 ctx.fillRect(x+5, y+5, T-10, T-10);
                 break;
-            case 10: // path/road
+            case 10: 
                 ctx.fillStyle = '#8a7a5a';
                 ctx.fillRect(x, y, T, T);
                 ctx.fillStyle = '#7a6a4a';
                 ctx.fillRect(x+1, y+1, T-2, T-2);
-                // Gravel speckles
+                
                 ctx.fillStyle = '#9a8a6a';
                 if ((col+row)%2===0) { ctx.fillRect(x+5,y+7,2,2); ctx.fillRect(x+18,y+20,2,2); }
                 else { ctx.fillRect(x+12,y+4,2,2); ctx.fillRect(x+8,y+22,2,2); }
                 break;
-            case 11: // sundial
+            case 11: 
                 ctx.fillStyle = '#2d5a1e';
                 ctx.fillRect(x, y, T, T);
-                // Sundial base
+                
                 ctx.fillStyle = '#ccbbaa';
                 ctx.beginPath();
                 ctx.arc(x+T/2, y+T/2, 12, 0, Math.PI*2);
                 ctx.fill();
-                // Dial markings
+                
                 ctx.strokeStyle = '#666';
                 ctx.lineWidth = 1;
                 for (let a = 0; a < 12; a++) {
@@ -681,7 +681,7 @@
                     ctx.lineTo(x+T/2 + Math.cos(angle)*11, y+T/2 + Math.sin(angle)*11);
                     ctx.stroke();
                 }
-                // Shadow needle
+                
                 ctx.strokeStyle = '#333';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
@@ -695,7 +695,7 @@
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Scale and center the game to fill the screen
+        
         const scaleX = canvas.width / W;
         const scaleY = canvas.height / H;
         const scale = Math.max(scaleX, scaleY);
@@ -706,22 +706,22 @@
         ctx.translate(offsetX, offsetY);
         ctx.scale(scale, scale);
 
-        // Fill background with water color
+        
         ctx.fillStyle = '#1a3a5c';
         ctx.fillRect(-offsetX/scale, -offsetY/scale, canvas.width/scale, canvas.height/scale);
 
-        // Draw map
+        
         for (let r = 0; r < ROWS; r++) {
             for (let c = 0; c < COLS; c++) {
                 drawTile(c, r);
             }
         }
 
-        // Draw boat
+        
         const allCollected = files.every(f => f.collected);
         ctx.save();
         ctx.translate(boat.x, boat.y);
-        // Boat body
+        
         ctx.fillStyle = allCollected ? '#44ff44' : '#6a4a2a';
         ctx.beginPath();
         ctx.moveTo(-15, 5);
@@ -730,10 +730,10 @@
         ctx.lineTo(-12, 12);
         ctx.closePath();
         ctx.fill();
-        // Mast
+        
         ctx.fillStyle = '#8a6a4a';
         ctx.fillRect(-1, -15, 2, 20);
-        // Sail
+        
         ctx.fillStyle = allCollected ? '#aaffaa' : '#ddd';
         ctx.beginPath();
         ctx.moveTo(0, -14);
@@ -742,7 +742,7 @@
         ctx.closePath();
         ctx.fill();
         if (allCollected) {
-            // Glow effect
+            
             ctx.shadowColor = '#44ff44';
             ctx.shadowBlur = 20;
             ctx.strokeStyle = '#44ff44';
@@ -754,27 +754,27 @@
         }
         ctx.restore();
 
-        // Draw files
+        
         files.forEach(f => {
             if (f.collected) return;
             ctx.save();
             ctx.translate(f.x, f.y);
-            // Glow
+            
             const glow = Math.sin(Date.now() / 300) * 0.3 + 0.7;
             ctx.shadowColor = '#ffcc00';
             ctx.shadowBlur = 10 * glow;
-            // Folder
+            
             ctx.fillStyle = `rgba(255, 200, 0, ${glow})`;
             ctx.fillRect(-8, -6, 16, 14);
             ctx.fillStyle = '#ff9900';
             ctx.fillRect(-8, -8, 10, 4);
-            // Label
+            
             ctx.fillStyle = '#aa6600';
             ctx.fillRect(-5, -2, 10, 2);
             ctx.fillRect(-5, 2, 10, 2);
             ctx.fillRect(-5, 6, 10, 2);
             ctx.shadowBlur = 0;
-            // TOP SECRET stamp
+            
             ctx.fillStyle = '#ff0000';
             ctx.font = '6px monospace';
             ctx.textAlign = 'center';
@@ -782,13 +782,13 @@
             ctx.restore();
         });
 
-        // Draw guards
+        
         guards.forEach(g => {
             ctx.save();
             ctx.translate(g.x, g.y);
             const alert = g.alertTimer > 0;
 
-            // Detection range circle
+            
             if (alert) {
                 ctx.strokeStyle = 'rgba(255,0,0,0.15)';
                 ctx.beginPath();
@@ -796,21 +796,21 @@
                 ctx.stroke();
             }
 
-            // Draw guard image or fallback
+            
             const imgSize = 32;
             const gIdx = guards.indexOf(g);
             const gImg = guardImages[gIdx % guardImages.length];
             if (gImg.complete && gImg.naturalWidth > 0) {
                 ctx.drawImage(gImg, -imgSize/2, -imgSize/2, imgSize, imgSize);
             } else {
-                // Fallback circle
+                
                 ctx.fillStyle = alert ? '#cc0000' : '#333';
                 ctx.beginPath();
                 ctx.arc(0, 0, g.size, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            // Alert indicator
+            
             if (alert) {
                 ctx.fillStyle = '#ff0000';
                 ctx.font = 'bold 16px monospace';
@@ -818,19 +818,19 @@
                 ctx.fillText('!', 0, -22);
             }
 
-            // Speech bubble + folder pull animation
+            
             if (g.speechTimer > 0 && g.stopped) {
-                // Check if mansion file is not collected
+                
                 const mansionFile = files.find(f => f.label === 'Mansion File');
                 const showPull = mansionFile && !mansionFile.collected;
 
                 if (showPull) {
-                    // Folder animation - draw folder to the right of Epstein
-                    const pullProgress = Math.min(1, (600 - g.speechTimer) / 180); // takes 3 sec to pull out
+                    
+                    const pullProgress = Math.min(1, (600 - g.speechTimer) / 180); 
                     const folderX = 20;
                     const folderY = -5;
 
-                    // Draw folder
+                    
                     ctx.fillStyle = '#c8a84e';
                     ctx.fillRect(folderX - 10, folderY - 8, 20, 16);
                     ctx.fillStyle = '#b08a30';
@@ -839,13 +839,13 @@
                     ctx.lineWidth = 1;
                     ctx.strokeRect(folderX - 10, folderY - 8, 20, 16);
 
-                    // Player image sliding out of folder
+                    
                     if (pullProgress > 0.1) {
                         const slideOut = Math.min(1, (pullProgress - 0.1) / 0.6);
                         const imgY = folderY - 4 - slideOut * 6;
                         const imgSize = 16;
                         ctx.save();
-                        // Clip so image appears to come from inside folder
+                        
                         if (slideOut < 1) {
                             ctx.beginPath();
                             ctx.rect(folderX - 10, folderY - 30, 22, 30 - 8 + slideOut * 18);
@@ -856,7 +856,7 @@
                         }
                         ctx.restore();
 
-                        // Small border around the pulled image
+                        
                         if (slideOut >= 1) {
                             ctx.strokeStyle = '#ffcc00';
                             ctx.lineWidth = 1;
@@ -865,14 +865,14 @@
                     }
                 }
 
-                // Speech bubble
+                
                 const bubbleText = 'im omning it';
                 ctx.font = 'bold 10px monospace';
                 const tw = ctx.measureText(bubbleText).width + 12;
                 const bh = 20;
                 const bx = -tw/2;
                 const by = -42;
-                // Bubble background
+                
                 ctx.fillStyle = '#fff';
                 ctx.strokeStyle = '#333';
                 ctx.lineWidth = 1.5;
@@ -892,13 +892,13 @@
                 ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
-                // Bubble text
+                
                 ctx.fillStyle = '#333';
                 ctx.textAlign = 'center';
                 ctx.fillText(bubbleText, 0, by + 14);
             }
 
-            // Guard name label
+            
             ctx.fillStyle = '#fff';
             ctx.strokeStyle = 'rgba(0,0,0,0.8)';
             ctx.lineWidth = 2;
@@ -910,7 +910,7 @@
             ctx.restore();
         });
 
-        // Draw player
+        
         ctx.save();
         ctx.translate(player.x, player.y);
 
@@ -918,7 +918,7 @@
         if (playerImg.complete && playerImg.naturalWidth > 0) {
             ctx.drawImage(playerImg, -pSize/2, -pSize/2, pSize, pSize);
         } else {
-            // Fallback
+            
             ctx.fillStyle = '#2288ff';
             ctx.beginPath();
             ctx.arc(0, 0, player.size, 0, Math.PI * 2);
@@ -927,7 +927,7 @@
 
         ctx.restore();
 
-        // Draw particles
+        
         particles.forEach(p => {
             ctx.globalAlpha = p.life / 50;
             ctx.fillStyle = p.color;
@@ -935,7 +935,7 @@
         });
         ctx.globalAlpha = 1;
 
-        // Draw messages
+        
         messages.forEach((m, i) => {
             const age = (Date.now() - m.time) / m.duration;
             ctx.globalAlpha = 1 - age;
@@ -946,7 +946,7 @@
         });
         ctx.globalAlpha = 1;
 
-        // Location labels on the map
+        
         ctx.font = 'bold 9px monospace';
         ctx.textAlign = 'center';
         ctx.fillStyle = 'rgba(255,255,255,0.8)';
@@ -966,7 +966,7 @@
             ctx.fillText(l.text, l.x, l.y);
         });
 
-        // Mini-map
+        
         const mmScale = 4;
         const mmX = W - COLS * mmScale - 10;
         const mmY = 10;
@@ -984,26 +984,26 @@
                 ctx.fillRect(mmX + c * mmScale, mmY + r * mmScale, mmScale, mmScale);
             }
         }
-        // Player on minimap
+        
         ctx.fillStyle = '#2288ff';
         ctx.fillRect(mmX + (player.x / T) * mmScale - 1, mmY + (player.y / T) * mmScale - 1, 3, 3);
-        // Files on minimap
+        
         files.forEach(f => {
             if (!f.collected) {
                 ctx.fillStyle = '#ffcc00';
                 ctx.fillRect(mmX + (f.x / T) * mmScale - 1, mmY + (f.y / T) * mmScale - 1, 2, 2);
             }
         });
-        // Guards on minimap
+        
         guards.forEach(g => {
             ctx.fillStyle = g.alertTimer > 0 ? '#ff0000' : '#ff6666';
             ctx.fillRect(mmX + (g.x / T) * mmScale - 1, mmY + (g.y / T) * mmScale - 1, 2, 2);
         });
-        // Boat on minimap
+        
         ctx.fillStyle = allCollected ? '#44ff44' : '#6a4a2a';
         ctx.fillRect(mmX + (boat.x / T) * mmScale - 1, mmY + (boat.y / T) * mmScale - 1, 3, 3);
 
-        ctx.restore(); // end scale/translate
+        ctx.restore(); 
     }
 
     function gameLoop() {
@@ -1012,7 +1012,7 @@
         requestAnimationFrame(gameLoop);
     }
 
-    // Input handling
+    
     document.addEventListener('keydown', e => {
         keys[e.code] = true;
         e.preventDefault();
@@ -1021,7 +1021,7 @@
         keys[e.code] = false;
     });
 
-    // Touch controls
+    
     function setupTouch(btnId, keyCode) {
         const btn = document.getElementById(btnId);
         btn.addEventListener('touchstart', e => { e.preventDefault(); keys[keyCode] = true; btn.classList.add('active'); }, {passive:false});
@@ -1034,11 +1034,11 @@
     setupTouch('btn-right', 'ArrowRight');
     setupTouch('btn-sprint', 'ShiftLeft');
 
-    // Prevent default touch on canvas to avoid scrolling
+    
     canvas.addEventListener('touchstart', e => e.preventDefault(), {passive:false});
     canvas.addEventListener('touchmove', e => e.preventDefault(), {passive:false});
 
-    // Buttons
+    
     document.getElementById('startBtn').addEventListener('click', () => {
         document.getElementById('startScreen').style.display = 'none';
         init();
@@ -1052,7 +1052,7 @@
         init();
     });
 
-    // Start
+    
     init();
     gameState = 'menu';
     gameLoop();

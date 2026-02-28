@@ -3,7 +3,7 @@ const lines = c.split('\n');
 console.log('Lines:', lines.length);
 console.log('HOW TO PLAY:', (c.match(/HOW TO PLAY/g) || []).length);
 
-// Check duplicate IDs
+
 const idMatches = c.match(/id="[^"]+"/g) || [];
 const idCounts = {};
 idMatches.forEach(id => { idCounts[id] = (idCounts[id] || 0) + 1; });
@@ -15,7 +15,7 @@ if (dupes.length) {
   console.log('No duplicate IDs');
 }
 
-// Check all required functions exist
+
 const funcs = ['spinSlots','startCrash','cashOut','spinRoulette','openCase','dropPlinkoBall',
   'bjDeal','bjHit','bjStand','minesStart','minesCashout','diceRoll','towerStart','towerCashout',
   'coinFlip','kenoDraw','limboGo','pokerDeal','pokerDrawCards','pokerEvaluate',
@@ -30,30 +30,29 @@ if (missing.length) {
   console.log('All', funcs.length, 'required functions found');
 }
 
-// Check for broken HTML patterns
+
 const issues = [];
 if (c.includes('<hrclass=')) issues.push('Corrupted <hr> tag');
 if (c.includes('<button clhtp')) issues.push('Corrupted button tag');
 if (c.includes('"ass="')) issues.push('Corrupted class attr');
 if (c.match(/<div cla\s+ss=/)) issues.push('Split <div class> tag');
 
-// Check unclosed script tags
+
 const scriptOpens = (c.match(/<script/g) || []).length;
 const scriptCloses = (c.match(/<\/script>/g) || []).length;
 if (scriptOpens !== scriptCloses) issues.push('Mismatched <script> tags: ' + scriptOpens + ' opens, ' + scriptCloses + ' closes');
 
-// Check game panel count
+
 const panels = (c.match(/class="game-panel/g) || []).length;
 console.log('Game panels:', panels);
 
-// Check for JS syntax issues - unclosed braces in functions
-// Count opening and closing braces in script section
+
 const scriptStart = c.indexOf('<script>');
 const scriptEnd = c.lastIndexOf('</script>');
 if (scriptStart > -1 && scriptEnd > -1) {
   const js = c.substring(scriptStart + 8, scriptEnd);
   let opens = 0, closes = 0;
-  // Simple brace count (not perfect but catches major issues)
+  
   for (const ch of js) {
     if (ch === '{') opens++;
     if (ch === '}') closes++;

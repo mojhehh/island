@@ -17,7 +17,7 @@ body {
     overflow: hidden;
 }
 
-/* Header */
+
 .header {
     padding: 16px 20px;
     background: rgba(0,0,0,0.8);
@@ -73,7 +73,7 @@ body {
 }
 .clear-btn:hover { border-color: #ff1744; color: #ff1744; }
 
-/* Chat area */
+
 .chat {
     flex: 1;
     overflow-y: auto;
@@ -130,7 +130,7 @@ body {
     max-width: 100%;
 }
 
-/* Typing indicator */
+
 .typing {
     align-self: flex-start;
     padding: 12px 20px;
@@ -152,7 +152,7 @@ body {
     40% { transform: scale(1); opacity: 1; }
 }
 
-/* Input area */
+
 .input-area {
     padding: 16px 20px;
     background: rgba(0,0,0,0.8);
@@ -192,7 +192,7 @@ body {
 #sendBtn:hover { background: rgba(255,23,68,0.25); }
 #sendBtn:disabled { opacity: 0.3; cursor: default; }
 
-/* Scanlines */
+
 .scanlines {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -207,7 +207,7 @@ body {
     z-index: 100;
 }
 
-/* Error */
+
 .error-banner {
     background: rgba(255,23,68,0.15);
     border: 1px solid rgba(255,23,68,0.3);
@@ -223,7 +223,7 @@ body {
 </head>
 <body>
 
-<!-- ══════ SPLASH SCREEN ══════ -->
+
 <div id="splashScreen">
   <img src="Untitled%20design.png" alt="Logo" id="splashLogo">
 </div>
@@ -369,12 +369,12 @@ async function send() {
 
         if (!res.ok) throw new Error(`Ollama error: ${res.status}`);
 
-        // Streaming response
+        
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let fullResponse = '';
 
-        // Create AI message div for streaming
+        
         const aiDiv = document.createElement('div');
         aiDiv.className = 'msg ai';
         aiDiv.innerHTML = '<div class="name">EPSTEIN</div><span class="ai-text"></span>';
@@ -386,7 +386,7 @@ async function send() {
             const { done, value } = await reader.read();
             if (done) break;
             const chunk = decoder.decode(value, { stream: true });
-            // Each line is a JSON object
+            
             for (const line of chunk.split('\n')) {
                 if (!line.trim()) continue;
                 try {

@@ -17,7 +17,7 @@ body {
   -webkit-user-select: none;
 }
 
-/* ── SPLASH ── */
+
 #splash {
   position: fixed; inset: 0; z-index: 999;
   background: #000;
@@ -42,14 +42,14 @@ body {
 }
 @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-/* ── LAYOUT ── */
+
 #app {
   display: none; flex-direction: column;
   height: 100vh; width: 100vw;
 }
 #app.active { display: flex; }
 
-/* ── HEADER ── */
+
 #header {
   height: 50px; display: flex; align-items: center; justify-content: space-between;
   padding: 0 20px;
@@ -69,7 +69,7 @@ body {
 #header .controls button:hover { border-color: #ff4400; color: #ff4400; }
 #header .controls button.active { border-color: #00ff44; color: #00ff44; }
 
-/* ── STAGE ── */
+
 #stage {
   flex: 1; display: flex; align-items: flex-end; justify-content: center;
   gap: 6px; padding: 20px 10px 10px;
@@ -121,7 +121,7 @@ body {
 }
 .slot-box.filled .remove-btn { display: flex; }
 
-/* ── TRAY ── */
+
 #tray {
   height: 130px; min-height: 130px;
   background: linear-gradient(180deg, #111118, #0a0a10);
@@ -155,13 +155,13 @@ body {
   font-size: 7px; color: #444; letter-spacing: 1px;
 }
 
-/* ── BEAT VISUALIZER ── */
+
 #visualizer {
   position: absolute; bottom: 0; left: 0; right: 0;
   height: 40px; pointer-events: none; z-index: 1;
 }
 
-/* ── BEAT INDICATOR ── */
+
 #beatDot {
   position: absolute; top: 10px; left: 50%;
   transform: translateX(-50%);
@@ -173,7 +173,7 @@ body {
 }
 #beatDot span.on { background: #ff4400; box-shadow: 0 0 8px #ff4400; }
 
-/* ── DRAGGING ── */
+
 .drag-ghost {
   position: fixed; pointer-events: none; z-index: 100;
   width: 64px; height: 80px; border-radius: 8px;
@@ -183,7 +183,7 @@ body {
   transform: translate(-50%, -50%) rotate(-5deg);
 }
 
-/* Mobile */
+
 @media (max-width: 700px) {
   .slot { width: 55px; }
   .slot-box { width: 50px; height: 65px; }
@@ -197,14 +197,14 @@ body {
 </head>
 <body>
 
-<!-- SPLASH -->
+
 <div id="splash">
   <h1>SPRUNKI</h1>
   <h2>EPSTEIN EDITION</h2>
   <div class="tap">TAP TO START</div>
 </div>
 
-<!-- APP -->
+
 <div id="app">
   <div id="header">
     <div class="title">SPRUNKI</div>
@@ -224,9 +224,8 @@ body {
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-//  CHARACTER DEFINITIONS
-// ═══════════════════════════════════════════
+
+
 const CHARACTERS = [
   { id: 'epstein', name: 'EPSTEIN', emoji: '👔', color: '#ff4400', role: 'BASS', cat: 'beat' },
   { id: 'ghislaine', name: 'GHISLAINE', emoji: '👩', color: '#cc00ff', role: 'HI-HAT', cat: 'beat' },
@@ -249,9 +248,7 @@ const BPM = 120;
 const BEAT_MS = (60 / BPM) * 1000;
 const BAR_MS = BEAT_MS * 4;
 
-// ═══════════════════════════════════════════
-//  AUDIO ENGINE
-// ═══════════════════════════════════════════
+
 let actx = null;
 function getCtx() {
   if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
@@ -259,7 +256,7 @@ function getCtx() {
   return actx;
 }
 
-// Master gain + compressor
+
 let masterGain = null, compressor = null, analyser = null;
 function initAudio() {
   const ctx = getCtx();
@@ -275,7 +272,7 @@ function initAudio() {
   masterGain.connect(analyser);
 }
 
-// Noise buffer
+
 let noiseBuffer = null;
 function getNoiseBuffer() {
   if (noiseBuffer) return noiseBuffer;
@@ -287,12 +284,11 @@ function getNoiseBuffer() {
   return noiseBuffer;
 }
 
-// ── Sound generators (each returns a stop function) ──
 
 function playBass() {
-  // Deep sub bass pattern: plays 8th notes with varying pitches
+  
   const ctx = getCtx();
-  const notes = [55, 55, 73.4, 55, 65.4, 55, 73.4, 82.4]; // Am pentatonic bass
+  const notes = [55, 55, 73.4, 55, 65.4, 55, 73.4, 82.4]; 
   let step = 0, alive = true;
   function tick() {
     if (!alive) return;
@@ -314,7 +310,7 @@ function playBass() {
 function playHiHat() {
   const ctx = getCtx();
   let alive = true;
-  const pattern = [1,0,1,1, 1,0,1,0]; // 16th feel
+  const pattern = [1,0,1,1, 1,0,1,0]; 
   let step = 0;
   function tick() {
     if (!alive) return;
@@ -338,7 +334,7 @@ function playHiHat() {
 
 function playSax() {
   const ctx = getCtx();
-  const melody = [220, 262, 294, 330, 262, 220, 196, 220]; // jazzy
+  const melody = [220, 262, 294, 330, 262, 220, 196, 220]; 
   let step = 0, alive = true;
   function tick() {
     if (!alive) return;
@@ -347,7 +343,7 @@ function playSax() {
     const osc2 = ctx.createOscillator();
     const g = ctx.createGain();
     osc.type = 'sawtooth'; osc.frequency.value = freq;
-    osc2.type = 'square'; osc2.frequency.value = freq * 1.005; // slight detune
+    osc2.type = 'square'; osc2.frequency.value = freq * 1.005; 
     const filt = ctx.createBiquadFilter();
     filt.type = 'lowpass'; filt.frequency.value = 1200; filt.Q.value = 5;
     g.gain.setValueAtTime(0.08, ctx.currentTime);
@@ -399,7 +395,7 @@ function playPiano() {
     const g = ctx.createGain();
     osc.type = 'sine';
     osc.frequency.value = freq;
-    // Add harmonics for piano-like tone
+    
     const osc2 = ctx.createOscillator();
     osc2.type = 'triangle'; osc2.frequency.value = freq * 2;
     const g2 = ctx.createGain(); g2.gain.value = 0.03;
@@ -452,7 +448,7 @@ function playBeeps() {
   let step = 0, alive = true;
   function tick() {
     if (!alive) return;
-    if (step % 3 !== 1) { // skip some for rhythm
+    if (step % 3 !== 1) { 
       const osc = ctx.createOscillator();
       const g = ctx.createGain();
       osc.type = 'sine';
@@ -471,7 +467,7 @@ function playBeeps() {
 
 function playKick() {
   const ctx = getCtx();
-  const pattern = [1,0,0,0, 1,0,0,0]; // four on the floor
+  const pattern = [1,0,0,0, 1,0,0,0]; 
   let step = 0, alive = true;
   function tick() {
     if (!alive) return;
@@ -494,7 +490,7 @@ function playKick() {
 
 function playClap() {
   const ctx = getCtx();
-  const pattern = [0,0,1,0]; // snare position
+  const pattern = [0,0,1,0]; 
   let step = 0, alive = true;
   function tick() {
     if (!alive) return;
@@ -599,7 +595,7 @@ function playSiren() {
 
 function playGavel() {
   const ctx = getCtx();
-  const pattern = [1,0,0,0, 0,0,1,1]; // gavel hits
+  const pattern = [1,0,0,0, 0,0,1,1]; 
   let step = 0, alive = true;
   function tick() {
     if (!alive) return;
@@ -613,7 +609,7 @@ function playGavel() {
       g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
       osc.connect(g); g.connect(masterGain);
       osc.start(); osc.stop(ctx.currentTime + 0.2);
-      // Wood noise
+      
       const src = ctx.createBufferSource();
       src.buffer = getNoiseBuffer();
       const bp = ctx.createBiquadFilter();
@@ -633,7 +629,7 @@ function playGavel() {
 
 function playLoop() {
   const ctx = getCtx();
-  // Arpeggiated loop
+  
   const notes = [330, 392, 440, 523, 440, 392, 330, 262];
   let step = 0, alive = true;
   function tick() {
@@ -670,16 +666,12 @@ const SOUND_MAP = {
   lawyer: playLoop,
 };
 
-// ═══════════════════════════════════════════
-//  GAME STATE
-// ═══════════════════════════════════════════
-const slots = new Array(SLOT_COUNT).fill(null); // { charId, stopFn }
+
+const slots = new Array(SLOT_COUNT).fill(null); 
 let beatStep = 0;
 let beatInterval = null;
 
-// ═══════════════════════════════════════════
-//  RENDER
-// ═══════════════════════════════════════════
+
 function renderTray() {
   const tray = document.getElementById('tray');
   tray.innerHTML = '';
@@ -689,7 +681,7 @@ function renderTray() {
     el.dataset.charId = c.id;
     el.innerHTML = `<div class="emoji">${c.emoji}</div><div class="name">${c.name}</div><div class="role">${c.role}</div>`;
     el.style.borderColor = c.color + '44';
-    // Drag events
+    
     el.addEventListener('mousedown', (e) => startDrag(e, c.id));
     el.addEventListener('touchstart', (e) => startDrag(e, c.id), { passive: false });
     tray.appendChild(el);
@@ -698,7 +690,7 @@ function renderTray() {
 
 function renderSlots() {
   const stage = document.getElementById('stage');
-  // Remove old slots
+  
   stage.querySelectorAll('.slot').forEach(s => s.remove());
 
   for (let i = 0; i < SLOT_COUNT; i++) {
@@ -743,9 +735,7 @@ function renderSlots() {
   }
 }
 
-// ═══════════════════════════════════════════
-//  DRAG & DROP
-// ═══════════════════════════════════════════
+
 let dragCharId = null;
 let dragGhost = null;
 
@@ -770,7 +760,7 @@ function startDrag(e, charId) {
   document.addEventListener('touchmove', onDragMove, { passive: false });
   document.addEventListener('touchend', onDragEnd);
 
-  // Highlight slots
+  
   document.querySelectorAll('.slot-box:not(.filled)').forEach(sb => sb.classList.add('highlight'));
 }
 
@@ -788,7 +778,7 @@ function onDragMove(e) {
 
 function onDragEnd(e) {
   const pos = e.changedTouches ? e.changedTouches[0] : e;
-  // Find which slot we're over
+  
   const slotBoxes = document.querySelectorAll('.slot-box');
   let targetIdx = -1;
   slotBoxes.forEach(sb => {
@@ -803,7 +793,7 @@ function onDragEnd(e) {
     addToSlot(targetIdx, dragCharId);
   }
 
-  // Cleanup
+  
   if (dragGhost) { dragGhost.remove(); dragGhost = null; }
   dragCharId = null;
   document.removeEventListener('mousemove', onDragMove);
@@ -812,9 +802,7 @@ function onDragEnd(e) {
   document.removeEventListener('touchend', onDragEnd);
 }
 
-// ═══════════════════════════════════════════
-//  SLOT MANAGEMENT
-// ═══════════════════════════════════════════
+
 function addToSlot(idx, charId) {
   if (!masterGain) initAudio();
   const soundFn = SOUND_MAP[charId];
@@ -845,9 +833,7 @@ function clearAll() {
   renderTray();
 }
 
-// ═══════════════════════════════════════════
-//  BEAT VISUALIZER
-// ═══════════════════════════════════════════
+
 function initBeatDots() {
   const container = document.getElementById('beatDot');
   container.innerHTML = '';
@@ -866,7 +852,7 @@ function startBeat() {
   }, BEAT_MS / 2);
 }
 
-// Canvas visualizer
+
 function drawVisualizer() {
   const canvas = document.getElementById('visualizer');
   const ctx2d = canvas.getContext('2d');
@@ -883,7 +869,7 @@ function drawVisualizer() {
     const barW = canvas.width / data.length;
     for (let i = 0; i < data.length; i++) {
       const h = (data[i] / 255) * canvas.height;
-      const hue = (i / data.length) * 30; // orange range
+      const hue = (i / data.length) * 30; 
       ctx2d.fillStyle = `hsla(${hue}, 100%, 50%, ${data[i] / 255 * 0.4})`;
       ctx2d.fillRect(i * barW, canvas.height - h, barW - 1, h);
     }
@@ -891,9 +877,7 @@ function drawVisualizer() {
   draw();
 }
 
-// ═══════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════
+
 document.getElementById('splash').addEventListener('click', () => {
   document.getElementById('splash').classList.add('hidden');
   document.getElementById('app').classList.add('active');
@@ -908,7 +892,7 @@ document.getElementById('splash').addEventListener('click', () => {
 document.getElementById('clearBtn').addEventListener('click', clearAll);
 
 document.getElementById('recBtn').addEventListener('click', () => {
-  // Toggle recording indicator (visual only for now)
+  
   const btn = document.getElementById('recBtn');
   btn.classList.toggle('active');
   btn.textContent = btn.classList.contains('active') ? '● REC' : 'REC';

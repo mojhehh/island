@@ -31,7 +31,7 @@
 
         canvas { display: block; width: 100%; height: 100%; }
 
-        /* ============== CUSTOM CURSOR ============== */
+        
         #customCursor {
             position: fixed;
             width: 24px; height: 24px;
@@ -63,7 +63,7 @@
             50% { transform: translate(-50%,-50%) scale(1.3); opacity: 0.1; }
         }
 
-        /* ============== HUD ============== */
+        
         #ui {
             position: absolute;
             top: 0; left: 0; right: 0;
@@ -140,7 +140,7 @@
             letter-spacing: 3px;
         }
 
-        /* ============== DAMAGE VIGNETTE ============== */
+        
         #damageOverlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -151,7 +151,7 @@
             transition: opacity 0.15s ease;
         }
 
-        /* ============== SCANLINES ============== */
+        
         #scanlines {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -166,7 +166,7 @@
             );
         }
 
-        /* ============== NOTIFICATION TOAST ============== */
+        
         #toastContainer {
             position: absolute;
             top: 60px; left: 50%;
@@ -201,7 +201,7 @@
             to { transform: translateY(-20px) scale(0.9); opacity: 0; }
         }
 
-        /* ============== SCREENS ============== */
+        
         .game-screen {
             position: absolute;
             top: 0; left: 0;
@@ -215,7 +215,7 @@
         }
         .game-screen.active { display: flex; }
 
-        /* ============== TITLE SCREEN ============== */
+        
         #titleScreen {
             background: #000;
         }
@@ -358,7 +358,7 @@
             50% { opacity: 0.4; }
         }
 
-        /* ============== BUTTONS ============== */
+        
         .btn {
             margin-top: 20px;
             padding: 14px 50px;
@@ -405,7 +405,7 @@
             letter-spacing: 3px;
         }
 
-        /* ============== SETTINGS SCREEN ============== */
+        
         #settingsScreen {
             background: rgba(0,0,0,0.95);
             backdrop-filter: blur(20px);
@@ -446,7 +446,7 @@
             letter-spacing: 1px;
         }
 
-        /* Toggle Switch */
+        
         .toggle {
             width: 44px; height: 22px;
             background: rgba(255,255,255,0.1);
@@ -475,7 +475,7 @@
             box-shadow: 0 0 8px rgba(255,23,68,0.5);
         }
 
-        /* Difficulty Selector */
+        
         .difficulty-selector {
             display: flex;
             gap: 8px;
@@ -504,7 +504,7 @@
             color: rgba(255,255,255,0.8);
         }
 
-        /* Slider */
+        
         .slider-container {
             display: flex;
             align-items: center;
@@ -534,7 +534,7 @@
             text-align: right;
         }
 
-        /* ============== WIN/LOSE SCREENS ============== */
+        
         #winScreen {
             background: rgba(0,0,0,0.9);
             backdrop-filter: blur(10px);
@@ -553,7 +553,7 @@
             50% { text-shadow: 0 0 60px rgba(0,230,118,0.7), 0 0 100px rgba(0,230,118,0.3); }
         }
 
-        /* ============== NAME INPUT MODAL ============== */
+        
         #nameModal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -614,7 +614,7 @@
         }
         #submitNameBtn:hover { background: rgba(0,230,118,0.15); }
 
-        /* ============== LEADERBOARD ============== */
+        
         #leaderboardScreen {
             background: rgba(0,0,0,0.92);
             backdrop-filter: blur(12px);
@@ -683,7 +683,7 @@
             gap: 10px;
         }
 
-        /* ============== DIFFICULTY TABS ============== */
+        
         .lb-diff-tabs { display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap; justify-content:center; }
         .lb-diff-tab { padding:6px 14px; border:1px solid rgba(255,255,255,0.15); border-radius:6px;
             background:transparent; color:rgba(255,255,255,0.4); cursor:pointer; font-size:10px;
@@ -695,7 +695,7 @@
         .lb-diff-tab.tab-hard.active { border-color:#ff5252; color:#ff5252; background:rgba(255,82,82,0.08); }
         .lb-diff-tab.tab-insane.active { border-color:#e040fb; color:#e040fb; background:rgba(224,64,251,0.08); }
 
-        /* ============== ACHIEVEMENTS ============== */
+        
         #achievementPopup { position:fixed; top:20px; right:20px; z-index:9000;
             background:rgba(0,0,0,0.92); border:1px solid #ffd740; border-radius:12px;
             padding:14px 20px; display:flex; align-items:center; gap:12px;
@@ -718,7 +718,7 @@
         .ach-row .ach-r-desc { color:rgba(255,255,255,0.4); font-size:10px; }
         .ach-row .ach-r-check { color:#00e676; font-size:14px; width:20px; text-align:center; }
 
-        /* ============== DAILY CHALLENGE ============== */
+        
         .daily-badge { display:inline-block; padding:3px 10px; border-radius:4px;
             background:linear-gradient(135deg,#ff6d00,#ff9100); color:#000;
             font-size:9px; font-weight:bold; letter-spacing:2px; margin-left:8px;
@@ -759,7 +759,7 @@
             letter-spacing: 3px;
         }
 
-        /* ============== PAUSE OVERLAY ============== */
+        
         #pauseOverlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -781,7 +781,7 @@
             margin-bottom: 30px;
         }
 
-        /* ============== SCREEN TRANSITIONS ============== */
+        
         #screenTransition {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -793,7 +793,7 @@
         }
         #screenTransition.active { opacity: 1; pointer-events: all; }
 
-        /* ============== TOUCH CONTROLS ============== */
+        
         #touchControls {
             display: none;
             position: absolute;
@@ -862,7 +862,7 @@
             #customCursor { display: none; }
         }
 
-        /* iPad / tablet scaling */
+        
         @media (pointer: coarse) and (min-width: 700px) {
             #joystickZone {
                 width: 200px; height: 200px;
@@ -886,7 +886,7 @@
             .hud-bar-label { width: 80px; font-size: 13px; }
         }
 
-        /* ============== LOADING SCREEN ============== */
+        
         #loadingScreen {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -923,7 +923,7 @@
 </head>
 <body>
 
-<!-- ══════ SPLASH SCREEN ══════ -->
+
 <div id="splashScreen">
   <img src="Untitled%20design.png" alt="Logo" id="splashLogo">
 </div>
@@ -970,13 +970,13 @@
     <div id="gameContainer">
         <canvas id="game"></canvas>
 
-        <!-- Damage Vignette -->
+        
         <div id="damageOverlay"></div>
 
-        <!-- Scanlines -->
+        
         <div id="scanlines"></div>
 
-        <!-- HUD -->
+        
         <div id="ui" style="display:none">
             <div id="hudLeft">
                 <div id="filesCount">FILES: 0 / 7</div>
@@ -997,19 +997,19 @@
             </div>
         </div>
 
-        <!-- Toast Notifications -->
+        
         <div id="toastContainer"></div>
 
-        <!-- Screen Transition -->
+        
         <div id="screenTransition"></div>
 
-        <!-- Loading Screen -->
+        
         <div id="loadingScreen">
             <div class="loading-text">LOADING</div>
             <div class="loading-bar-track"><div class="loading-bar-fill" id="loadingFill"></div></div>
         </div>
 
-        <!-- ========= TITLE SCREEN ========= -->
+        
         <div id="titleScreen" class="game-screen active">
             <canvas id="titleBgCanvas"></canvas>
             <div id="titleOverlay"></div>
@@ -1038,7 +1038,7 @@
             </div>
         </div>
 
-        <!-- ========= SETTINGS SCREEN ========= -->
+        
         <div id="settingsScreen" class="game-screen">
             <div class="settings-container">
                 <div class="settings-title">SETTINGS</div>
@@ -1107,7 +1107,7 @@
             </div>
         </div>
 
-        <!-- ========= WIN SCREEN ========= -->
+        
         <div id="winScreen" class="game-screen">
             <div class="screen-title">THE FILES ARE OUT</div>
             <div class="title-divider" style="margin:16px 0"></div>
@@ -1121,7 +1121,7 @@
             <button class="btn btn-small" id="achievementsBtnWin" style="margin-top:4px; border-color:rgba(0,230,118,0.4); color:#00e676">🏆 ACHIEVEMENTS</button>
         </div>
 
-        <!-- ========= NAME INPUT MODAL ========= -->
+        
         <div id="nameModal">
             <div class="name-modal-box">
                 <h2>YOU ESCAPED</h2>
@@ -1133,7 +1133,7 @@
             </div>
         </div>
 
-        <!-- ========= LEADERBOARD SCREEN ========= -->
+        
         <div id="leaderboardScreen" class="game-screen">
             <div class="lb-title">LEADERBOARD</div>
             <div class="lb-live">● LIVE</div>
@@ -1161,7 +1161,7 @@
             </div>
         </div>
 
-        <!-- ========= ACHIEVEMENTS SCREEN ========= -->
+        
         <div id="achievementsScreen" class="game-screen">
             <div class="lb-title">🏆 ACHIEVEMENTS</div>
             <div class="lb-sub" id="achCount">0 / 0 UNLOCKED</div>
@@ -1171,7 +1171,7 @@
             </div>
         </div>
 
-        <!-- ========= LOSE SCREEN ========= -->
+        
         <div id="loseScreen" class="game-screen">
             <div class="screen-title">CAUGHT</div>
             <div class="title-divider" style="margin:16px 0; background: linear-gradient(90deg, transparent, rgba(255,23,68,0.5), transparent);"></div>
@@ -1182,7 +1182,7 @@
             <button class="btn" id="menuLoseBtn" style="margin-top:8px; border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.5)">MENU</button>
         </div>
 
-        <!-- ========= PAUSE OVERLAY ========= -->
+        
         <div id="pauseOverlay">
             <div class="pause-title">PAUSED</div>
             <button class="btn btn-small" id="resumeBtn">RESUME</button>
@@ -1190,7 +1190,7 @@
             <button class="btn btn-small" id="pauseQuitBtn" style="margin-top:8px; border-color:rgba(255,255,255,0.2); color:rgba(255,255,255,0.3)">QUIT</button>
         </div>
 
-        <!-- Touch Controls -->
+        
         <div id="touchControls">
             <div id="joystickZone">
                 <div id="joystickBase"></div>
@@ -1199,7 +1199,7 @@
             <div id="btn-sprint">RUN</div>
         </div>
 
-        <!-- Achievement Popup -->
+        
         <div id="achievementPopup">
             <div class="ach-icon" id="achPopIcon"></div>
             <div class="ach-text">
@@ -1210,14 +1210,12 @@
     </div>
 
 <script>
-// ============================================================
-// EPSTEIN ISLAND — FULLY UPGRADED
-// ============================================================
+
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 
-// ============== SETTINGS ==============
+
 const settings = {
     difficulty: 'normal',
     scanlines: true,
@@ -1237,7 +1235,7 @@ const difficultyMods = {
     insane: { guardSpeed: 1.6, detectRange: 160, chaseRange: 220, damage: 2.5, guardCount: 10, staminaDrain: 0.45, staminaRegen: 0.08 }
 };
 
-// ============== ACHIEVEMENT SYSTEM ==============
+
 const ACHIEVEMENTS = [
     { id:'first_escape', icon:'📁', name:'THE WHISTLEBLOWER', desc:'Complete your first escape' },
     { id:'speedrunner', icon:'🏃', name:'SPEEDRUNNER', desc:'Escape in under 60 seconds' },
@@ -1335,7 +1333,7 @@ function renderAchievementsPanel() {
     }).join('');
 }
 
-// ============== DAILY CHALLENGE ==============
+
 let isDailyChallenge = false;
 function getDailySeed() {
     const d = new Date();
@@ -1349,14 +1347,14 @@ function seededRandom(seed) {
     };
 }
 
-// ============== STEALTH TRACKING ==============
+
 let timesSpotted = 0;
 let totalDamageTaken = 0;
 
-// ============== LB FILTER ==============
+
 let lbDiffFilter = 'all';
 
-// ============== AUDIO SYSTEM ==============
+
 let audioCtx = null;
 function initAudio() {
     if (audioCtx) return;
@@ -1404,14 +1402,14 @@ function playStep() {
     playTone(60 + Math.random() * 30, 0.05, 'triangle', 0.03);
 }
 
-// ============== AMBIENT SOUND ==============
+
 let ambientInterval = null;
 function startAmbient() {
     if (ambientInterval) return;
     ambientInterval = setInterval(() => {
         if (!settings.sound || !audioCtx || gameState !== 'playing') return;
         const vol = (settings.musicVolume / 100) * 0.015;
-        // Ocean
+        
         const noise = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         noise.type = 'sine';
@@ -1425,7 +1423,7 @@ function startAmbient() {
     }, 2000);
 }
 
-// ============== SCREEN SHAKE ==============
+
 let shakeAmount = 0;
 let shakeDuration = 0;
 function triggerShake(amount = 5, duration = 10) {
@@ -1434,7 +1432,7 @@ function triggerShake(amount = 5, duration = 10) {
     shakeDuration = duration;
 }
 
-// ============== BASE DIMENSIONS ==============
+
 const BASE_W = 900, BASE_H = 600;
 const W = BASE_W, H = BASE_H;
 const T = 30;
@@ -1448,7 +1446,7 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 200));
 
-// ============== MAP ==============
+
 const MAP = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -1472,14 +1470,14 @@ const MAP = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ];
 
-// ============== GAME STATE ==============
+
 let player, guards, files, boat, keys, gameState, startTime, stamina, health;
 let lastWinTime = 0;
 let particles, rainDrops, killedBy, camera, stepTimer = 0;
 let frameCount = 0;
-let _alreadySpottedBy = {}; // track unique guard spot events
+let _alreadySpottedBy = {}; 
 
-// Guard images
+
 const guardImages = ['TheBigE.png','mrstephen.png','guard3_new.png','guard4_new.png','guard5_new.png','guard6_new.png','trump5.png','TheBigE.png','mrstephen.png','goldenstephen.png'].map(src => {
     const img = new Image(); img.src = src; return img;
 });
@@ -1492,7 +1490,7 @@ function isWalkable(col, row) {
     return [0,2,6,10,4,7,8,9,11].includes(tile);
 }
 
-// ============== RAIN SYSTEM ==============
+
 function initRain() {
     rainDrops = [];
     for (let i = 0; i < 200; i++) {
@@ -1516,7 +1514,7 @@ function updateRain() {
     });
 }
 
-// ============== CAMERA ==============
+
 function initCamera() {
     camera = { x: 0, y: 0, targetX: 0, targetY: 0 };
 }
@@ -1524,15 +1522,15 @@ function initCamera() {
 function updateCamera() {
     camera.targetX = player.x - W / 2;
     camera.targetY = player.y - H / 2;
-    // Clamp
+    
     camera.targetX = Math.max(0, Math.min(camera.targetX, 0));
     camera.targetY = Math.max(0, Math.min(camera.targetY, 0));
-    // Smooth follow
+    
     camera.x += (camera.targetX - camera.x) * 0.08;
     camera.y += (camera.targetY - camera.y) * 0.08;
 }
 
-// ============== INIT ==============
+
 function init() {
     keys = {};
     gameState = 'playing';
@@ -1570,7 +1568,7 @@ function init() {
         { name:'Prince Andrew', x:18*T, y:7*T, speed:1.1*diff.guardSpeed, patrolPoints:[{x:18*T,y:5*T},{x:22*T,y:10*T},{x:18*T,y:13*T}], patrolIdx:0, alertTimer:0, size:14 },
     ];
 
-    // Extra guards for hard/insane
+    
     if (diff.guardCount >= 7) {
         guards.push({ name:'Donald Trump', x:12*T, y:8*T, speed:1.2*diff.guardSpeed, patrolPoints:[{x:10*T,y:6*T},{x:16*T,y:10*T},{x:12*T,y:14*T}], patrolIdx:0, alertTimer:0, size:14 });
     }
@@ -1584,17 +1582,17 @@ function init() {
         guards.push({ name:'Golden Hawking', x:20*T, y:14*T, speed:1.4*diff.guardSpeed, patrolPoints:[{x:18*T,y:12*T},{x:21*T,y:16*T},{x:16*T,y:14*T},{x:20*T,y:10*T}], patrolIdx:0, alertTimer:0, size:14 });
     }
 
-    // Daily Challenge: shuffle guard patrol offsets with seeded random
+    
     if (isDailyChallenge) {
         const rng = seededRandom(getDailySeed());
-        // Shuffle file positions slightly (within walkable tiles)
+        
         const walkablePositions = [
             {x:6*T,y:6*T},{x:21.5*T,y:11*T},{x:22*T,y:5*T},{x:14*T,y:14*T},
             {x:8.5*T,y:13.5*T},{x:13*T,y:8*T},{x:10*T,y:16*T},
             {x:9*T,y:4*T},{x:18*T,y:14*T},{x:5*T,y:15*T},{x:16*T,y:6*T},
             {x:12*T,y:11*T},{x:20*T,y:8*T},{x:7*T,y:10*T},{x:11*T,y:15*T}
         ];
-        // Shuffle using Fisher-Yates with seeded RNG
+        
         for (let i = walkablePositions.length - 1; i > 0; i--) {
             const j = Math.floor(rng() * (i + 1));
             [walkablePositions[i], walkablePositions[j]] = [walkablePositions[j], walkablePositions[i]];
@@ -1603,7 +1601,7 @@ function init() {
             f.x = walkablePositions[idx].x;
             f.y = walkablePositions[idx].y;
         });
-        // Slightly adjust guard speeds
+        
         guards.forEach(g => {
             g.speed *= (0.85 + rng() * 0.3);
         });
@@ -1618,7 +1616,7 @@ function init() {
     document.getElementById('ui').style.display = 'flex';
 }
 
-// ============== TOAST ==============
+
 function showToast(text) {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -1628,7 +1626,7 @@ function showToast(text) {
     setTimeout(() => toast.remove(), 3200);
 }
 
-// ============== PARTICLES ==============
+
 function addParticles(x, y, color, count, opts = {}) {
     if (!settings.particles) return;
     for (let i = 0; i < count; i++) {
@@ -1651,7 +1649,7 @@ function addExplosion(x, y) {
     addParticles(x, y, '#fff', 10, { spread: 12, life: 30, size: 1 });
 }
 
-// ============== UI ==============
+
 function updateUI() {
     const collected = files.filter(f => f.collected).length;
     document.getElementById('filesCount').textContent = `FILES: ${collected} / ${files.length}`;
@@ -1672,7 +1670,7 @@ function updateUI() {
         document.getElementById('status').textContent = 'Find the Epstein Files!';
     }
 
-    // Timer
+    
     if (gameState === 'playing') {
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
         const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
@@ -1683,7 +1681,7 @@ function updateUI() {
 
 function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
 
-// ============== A* PATHFINDING ==============
+
 function findPath(sx, sy, ex, ey) {
     const sc = Math.floor(sx / T), sr = Math.floor(sy / T);
     const ec = Math.floor(ex / T), er = Math.floor(ey / T);
@@ -1703,7 +1701,7 @@ function findPath(sx, sy, ex, ey) {
     let iters = 0;
     while (open.length > 0 && iters < 800) {
         iters++;
-        // Find lowest f
+        
         let bestIdx = 0;
         for (let i = 1; i < open.length; i++) {
             if (open[i].f < open[bestIdx].f) bestIdx = i;
@@ -1711,7 +1709,7 @@ function findPath(sx, sy, ex, ey) {
         const cur = open.splice(bestIdx, 1)[0];
 
         if (cur.c === ec && cur.r === er) {
-            // Reconstruct path
+            
             const path = [];
             let node = cur;
             while (node.parent) { path.unshift({ x: node.c * T + T / 2, y: node.r * T + T / 2 }); node = node.parent; }
@@ -1721,7 +1719,7 @@ function findPath(sx, sy, ex, ey) {
         for (const dir of dirs) {
             const nc = cur.c + dir.dc, nr = cur.r + dir.dr;
             if (!isWalkable(nc, nr)) continue;
-            // Diagonal: check both adjacent cells to prevent corner cutting
+            
             if (dir.dc !== 0 && dir.dr !== 0) {
                 if (!isWalkable(cur.c + dir.dc, cur.r) || !isWalkable(cur.c, cur.r + dir.dr)) continue;
             }
@@ -1733,24 +1731,24 @@ function findPath(sx, sy, ex, ey) {
             open.push({ c: nc, r: nr, g: g, f: g + h, parent: cur });
         }
     }
-    return null; // No path found
+    return null; 
 }
 
-// Cache paths to avoid recalculating every frame
+
 function getGuardPath(g, tx, ty) {
     const now = Date.now();
     const tc = Math.floor(tx / T), tr = Math.floor(ty / T);
-    // Recalculate if target changed or every 500ms
+    
     if (!g._path || !g._pathTarget || g._pathTarget.c !== tc || g._pathTarget.r !== tr || now - (g._pathTime || 0) > 500) {
         g._path = findPath(g.x, g.y, tx, ty);
         g._pathIdx = 0;
         g._pathTarget = { c: tc, r: tr };
         g._pathTime = now;
-        // If no path found, try to get unstuck by finding nearest walkable tile
+        
         if (!g._path) {
             g._stuckCount = (g._stuckCount || 0) + 1;
             if (g._stuckCount > 15) {
-                // Skip to next patrol point if stuck too long
+                
                 if (g.patrolPoints && g.patrolPoints.length > 1) {
                     g.patrolIdx = (g.patrolIdx + 1) % g.patrolPoints.length;
                 }
@@ -1773,10 +1771,10 @@ function moveToward(entity, tx, ty, speed) {
         return true;
     }
 
-    // Try pathfinding
+    
     const path = getGuardPath(entity, tx, ty);
     if (path && path.length > 0) {
-        // Find current waypoint
+        
         let idx = entity._pathIdx || 0;
         if (idx >= path.length) idx = path.length - 1;
 
@@ -1785,14 +1783,14 @@ function moveToward(entity, tx, ty, speed) {
         const wd = Math.hypot(wdx, wdy);
 
         if (wd < speed * 2) {
-            // Reached waypoint, advance
+            
             entity._pathIdx = idx + 1;
             if (entity._pathIdx >= path.length) {
                 entity._path = null;
             }
         }
 
-        // Move toward current waypoint
+        
         if (wd > 0.5) {
             const mx = (wdx / wd) * speed;
             const my = (wdy / wd) * speed;
@@ -1813,7 +1811,7 @@ function moveToward(entity, tx, ty, speed) {
             }
         }
     } else {
-        // Fallback: direct move with wall sliding
+        
         const mx = (dx / d) * speed;
         const my = (dy / d) * speed;
         const margin = 6;
@@ -1835,14 +1833,14 @@ function moveToward(entity, tx, ty, speed) {
     return false;
 }
 
-// ============== UPDATE ==============
+
 function update() {
     if (gameState !== 'playing') return;
     frameCount++;
 
     const diff = difficultyMods[settings.difficulty];
 
-    // Player movement
+    
     let dx = 0, dy = 0;
     if (keys['ArrowLeft'] || keys['KeyA']) dx -= 1;
     if (keys['ArrowRight'] || keys['KeyD']) dx += 1;
@@ -1878,20 +1876,20 @@ function update() {
         player.y = newY;
     }
 
-    // Player trail
+    
     if (dx !== 0 || dy !== 0) {
         player.trail.push({ x: player.x, y: player.y, life: 15 });
         if (player.trail.length > 20) player.trail.shift();
-        // Footstep dust
+        
         if (frameCount % 8 === 0 && settings.particles) {
             addParticles(player.x, player.y + 8, 'rgba(180,160,120,0.4)', 2, { spread: 2, life: 15, size: 1, sizeVar: 2 });
         }
-        // Step sound
+        
         stepTimer++;
         if (stepTimer % 12 === 0) playStep();
     }
 
-    // Collect files
+    
     files.forEach(f => {
         if (!f.collected && dist(player, f) < 22) {
             f.collected = true;
@@ -1903,12 +1901,12 @@ function update() {
         }
     });
 
-    // Guard AI
+    
     guards.forEach(g => {
         const playerDist = dist(player, g);
         const detectRange = diff.detectRange;
 
-        // Epstein mansion behavior
+        
         if (g.mansionTimer !== undefined) {
             if (g.stopped) {
                 g.speechTimer--;
@@ -1953,7 +1951,7 @@ function update() {
                 g.patrolIdx = (g.patrolIdx + 1) % g.patrolPoints.length;
         }
 
-        // Collision
+        
         if (playerDist < 18) {
             health -= diff.damage;
             totalDamageTaken += diff.damage;
@@ -1961,7 +1959,7 @@ function update() {
             addParticles(player.x, player.y, '#ff1744', 5, { spread: 4, life: 25 });
             triggerShake(6, 12);
             playHit();
-            // Push away (with wall check to prevent clipping)
+            
             const angle = Math.atan2(player.y - g.y, player.x - g.x);
             const pushX = player.x + Math.cos(angle) * 3;
             const pushY = player.y + Math.sin(angle) * 3;
@@ -1978,34 +1976,34 @@ function update() {
                 isWalkable(Math.floor((player.x + pm) / T), Math.floor((pushY + pm) / T))) {
                 player.y = pushY;
             }
-            // Damage vignette
+            
             document.getElementById('damageOverlay').style.opacity = Math.min(1, (125 - health) / 75);
         }
     });
 
-    // Update particles
+    
     particles = particles.filter(p => {
         p.x += p.vx; p.y += p.vy;
         p.life--; p.vx *= 0.94; p.vy *= 0.94;
         return p.life > 0;
     });
 
-    // Trail fade
+    
     player.trail = player.trail.filter(t => { t.life--; return t.life > 0; });
 
-    // Shake decay
+    
     if (shakeDuration > 0) shakeDuration--;
     else shakeAmount = 0;
 
-    // Rain
+    
     updateRain();
 
-    // Health low heartbeat
+    
     if (health < 30 && health > 0 && frameCount % 40 === 0) {
         playTone(50, 0.15, 'sine', 0.06);
     }
 
-    // Death
+    
     if (health <= 0) {
         gameState = 'lost';
         document.getElementById('killerName').textContent = killedBy || 'a guard';
@@ -2016,7 +2014,7 @@ function update() {
         });
     }
 
-    // Win
+    
     if (files.every(f => f.collected) && dist(player, boat) < 25) {
         gameState = 'won';
         const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
@@ -2025,14 +2023,14 @@ function update() {
         window.lastWinTime = lastWinTime;
         window._lastSpotted = timesSpotted;
         window._lastDaily = isDailyChallenge;
-        // Achievement check
+        
         const newAchs = checkAndAwardAchievements(parseFloat(elapsed), timesSpotted, totalDamageTaken, settings.difficulty, isDailyChallenge);
-        // Show new achievements on win screen
+        
         const winAchEl = document.getElementById('winAchievements');
         if (newAchs.length > 0) {
             winAchEl.innerHTML = newAchs.map(a => a.icon + ' ' + a.name).join(' &nbsp;·&nbsp; ');
         } else { winAchEl.innerHTML = ''; }
-        // Show stealth stats
+        
         const statsLine = `Spotted: ${timesSpotted} | Damage: ${Math.round(totalDamageTaken)}`;
         document.getElementById('winTime').textContent = `ESCAPE TIME: ${elapsed}s — ${statsLine}`;
         playWin();
@@ -2046,21 +2044,21 @@ function update() {
     updateUI();
 }
 
-// ============== DRAW TILE ==============
+
 function drawTile(col, row) {
     const x = col * T, y = row * T;
     const tile = MAP[row][col];
     const time = Date.now();
 
     switch(tile) {
-        case 0: // grass
+        case 0: 
             ctx.fillStyle = '#2d5a1e';
             ctx.fillRect(x, y, T, T);
-            // Detail variation
+            
             const gv = ((col * 17 + row * 31) % 7);
             ctx.fillStyle = gv < 3 ? '#326520' : gv < 5 ? '#287218' : '#2d5a1e';
             ctx.fillRect(x + (gv*3)%T, y + (gv*5)%T, 6, 6);
-            // Grass blades
+            
             ctx.strokeStyle = '#3a7528';
             ctx.lineWidth = 1;
             if ((col + row) % 3 === 0) {
@@ -2069,11 +2067,11 @@ function drawTile(col, row) {
                 ctx.beginPath(); ctx.moveTo(x+20, y+T); ctx.lineTo(x+20+sway, y+T-8); ctx.stroke();
             }
             break;
-        case 1: // water
+        case 1: 
             const wBase = 0.15 + Math.sin(time/2000 + col*0.3 + row*0.5) * 0.05;
             ctx.fillStyle = `rgb(${20+Math.sin(time/3000+col)*5}, ${50+Math.sin(time/2500+row)*8}, ${80+Math.sin(time/2000+col+row)*10})`;
             ctx.fillRect(x, y, T, T);
-            // Animated waves
+            
             ctx.strokeStyle = `rgba(100,180,255,${wBase})`;
             ctx.lineWidth = 1;
             for (let w = 0; w < 3; w++) {
@@ -2084,13 +2082,13 @@ function drawTile(col, row) {
                 }
                 ctx.stroke();
             }
-            // Sparkle
+            
             if ((col * 13 + row * 7) % 11 === Math.floor(time / 400) % 11) {
                 ctx.fillStyle = 'rgba(200,230,255,0.6)';
                 ctx.fillRect(x + (col*7)%25, y + (row*11)%25, 2, 2);
             }
             break;
-        case 2: // sand
+        case 2: 
             ctx.fillStyle = '#c2a644';
             ctx.fillRect(x, y, T, T);
             ctx.fillStyle = '#b89a3a';
@@ -2098,16 +2096,16 @@ function drawTile(col, row) {
             ctx.fillStyle = '#d4b84e';
             if ((col*3+row*7)%9===0) ctx.fillRect(x+3,y+18,3,3);
             break;
-        case 3: // tree
+        case 3: 
             ctx.fillStyle = '#2d5a1e';
             ctx.fillRect(x, y, T, T);
-            // Trunk
+            
             ctx.fillStyle = '#5a3a1a';
             ctx.fillRect(x+12, y+18, 6, 12);
-            // Shadow
+            
             ctx.fillStyle = 'rgba(0,0,0,0.15)';
             ctx.beginPath(); ctx.ellipse(x+15, y+28, 10, 4, 0, 0, Math.PI*2); ctx.fill();
-            // Canopy with sway
+            
             const sway = Math.sin(time/1500 + col * 2) * 1.5;
             ctx.fillStyle = '#1a7a1a';
             ctx.beginPath(); ctx.arc(x+15+sway, y+13, 11, 0, Math.PI*2); ctx.fill();
@@ -2116,22 +2114,22 @@ function drawTile(col, row) {
             ctx.fillStyle = '#2d9922';
             ctx.beginPath(); ctx.arc(x+18+sway*1.2, y+11, 5, 0, Math.PI*2); ctx.fill();
             break;
-        case 4: // building
+        case 4: 
             ctx.fillStyle = '#555';
             ctx.fillRect(x, y, T, T);
             ctx.fillStyle = '#4a4a4a';
             ctx.fillRect(x+1, y+1, T-2, T-2);
-            // Floor pattern
+            
             ctx.strokeStyle = 'rgba(255,255,255,0.04)';
             ctx.lineWidth = 1;
             ctx.strokeRect(x+4, y+4, T-8, T-8);
             break;
-        case 5: // wall
+        case 5: 
             ctx.fillStyle = '#888';
             ctx.fillRect(x, y, T, T);
             ctx.fillStyle = '#777';
             ctx.fillRect(x+2, y+2, T-4, T-4);
-            // Brick lines
+            
             ctx.strokeStyle = 'rgba(0,0,0,0.2)';
             ctx.lineWidth = 0.5;
             ctx.beginPath(); ctx.moveTo(x, y+T/2); ctx.lineTo(x+T, y+T/2); ctx.stroke();
@@ -2139,20 +2137,20 @@ function drawTile(col, row) {
             ctx.beginPath(); ctx.moveTo(x+T/4, y+T/2); ctx.lineTo(x+T/4, y+T); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(x+T*3/4, y+T/2); ctx.lineTo(x+T*3/4, y+T); ctx.stroke();
             break;
-        case 6: // dock
+        case 6: 
             ctx.fillStyle = '#1a3a5c';
             ctx.fillRect(x, y, T, T);
             ctx.fillStyle = '#6a4a2a';
             ctx.fillRect(x+2, y, T-4, T);
             ctx.fillStyle = '#7a5a3a';
             for (let p = 2; p < T; p += 10) ctx.fillRect(x+4, y+p, T-8, 4);
-            // Wood grain
+            
             ctx.strokeStyle = 'rgba(0,0,0,0.15)';
             ctx.lineWidth = 0.5;
             ctx.beginPath(); ctx.moveTo(x+6, y); ctx.lineTo(x+6, y+T); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(x+T-6, y); ctx.lineTo(x+T-6, y+T); ctx.stroke();
             break;
-        case 7: // temple
+        case 7: 
             ctx.fillStyle = '#2d5a1e';
             ctx.fillRect(x, y, T, T);
             ctx.fillStyle = '#ddd8c4';
@@ -2163,12 +2161,12 @@ function drawTile(col, row) {
             }
             ctx.fillStyle = '#daa520';
             ctx.fillRect(x+10, y+1, 10, 3);
-            // Shimmer
+            
             const tShim = Math.sin(time/800 + col) * 0.15 + 0.85;
             ctx.fillStyle = `rgba(218,165,32,${tShim * 0.3})`;
             ctx.fillRect(x+2, y+2, T-4, T-4);
             break;
-        case 8: // helipad
+        case 8: 
             ctx.fillStyle = '#555';
             ctx.fillRect(x, y, T, T);
             ctx.fillStyle = '#444';
@@ -2177,13 +2175,13 @@ function drawTile(col, row) {
             ctx.fillRect(x+8, y+6, 3, 18);
             ctx.fillRect(x+19, y+6, 3, 18);
             ctx.fillRect(x+8, y+13, 14, 3);
-            // Blinking light
+            
             if (Math.floor(time/500) % 2) {
                 ctx.fillStyle = 'rgba(255,0,0,0.6)';
                 ctx.beginPath(); ctx.arc(x+T/2, y+T/2, 2, 0, Math.PI*2); ctx.fill();
             }
             break;
-        case 9: // pool
+        case 9: 
             ctx.fillStyle = '#2d5a1e';
             ctx.fillRect(x, y, T, T);
             ctx.fillStyle = '#88cccc';
@@ -2193,14 +2191,14 @@ function drawTile(col, row) {
             const shimmer = Math.sin(time/500 + col + row);
             ctx.fillStyle = `rgba(150,220,255,${0.3 + shimmer * 0.15})`;
             ctx.fillRect(x+5, y+5, T-10, T-10);
-            // Caustics
+            
             ctx.strokeStyle = `rgba(200,240,255,${0.15 + shimmer * 0.1})`;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.arc(x+10+Math.sin(time/700)*3, y+10+Math.cos(time/900)*3, 5, 0, Math.PI*2);
             ctx.stroke();
             break;
-        case 10: // path
+        case 10: 
             ctx.fillStyle = '#8a7a5a';
             ctx.fillRect(x, y, T, T);
             ctx.fillStyle = '#7a6a4a';
@@ -2209,7 +2207,7 @@ function drawTile(col, row) {
             if ((col+row)%2===0) { ctx.fillRect(x+5,y+7,2,2); ctx.fillRect(x+18,y+20,2,2); }
             else { ctx.fillRect(x+12,y+4,2,2); ctx.fillRect(x+8,y+22,2,2); }
             break;
-        case 11: // sundial
+        case 11: 
             ctx.fillStyle = '#2d5a1e';
             ctx.fillRect(x, y, T, T);
             ctx.fillStyle = '#ccbbaa';
@@ -2222,7 +2220,7 @@ function drawTile(col, row) {
                 ctx.lineTo(x+T/2+Math.cos(angle)*11, y+T/2+Math.sin(angle)*11);
                 ctx.stroke();
             }
-            // Animated shadow
+            
             const shadowAngle = time / 5000;
             ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
             ctx.beginPath();
@@ -2233,7 +2231,7 @@ function drawTile(col, row) {
     }
 }
 
-// ============== DRAW ==============
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -2245,7 +2243,7 @@ function draw() {
 
     ctx.save();
 
-    // Screen shake
+    
     let shakeX = 0, shakeY = 0;
     if (shakeDuration > 0) {
         shakeX = (Math.random() - 0.5) * shakeAmount * 2;
@@ -2255,20 +2253,20 @@ function draw() {
     ctx.translate(offsetX + shakeX * scale, offsetY + shakeY * scale);
     ctx.scale(scale, scale);
 
-    // Water fill
+    
     ctx.fillStyle = '#1a3a5c';
     ctx.fillRect(-offsetX/scale, -offsetY/scale, canvas.width/scale, canvas.height/scale);
 
-    // Draw map
+    
     for (let r = 0; r < ROWS; r++)
         for (let c = 0; c < COLS; c++)
             drawTile(c, r);
 
-    // ===== Draw boat =====
+    
     const allCollected = files.every(f => f.collected);
     ctx.save();
     ctx.translate(boat.x, boat.y);
-    // Bobbing animation
+    
     const bob = Math.sin(Date.now()/800) * 2;
     ctx.translate(0, bob);
 
@@ -2279,7 +2277,7 @@ function draw() {
     ctx.beginPath(); ctx.moveTo(0,-14); ctx.lineTo(10,-3); ctx.lineTo(0,-1); ctx.closePath(); ctx.fill();
 
     if (allCollected) {
-        // Pulsing glow
+        
         const gPulse = Math.sin(Date.now()/300) * 0.3 + 0.7;
         ctx.shadowColor = '#00e676';
         ctx.shadowBlur = 20 * gPulse;
@@ -2287,14 +2285,14 @@ function draw() {
         ctx.lineWidth = 2;
         ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2); ctx.stroke();
         ctx.shadowBlur = 0;
-        // Arrow indicator
+        
         const arrowY = -30 + Math.sin(Date.now()/400) * 4;
         ctx.fillStyle = '#00e676';
         ctx.beginPath(); ctx.moveTo(-5, arrowY); ctx.lineTo(5, arrowY); ctx.lineTo(0, arrowY+8); ctx.closePath(); ctx.fill();
     }
     ctx.restore();
 
-    // ===== Draw files =====
+    
     files.forEach(f => {
         if (f.collected) return;
         ctx.save();
@@ -2302,24 +2300,24 @@ function draw() {
         const hover = Math.sin(Date.now()/400) * 3;
         ctx.translate(0, hover);
 
-        // Outer glow ring
+        
         const glow = Math.sin(Date.now()/300) * 0.3 + 0.7;
         ctx.shadowColor = '#ffd740';
         ctx.shadowBlur = 15 * glow;
 
-        // Folder
+        
         ctx.fillStyle = `rgba(255,200,0,${glow})`;
         ctx.fillRect(-9, -7, 18, 16);
         ctx.fillStyle = '#ff9100';
         ctx.fillRect(-9, -9, 11, 4);
-        // Lines
+        
         ctx.fillStyle = '#aa6600';
         ctx.fillRect(-6, -3, 12, 1.5);
         ctx.fillRect(-6, 1, 12, 1.5);
         ctx.fillRect(-6, 5, 12, 1.5);
         ctx.shadowBlur = 0;
 
-        // Rotating glow ring
+        
         ctx.strokeStyle = `rgba(255,215,64,${glow * 0.4})`;
         ctx.lineWidth = 1;
         const rotAngle = Date.now() / 1000;
@@ -2327,7 +2325,7 @@ function draw() {
         ctx.ellipse(0, 0, 14, 14, rotAngle, 0, Math.PI * 1.5);
         ctx.stroke();
 
-        // SECRET stamp
+        
         ctx.fillStyle = '#ff1744';
         ctx.font = 'bold 6px Orbitron, monospace';
         ctx.textAlign = 'center';
@@ -2336,7 +2334,7 @@ function draw() {
         ctx.restore();
     });
 
-    // ===== Player trail =====
+    
     player.trail.forEach(t => {
         ctx.globalAlpha = t.life / 20;
         ctx.fillStyle = 'rgba(34,136,255,0.3)';
@@ -2346,13 +2344,13 @@ function draw() {
     });
     ctx.globalAlpha = 1;
 
-    // ===== Draw guards =====
+    
     guards.forEach((g, gIdx) => {
         ctx.save();
         ctx.translate(g.x, g.y);
         const alert = g.alertTimer > 0;
 
-        // Detection range (faded)
+        
         if (alert) {
             const aPulse = Math.sin(Date.now()/200) * 0.05 + 0.1;
             ctx.strokeStyle = `rgba(255,23,68,${aPulse})`;
@@ -2362,11 +2360,11 @@ function draw() {
             ctx.setLineDash([]);
         }
 
-        // Guard shadow
+        
         ctx.fillStyle = 'rgba(0,0,0,0.2)';
         ctx.beginPath(); ctx.ellipse(0, 14, 10, 4, 0, 0, Math.PI*2); ctx.fill();
 
-        // Guard image
+        
         const imgSize = 36;
         const gImg = guardImages[gIdx % guardImages.length];
         if (gImg.complete && gImg.naturalWidth > 0) {
@@ -2385,7 +2383,7 @@ function draw() {
             ctx.beginPath(); ctx.arc(0, 0, g.size, 0, Math.PI*2); ctx.fill();
         }
 
-        // Alert exclamation
+        
         if (alert) {
             const bounce = Math.abs(Math.sin(Date.now()/150)) * 4;
             ctx.fillStyle = '#ff1744';
@@ -2397,7 +2395,7 @@ function draw() {
             ctx.shadowBlur = 0;
         }
 
-        // Epstein speech bubble
+        
         if (g.speechTimer > 0 && g.stopped) {
             const mansionFile = files.find(f => f.label === 'Mansion File');
             if (mansionFile && !mansionFile.collected) {
@@ -2416,7 +2414,7 @@ function draw() {
                     ctx.restore();
                 }
             }
-            // Speech bubble
+            
             const txt = 'im omning it';
             ctx.font = 'bold 9px Share Tech Mono, monospace';
             const tw = ctx.measureText(txt).width + 12;
@@ -2425,13 +2423,13 @@ function draw() {
             ctx.beginPath();
             ctx.roundRect(bx, by, tw, 20, 4);
             ctx.fill(); ctx.stroke();
-            // Tail
+            
             ctx.beginPath(); ctx.moveTo(-3, by+20); ctx.lineTo(0, by+26); ctx.lineTo(3, by+20); ctx.closePath(); ctx.fill(); ctx.stroke();
             ctx.fillStyle = '#333'; ctx.textAlign = 'center';
             ctx.fillText(txt, 0, by+14);
         }
 
-        // Name label
+        
         ctx.fillStyle = alert ? '#ff5252' : '#fff';
         ctx.strokeStyle = 'rgba(0,0,0,0.9)';
         ctx.lineWidth = 2.5;
@@ -2443,15 +2441,15 @@ function draw() {
         ctx.restore();
     });
 
-    // ===== Draw player =====
+    
     ctx.save();
     ctx.translate(player.x, player.y);
 
-    // Player shadow
+    
     ctx.fillStyle = 'rgba(0,0,0,0.25)';
     ctx.beginPath(); ctx.ellipse(0, 10, 10, 4, 0, 0, Math.PI*2); ctx.fill();
 
-    // Glow when sprinting
+    
     if (keys['ShiftLeft'] || keys['ShiftRight']) {
         ctx.shadowColor = '#2979ff';
         ctx.shadowBlur = 15;
@@ -2468,7 +2466,7 @@ function draw() {
     ctx.shadowBlur = 0;
     ctx.restore();
 
-    // ===== Particles =====
+    
     particles.forEach(p => {
         ctx.globalAlpha = (p.life / p.maxLife) * 0.8;
         ctx.fillStyle = p.color;
@@ -2480,7 +2478,7 @@ function draw() {
     });
     ctx.globalAlpha = 1;
 
-    // ===== Rain =====
+    
     if (settings.rain && rainDrops) {
         ctx.strokeStyle = 'rgba(180,200,220,0.2)';
         ctx.lineWidth = 0.5;
@@ -2494,7 +2492,7 @@ function draw() {
         ctx.globalAlpha = 1;
     }
 
-    // ===== Fog of War =====
+    
     if (settings.fogOfWar) {
         const fogGrad = ctx.createRadialGradient(player.x, player.y, 60, player.x, player.y, 180);
         fogGrad.addColorStop(0, 'rgba(0,0,0,0)');
@@ -2504,7 +2502,7 @@ function draw() {
         ctx.fillRect(0, 0, W, H);
     }
 
-    // ===== Location labels =====
+    
     ctx.font = 'bold 8px Orbitron, monospace';
     ctx.textAlign = 'center';
     const labels = [
@@ -2523,10 +2521,10 @@ function draw() {
         ctx.fillText(l.text, l.x, l.y);
     });
 
-    // ===== Mini-map =====
+    
     const mmS = 4;
     const mmX = W - COLS*mmS - 12, mmY = 12;
-    // BG
+    
     ctx.fillStyle = 'rgba(0,0,0,0.7)';
     ctx.fillRect(mmX-4, mmY-4, COLS*mmS+8, ROWS*mmS+8);
     ctx.strokeStyle = 'rgba(255,255,255,0.1)';
@@ -2542,37 +2540,37 @@ function draw() {
             ctx.fillRect(mmX+c*mmS, mmY+r*mmS, mmS, mmS);
         }
     }
-    // Player blip (pulsing)
+    
     const blipSize = 2 + Math.sin(Date.now()/300) * 0.5;
     ctx.fillStyle = '#2979ff';
     ctx.beginPath(); ctx.arc(mmX+(player.x/T)*mmS, mmY+(player.y/T)*mmS, blipSize, 0, Math.PI*2); ctx.fill();
-    // Files
+    
     files.forEach(f => {
         if (!f.collected) {
             ctx.fillStyle = '#ffd740';
             ctx.fillRect(mmX+(f.x/T)*mmS-1, mmY+(f.y/T)*mmS-1, 2, 2);
         }
     });
-    // Guards
+    
     guards.forEach(g => {
         ctx.fillStyle = g.alertTimer > 0 ? '#ff1744' : '#ff6666';
         ctx.fillRect(mmX+(g.x/T)*mmS-1, mmY+(g.y/T)*mmS-1, 2, 2);
     });
-    // Boat
+    
     ctx.fillStyle = allCollected ? '#00e676' : '#6a4a2a';
     ctx.fillRect(mmX+(boat.x/T)*mmS-1, mmY+(boat.y/T)*mmS-1, 3, 3);
 
     ctx.restore();
 }
 
-// ============== GAME LOOP ==============
+
 function gameLoop() {
     update();
     draw();
     requestAnimationFrame(gameLoop);
 }
 
-// ============== SCREEN TRANSITIONS ==============
+
 function transitionTo(callback) {
     const trans = document.getElementById('screenTransition');
     trans.classList.add('active');
@@ -2582,9 +2580,9 @@ function transitionTo(callback) {
     }, 500);
 }
 
-// ============== INPUT ==============
+
 document.addEventListener('keydown', e => {
-    // Don't block typing in input fields
+    
     if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
     keys[e.code] = true;
     if (e.code === 'Escape' && gameState === 'playing') {
@@ -2595,17 +2593,17 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('keyup', e => { keys[e.code] = false; });
 
-// Custom cursor
+
 document.addEventListener('mousemove', e => {
     const cursor = document.getElementById('customCursor');
     cursor.style.left = e.clientX - 12 + 'px';
     cursor.style.top = e.clientY - 12 + 'px';
 });
 
-// Touch controls — Joystick
+
 let joystickActive = false;
 let joystickTouchId = null;
-let joystickX = 0, joystickY = 0; // -1 to 1
+let joystickX = 0, joystickY = 0; 
 let sprintToggled = false;
 
 const joystickZone = document.getElementById('joystickZone');
@@ -2677,7 +2675,7 @@ function updateJoystick(touch) {
     keys['ArrowRight'] = joystickX > deadzone;
 }
 
-// Sprint toggle
+
 sprintBtn.addEventListener('touchstart', e => {
     e.preventDefault();
     sprintToggled = !sprintToggled;
@@ -2688,7 +2686,7 @@ sprintBtn.addEventListener('touchstart', e => {
 canvas.addEventListener('touchstart', e => e.preventDefault(), {passive:false});
 canvas.addEventListener('touchmove', e => e.preventDefault(), {passive:false});
 
-// ============== SETTINGS UI ==============
+
 document.querySelectorAll('.toggle').forEach(toggle => {
     toggle.addEventListener('click', () => {
         const setting = toggle.dataset.setting;
@@ -2716,7 +2714,7 @@ document.getElementById('musicVolume').addEventListener('input', e => {
     document.getElementById('musicVolVal').textContent = settings.musicVolume;
 });
 
-// ============== BUTTONS ==============
+
 function hideAllScreens() {
     document.querySelectorAll('.game-screen').forEach(s => s.classList.remove('active'));
     document.getElementById('pauseOverlay').classList.remove('active');
@@ -2799,7 +2797,7 @@ document.getElementById('menuLoseBtn').addEventListener('click', () => {
     });
 });
 
-// Leaderboard buttons
+
 document.getElementById('leaderboardBtnWin').addEventListener('click', () => {
     playClick();
     hideAllScreens();
@@ -2831,7 +2829,7 @@ document.getElementById('lbMenuBtn').addEventListener('click', () => {
     gameState = 'menu';
 });
 
-// ============== DAILY CHALLENGE BTN ==============
+
 document.getElementById('dailyChallengeBtn').addEventListener('click', () => {
     initAudio();
     playClick();
@@ -2841,13 +2839,13 @@ document.getElementById('dailyChallengeBtn').addEventListener('click', () => {
         init();
     });
 });
-// Normal start resets daily flag
+
 const _origStartClick = document.getElementById('startBtn').onclick;
 document.getElementById('startBtn').addEventListener('click', () => {
     isDailyChallenge = false;
-}, true); // capture phase, runs first
+}, true); 
 
-// ============== ACHIEVEMENT SCREEN BTNS ==============
+
 document.getElementById('achievementsBtnTitle').addEventListener('click', () => {
     playClick();
     hideAllScreens();
@@ -2866,7 +2864,7 @@ document.getElementById('achBackBtn').addEventListener('click', () => {
     document.getElementById('titleScreen').classList.add('active');
 });
 
-// ============== DIFFICULTY LB TABS ==============
+
 document.querySelectorAll('.lb-diff-tab').forEach(tab => {
     tab.addEventListener('click', () => {
         document.querySelectorAll('.lb-diff-tab').forEach(t => t.classList.remove('active'));
@@ -2876,7 +2874,7 @@ document.querySelectorAll('.lb-diff-tab').forEach(tab => {
     });
 });
 
-// ============== TITLE SCREEN BACKGROUND ==============
+
 const titleCanvas = document.getElementById('titleBgCanvas');
 const tCtx = titleCanvas.getContext('2d');
 let titleParticles = [];
@@ -2888,7 +2886,7 @@ function resizeTitleCanvas() {
 resizeTitleCanvas();
 window.addEventListener('resize', resizeTitleCanvas);
 
-// Initialize title particles
+
 for (let i = 0; i < 150; i++) {
     titleParticles.push({
         x: Math.random() * window.innerWidth,
@@ -2904,7 +2902,7 @@ for (let i = 0; i < 150; i++) {
 function drawTitleBg() {
     tCtx.clearRect(0, 0, titleCanvas.width, titleCanvas.height);
 
-    // Dark gradient bg
+    
     const grad = tCtx.createRadialGradient(
         titleCanvas.width/2, titleCanvas.height * 0.7, 0,
         titleCanvas.width/2, titleCanvas.height * 0.7, titleCanvas.height * 0.8
@@ -2915,7 +2913,7 @@ function drawTitleBg() {
     tCtx.fillStyle = grad;
     tCtx.fillRect(0, 0, titleCanvas.width, titleCanvas.height);
 
-    // Ocean at the bottom
+    
     const oceanY = titleCanvas.height * 0.7;
     const oceanGrad = tCtx.createLinearGradient(0, oceanY, 0, titleCanvas.height);
     oceanGrad.addColorStop(0, 'rgba(20,40,70,0.8)');
@@ -2923,7 +2921,7 @@ function drawTitleBg() {
     tCtx.fillStyle = oceanGrad;
     tCtx.fillRect(0, oceanY, titleCanvas.width, titleCanvas.height - oceanY);
 
-    // Waves
+    
     const time = Date.now() / 1000;
     for (let w = 0; w < 5; w++) {
         tCtx.strokeStyle = `rgba(60,100,160,${0.08 - w*0.015})`;
@@ -2936,7 +2934,7 @@ function drawTitleBg() {
         tCtx.stroke();
     }
 
-    // Island silhouette
+    
     const cx = titleCanvas.width / 2;
     tCtx.fillStyle = 'rgba(15,25,15,0.9)';
     tCtx.beginPath();
@@ -2948,7 +2946,7 @@ function drawTitleBg() {
     tCtx.closePath();
     tCtx.fill();
 
-    // Trees on island
+    
     [cx-120, cx-60, cx-20, cx+30, cx+80, cx+140].forEach((tx, i) => {
         const ty = oceanY - 25 - Math.sin(i*2.1)*20 - 10;
         const sway = Math.sin(time + i) * 2;
@@ -2957,17 +2955,17 @@ function drawTitleBg() {
         tCtx.beginPath(); tCtx.arc(tx+sway, ty, 8+i%3, 0, Math.PI*2); tCtx.fill();
     });
 
-    // Temple on island
+    
     tCtx.fillStyle = 'rgba(40,60,90,0.8)';
     tCtx.fillRect(cx-15, oceanY-65, 30, 30);
     tCtx.fillStyle = 'rgba(60,100,150,0.6)';
     tCtx.fillRect(cx-15, oceanY-65, 30, 5);
     tCtx.fillRect(cx-15, oceanY-55, 30, 5);
-    // Gold dome
+    
     tCtx.fillStyle = 'rgba(180,140,40,0.7)';
     tCtx.beginPath(); tCtx.arc(cx, oceanY-65, 8, Math.PI, 0); tCtx.fill();
 
-    // Particles
+    
     titleParticles.forEach(p => {
         p.x += p.vx;
         p.y += p.vy;
@@ -2983,7 +2981,7 @@ function drawTitleBg() {
     });
     tCtx.globalAlpha = 1;
 
-    // Subtle light flicker at top
+    
     const flickerGrad = tCtx.createRadialGradient(cx, 0, 0, cx, 0, titleCanvas.width * 0.5);
     flickerGrad.addColorStop(0, `rgba(255,23,68,${0.02 + Math.sin(time*2)*0.01})`);
     flickerGrad.addColorStop(1, 'transparent');
@@ -2994,7 +2992,7 @@ function drawTitleBg() {
 }
 drawTitleBg();
 
-// ============== LOADING ==============
+
 let loadProgress = 0;
 function simulateLoading() {
     const fill = document.getElementById('loadingFill');
@@ -3015,14 +3013,14 @@ function simulateLoading() {
 }
 simulateLoading();
 
-// ============== START ==============
+
 init();
 gameState = 'menu';
 gameLoop();
 
 </script>
 
-<!-- Firebase -->
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getDatabase, ref, push, set, get, onValue, query, orderByChild, equalTo, limitToLast } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
@@ -3041,7 +3039,7 @@ const firebaseConfig = {
 const fbApp = initializeApp(firebaseConfig);
 const db = getDatabase(fbApp);
 
-// Expose to global scope for the game script
+
 let lastWinTime = 0;
 let lastSubmittedKey = null;
 let lbUnsubscribe = null;
@@ -3051,7 +3049,7 @@ window.lastWinTime = 0;
 function showNameModal() {
     const savedName = localStorage.getItem('epstein_player_name');
     if (savedName) {
-        // Name already set — auto-submit without showing modal
+        
         const time = window.lastWinTime || 0;
         const difficulty = window.settings ? window.settings.difficulty : 'normal';
         const spotted = window._lastSpotted || 0;
@@ -3075,11 +3073,11 @@ async function submitScore(name, time, difficulty, spotted, isDaily) {
     const badWords = /nigg|fagg|fag[^s]|n[i1]gl|kike|chink|spic[^e]/i;
     let cleanName = name.toUpperCase().substring(0, 16);
     if (badWords.test(cleanName)) cleanName = 'PLAYER';
-    // Deterministic key: one entry per name+difficulty (no duplicates)
+    
     const nameKey = cleanName.replace(/[.#$\[\]\/\s]/g, '_');
     const entryKey = nameKey + '_' + difficulty + (isDaily ? '_daily' : '');
     const entryRef = ref(db, 'leaderboard/' + entryKey);
-    // Check if existing entry is better
+    
     const existing = await get(entryRef);
     if (existing.exists() && existing.val().time <= time) {
         return { key: entryKey };
@@ -3111,7 +3109,7 @@ function startLeaderboardListener() {
         snapshot.forEach(child => {
             entries.push({ key: child.key, ...child.val() });
         });
-        // Apply difficulty filter
+        
         const filter = window.lbDiffFilter || 'all';
         let filtered = entries;
         if (filter === 'daily') {
@@ -3160,7 +3158,7 @@ function escHtml(s) {
     return d.innerHTML;
 }
 
-// Name submit
+
 document.getElementById('submitNameBtn').addEventListener('click', () => {
     const input = document.getElementById('nameInput');
     let name = input.value.trim();
@@ -3186,7 +3184,7 @@ document.getElementById('nameInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') document.getElementById('submitNameBtn').click();
 });
 
-// Settings name save
+
 document.getElementById('settingsNameInput').value = localStorage.getItem('epstein_player_name') || '';
 document.getElementById('saveNameBtn').addEventListener('click', () => {
     const val = document.getElementById('settingsNameInput').value.trim();

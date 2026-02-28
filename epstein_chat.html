@@ -204,7 +204,7 @@ body {
 </head>
 <body>
 
-<!-- ══════ SPLASH SCREEN ══════ -->
+
 <div id="splashScreen">
   <img src="Untitled%20design.png" alt="Logo" id="splashLogo">
 </div>
@@ -308,7 +308,7 @@ const statusText = document.getElementById('statusText');
 let waitingForResponse = false;
 let currentAiDiv = null;
 let serverOnline = false;
-let localMessages = []; // Keep local history for context
+let localMessages = []; 
 
 function escHtml(s) {
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
@@ -333,7 +333,7 @@ function addMessage(role, text) {
     return div;
 }
 
-// Watch relay server status
+
 onValue(ref(db, 'relay_status'), (snap) => {
     const data = snap.val();
     if (data && data.lastPing && (Date.now() - data.lastPing < 30000)) {
@@ -347,7 +347,7 @@ onValue(ref(db, 'relay_status'), (snap) => {
     }
 });
 
-// Watch for response from relay
+
 onValue(responseRef, (snap) => {
     const data = snap.val();
     if (!data || !waitingForResponse) return;
@@ -409,7 +409,7 @@ async function send() {
     chatEl.scrollTop = chatEl.scrollHeight;
 
     try {
-        // Send the full conversation history so relay has context
+        
         await set(ref(db, `epstein_chat/${sessionId}/request`), {
             messages: localMessages,
             timestamp: Date.now()
